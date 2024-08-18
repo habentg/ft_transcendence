@@ -1,0 +1,7 @@
+django
+bash
+dj_database_url
+requests
+python-dotenv
+psycopg2-binary
+djangorestframework-simplejwt

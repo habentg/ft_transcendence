@@ -1,0 +1,57 @@
+version: '3.8'
+
+services:
+  postgres:
+    container_name: postgresql_cont
+    image: postgres:latest
+    restart: always
+    volumes:
+      - drf_postgres_data:/var/lib/postgresql/data
+    networks:
+      - drf_network
+    env_file:
+      - .env
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  drf_service:
+    container_name: drf_container
+    image: drf_image
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8000:8000"
+    restart: always
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - drf_network
+    env_file:
+      - .env
+    environment:
+      DATABASE_URL: postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}
+      DJANGO_SUPERUSER_USERNAME: ${DJANGO_SUPERUSER_USERNAME}
+      DJANGO_SUPERUSER_FIRSTNAME: ${DJANGO_SUPERUSER_FIRSTNAME}
+      DJANGO_SUPERUSER_LASTNAME: ${DJANGO_SUPERUSER_LASTNAME}
+      DJANGO_SUPERUSER_EMAIL: ${DJANGO_SUPERUSER_EMAIL}
+      DJANGO_SUPERUSER_PASSWORD: ${DJANGO_SUPERUSER_PASSWORD}
+    volumes:
+      - .:/drf
+
+volumes:
+  drf_postgres_data:
+    driver: local
+
+networks:
+  drf_network:
+    name: drf_network
+    driver: bridge

@@ -1,0 +1,30 @@
+/* .navbar {
+  background: #fae8d2;
+  box-shadow: 4px 6px 12px rgba(0, 0, 0, 0.4);
+}
+
+.nav-item .active {
+  border-radius: 6px;
+  background: linear-gradient(145deg, #010101, #9b9a98);
+  box-shadow: 4px 4px 8px #0a0805, -4px -4px 8px #000000;
+}
+.navbar .dropdown-menu a:hover {
+  color: #454545;
+}
+.navbar .nav-item {
+  margin: auto 4px;
+}
+.navbar a {
+  padding-left: 12px;
+  padding-right: 12px;
+}
+.navbar .dropdown-menu {
+  background: #545454;
+}
+a.navbar-brand {
+  color: #454545;
+} */
+
+.content {
+  background-color: black;
+}
