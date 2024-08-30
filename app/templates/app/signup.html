@@ -1,6 +1,6 @@
 <div class="container my-5">
   <!-- Sign form -->
-  <form id="signupForm" class="col-6 mx-auto card p-3 form-cont">
+  <form class="col-6 mx-auto card p-3 form-cont" onsubmit="handleSignupSubmit(event)">
     {% csrf_token %}
     <h1 style="text-align: center">
       <span style="color: rgb(34, 34, 34)">Sign Up</span>
@@ -8,7 +8,7 @@
     <hr />
 
     <!-- Display error/success messages -->
-    <div id="message"></div>
+    <div class="alert alert-danger" role="alert" id="error-msg" style="display: none;"></div>
 
     <div class="form-group my-3 first-last_name">
       <div class="first-name">
@@ -38,10 +38,10 @@
     </div>
 
     <!-- Submit button -->
-    <button type="submit" class="btn btn-dark">Submit</button>
+    <button id="signupForm" type="submit" class="btn btn-dark">Submit</button>
 
     <!-- Link to login page for users who already have an account -->
-    <p class="p-3">Already have an account? <a href="/signin/">sign in</a></p>
+    <p class="p-3">Already have an account? <a onclick="route()" href="signin">sign in</a></p>
 
     <div class="or-separator">
       <span>or</span>

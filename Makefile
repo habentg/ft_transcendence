@@ -3,8 +3,13 @@ COMPOSE 		= docker compose
 
 
 # ----------------------- building services --------------------------
+all: build up
+
 up:
-	$(COMPOSE) -f docker-compose.yaml up --build -d
+	$(COMPOSE) -f docker-compose.yaml up -d
+
+build:
+	$(COMPOSE) -f docker-compose.yaml build
 
 down:
 	$(COMPOSE) -f docker-compose.yaml down

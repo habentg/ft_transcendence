@@ -1,17 +1,17 @@
-console.log("signin.js loaded");
 
-// Handle the signin form submission
-async function handleSignInSubmit(e) {
+console.log("password_reset.js loaded");
+async function handlePasswordRestSubmit(e) {
+
     e.preventDefault();
 
     const formData = {
-        username: document.getElementById('username').value,
-        password: document.getElementById('password').value
+        email: document.getElementById('email').value
     };
 
+    console.log("Handling password reset form submission");
     try {
         let m_csrf_token = await getCSRFToken();
-        const response = await fetch('/signin/', {
+        const response = await fetch('/password_reset/', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -19,7 +19,7 @@ async function handleSignInSubmit(e) {
             },
             body: JSON.stringify(formData)
         });
-        
+
         const responseData = await response.json();
         
         if (!response.ok) {
@@ -27,16 +27,12 @@ async function handleSignInSubmit(e) {
             return;
         }
 
-        // saving jwt access and refresh token in local storage
-        localStorage.setItem('access_token', responseData.access_token);
-        localStorage.setItem('refresh_token', responseData.refresh_token);
-
         console.log('redirecting to:', responseData.redirect);
-        
         // redirect to the protected page
-        history.pushState(null, '', `/${responseData.redirect}`);
-        handleLocationChange();
+        // history.pushState(null, '', `/${responseData.redirect}`);
+        // handleLocationChange();
     } catch (error) {
         console.error('Error:', error);
     }
+    
 }

@@ -17,9 +17,6 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
 	class Meta:
 		model = BlogUser
 		fields = ['first_name', 'last_name', 'username', 'email', 'password']
-		extra_kwargs = {
-            'password': {'write_only': True}
-        }
 
 	def create(self, validated_data):
 		user_password = validated_data.pop('password')
@@ -40,7 +37,5 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
 	-> It provides a custom method for creating a new user, ensuring that the password is properly hashed before saving.
 """
 class UserLoginSerializer(serializers.Serializer):
-	username = serializers.CharField(max_length=150, read_only=True)
-	email = serializers.CharField(max_length=150)
+	username = serializers.CharField(max_length=150)
 	password = serializers.CharField(max_length=150, min_length=3, style={'input_type': 'password'})
-	token = serializers.CharField(max_length=255, read_only=True)
