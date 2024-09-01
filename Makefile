@@ -2,7 +2,7 @@
 COMPOSE 		= docker compose
 
 
-# ----------------------- building services --------------------------
+# ----------------------- creating services --------------------------
 all: build up
 
 up:
@@ -32,11 +32,11 @@ restart: stop start # restarting the services (volumes, network, and images stay
 
 fclean: down
 	@yes | docker system prune --all
-	@docker volume rm $$(docker volume ls -q)
+	@docker volume ls -q | grep -q . && docker volume rm $$(docker volume ls -q) || true
 
-rebuild: fclean up 
+rebuild: fclean all 
 
-# ----------------------- Managing transcendence service only --------------------------
+# ----------------------- Managing drf service only --------------------------
 
 drf-down:
 	$(COMPOSE) -f docker-compose.yaml stop drf_service

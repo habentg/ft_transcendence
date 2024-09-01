@@ -25,6 +25,8 @@ from django.contrib.auth.tokens import default_token_generator
 from django.utils.http import urlsafe_base64_encode
 from django.utils.encoding import force_bytes
 from django.utils.http import urlsafe_base64_decode
+from django.shortcuts import render, redirect
+from django.utils.encoding import force_str
 
 # base view for basic pages in our SPA
 class BaseView(View):
@@ -149,61 +151,6 @@ class InfoForOauth(View):
 		return JsonResponse(response, status=status.HTTP_200_OK)
 
 # 42 Oauth2.0 callback
-# class OauthCallback(View):
-# 	def get(self, request):
-# 		# getting the authorization code from 42 auth server
-# 		code = request.GET.get('code')
-# 		#Doc: https://api.intra.42.fr/apidoc/guides/web_application_flow
-# 		# getting the access token from 42 auth server using the authorization code
-# 		token_response = requests.post('https://api.intra.42.fr/oauth/token', data={
-# 			'grant_type': 'authorization_code',
-# 			'code': code,
-# 			'redirect_uri': settings.DOMAIN_NAME + '/oauth/',
-# 			'client_id': settings.FOURTYTWO_OAUTH_CLIENT_ID,
-# 			'client_secret': settings.FOURTYTWO_OAUTH_CLIENT_SECRET,
-# 		})
-
-# 		if token_response.status_code != 200:
-# 			return JsonResponse({'error': 'failed to optain access token'}, status=token_response.status_code)
-# 		access_token = token_response.json()['access_token']
-# 		# Use the access token to access the user's data
-# 		user_info_response = requests.get('https://api.intra.42.fr/v2/me', headers={
-# 			'Authorization': f'Bearer {access_token}'
-# 		})
-
-# 		if user_info_response.status_code != 200:
-# 			return JsonResponse({'error': 'Failed to obtain user information.'}, status=user_info_response.status_code)
-# 		user_info = user_info_response.json()
-# 		# find or create user
-# 		user = BlogUser.objects.filter(username=user_info['login']).first()
-# 		if not user:
-# 			data = {
-# 				'username': user_info['login'],
-# 				'email': user_info['email'],
-# 				'first_name': user_info['first_name'],
-# 				'last_name': user_info['last_name'],
-# 				'password': '42password',
-# 			}
-# 			serializer = UserRegistrationSerializer(data=data)
-# 			if serializer.is_valid():
-# 				new_user = serializer.save()
-# 				if new_user:
-# 					# Update last_login
-# 					new_user.last_login = timezone.now()
-# 					new_user.save()
-# 					refresh = RefreshToken.for_user(new_user)
-# 					data = {
-# 						'refresh_token': str(refresh),
-# 						'access_token': str(refresh.access_token),
-# 						'redirect': 'home'
-# 					}
-# 					# render the home page
-# 					render(request, 'app/home.html', data)
-# 					# return JsonResponse(data, status=status.HTTP_201_CREATED)
-# 		else:
-# 			print('User exists', flush=True)
-# 		return JsonResponse({'message': 'Callback'}, status=status.HTTP_200_OK)
-	
 class OauthCallback(View):
 	def get(self, request):
 		code = request.GET.get('code')
@@ -246,23 +193,29 @@ class OauthCallback(View):
 			print('User created', flush=True)
 			user.set_password('42password')  # Consider using a more secure method
 			user.save()
+		else:
+			print('User found', flush=True)
 
 		# Update last login
 		user.last_login = timezone.now()
 		user.save()
 
 		# Generate JWT tokens
+		# Generate JWT tokens
 		refresh = RefreshToken.for_user(user)
-		data = {
+		access_token = refresh.access_token
+
+		# Create a response with the JWT tokens
+		response_data = {
+			'access_token': str(access_token),
 			'refresh_token': str(refresh),
-			'access_token': str(refresh.access_token),
 			'redirect': 'home'
 		}
 
-		# Return tokens as JSON response
-		return JsonResponse(data, status=status.HTTP_200_OK)
-	
+		# Redirect to a specific URL with the JSON data as URL parameters
+		return redirect(f'/oauth/callback?access_token={response_data["access_token"]}&refresh_token={response_data["refresh_token"]}&redirect={response_data["redirect"]}')
 
+	
 class PasswordReset(BaseView):
 	template_name = 'app/password_reset.html'
 	title = 'Password Reset'
@@ -276,9 +229,13 @@ class PasswordReset(BaseView):
 		user = User.objects.filter(email=data['email']).first()
 		if user:
 			self.email_pass_reset_link(user)
-			return JsonResponse({'message': 'Password reset successful!', 'redirect': 'home'}, status=status.HTTP_200_OK)
+			return JsonResponse({
+				'success': 'User found!',
+				'uidb64': urlsafe_base64_encode(force_bytes(user.pk)),
+				'token': default_token_generator.make_token(user)
+			}, status=status.HTTP_200_OK)
 		print('User NOT found', flush=True)
-		return JsonResponse({'error': 'User not found!', 'redirect': 'not_home'}, status=status.HTTP_404_NOT_FOUND)
+		return JsonResponse({'error_msg': 'Couldnt find your email!'}, status=status.HTTP_404_NOT_FOUND)
 
 	def email_pass_reset_link(self, user):
 		from_email = settings.DEFAULT_FROM_EMAIL
@@ -287,7 +244,7 @@ class PasswordReset(BaseView):
 		email_template_name = "app/password_reset_email_tamplate.txt"
 		c = {
 			'email': user.email,
-			'domain': 'localhost',
+			'domain': 'localhost:8000',
 			'site_name': 'Your Site',
 			'uid': urlsafe_base64_encode(force_bytes(user.pk)),
 			'user': user,
@@ -297,68 +254,53 @@ class PasswordReset(BaseView):
 		email_body = render_to_string(email_template_name, c)
 		send_mail(subject, email_body, from_email, recipient_list, fail_silently=False)
 
+class PassResetNewPass(View):
+	template_name = 'app/change_pass.html'
+	title = 'Password Reset'
+	js = 'js/password_reset.js'
+	css = 'css/password_reset.css'
 
-""" Sending password reset link by email """
+	def get(self, request, uidb64=None, token=None):
+		User = get_user_model()
+		try:
+			uid = force_str(urlsafe_base64_decode(uidb64))
+			user = User.objects.get(pk=uid)
+		except (TypeError, ValueError, OverflowError, User.DoesNotExist):
+			user = None
 
-# def password_reset_newpass(request, uidb64=None, token=None):
-#     Player = get_user_model()
-#     try:
-#         uid = force_str(urlsafe_base64_decode(uidb64))
-#         player = Player.objects.get(pk=uid)
-#     except (TypeError, ValueError, OverflowError, Player.DoesNotExist):
-#         player = None
+		if user is not None and default_token_generator.check_token(user, token):
+			html_content = render_to_string(self.template_name, {})
+			resources = {
+				'title': self.title,
+				'css': self.css,
+				'js': self.js,
+				'html': html_content,
+				'uidb64': uidb64,
+				'token': token
+			}
+			return render(request, 'app/base.html', resources)
+		else:
+			# Invalid token, render an error page or redirect
+			return render(request, 'app/invalid_token.html')
 
-#     if player is not None and default_token_generator.check_token(player, token):
-#         if request.method == 'POST':
-#             if player.password_reset_token!= token:
-#                 messages.error(request, 'The reset password link is no longer valid.')
-#                 return redirect('/password_reset/')
-#             new_password = request.POST.get('new_password')
-#             confirm_password = request.POST.get('confirm_password')
-#             if new_password != confirm_password:
-#                 messages.error(request, 'Passwords do not match.')
-#                 return render(request, 'auth_AM/password_reset_newpass.html', context={})
-#             player.set_password(new_password)
-#             player.save()
-#             messages.success(request, 'Your password has been set. You can now log in.')
-#             return redirect('/signin/')
-#         else:
-#             return render(request, 'auth_AM/password_reset_newpass.html', context={})
-#     else:
-#         messages.error(request, 'The reset password link is no longer valid.')
-#         return redirect('password_reset')
+	def post(self, request, uidb64, token):
+		data = json.loads(request.body)
+		new_password = data.get('new_password')
 
-# # def password_reset_complete(request):
+		User = get_user_model()
+		try:
+			uid = force_str(urlsafe_base64_decode(uidb64))
+			user = User.objects.get(pk=uid)
+		except (TypeError, ValueError, OverflowError, User.DoesNotExist):
+			user = None
 
-# def emailing_password_reset_link(request, reseting_player, to_email):
-#     from_email = settings.DEFAULT_FROM_EMAIL
-#     recipient_list = [to_email]
-#     subject = "Password Reset Requested"
-#     email_template_name = "app/password_reset_email_tamplate.txt"
-#     c = {
-#         'email': reseting_player.email,
-#         'domain': 'localhost',
-#         'site_name': 'Your Site',
-#         'uid': urlsafe_base64_encode(force_bytes(reseting_player.pk)),
-#         'user': reseting_player,
-#         'token': default_token_generator.make_token(reseting_player),
-#         'protocol': 'http',
-#     }
-#     # to prevent players reseting thier password using older token
-#     reseting_player.password_reset_token = c['token']
-#     reseting_player.save()
-#     email_body = render_to_string(email_template_name, c)
-#     send_mail(subject, email_body, from_email, recipient_list, fail_silently=False)
+		if user is not None and default_token_generator.check_token(user, token):
+			user.set_password(new_password)
+			user.save()
+			return JsonResponse({'success': 'Password reset successful!'}, status=status.HTTP_200_OK)
+		else:
+			return JsonResponse({'error_msg': 'Invalid password reset request'}, status=status.HTTP_400_BAD_REQUEST)
 
-# def password_reset(request):
-#     if request.method == 'GET':
-#         return render(request, 'auth_AM/password_reset.html', context={})
-#     elif request.method == 'POST':
-#         to_email = request.POST.get('email')
-#         Player = get_user_model()
-#         reseting_player = Player.objects.filter(email=to_email).first()
-#         if reseting_player is None:
-#             messages.error(request, "Email not found in our db!")
-#             return redirect('/password_reset/')
-#         emailing_password_reset_link(request, reseting_player, to_email)
-#         return render(request, 'auth_AM/password_reset_complete.html', context={})
+class PassResetConfirm(BaseView):
+	template_name = 'app/password_reset_complete.html'
+	title = 'Password Reset'

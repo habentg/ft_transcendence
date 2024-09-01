@@ -27,7 +27,7 @@ async function handleSignupSubmit(e) {
         const responseData = await response.json();
         
         if (!response.ok) {
-            displayError(responseData, response.status);
+            displayError(responseData);
             return;
         }
 

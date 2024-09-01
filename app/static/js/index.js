@@ -8,6 +8,7 @@ const routes = [
     'profile',
     '404',
     'password_reset',
+    'password_reset_confirm',
 ];
 
 // protect the routes
@@ -15,20 +16,16 @@ const protectedRoutes = [
     'home',
 ]
 
-
-// function trimSlashes(str) {
-//     return str.replace(/^[/\\]+|[/\\]+$/g, '');
-// }
-
 // actual function to change the content of the page
 handleLocationChange = async () => {
     let path = (window.location.pathname.slice(1));
-    if (!routes.includes(path)) {
-        path = '404';
-        // history.replaceState(null, '', '/404.html');
-    }
-    if (path !== '')
+    // if (!routes.includes(path)) {
+    //     path = '404';
+    //     // history.replaceState(null, '', '/404.html');
+    // }
+    if (path !== '' && path !== 'password_reset_confirm') {
         await loadPageSpecificResources(path);
+    }
     console.log('loading content for path:', path);
     await loadContent(path);
     // await requestCSRFToken();
@@ -231,7 +228,7 @@ async function loadProtectedPage(route) {
 }
 
 // display error in form submission pages
-function displayError(response, http_response_status_code) {
+function displayError(response) {
     console.log('response:', response);
     error_msg = 'Invalid credentials';
     if (response.error_msg) {
@@ -246,7 +243,7 @@ function displayError(response, http_response_status_code) {
     else if (response.email && response.email[0]) {
         error_msg = response.email[0];
     }
-    console.log('error_msg:', error_msg, 'status:', http_response_status_code);
+    console.log('error_msg:', error_msg, 'status:');
     document.getElementById('error-msg').innerText = error_msg;
     document.getElementById('error-msg').style.display = 'block';
 }
@@ -259,7 +256,6 @@ async function handle42Login() {
         const response = await fetch('/auth_info/');
         const responseData = await response.json();
         const clientId = responseData.client_id;
-        // #42's server then redirects the user back to this URL appending the authorization code as a query parameter.
         const redirectUri = responseData.redirect_uri;
 
         const authorizationEndpoint = 'https://api.intra.42.fr/oauth/authorize';
@@ -268,7 +264,10 @@ async function handle42Login() {
 
         const authUrl = `${authorizationEndpoint}?response_type=${responseType}&client_id=${clientId}&redirect_uri=${encodeURIComponent(redirectUri)}&scope=${encodeURIComponent(scope)}`;
 
-        window.location.href = authUrl;
+        //https://api.intra.42.fr/oauth/authorize?client_id=u-s4t2ud-7ac3a64d97f3088e86786177044308facfb8da98cb5325e56049fbad72dfa0a1&redirect_uri=https%3A%2F%2Flocalhost%3A8001%2Fauth%2F&response_type=code
+
+        // Open the authorization URL in a new tab
+        window.open(authUrl, '_blank');
 
         console.log('what happens after this?');
     } catch (error) {
@@ -276,27 +275,20 @@ async function handle42Login() {
     }
 }
 
-// Add an event listener to handle the redirect from the OAuth callback endpoint
+// Add an event listener to handle the OAuth callback
 window.addEventListener('load', () => {
-    if (window.location.pathname === '/oauth/') {
-      // Get the JSON response from the OAuth callback endpoint
-      fetch('/oauth/')
-        .then(response => response.json())
-        .then(data => {
-          // Catch the JWT tokens and status code
-          const refreshToken = data.refresh_token;
-          const accessToken = data.access_token;
-          const redirect = data.redirect;
-  
-          // Store the tokens in local storage or a secure cookie
-          localStorage.setItem('refreshToken', refreshToken);
-          localStorage.setItem('accessToken', accessToken);
-  
-          // Redirect to the home page
-          window.location.href = `/home`;
-        })
-        .catch(error => {
-          console.error('Error handling OAuth callback:', error);
-        });
+    const urlParams = new URLSearchParams(window.location.search);
+    const accessToken = urlParams.get('access_token');
+    const refreshToken = urlParams.get('refresh_token');
+    const redirect = urlParams.get('redirect');
+
+    if (accessToken && refreshToken && redirect) {
+        // Store JWT tokens in local storage
+        localStorage.setItem('access_token', accessToken);
+        localStorage.setItem('refresh_token', refreshToken);
+
+        // Redirect to the home page
+        history.pushState(null, '', `/${redirect}`);
+        handleLocationChange();
     }
-  });
+});
