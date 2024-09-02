@@ -5,11 +5,9 @@ from django.views import View
 from django.utils.decorators import method_decorator
 from rest_framework.views import APIView
 from rest_framework import status
-from app.serializers import UserRegistrationSerializer, UserLoginSerializer
+from app.serializers import PlayerSignupSerializer, PlayerSigninSerializer
 from rest_framework_simplejwt.tokens import RefreshToken
-from rest_framework.permissions import IsAuthenticated
 from django.middleware.csrf import get_token
-from django.shortcuts import render
 from django.views.decorators.csrf import csrf_protect
 import json
 from django.contrib.auth import authenticate
@@ -17,7 +15,7 @@ from rest_framework_simplejwt.authentication import JWTAuthentication
 from django.utils import timezone
 from django.conf import settings
 import requests
-from .models import BlogUser
+from .models import Player
 from django.contrib.auth import get_user_model
 from django.core.mail import send_mail
 from django.utils.encoding import force_str
@@ -26,9 +24,13 @@ from django.utils.http import urlsafe_base64_encode
 from django.utils.encoding import force_bytes
 from django.utils.http import urlsafe_base64_decode
 from django.shortcuts import render, redirect
-from django.utils.encoding import force_str
 
 # base view for basic pages in our SPA
+"""
+	-> Basic Get view for all pages
+	-> If the request is an AJAX request (click route), return the html content as JSON
+	-> If the request is not an AJAX request (direct url visit), return the html content as a rendered page
+"""
 class BaseView(View):
 	template_name = None
 	title = None
@@ -37,19 +39,17 @@ class BaseView(View):
 	def get(self, request):
 		context = self.get_context_data()
 		html_content = render_to_string(self.template_name, context)
+		resources = {
+			'title': self.title,
+			'css': self.css,
+			'js': self.js,
+			'html': html_content
+		}
 		if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
-			return JsonResponse({
-				'html': html_content, 
-				'title': self.title
-			})
+			return JsonResponse(resources)
 		else:
-			resources = {
-				'title': self.title,
-				'css': self.css,
-				'js': self.js,
-				'html': html_content
-			}
 			return render(request, 'app/base.html', resources)
+
 	def get_context_data(self):
 		return {}
 
@@ -89,14 +89,14 @@ class SignUpView(BaseView, View):
 	
 	def post(self, request):
 		data = json.loads(request.body)
-		serializer = UserRegistrationSerializer(data=data)
+		serializer = PlayerSignupSerializer(data=data)
 		if serializer.is_valid():
-			new_user = serializer.save()
-			if new_user:
+			new_player = serializer.save()
+			if new_player:
 				# Update last_login
-				new_user.last_login = timezone.now()
-				new_user.save()
-				refresh = RefreshToken.for_user(new_user)
+				new_player.last_login = timezone.now()
+				new_player.save()
+				refresh = RefreshToken.for_user(new_player)
 				data = {
 					'refresh_token': str(refresh),
 					'access_token': str(refresh.access_token),
@@ -115,17 +115,17 @@ class SignInView(BaseView, View):
 
 	def post(self, request):
 		data = json.loads(request.body)
-		serializer_class = UserLoginSerializer(data=data)
+		serializer_class = PlayerSigninSerializer(data=data)
 		if serializer_class.is_valid():
 			username = serializer_class.validated_data['username']
 			password = serializer_class.validated_data['password']
-			user = authenticate(username=username, password=password)
-			if user is not None:
+			player = authenticate(username=username, password=password)
+			if player is not None:
 				# Update last_login
-				user.last_login = timezone.now()
-				user.save()
+				player.last_login = timezone.now()
+				player.save()
 
-				refresh = RefreshToken.for_user(user)
+				refresh = RefreshToken.for_user(player)
 				data = {
 					'refresh_token': str(refresh),
 					'access_token': str(refresh.access_token),
@@ -141,7 +141,7 @@ class CsrfRequest(View):
 	def get(self, request):
 		return JsonResponse({'csrf_token': get_token(request)}, status=status.HTTP_200_OK)
 
-# 42 Oauth2.0
+# 42 Oauth2.0 info
 class InfoForOauth(View):
 	def get(self, request):
 		response = {
@@ -151,9 +151,13 @@ class InfoForOauth(View):
 		return JsonResponse(response, status=status.HTTP_200_OK)
 
 # 42 Oauth2.0 callback
+# DOC: https://api.intra.42.fr/apidoc/guides/web_application_flow
 class OauthCallback(View):
 	def get(self, request):
 		code = request.GET.get('code')
+		
+		if not code:
+			return JsonResponse({'error': 'No code provided'}, status=status.HTTP_400_BAD_REQUEST)
 		
 		# Exchange code for access token
 		token_response = requests.post('https://api.intra.42.fr/oauth/token', data={
@@ -180,7 +184,7 @@ class OauthCallback(View):
 		user_info = user_info_response.json()
 		
 		# Find or create user
-		user, created = BlogUser.objects.get_or_create(
+		user, created = Player.objects.get_or_create(
 			username=user_info['login'],
 			defaults={
 				'email': user_info['email'],
@@ -190,22 +194,15 @@ class OauthCallback(View):
 		)
 
 		if created:
-			print('User created', flush=True)
-			user.set_password('42password')  # Consider using a more secure method
+			user.set_password('42password')  # will be using more secure password in the future
 			user.save()
-		else:
-			print('User found', flush=True)
 
 		# Update last login
 		user.last_login = timezone.now()
 		user.save()
 
-		# Generate JWT tokens
-		# Generate JWT tokens
+		# Generate JWT tokens and Create a response with the JWT tokens
 		refresh = RefreshToken.for_user(user)
-		access_token = refresh.access_token
-
-		# Create a response with the JWT tokens
 		response_data = {
 			'access_token': str(access_token),
 			'refresh_token': str(refresh),
@@ -223,32 +220,30 @@ class PasswordReset(BaseView):
 	js = 'js/password_reset.js'
 
 	def post(self, request):
-		print('Password reset request', flush=True)
 		data = json.loads(request.body)
-		User = get_user_model()
-		user = User.objects.filter(email=data['email']).first()
-		if user:
-			self.email_pass_reset_link(user)
+		Player = get_user_model()
+		player = Player.objects.filter(email=data['email']).first()
+		if player:
+			self.email_pass_reset_link(player)
 			return JsonResponse({
-				'success': 'User found!',
-				'uidb64': urlsafe_base64_encode(force_bytes(user.pk)),
-				'token': default_token_generator.make_token(user)
+				'success': 'player found!',
+				'uidb64': urlsafe_base64_encode(force_bytes(player.pk)),
+				'token': default_token_generator.make_token(player)
 			}, status=status.HTTP_200_OK)
-		print('User NOT found', flush=True)
 		return JsonResponse({'error_msg': 'Couldnt find your email!'}, status=status.HTTP_404_NOT_FOUND)
 
-	def email_pass_reset_link(self, user):
+	def email_pass_reset_link(self, player):
 		from_email = settings.DEFAULT_FROM_EMAIL
-		recipient_list = [user.email]
+		recipient_list = [player.email]
 		subject = "Password Reset Requested"
 		email_template_name = "app/password_reset_email_tamplate.txt"
 		c = {
-			'email': user.email,
+			'email': player.email,
 			'domain': 'localhost:8000',
 			'site_name': 'Your Site',
-			'uid': urlsafe_base64_encode(force_bytes(user.pk)),
-			'user': user,
-			'token': default_token_generator.make_token(user),
+			'uid': urlsafe_base64_encode(force_bytes(player.pk)),
+			'user': player,
+			'token': default_token_generator.make_token(player),
 			'protocol': 'http',
 		}
 		email_body = render_to_string(email_template_name, c)
@@ -261,14 +256,14 @@ class PassResetNewPass(View):
 	css = 'css/password_reset.css'
 
 	def get(self, request, uidb64=None, token=None):
-		User = get_user_model()
+		Player = get_user_model()
 		try:
 			uid = force_str(urlsafe_base64_decode(uidb64))
-			user = User.objects.get(pk=uid)
-		except (TypeError, ValueError, OverflowError, User.DoesNotExist):
-			user = None
+			player = Player.objects.get(pk=uid)
+		except (TypeError, ValueError, OverflowError, Player.DoesNotExist):
+			player = None
 
-		if user is not None and default_token_generator.check_token(user, token):
+		if player is not None and default_token_generator.check_token(player, token):
 			html_content = render_to_string(self.template_name, {})
 			resources = {
 				'title': self.title,
@@ -280,7 +275,6 @@ class PassResetNewPass(View):
 			}
 			return render(request, 'app/base.html', resources)
 		else:
-			# Invalid token, render an error page or redirect
 			return render(request, 'app/invalid_token.html')
 
 	def post(self, request, uidb64, token):

@@ -6,3 +6,6 @@
 
 # Ignore compiled Python files
 **/*.pyc
+
+# Ignore the build directory
+./.vscode/

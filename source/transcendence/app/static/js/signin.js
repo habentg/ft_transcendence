@@ -10,7 +10,7 @@ async function handleSignInSubmit(e) {
     };
 
     try {
-        let m_csrf_token = await getCSRFToken();
+        const m_csrf_token = await getCSRFToken();
         const response = await fetch('/signin/', {
             method: 'POST',
             headers: {
@@ -31,8 +31,6 @@ async function handleSignInSubmit(e) {
         localStorage.setItem('access_token', responseData.access_token);
         localStorage.setItem('refresh_token', responseData.refresh_token);
 
-        console.log('redirecting to:', responseData.redirect);
-        
         // redirect to the protected page
         history.pushState(null, '', `/${responseData.redirect}`);
         handleLocationChange();

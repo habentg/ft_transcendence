@@ -1,7 +1,6 @@
 console.log("signin.js loaded");
 
 async function handlePassResetSubmit(e) {
-    console.log("handlePassResetSubmit called");
     e.preventDefault();
 
     const formData = {
@@ -9,7 +8,7 @@ async function handlePassResetSubmit(e) {
     };
 
     try {
-        let m_csrf_token = await getCSRFToken();
+        const m_csrf_token = await getCSRFToken();
         const response = await fetch('/password_reset/', {
             method: 'POST',
             headers: {
@@ -22,7 +21,6 @@ async function handlePassResetSubmit(e) {
         const responseData = await response.json();
 
         if (!response.ok) {
-            console.log("respnseData: ", responseData);
             displayError(responseData);
             return;
         }
@@ -30,9 +28,11 @@ async function handlePassResetSubmit(e) {
         // Get the uidb64 and token from the response data
         const uidb64 = responseData.uidb64;
         const token = responseData.token;
+
+        // Store the uidb64 and token in the local storage
         localStorage.setItem('uidb64', uidb64);
         localStorage.setItem('token', token);
-
+    
         // Redirect to the password reset new password page
         history.pushState(null, '', `/password_reset_confirm`);
         handleLocationChange();
@@ -58,7 +58,7 @@ async function handlePassChangeSubmit(e) {
     }
 
     try {
-        let m_csrf_token = await getCSRFToken();
+        const m_csrf_token = await getCSRFToken();
         const response = await fetch(`/password_reset_newpass/${uidb64}/${token}/`, {
             method: 'POST',
             headers: {

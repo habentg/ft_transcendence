@@ -1,41 +1,26 @@
 from rest_framework import serializers
-from .models import BlogPost, BlogUser
-
-class BlogPostSerializer(serializers.ModelSerializer):
-	class Meta:
-		model = BlogPost
-		fields = '__all__'
+from .models import Player
 
 # user registration serializer class
-""" 
-	-> It defines the structure for user registration data
-	-> It validates the incoming data against the defined fields
-	-> It provides a custom method for creating a new user, ensuring that the password is properly hashed before saving.
-"""
-class UserRegistrationSerializer(serializers.ModelSerializer):
+class PlayerSignupSerializer(serializers.ModelSerializer):
 	password = serializers.CharField(max_length=100, min_length=3, style={'input_type': 'password'}, write_only=True)
 	class Meta:
-		model = BlogUser
+		model = Player
 		fields = ['first_name', 'last_name', 'username', 'email', 'password']
 
 	def create(self, validated_data):
 		user_password = validated_data.pop('password')
-		db_instance = self.Meta.model(**validated_data)
-		db_instance.set_password(user_password)
-		db_instance.save()
-		return db_instance
+		playa = self.Meta.model(**validated_data)
+		playa.set_password(user_password)
+		playa.save()
+		return playa
 
-	def validate_username(self, value):
-		if self.Meta.model.objects.filter(username=value).exists():
+	def validate_username(self, username):
+		if self.Meta.model.objects.filter(username=username).exists():
 			raise serializers.ValidationError("A user with this username already exists.")
-		return value
+		return username
 
 # user login serializer class
-""" 
-	-> It defines the structure for user registration data
-	-> It validates the incoming data against the defined fields
-	-> It provides a custom method for creating a new user, ensuring that the password is properly hashed before saving.
-"""
-class UserLoginSerializer(serializers.Serializer):
+class PlayerSigninSerializer(serializers.Serializer):
 	username = serializers.CharField(max_length=150)
 	password = serializers.CharField(max_length=150, min_length=3, style={'input_type': 'password'})

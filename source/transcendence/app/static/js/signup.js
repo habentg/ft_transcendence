@@ -4,7 +4,6 @@ console.log("signup.js loaded");
 async function handleSignupSubmit(e) {
     e.preventDefault();
 
-    console.log("Handling signup form submission");
     const formData = {
         first_name: document.getElementById('firstName').value,
         last_name: document.getElementById('lastName').value,
@@ -14,7 +13,7 @@ async function handleSignupSubmit(e) {
     };
 
     try {
-        let m_csrf_token = await getCSRFToken();
+        const m_csrf_token = await getCSRFToken();
         const response = await fetch('/signup/', {
             method: 'POST',
             headers: {
