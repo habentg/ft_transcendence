@@ -4,8 +4,11 @@
 echo "RUNNING MIGRATIONS"
 python manage.py makemigrations
 python manage.py migrate
+# updating requirements.txt
+echo "UPDATING REQUIREMENTS.TXT"
+pip freeze > requirements.txt
 
-# # Create superuser
+# Create superuser
 echo "CREATING SUPER-USER"
 python manage.py createsuperuser --noinput \
     --first_name="$DJANGO_SUPERUSER_FIRSTNAME" \
