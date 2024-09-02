@@ -21,3 +21,4 @@ AJAX/Fetch API: Allows dynamic updates to the SPA by communicating with the Djan
 Bootstrap: Provides responsive and visually appealing components that can be dynamically updated.
 WebSockets (Optional): For real-time data updates without polling.
 Together, these components create a seamless, interactive SPA where the page does not need to refresh as data is constantly updated.
+
