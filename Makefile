@@ -1,5 +1,5 @@
 
-COMPOSE 		= docker compose
+COMPOSE 		= cd ./source && docker compose
 
 
 # ----------------------- creating services --------------------------
@@ -32,7 +32,7 @@ restart: stop start # restarting the services (volumes, network, and images stay
 
 fclean: down
 	@yes | docker system prune --all
-	@docker volume ls -q | grep -q . && docker volume rm $$(docker volume ls -q) || true
+	@docker volume ls -q | grep -q . && docker volume rm $$(docker volume ls -q) || true 
 
 rebuild: fclean all 
 
