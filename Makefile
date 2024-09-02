@@ -36,7 +36,7 @@ fclean: down
 
 rebuild: fclean all 
 
-# ----------------------- Managing drf service only --------------------------
+# ----------------------- Managing app service only --------------------------
 
 app-down:
 	$(COMPOSE) -f docker-compose.yaml stop app
