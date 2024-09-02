@@ -38,17 +38,17 @@ rebuild: fclean all
 
 # ----------------------- Managing drf service only --------------------------
 
-drf-down:
-	$(COMPOSE) -f docker-compose.yaml stop drf_service
-	$(COMPOSE) -f docker-compose.yaml rm -f drf_service
+app-down:
+	$(COMPOSE) -f docker-compose.yaml stop app
+	$(COMPOSE) -f docker-compose.yaml rm -f app
 
-drf-up:
-	$(COMPOSE) -f docker-compose.yaml up --build -d --no-deps drf_service
+app-up:
+	$(COMPOSE) -f docker-compose.yaml up --build -d --no-deps app
 
-drf-rebuild: drf-down drf-up
+app-rebuild: app-down app-up
 
-drf-restart:
-	$(COMPOSE) -f docker-compose.yaml restart drf_service
+app-restart:
+	$(COMPOSE) -f docker-compose.yaml restart app
 
 # ---------------------------- git push target -------------------------------
 
