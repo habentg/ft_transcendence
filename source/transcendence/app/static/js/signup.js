@@ -9,7 +9,8 @@ async function handleSignupSubmit(e) {
         last_name: document.getElementById('lastName').value,
         username: document.getElementById('username').value,
         email: document.getElementById('email').value,
-        password: document.getElementById('password').value
+        password: document.getElementById('password').value,
+        two_factor_enabled: localStorage.getItem('2fa-enabled')
     };
 
     try {
@@ -42,4 +43,15 @@ async function handleSignupSubmit(e) {
     }
 }
 
-
+function handleToggleButtonClick(event) {
+    // Handle the toggle button's change event
+    const enabled = event.target.checked;
+    localStorage.setItem('2fa-enabled', enabled.toString());
+    if (enabled) {
+        console.log("2FA Enabled");
+        // document.getElementById('2fa-toggle-label').textContent = '2FA Enabled';
+    } else {
+        console.log("2FA Disabled");
+        // document.getElementById('2fa-toggle-label').textContent = '2FA Disabled';
+    }
+}

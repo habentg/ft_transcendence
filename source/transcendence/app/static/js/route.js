@@ -14,12 +14,13 @@ const routes = [
 // protect the routes
 const protectedRoutes = [
     'home',
+    '2fa',
 ]
 
 // actual function to change the content of the page
 handleLocationChange = async () => {
     let path = (window.location.pathname.slice(1));
-    if (path !== '' && path !== 'password_reset_confirm'  && path !== 'oauth' && path !== 'oauth/callback') {
+    if (path !== '' && path !== 'password_reset_newpass' && path !== 'password_reset_confirm'  && path !== 'oauth' && path !== 'oauth/callback') {
         await loadPageSpecificResources(path);
     }
     await loadContent(path);
@@ -66,6 +67,7 @@ async function loadContent(route) {
             return;
         }
         else if (route === '' && isAuthenticated()) { // if authenticated and trying to access the 'landing' page -- redirect to home page
+            console.log("somehow I m here");
             history.pushState(null, '', 'home');
             await loadProtectedPage('/home');
             return ;

@@ -26,14 +26,30 @@ async function handleSignInSubmit(e) {
             displayError(responseData);
             return;
         }
-
+        console.log('******+++>>>>Response data:', responseData);
         // saving jwt access and refresh token in local storage
         localStorage.setItem('access_token', responseData.access_token);
         localStorage.setItem('refresh_token', responseData.refresh_token);
 
+        if (responseData.tfa_code === true) {
+            // user has 2FA enabled -- successfully email send
+            if (responseData.tfa_code_sent === 'success') {
+                // Redirect to the two factor authentication page
+                console.log('2FA code sent ---- so we go to 2FA page');
+                history.pushState(null, '', `/2fa`);
+                handleLocationChange();
+                return;
+            }
+            else {
+                displayError(responseData);
+                return;
+            }
+            // user has 2FA enabled -- failed to email send
+        }
+
         // redirect to the protected page
-        history.pushState(null, '', `/${responseData.redirect}`);
-        handleLocationChange();
+        // history.pushState(null, '', `/${responseData.redirect}`);
+        // handleLocationChange();
     } catch (error) {
         console.error('Error:', error);
     }

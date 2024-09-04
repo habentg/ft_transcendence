@@ -76,6 +76,9 @@ async function handlePassChangeSubmit(e) {
         // Redirect to the signin page
         history.pushState(null, '', `/signin`);
         handleLocationChange();
+        // Clear the local storage
+        localStorage.removeItem('uidb64');
+        localStorage.removeItem('token');
     }
     catch (error) {
         console.error('Error:', error);

@@ -10,6 +10,7 @@ from rest_framework_simplejwt.tokens import RefreshToken
 from django.middleware.csrf import get_token
 from django.views.decorators.csrf import csrf_protect
 import json
+import jwt
 from django.contrib.auth import authenticate
 from rest_framework_simplejwt.authentication import JWTAuthentication
 from django.utils import timezone
@@ -24,6 +25,8 @@ from django.utils.http import urlsafe_base64_encode
 from django.utils.encoding import force_bytes
 from django.utils.http import urlsafe_base64_decode
 from django.shortcuts import render, redirect
+from .utils import send_2fa_code
+import pyotp
 
 # base view for basic pages in our SPA
 """
@@ -58,6 +61,7 @@ class HomeView(APIView):
 	authentication_classes = [JWTAuthentication]
 
 	def get(self, request):
+		print(request.user, flush=True)
 		user = request.user
 		data = {
 			'username': user.username,
@@ -95,6 +99,13 @@ class SignUpView(BaseView, View):
 			if new_player:
 				# Update last_login
 				new_player.last_login = timezone.now()
+				tfa = data.get('two_factor_enabled')
+				if tfa == 'true':
+					print('2fa is true', flush=True)
+					new_player.tfa = True
+				else:
+					print('2fa is false', flush=True)
+					new_player.tfa = False
 				new_player.save()
 				refresh = RefreshToken.for_user(new_player)
 				data = {
@@ -121,16 +132,30 @@ class SignInView(BaseView, View):
 			password = serializer_class.validated_data['password']
 			player = authenticate(username=username, password=password)
 			if player is not None:
-				# Update last_login
-				player.last_login = timezone.now()
-				player.save()
-
+				# Generate JWT tokens and Create a response with the JWT tokens
 				refresh = RefreshToken.for_user(player)
 				data = {
 					'refresh_token': str(refresh),
 					'access_token': str(refresh.access_token),
-					'redirect': 'home'
+					'redirect': 'home',
+					'tfa_code': False
 				}
+				# Update last_login
+				if not player.tfa:
+					player.last_login = timezone.now()
+					player.save()
+				else:
+					# send 2fa code
+					if send_2fa_code(player):
+						print('2fa code sent', flush=True)
+						data['tfa_code'] = True
+						data['tfa_code_sent'] = 'success'
+						return JsonResponse(data, status=status.HTTP_200_OK)
+					else:
+						print('2fa code couldnt be sent', flush=True)
+						data['tfa_code'] = True
+						data['tfa_code_sent'] = 'failure'
+						return JsonResponse({'tfa_code_sent': 'failure', 'error_msg': 'Couldnt send OTP to the given Email'}, status=status.HTTP_401_UNAUTHORIZED)
 				return JsonResponse(data, status=status.HTTP_200_OK)
 			return JsonResponse({'error_msg': 'Invalid username or password!'}, status=status.HTTP_401_UNAUTHORIZED)
 		return JsonResponse(serializer_class.errors, status=status.HTTP_400_BAD_REQUEST)
@@ -240,7 +265,7 @@ class PasswordReset(BaseView):
 		c = {
 			'email': player.email,
 			'domain': 'localhost:8000',
-			'site_name': 'Your Site',
+			'site_name': 'Haben Pong',
 			'uid': urlsafe_base64_encode(force_bytes(player.pk)),
 			'user': player,
 			'token': default_token_generator.make_token(player),
@@ -298,3 +323,32 @@ class PassResetNewPass(View):
 class PassResetConfirm(BaseView):
 	template_name = 'app/password_reset_complete.html'
 	title = 'Password Reset'
+
+
+# 2FA - Two Factor Authentication
+class TwoFactorAuth(APIView, BaseView):
+	authentication_classes = [JWTAuthentication]
+	template_name = 'app/2fa.html'
+	title = 'Two Factor Authentication'
+	css = 'css/2fa.css'
+	js = 'js/2fa.js'
+
+
+	def post(self, request):
+		data = json.loads(request.body)
+		player = request.user
+		if player:
+			print("Player username!: ", player.username, flush=True)
+			totp = pyotp.TOTP(player.secret, interval=90)
+			if totp.verify(data['otp']):
+				print("Valid OTP", flush=True)
+				player.verified = True
+				player.save()
+				return JsonResponse({'redirect': 'home'}, status=status.HTTP_200_OK)
+			else:
+				print("Invalid OTP!", flush=True)
+				return JsonResponse({'error_msg': 'Invalid OTP!'}, status=status.HTTP_401_UNAUTHORIZED)
+		return JsonResponse({'failure': 'no player found with that email!'}, status=status.HTTP_401_UNAUTHORIZED)
+
+	def get_context_data(self):
+		return {'email': self.request.user.email}

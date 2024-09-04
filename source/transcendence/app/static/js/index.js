@@ -4,13 +4,13 @@ function isAuthenticated() {
     if (!token) {
         return false;
     }
-    // const payload = JSON.parse(atob(token.split('.')[1]));
-    // const expirationTime = payload.exp * 1000; // Convert to milliseconds
-    // if (Date.now() >= expirationTime) {
-    //     console.log('Token expired');
-    //     localStorage.removeItem('access_token');
-    //     return false;
-    // }
+    const payload = JSON.parse(atob(token.split('.')[1]));
+    const expirationTime = payload.exp * 1000; // Convert to milliseconds
+    if (Date.now() >= expirationTime) {
+        console.log('Token expired');
+        localStorage.removeItem('access_token');
+        return false;
+    }
     return true;
 }
 
