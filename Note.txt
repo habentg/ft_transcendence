@@ -1,0 +1,10 @@
+TODO: ideas
+
+~> I will use viewsets && routers from DRF to
+    * see all friends
+    * update or delete a friend 
+    * retrieve one friend
+
+
+ISSUES:
+# 

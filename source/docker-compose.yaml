@@ -1,0 +1,61 @@
+version: '3.8'
+
+services:
+  postgres:
+    container_name: postgresql
+    image: postgres:latest
+    restart: always
+    volumes:
+      - our_db:/var/lib/postgresql/data
+    networks:
+      - trans_net
+    env_file:
+      - .env
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  app:
+    container_name: app
+    image: app_image
+    build:
+      context: ./transcendence/.
+      dockerfile: Dockerfile
+    ports:
+      - "8000:8000"
+    restart: always
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - trans_net
+    env_file:
+      - .env
+    environment:
+      DATABASE_URL: postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}
+      DJANGO_SUPERUSER_USERNAME: ${DJANGO_SUPERUSER_USERNAME}
+      DJANGO_SUPERUSER_FIRSTNAME: ${DJANGO_SUPERUSER_FIRSTNAME}
+      DJANGO_SUPERUSER_LASTNAME: ${DJANGO_SUPERUSER_LASTNAME}
+      DJANGO_SUPERUSER_EMAIL: ${DJANGO_SUPERUSER_EMAIL}
+      DJANGO_SUPERUSER_PASSWORD: ${DJANGO_SUPERUSER_PASSWORD}
+      DOMAIN_NAME: ${DOMAIN_NAME}
+      EMAIL_HOST_USER: ${EMAIL_HOST_USER}
+      EMAIL_HOST_PASSWORD: ${EMAIL_HOST_PASSWORD}
+      DEFAULT_FROM_EMAIL: ${DEFAULT_FROM_EMAIL}
+    volumes:
+      - ./transcendence:/app
+
+volumes:
+  our_db:
+    driver: local
+
+networks:
+  trans_net:
+    name: trans_net
+    driver: bridge

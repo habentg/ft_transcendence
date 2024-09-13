@@ -1,0 +1,56 @@
+<div class="container my-5">
+  <!-- Sign form -->
+  <form class="col-6 mx-auto card p-3 form-cont" onsubmit="handleSignupSubmit(event)">
+    {% csrf_token %}
+    <h1 style="text-align: center">
+      <span style="color: rgb(34, 34, 34)">Sign Up</span>
+    </h1>
+    <hr />
+
+    <!-- Display error/success messages -->
+    <div class="alert alert-danger" role="alert" id="error-msg" style="display: none;"></div>
+
+    <div class="form-group my-3 first-last_name">
+      <div class="first-name">
+        <label for="firstName">First name</label>
+        <input type="text" class="form-control" id="firstName" placeholder="Enter First name" name="first_name"
+          required />
+      </div>
+      <div class="last-name">
+        <label for="lastName">Last name</label>
+        <input type="text" name="lastName" class="form-control" id="lastName" placeholder="Enter Last name" required />
+      </div>
+    </div>
+
+    <div class="form-group my-3">
+      <label for="username">Username</label>
+      <input type="text" class="form-control" name="username" id="username" placeholder="Enter username" required />
+    </div>
+
+    <div class="form-group my-3">
+      <label for="email">Email</label>
+      <input type="text" class="form-control" name="email" id="email" placeholder="Enter email" required />
+    </div>
+
+    <div class="form-group my-3">
+      <label for="password">Password</label>
+      <input type="password" class="form-control" name="password" id="password" placeholder="Enter password" required />
+    </div>
+
+    <!-- Submit button -->
+    <button id="signupForm" type="submit" class="btn btn-dark">Submit</button>
+    <!-- 2fa router -->
+    <div>
+      <label id="2fa-toggle-label" for="2fa-toggle">2FA</label>
+      <input type="checkbox" id="2fa-toggle" name="2fa-toggle" onclick="handleToggleButtonClick(event)" />
+    </div>
+
+    <!-- Link to login page for users who already have an account -->
+    <p class="p-3">Already have an account? <a onclick="route()" href="signin">sign in</a></p>
+
+    <div class="or-separator">
+      <span>or</span>
+    </div>
+    <button type="button" class="btn btn-dark fourty-two">42</button>
+  </form>
+</div>
