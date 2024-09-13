@@ -68,6 +68,16 @@ The list(), retrieve(), create(), update(), and destroy() methods are automatica
 
 users/urls.py
 
+<<<<<<< HEAD
+=======
+python
+
+Verify
+
+Open In Editor
+Edit
+Copy code
+>>>>>>> 073fe2c83dccfdc233eb1dd9e085affbad0aef69
 from django.urls import path, include
 from rest_framework import routers
 from . import views
