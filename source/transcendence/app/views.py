@@ -27,6 +27,9 @@ from django.utils.http import urlsafe_base64_decode
 from django.shortcuts import render, redirect
 from .utils import send_2fa_code
 import pyotp
+import os
+from django.http import HttpResponseRedirect
+from django.urls import reverse
 
 # base view for basic pages in our SPA
 """
@@ -156,13 +159,19 @@ class SignInView(BaseView, View):
 						data['tfa_code'] = True
 						data['tfa_code_sent'] = 'failure'
 						return JsonResponse({'tfa_code_sent': 'failure', 'error_msg': 'Couldnt send OTP to the given Email'}, status=status.HTTP_401_UNAUTHORIZED)
-						# Store the JWT token securely on the client-side
-				request.session['access_token'] = data['access_token']
-				request.session['refresh_token'] = data['refresh_token']
 				return JsonResponse(data, status=status.HTTP_200_OK)
 			return JsonResponse({'error_msg': 'Invalid username or password!'}, status=status.HTTP_401_UNAUTHORIZED)
 		return JsonResponse(serializer_class.errors, status=status.HTTP_400_BAD_REQUEST)
 
+class SignOutView(BaseView, View):
+	def get(self, request):
+		print("Signing out", flush=True)
+		response = HttpResponseRedirect(reverse('landing'))
+		response.delete_cookie('access_token')
+		response.delete_cookie('refresh_token')
+		response.singed_out = True
+		print("response: ", response, flush=True)
+		return response
 
 # view for the csrf token request
 class CsrfRequest(View):
@@ -180,6 +189,19 @@ class InfoForOauth(View):
 
 # 42 Oauth2.0 callback
 # DOC: https://api.intra.42.fr/apidoc/guides/web_application_flow
+class Auth_42(View):
+	def get(self, request):
+		redirect_uri = settings.DOMAIN_NAME + '/oauth/'
+		client_id =settings.FOURTYTWO_OAUTH_CLIENT_ID
+		# Construct the 42 OAuth authorization URL
+		authorization_url = f'https://api.intra.42.fr/oauth/authorize?' \
+							f'client_id={client_id}&' \
+							f'redirect_uri={redirect_uri}&' \
+							f'response_type=code&' \
+							f'scope=public'
+
+		return JsonResponse({'authorization_url': authorization_url})
+
 class OauthCallback(View):
 	def get(self, request):
 		code = request.GET.get('code')
@@ -198,6 +220,7 @@ class OauthCallback(View):
 
 		if token_response.status_code != 200:
 			return JsonResponse({'error': 'Failed to obtain access token'}, status=token_response.status_code)
+		
 		access_token = token_response.json()['access_token']
 		
 		# Get user info
@@ -232,13 +255,18 @@ class OauthCallback(View):
 
 		# Generate JWT tokens and Create a response with the JWT tokens
 		refresh = RefreshToken.for_user(user)
-		response_data = {
-			'access_token': str(access_token),
+		data = {
 			'refresh_token': str(refresh),
+			'access_token': str(refresh.access_token),
 			'redirect': '/home'
 		}
-		# Redirect to the desired URL
-		return JsonResponse(response_data, status=status.HTTP_200_OK)
+
+		# Set the tokens in cookies
+		response = HttpResponseRedirect(data['redirect'])
+		response.set_cookie('access_token', data['access_token'])
+		response.set_cookie('refresh_token', data['refresh_token'])
+
+		return response
 
 	
 class PasswordReset(BaseView):

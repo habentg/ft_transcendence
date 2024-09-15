@@ -50,33 +50,10 @@ async function handleSignInSubmit(e) {
                 return;
             }
         }
-
-        // accessing the cookies:
-        const cookies = getJWTcookies();
-        console.log("MY cookies RETRIEVED:", cookies);
         // redirect to the protected page
         history.pushState(null, '', `/${responseData.redirect}`);
         handleLocationChange();
     } catch (error) {
         console.error('Error:', error);
     }
-}
-
-
-function getJWTcookies() {
-    console.log("getJWTcookies called");
-    const cookies = document.cookie.split(';');
-    let access_token = null;
-    let refresh_token = null;
-    for (let i = 0; i < cookies.length; i++) {
-        const cookie = cookies[i].trim();
-        if (cookie.substring(0, 13) === 'access_token=') {
-            access_token = cookie.substring(13);
-        }
-        else if (cookie.substring(0, 14) === 'refresh_token=') {
-            refresh_token = cookie.substring(14);
-        }
-    }
-    
-    return {access_token, refresh_token};
 }

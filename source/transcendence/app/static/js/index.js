@@ -96,6 +96,7 @@ function displayError(response) {
 const loadedResources = new Set();
 
 async function loadPageSpecificResources(route) {
+    console.log('Loading page-specific resources for:', route);
     // Remove all resources that are not needed
     // all stylesheets
 
@@ -146,6 +147,7 @@ async function loadPageSpecificResources(route) {
 
 
 function deleteCookie(name) {
+    console.log('Deleting cookie:', name);
     const cookie = `${name}=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/`;
     document.cookie = cookie;
   }

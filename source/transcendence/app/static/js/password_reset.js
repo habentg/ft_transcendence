@@ -2,13 +2,13 @@
 async function handlePassResetSubmit(e) {
     e.preventDefault();
 
-    console.log("Password reset form submitted");
     const formData = {
         email: document.getElementById('email').value
     };
 
     try {
         const m_csrf_token = await getCSRFToken();
+        console.log("CSRF Token:", m_csrf_token);
         const response = await fetch('/password_reset/', {
             method: 'POST',
             headers: {

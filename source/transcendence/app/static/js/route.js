@@ -9,6 +9,7 @@ const routes = [
     '404',
     'password_reset',
     'password_reset_confirm',
+    'auth_42',
 ];
 
 // protect the routes
@@ -21,7 +22,7 @@ const protectedRoutes = [
 // actual function to change the content of the page
 handleLocationChange = async () => {
     let path = (window.location.pathname.slice(1));
-    if (path !== '' && path !== 'password_reset_newpass' && path !== 'password_reset_confirm'  && path !== 'oauth' && path !== 'oauth/callback') {
+    if (path !== '' && path !== 'password_reset_newpass' && path !== 'password_reset_confirm'  && path !== 'oauth' && path !== 'oauth/callback' && path !== 'auth_42' && path !== 'signout') {
         await loadPageSpecificResources(path);
     }
     await loadContent(path);
@@ -70,13 +71,8 @@ async function loadContent(route) {
             await loadProtectedPage('/home');
             return ;
         }
-        else if (route === 'signout') {
-            deleteCookie('access_token');
-            deleteCookie('refresh_token');
-            history.pushState(null, '', '/');
-            handleLocationChange();
-            return;
-        }
+
+        // else - send a request to the server to get the page content
         const response = await fetch(`${route}/`, {
             method: 'GET',
             headers: {
@@ -97,6 +93,7 @@ async function loadContent(route) {
 
 // getting user details after login or auth
 async function loadProtectedPage(route) {
+    console.log("loadProtectedPage");
     try {
         const access_token = document.cookie.split('; ').find(row => row.startsWith('access_token')).split('=')[1];
         const response = await fetch(`${route}/`, {
@@ -109,8 +106,10 @@ async function loadProtectedPage(route) {
         if (!response.ok) {
             throw new Error('Error in protected route function');
         }
-        
         const data = await response.json();
+        if (route === 'signout') {
+            history.pushState(null, '', '/');
+        }
         document.title = data.title;
         document.getElementById('content').innerHTML = data.html;
     } catch (error) {

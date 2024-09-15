@@ -3,17 +3,18 @@
 /* Initiating an OAuth 2.0 authorization flow with the 42 intranet API. */
 async function handle42Login() {
     try {
-        const response = await fetch('/auth_info/');
-        const responseData = await response.json();
-        const clientId = responseData.client_id;
-        const redirectUri = responseData.redirect_uri;
+        const response = await fetch('/auth_42/', {
+            method: 'GET',
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest'
+            }
+        });
+        
+        const resposeData = await response.json();
 
-        const authorizationEndpoint = 'https://api.intra.42.fr/oauth/authorize';
-        const responseType = 'code';
-        const scope = 'public';
+        const authUrl = resposeData.authorization_url;
 
-        const authUrl = `${authorizationEndpoint}?response_type=${responseType}&client_id=${clientId}&redirect_uri=${encodeURIComponent(redirectUri)}&scope=${encodeURIComponent(scope)}`;
-
+        console.log('authUrl:', authUrl);
         window.location.href = authUrl;
 
     } catch (error) {
