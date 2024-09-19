@@ -5,6 +5,9 @@ TODO: ideas
     * update or delete a friend 
     * retrieve one friend
 
-
+~> put the 
 ISSUES:
-# 
+# visiting a Protected endpoint directly from the browser -- is going to 404
+    -> Possible fix - Overriding JWTAuthentication()
+# loading page specific resources ---- without cluttering the DOM
+    -> 

@@ -41,7 +41,7 @@ rebuild: fclean all
 app-down:
 	$(COMPOSE) -f docker-compose.yaml stop app
 	$(COMPOSE) -f docker-compose.yaml rm -f app
-	@docker image rm app_image
+# @docker image rm app_image
 
 app-up:
 	$(COMPOSE) -f docker-compose.yaml up --build -d --no-deps app
@@ -50,6 +50,15 @@ app-rebuild: app-down app-up
 
 app-restart:
 	$(COMPOSE) -f docker-compose.yaml restart app
+
+app-down:
+
+nginx-rebuild:
+	$(COMPOSE) -f docker-compose.yaml stop nginx
+	$(COMPOSE) -f docker-compose.yaml rm -f nginx
+# @docker image rm app_image
+	$(COMPOSE) -f docker-compose.yaml up --build -d --no-deps nginx
+
 
 # ---------------------------- git push target -------------------------------
 

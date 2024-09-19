@@ -65,14 +65,19 @@ class HomeView(APIView):
 
 	def get(self, request):
 		print(request.user, flush=True)
-		user = request.user
-		data = {
-			'username': user.username,
-			'email': user.email,
-			'full_name': user.get_full_name(),
-		}
-		html_content = render_to_string('app/home.html', data)
-		return Response({'html': html_content, 'title': 'Homie Page'})
+		try:
+			user = request.user
+			data = {
+				'username': user.username,
+				'email': user.email,
+				'full_name': user.get_full_name(),
+			}
+			html_content = render_to_string('app/home.html', data)
+			return JsonResponse({'html': html_content, 'title': 'Homie Page'})
+		except Exception as e:
+			print(e, flush=True)
+			return JsonResponse({'error': 'Error in fetching user data'}, status=status.HTTP_400_BAD_REQUEST)
+			
 
 # view for the 404 page
 class Catch_All(BaseView):
@@ -167,6 +172,7 @@ class SignOutView(BaseView, View):
 	def get(self, request):
 		print("Signing out", flush=True)
 		response = HttpResponseRedirect(reverse('landing'))
+		# invalidate the tokens - before deleting the cookies
 		response.delete_cookie('access_token')
 		response.delete_cookie('refresh_token')
 		response.singed_out = True
@@ -177,15 +183,6 @@ class SignOutView(BaseView, View):
 class CsrfRequest(View):
 	def get(self, request):
 		return JsonResponse({'csrf_token': get_token(request)}, status=status.HTTP_200_OK)
-
-# 42 Oauth2.0 info
-class InfoForOauth(View):
-	def get(self, request):
-		response = {
-			'client_id': settings.FOURTYTWO_OAUTH_CLIENT_ID,
-			'redirect_uri': settings.DOMAIN_NAME + '/oauth/',
-		}
-		return JsonResponse(response, status=status.HTTP_200_OK)
 
 # 42 Oauth2.0 callback
 # DOC: https://api.intra.42.fr/apidoc/guides/web_application_flow
@@ -234,7 +231,7 @@ class OauthCallback(View):
 		
 		user_info = user_info_response.json()
 		
-		print("user login: ", user_info['login'], flush=True)
+		print("user: ", user_info, flush=True)
 		# Find or create user
 		user, created = Player.objects.get_or_create(
 			username=user_info['login'],
@@ -263,8 +260,8 @@ class OauthCallback(View):
 
 		# Set the tokens in cookies
 		response = HttpResponseRedirect(data['redirect'])
-		response.set_cookie('access_token', data['access_token'])
-		response.set_cookie('refresh_token', data['refresh_token'])
+		response.set_cookie('access_token', data['access_token'], httponly=True)
+		response.set_cookie('refresh_token', data['refresh_token'], httponly=True)
 
 		return response
 
@@ -383,3 +380,7 @@ class TwoFactorAuth(APIView, BaseView):
 
 	def get_context_data(self):
 		return {'email': self.request.user.email}
+	
+class HealthCheck(View):
+	def get(self, request):
+		return JsonResponse({'status': 'healthy'}, status=status.HTTP_200_OK)

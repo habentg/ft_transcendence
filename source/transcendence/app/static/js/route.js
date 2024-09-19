@@ -83,7 +83,7 @@ async function loadContent(route) {
             throw new Error("HTTP " + response.status);
         }
         let data = await response.json();
-
+        console.log("data:", data);
         document.title = data.title;
         document.getElementById('content').innerHTML = data.html;
     } catch (error) {
@@ -110,6 +110,7 @@ async function loadProtectedPage(route) {
         if (route === 'signout') {
             history.pushState(null, '', '/');
         }
+        console.log("data:", data);
         document.title = data.title;
         document.getElementById('content').innerHTML = data.html;
     } catch (error) {
