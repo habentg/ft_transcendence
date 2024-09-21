@@ -24,37 +24,28 @@ async function handleSignupSubmit(e) {
             body: JSON.stringify(formData)
         });
 
-        const responseData = await response.json();
         
+        console.log("response:", response);
         if (!response.ok) {
-            displayError(responseData);
+            if (response.status === 302) {
+                // Redirect to the two factor authentication page
+                document.cookie = `is_auth=true`
+                history.pushState(null, '', `/2fa`);
+                handleLocationChange();
+            }
+            else
+            {
+                const responseData = await response.json();
+                displayError(responseData);
+            }
             return;
         }
-
-        // saving jwt access and refresh token in local storage
-        // localStorage.setItem('access_token', responseData.access_token);
-        // localStorage.setItem('refresh_token', responseData.refresh_token);
-        
-        // saving jwt access and refresh token in cookies
-        document.cookie = `access_token=${responseData.access_token}; Path=/; SameSite=Lax`;
-        document.cookie = `refresh_token=${responseData.refresh_token}; Path=/; SameSite=Lax`;
         // redirect to the protected page
-        history.pushState(null, '', `/${responseData.redirect}`);
+        document.cookie = `is_auth=true`
+        history.pushState(null, '', `/home`);
         handleLocationChange();
     } catch (error) {
         console.error('Error:', error);
     }
 }
 
-function handleToggleButtonClick(event) {
-    // Handle the toggle button's change event
-    const enabled = event.target.checked;
-    sessionStorage.setItem('2fa-enabled', enabled.toString());
-    if (enabled) {
-        console.log("2FA Enabled");
-        // document.getElementById('2fa-toggle-label').textContent = '2FA Enabled';
-    } else {
-        console.log("2FA Disabled");
-        // document.getElementById('2fa-toggle-label').textContent = '2FA Disabled';
-    }
-}

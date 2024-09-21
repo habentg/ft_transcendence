@@ -20,38 +20,24 @@ async function handleSignInSubmit(e) {
             body: JSON.stringify(formData)
         });
         
-        const responseData = await response.json();
-        
+        console.log("response:", response);
         if (!response.ok) {
-            displayError(responseData);
-            return;
-        }
-        // saving jwt access and refresh token in local storage
-        // localStorage.setItem('access_token', responseData.access_token);
-        // localStorage.setItem('refresh_token', responseData.refresh_token);
-
-        // // Set JWT tokens in cookies
-        document.cookie = `access_token=${responseData.access_token}; Path=/; SameSite=Lax`;
-        document.cookie = `refresh_token=${responseData.refresh_token}; Path=/; SameSite=Lax`;
-        // // Set JWT tokens in cookies
-        // document.cookie = `access_token=${responseData.access_token}; Path=/; HttpOnly; Secure; SameSite=Lax`;
-        // document.cookie = `refresh_token=${responseData.refresh_token}; Path=/; HttpOnly; Secure; SameSite=Lax`;
-
-        if (responseData.tfa_code === true) {
-            // user has 2FA enabled -- successfully email send
-            if (responseData.tfa_code_sent === 'success') {
+            if (response.status === 302) {
                 // Redirect to the two factor authentication page
+                document.cookie = `is_auth=true`
                 history.pushState(null, '', `/2fa`);
                 handleLocationChange();
-                return;
             }
-            else {
+            else
+            {
+                const responseData = await response.json();
                 displayError(responseData);
-                return;
             }
+            return;
         }
         // redirect to the protected page
-        history.pushState(null, '', `/${responseData.redirect}`);
+        document.cookie = `is_auth=true`
+        history.pushState(null, '', `/home`);
         handleLocationChange();
     } catch (error) {
         console.error('Error:', error);

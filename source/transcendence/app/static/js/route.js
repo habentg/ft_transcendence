@@ -15,14 +15,15 @@ const routes = [
 // protect the routes
 const protectedRoutes = [
     'home',
-    '2fa',
+    'profile',
     'signout',
+    '2fa'
 ]
 
 // actual function to change the content of the page
 handleLocationChange = async () => {
     let path = (window.location.pathname.slice(1));
-    if (path !== '' && path !== 'password_reset_newpass' && path !== 'password_reset_confirm'  && path !== 'oauth' && path !== 'oauth/callback' && path !== 'auth_42' && path !== 'signout') {
+    if (path !== '' && path !== 'password_reset_newpass' && path !== 'password_reset_confirm'  && path !== 'oauth' && path !== 'oauth/callback' && path !== 'auth_42' && path !== 'signout'  && path !== 'profile') {
         await loadPageSpecificResources(path);
     }
     await loadContent(path);
@@ -44,13 +45,14 @@ const route = (event) => {
 
 // Add the route function to the window object -- this makes it globally accessible
 window.route = route;
-
+// await getCSRFToken();
 // Handle initial load and browser back/forward buttons
 window.addEventListener('popstate', handleLocationChange);
 window.addEventListener('load', handleLocationChange);
 
 // Load the content of the page
 async function loadContent(route) {
+    // const access_token = document.cookie.split('; ').find(row => row.startsWith('access_token')).split('=')[1];
     try {
         if (protectedRoutes.includes(route)) {
             if (!isAuthenticated() && route === 'home') { // if not authenticated and trying to access home page -- redirect to landing page
@@ -71,7 +73,7 @@ async function loadContent(route) {
             await loadProtectedPage('/home');
             return ;
         }
-
+        
         // else - send a request to the server to get the page content
         const response = await fetch(`${route}/`, {
             method: 'GET',
@@ -95,20 +97,22 @@ async function loadContent(route) {
 async function loadProtectedPage(route) {
     console.log("loadProtectedPage");
     try {
-        const access_token = document.cookie.split('; ').find(row => row.startsWith('access_token')).split('=')[1];
         const response = await fetch(`${route}/`, {
             headers: {
                 'X-Requested-With': 'XMLHttpRequest',
-                'Authorization': `Bearer ${access_token}`
             }
         });
         
+        console.log("response:", response);
         if (!response.ok) {
             throw new Error('Error in protected route function');
         }
         const data = await response.json();
         if (route === 'signout') {
+            document.cookie = `is_auth=false`
             history.pushState(null, '', '/');
+            handleLocationChange();
+            return;
         }
         console.log("data:", data);
         document.title = data.title;

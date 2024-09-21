@@ -3,6 +3,15 @@
         <h1>Welcome, {{ full_name }}!</h1>
         <p>Username: {{ username }}</p>
         <p>Email: {{ email }}</p>
-        <p>Logged in: {{ request.user.is_authenticated }}</p>
+        
+        <div class="container">
+            <div class="row">
+                <div class="col-6">
+                    <a href="profile" class="btn btn-dark" onclick="route()">Edit Profile</a>
+                </div>
+                <div class="col-6">
+                    <a href="2fa" class="btn btn-light" onclick="route()">Enable 2FA</a>
+                </div>
+            </div>
     </div>
 </div>

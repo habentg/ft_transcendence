@@ -3,8 +3,8 @@ from .views import Index, SignUpView, HomeView, SignInView, CsrfRequest, OauthCa
 
 urlpatterns = [
     path('', Index.as_view(), name='landing'),
-    path('signup/', SignUpView.as_view(), name='signup_page'),
     path('home/', HomeView.as_view(), name='home_page'),
+    path('signup/', SignUpView.as_view(), name='signup_page'),
     path('signout/', SignOutView.as_view(), name='signout_page'),
     path('signin/', SignInView.as_view(), name='signin_page'),
     path('csrf_request/', CsrfRequest.as_view(), name='crf_request'),

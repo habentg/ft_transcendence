@@ -11,3 +11,10 @@ ISSUES:
     -> Possible fix - Overriding JWTAuthentication()
 # loading page specific resources ---- without cluttering the DOM
     -> 
+
+
+
+TODO DAY BY DAY:
+-> token blacklisting during SIGNOUT
+-> changing 2FA enable/disable from signup
+-> Caching and HashiCorp voults

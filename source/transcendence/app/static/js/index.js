@@ -1,20 +1,14 @@
 
 function isAuthenticated() {
-    const token = getToken('access_token');
-    if (!token) {
-        return false;
+    const token = getCookie('is_auth');
+    if (token === 'true') {
+        return true;
     }
-    const payload = JSON.parse(atob(token.split('.')[1]));
-    const expirationTime = payload.exp * 1000; // Convert to milliseconds
-    if (Date.now() >= expirationTime) {
-        deleteCookie('access_token');
-        return false;
-    }
-    return true;
+    return false;
 }
 
 // get csrf token
-function getToken(tokenName) {
+function getCookie(tokenName) {
     let cookieValue = null;
     if (document.cookie && document.cookie !== '') {
         const cookies = document.cookie.split(';');
@@ -30,7 +24,7 @@ function getToken(tokenName) {
 }
 
 async function getCSRFToken() {
-    let cookieValue = getToken('csrftoken');
+    let cookieValue = getCookie('csrftoken');
     if (!cookieValue) {
         try {
             const response = await fetch('/csrf_request/', {
@@ -73,7 +67,7 @@ async function getCSRFToken() {
 
 // display error in form submission pages
 function displayError(response) {
-    error_msg = 'Invalid credentials';
+    error_msg = 'Some Kind of Error Occurred';
     if (response.error_msg) {
         error_msg = response.error_msg;
     }
@@ -151,3 +145,16 @@ function deleteCookie(name) {
     const cookie = `${name}=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/`;
     document.cookie = cookie;
   }
+
+  function handleToggleButtonClick(event) {
+    // Handle the toggle button's change event
+    const enabled = event.target.checked;
+    sessionStorage.setItem('2fa-enabled', enabled.toString());
+    if (enabled) {
+        console.log("2FA Enabled");
+        // document.getElementById('2fa-toggle-label').textContent = '2FA Enabled';
+    } else {
+        console.log("2FA Disabled");
+        // document.getElementById('2fa-toggle-label').textContent = '2FA Disabled';
+    }
+}

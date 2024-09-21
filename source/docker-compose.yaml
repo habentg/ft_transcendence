@@ -74,19 +74,6 @@ services:
     volumes:
       - ./nginx_server/conf/nginx.conf:/etc/nginx/nginx.conf:ro
 
-  # nginx:
-  #   container_name: nginx_server
-  #   image: nginx:latest
-  #   restart: always
-  #   depends_on:
-  #     app:
-  #       condition: service_healthy
-  #   networks:
-  #     - trans_net
-  #   ports:
-  #     - "80:80"
-  #   volumes:
-  #     - ./nginx_server/conf/nginx.conf:/etc/nginx/nginx.conf:ro
 volumes:
   our_db:
     driver: local

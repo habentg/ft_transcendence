@@ -28,8 +28,13 @@ from django.shortcuts import render, redirect
 from .utils import send_2fa_code
 import pyotp
 import os
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, HttpResponse
 from django.urls import reverse
+from rest_framework.permissions import IsAuthenticated
+from .auth_middleware import JWTCookieAuthentication
+from django.views.decorators.csrf import ensure_csrf_cookie
+from django.template import RequestContext
+from django.middleware.csrf import get_token
 
 # base view for basic pages in our SPA
 """
@@ -42,8 +47,9 @@ class BaseView(View):
 	title = None
 	css = None
 	js = None
+	
 	def get(self, request):
-		context = self.get_context_data()
+		context = self.get_context_data(request)
 		html_content = render_to_string(self.template_name, context)
 		resources = {
 			'title': self.title,
@@ -56,28 +62,23 @@ class BaseView(View):
 		else:
 			return render(request, 'app/base.html', resources)
 
-	def get_context_data(self):
+	def get_context_data(self, request):
 		return {}
 
-# view for the home page
+# view for the HOME page
 class HomeView(APIView):
-	authentication_classes = [JWTAuthentication]
+    authentication_classes = [JWTCookieAuthentication]
+    permission_classes = [IsAuthenticated]
 
-	def get(self, request):
-		print(request.user, flush=True)
-		try:
-			user = request.user
-			data = {
-				'username': user.username,
-				'email': user.email,
-				'full_name': user.get_full_name(),
-			}
-			html_content = render_to_string('app/home.html', data)
-			return JsonResponse({'html': html_content, 'title': 'Homie Page'})
-		except Exception as e:
-			print(e, flush=True)
-			return JsonResponse({'error': 'Error in fetching user data'}, status=status.HTTP_400_BAD_REQUEST)
-			
+    def get(self, request):
+        user = request.user
+        data = {
+            'username': user.username,
+            'email': user.email,
+            'full_name': user.get_full_name(),
+        }
+        html_content = render_to_string('app/home.html', data)
+        return Response({'html': html_content, 'title': 'Home Page'})
 
 # view for the 404 page
 class Catch_All(BaseView):
@@ -92,6 +93,7 @@ class Index(BaseView):
 	title = 'Index Page'
 
 # view for the sign up page
+# @ensure_csrf_cookie
 @method_decorator(csrf_protect, name='dispatch')
 class SignUpView(BaseView, View):
 	template_name = 'app/signup.html'
@@ -99,32 +101,36 @@ class SignUpView(BaseView, View):
 	css = 'css/signup.css'
 	js = 'js/signup.js'
 	
+	def get(self, request):
+		return super().get(request)
+
+	def get_context_data(self, request):
+		return {'csrf_token':get_token(request)}
+	
 	def post(self, request):
 		data = json.loads(request.body)
-		serializer = PlayerSignupSerializer(data=data)
-		if serializer.is_valid():
-			new_player = serializer.save()
+		serializer_class = PlayerSignupSerializer(data=data)
+		response = HttpResponse()
+		if serializer_class.is_valid():
+			new_player = serializer_class.save()
 			if new_player:
-				# Update last_login
-				new_player.last_login = timezone.now()
 				tfa = data.get('two_factor_enabled')
 				if tfa == 'true':
-					print('2fa is true', flush=True)
 					new_player.tfa = True
 				else:
-					print('2fa is false', flush=True)
 					new_player.tfa = False
+				new_player.last_login = timezone.now()
 				new_player.save()
 				refresh = RefreshToken.for_user(new_player)
-				data = {
-					'refresh_token': str(refresh),
-					'access_token': str(refresh.access_token),
-					'redirect': 'home'
-				}
-				return JsonResponse(data, status=status.HTTP_201_CREATED)
-		return JsonResponse(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+				response.set_cookie('access_token', str(refresh.access_token), httponly=True)
+				response.set_cookie('refresh_token', str(refresh), httponly=True)
+				response.status_code = 201  # created the player
+				return response
+			return JsonResponse({'error_msg': 'Couldnt create the player'}, status=status.HTTP_422_UNPROCESSABLE_ENTITY)
+		return JsonResponse(serializer_class.errors, status=status.HTTP_400_BAD_REQUEST)
 
 # view for the sign in page
+# @ensure_csrf_cookie
 @method_decorator(csrf_protect, name='dispatch')
 class SignInView(BaseView, View):
 	template_name = 'app/signin.html'
@@ -132,39 +138,34 @@ class SignInView(BaseView, View):
 	css = 'css/signin.css'
 	js = 'js/signin.js'
 
+	def get(self, request):
+		return super().get(request)
+
+	def get_context_data(self, request):
+		return {'csrf_token':get_token(request)}
+
 	def post(self, request):
 		data = json.loads(request.body)
 		serializer_class = PlayerSigninSerializer(data=data)
+		response = HttpResponse()
 		if serializer_class.is_valid():
 			username = serializer_class.validated_data['username']
 			password = serializer_class.validated_data['password']
 			player = authenticate(username=username, password=password)
 			if player is not None:
-				# Generate JWT tokens and Create a response with the JWT tokens
 				refresh = RefreshToken.for_user(player)
-				data = {
-					'refresh_token': str(refresh),
-					'access_token': str(refresh.access_token),
-					'redirect': 'home',
-					'tfa_code': False
-				}
+				response.set_cookie('access_token', str(refresh.access_token), httponly=True)
+				response.set_cookie('refresh_token', str(refresh), httponly=True)
 				# Update last_login
-				if not player.tfa:
-					player.last_login = timezone.now()
-					player.save()
-				else:
-					# send 2fa code
+				if player.tfa:
 					if send_2fa_code(player):
 						print('2fa code sent', flush=True)
-						data['tfa_code'] = True
-						data['tfa_code_sent'] = 'success'
-						return JsonResponse(data, status=status.HTTP_200_OK)
+						response.status_code = 302  # or 301 for a permanent redirect
 					else:
-						print('2fa code couldnt be sent', flush=True)
-						data['tfa_code'] = True
-						data['tfa_code_sent'] = 'failure'
-						return JsonResponse({'tfa_code_sent': 'failure', 'error_msg': 'Couldnt send OTP to the given Email'}, status=status.HTTP_401_UNAUTHORIZED)
-				return JsonResponse(data, status=status.HTTP_200_OK)
+						return JsonResponse({'error_msg': 'Couldnt send OTP to the given Email'}, status=status.HTTP_422_UNPROCESSABLE_ENTITY)
+				player.last_login = timezone.now() # IF EVERYTHING IS OK, UPDATE LAST LOGIN
+				player.save()
+				return response
 			return JsonResponse({'error_msg': 'Invalid username or password!'}, status=status.HTTP_401_UNAUTHORIZED)
 		return JsonResponse(serializer_class.errors, status=status.HTTP_400_BAD_REQUEST)
 
@@ -221,7 +222,6 @@ class OauthCallback(View):
 		access_token = token_response.json()['access_token']
 		
 		# Get user info
-		print("Access Token: ", access_token, flush=True)
 		user_info_response = requests.get('https://api.intra.42.fr/v2/me', headers={
 			'Authorization': f'Bearer {access_token}'
 		})
@@ -231,9 +231,8 @@ class OauthCallback(View):
 		
 		user_info = user_info_response.json()
 		
-		print("user: ", user_info, flush=True)
 		# Find or create user
-		user, created = Player.objects.get_or_create(
+		player, created = Player.objects.get_or_create(
 			username=user_info['login'],
 			defaults={
 				'email': user_info['email'],
@@ -243,25 +242,21 @@ class OauthCallback(View):
 		)
 
 		if created:
-			user.set_password('42password')  # will be using more secure password in the future
-			user.save()
+			player.set_password('42password')  # will be using more secure password in the future
+			player.save()
 
 		# Update last login
-		user.last_login = timezone.now()
-		user.save()
+		player.last_login = timezone.now()
+		player.save()
 
 		# Generate JWT tokens and Create a response with the JWT tokens
-		refresh = RefreshToken.for_user(user)
-		data = {
-			'refresh_token': str(refresh),
-			'access_token': str(refresh.access_token),
-			'redirect': '/home'
-		}
+		refresh = RefreshToken.for_user(player)
 
 		# Set the tokens in cookies
-		response = HttpResponseRedirect(data['redirect'])
-		response.set_cookie('access_token', data['access_token'], httponly=True)
-		response.set_cookie('refresh_token', data['refresh_token'], httponly=True)
+		response = HttpResponseRedirect(reverse('landing'))
+		response.set_cookie('access_token', str(refresh.access_token), httponly=True)
+		response.set_cookie('refresh_token', str(refresh), httponly=True)
+		response.set_cookie('is_auth', 'true')
 
 		return response
 
@@ -292,7 +287,7 @@ class PasswordReset(BaseView):
 		email_template_name = "app/password_reset_email_tamplate.txt"
 		c = {
 			'email': player.email,
-			'domain': 'localhost:8000',
+			'domain': settings.DOMAIN_NAME,
 			'site_name': 'Haben Pong',
 			'uid': urlsafe_base64_encode(force_bytes(player.pk)),
 			'user': player,
@@ -355,7 +350,8 @@ class PassResetConfirm(BaseView):
 
 # 2FA - Two Factor Authentication
 class TwoFactorAuth(APIView, BaseView):
-	authentication_classes = [JWTAuthentication]
+	authentication_classes = [JWTCookieAuthentication]
+	permission_classes = [IsAuthenticated]
 	template_name = 'app/2fa.html'
 	title = 'Two Factor Authentication'
 	css = 'css/2fa.css'
