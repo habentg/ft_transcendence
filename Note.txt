@@ -18,3 +18,5 @@ TODO DAY BY DAY:
 -> token blacklisting during SIGNOUT
 -> changing 2FA enable/disable from signup
 -> Caching and HashiCorp voults
+-> changing resources loading -- css and js of each page
+-> 
