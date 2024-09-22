@@ -17,3 +17,10 @@ https://www.youtube.com/watch?v=vRBihr41JTo
 
 https://security.stackexchange.com/questions/175536/does-a-csrf-cookie-need-to-be-httponly
 
+
+
+## Python Debuging Handbook
+https://www.freecodecamp.org/news/python-debugging-handbook/
+
+
+## Production 

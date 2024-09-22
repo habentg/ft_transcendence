@@ -3,8 +3,8 @@ version: '3.8'
 services:
   postgres:
     container_name: postgresql
-    image: postgres:latest
-    restart: always
+    image: postgres:15-alpine
+    restart: unless-stopped
     volumes:
       - our_db:/var/lib/postgresql/data
     networks:
@@ -27,7 +27,7 @@ services:
     build:
       context: ./transcendence/.
       dockerfile: Dockerfile
-    restart: always
+    restart: unless-stopped
     depends_on:
       postgres:
         condition: service_healthy
@@ -37,15 +37,16 @@ services:
       - .env
     environment:
       DATABASE_URL: postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}
-      DJANGO_SUPERUSER_USERNAME: ${DJANGO_SUPERUSER_USERNAME}
-      DJANGO_SUPERUSER_FIRSTNAME: ${DJANGO_SUPERUSER_FIRSTNAME}
-      DJANGO_SUPERUSER_LASTNAME: ${DJANGO_SUPERUSER_LASTNAME}
-      DJANGO_SUPERUSER_EMAIL: ${DJANGO_SUPERUSER_EMAIL}
-      DJANGO_SUPERUSER_PASSWORD: ${DJANGO_SUPERUSER_PASSWORD}
-      DOMAIN_NAME: ${DOMAIN_NAME}
-      EMAIL_HOST_USER: ${EMAIL_HOST_USER}
-      EMAIL_HOST_PASSWORD: ${EMAIL_HOST_PASSWORD}
-      DEFAULT_FROM_EMAIL: ${DEFAULT_FROM_EMAIL}
+      # DJANGO_SUPERUSER_USERNAME: ${DJANGO_SUPERUSER_USERNAME}
+      # DJANGO_SUPERUSER_FIRSTNAME: ${DJANGO_SUPERUSER_FIRSTNAME}
+      # DJANGO_SUPERUSER_LASTNAME: ${DJANGO_SUPERUSER_LASTNAME}
+      # DJANGO_SUPERUSER_EMAIL: ${DJANGO_SUPERUSER_EMAIL}
+      # DJANGO_SUPERUSER_PASSWORD: ${DJANGO_SUPERUSER_PASSWORD}
+      # DOMAIN_NAME: ${DOMAIN_NAME}
+      # EMAIL_HOST_USER: ${EMAIL_HOST_USER}
+      # EMAIL_HOST_PASSWORD: ${EMAIL_HOST_PASSWORD}
+      # DEFAULT_FROM_EMAIL: ${DEFAULT_FROM_EMAIL}
+      # DJANGO_SETTINGS_MODULE: transcendence.settings.production
     volumes:
       - ./transcendence:/app
     healthcheck:
@@ -56,11 +57,11 @@ services:
 
   nginx:
     container_name: nginx_server
-    image: nginx:latest
+    image: nginx:1.26
     # build:
     #   context: ./transcendence/.
     #   dockerfile: Dockerfile
-    restart: always
+    restart: unless-stopped
     depends_on:
       app:
         condition: service_healthy

@@ -15,8 +15,25 @@ ISSUES:
 
 
 TODO DAY BY DAY:
--> token blacklisting during SIGNOUT
--> changing 2FA enable/disable from signup
--> Caching and HashiCorp voults
--> changing resources loading -- css and js of each page
--> 
+=> token blacklisting during SIGNOUT
+    - idea: shortening access_token lifetime, storing backlisted tokens in DB (could be redis, django mem, ..), deleting them after they expire. using the refresh token requesting new access token.
+    
+=> changing 2FA enable/disable from signup
+    - 
+=> Caching and HashiCorp voults
+    - 
+=> changing resources loading -- css and js of each page
+    - 
+=> 
+    - 
+
+
+
+## Production level Architecture Design - by improving the current one
+1. Use a production-grade WSGI server like Gunicorn or uWSGI to run your Django application.
+2. collectstatic: to improve performance
+3. regular backup for database.
+4. Adding centralized loging solution (DevOps Module)
+5. SSL/TLS and HTTPS
+6. healthcheck and monitoring
+7. CI/CD pipeline 

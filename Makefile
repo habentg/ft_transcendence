@@ -56,8 +56,9 @@ app-down:
 nginx-rebuild:
 	$(COMPOSE) -f docker-compose.yaml stop nginx
 	$(COMPOSE) -f docker-compose.yaml rm -f nginx
-# @docker image rm app_image
 	$(COMPOSE) -f docker-compose.yaml up --build -d --no-deps nginx
+
+app-nginx-rebuild: app-rebuild nginx-rebuild
 
 
 # ---------------------------- git push target -------------------------------
