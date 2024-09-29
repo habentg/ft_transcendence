@@ -1,18 +1,4 @@
-# FROM python:3.12
-
-# WORKDIR /app
-
-
-
-# # Installing app dependencies
-# COPY requirements.txt /app/
-# RUN pip install --upgrade pip && pip install -r requirements.txt
-
-
-# EXPOSE 8000
-
-# ENTRYPOINT [ "./entry_point.sh" ]
-
+# base image
 FROM python:3.12
 
 WORKDIR /app
@@ -24,7 +10,6 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 
 COPY requirements.txt .
 COPY entry_point.sh .
-
 
 RUN pip install --upgrade pip && pip install --no-cache-dir -r requirements.txt
 

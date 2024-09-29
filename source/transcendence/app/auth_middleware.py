@@ -1,42 +1,55 @@
-from django.http import JsonResponse
 from django.conf import settings
-from rest_framework_simplejwt.tokens import AccessToken
-from rest_framework_simplejwt.exceptions import TokenError, InvalidToken
-from django.contrib.auth import get_user_model
+from rest_framework_simplejwt.exceptions import InvalidToken
 from rest_framework_simplejwt.authentication import JWTAuthentication
 from rest_framework_simplejwt.exceptions import InvalidToken, AuthenticationFailed
+import redis
+from django.conf import settings
+import jwt
 from django.conf import settings
 
-# class JWTAuthMiddleware:
-#     def __init__(self, get_response):
-#         self.get_response = get_response
+# strict redis instance - comes with redis client
+redis_instance = redis.StrictRedis(host=settings.REDIS_HOST, 
+                                   port=settings.REDIS_PORT, 
+                                   db=settings.REDIS_DB)
+# just checks if token is in blacklist
+#EX: `GET mykey`
+def is_token_blacklisted(token_string):
+    try:
+        token = jwt.decode(token_string, algorithms=["HS256"], key=settings.SECRET_KEY, options={"verify_exp": True})
+        jti = token['jti']
+        return redis_instance.exists(jti)
+    except jwt.ExpiredSignatureError: # Token has expired, return True to indicate it's blacklisted
+        print("Token has expired", flush=True)
+        return True
+    except jwt.InvalidTokenError: # Token is invalid, return True to indicate it's blacklisted
+        print("Token is invalid", flush=True)
+        return True
 
-#     def __call__(self, request):
-#         access_token = request.COOKIES.get('access_token')
-        
-#         if access_token:
-#             try:
-#                 token = AccessToken(access_token)
-#                 username = token.payload.get('username')
-                
-#                 Player = get_user_model()
-#                 request.user = Player.objects.get(username=username)
-#             except (TokenError, InvalidToken):
-#                 response = JsonResponse({"error": "Invalid token"}, status=401)
-#                 response.delete_cookie('access_token')
-#                 return response
+# extracts JTI (JSON Token Identifier) from token and adds it to blacklist using SETEX command - sets key with expiry time (auto deletes)
+#EX: `SETEX mykey 3600 "hello"`
+def add_token_to_blacklist(token_string):
+    try:
+        token = jwt.decode(token_string, algorithms=["HS256"], key=settings.SECRET_KEY, options={"verify_exp": True})
+        expires_in = token['exp'] - token['iat']
+        jti = token['jti']
+        redis_instance.setex(jti, expires_in, 'blacklisted')
+    except jwt.ExpiredSignatureError:
+        print('Token has expired', flush=True)
+    except jwt.InvalidTokenError:
+        print('Token is invalid', flush=True)
+    print('Token added to blacklist', flush=True)
 
-#         response = self.get_response(request)
-#         return response
-    
 
+# custom JWT authentication class that uses cookies instead of Authorization header
 class JWTCookieAuthentication(JWTAuthentication):
     def authenticate(self, request):
         raw_token = request.COOKIES.get('access_token')
         if raw_token is None:
             return None
-
         try:
+            if is_token_blacklisted(raw_token):
+                print('trying to access with a blacklisted Token.... ', flush=True)
+                raise AuthenticationFailed('Token is blacklisted')
             validated_token = self.get_validated_token(raw_token)
             user = self.get_user(validated_token)
             return (user, validated_token)

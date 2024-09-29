@@ -35,8 +35,6 @@ async function getCSRFToken() {
             if (response.status !== 200) {
                 throw new Error("Failed to fetch CSRF token");
             }
-            const data = await response.json();
-            document.cookie = `csrftoken=${cookieValue}`;
         }
         catch (error) {
             console.error('Failed to fetch CSRF token:', error);

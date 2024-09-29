@@ -23,9 +23,11 @@ const protectedRoutes = [
 // actual function to change the content of the page
 handleLocationChange = async () => {
     let path = (window.location.pathname.slice(1));
-    if (path !== '' && path !== 'password_reset_newpass' && path !== 'password_reset_confirm'  && path !== 'oauth' && path !== 'oauth/callback' && path !== 'auth_42' && path !== 'signout'  && path !== 'profile') {
-        await loadPageSpecificResources(path);
-    }
+    // Thnking of a way to remove trailing slashes and all
+    
+    // if (path !== '' && path !== 'password_reset_newpass' && path !== 'password_reset_confirm'  && path !== 'oauth' && path !== 'oauth/callback' && path !== 'auth_42' && path !== 'signout'  && path !== 'profile') {
+    //     await loadPageSpecificResources(path);
+    // }
     await loadContent(path);
 };
 
@@ -85,7 +87,7 @@ async function loadContent(route) {
             throw new Error("HTTP " + response.status);
         }
         let data = await response.json();
-        console.log("data:", data);
+        loadCssandJS(data);
         document.title = data.title;
         document.getElementById('content').innerHTML = data.html;
     } catch (error) {
@@ -122,3 +124,23 @@ async function loadProtectedPage(route) {
     }
 }
 
+loadCssandJS = (data) => {
+    src = data.js;
+    href = data.css;
+
+    console.log("src:", src);
+    console.log("href:", href);
+    if (href) {
+        let link = document.createElement('link');
+        link.rel = 'stylesheet';
+        link.type = 'text/css';
+        link.href = `/static/${href}`;
+        document.head.appendChild(link);
+    }
+    if (src) {
+        let script = document.createElement('script');
+        script.src = `/static/${src}`;
+        script.defer = true;
+        document.head.appendChild(script);
+    }
+};

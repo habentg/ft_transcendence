@@ -78,3 +78,42 @@ push:
 # ---------------------------- PHONY PHONY ... -------------------------------
 .PHONY: up down fclean re restart rebuild
 
+
+
+# ---------------------------- Help target -------------------------------
+help:
+	@echo "Usage: make [target]"
+	@echo ""
+	@echo "Targets:"
+	@echo "  all:          Build and start the services"
+	@echo "  up:           Start the services"
+	@echo "  build:        Build the services"
+	@echo "  down:         Stop the services"
+	@echo "  re:           Rebuild the services without deleting the persistent storages"
+	@echo "  start:        Start the services"
+	@echo "  stop:         Stop the services"
+	@echo "  restart:      Restart the services"
+	@echo "  fclean:       Stop the services, delete all the containers, networks, and volumes"
+	@echo "  rebuild:      Delete all the containers, networks, and volumes, then rebuild the services"
+	@echo "  app-down:     Stop and delete the app service"
+	@echo "  app-up:       Start the app service"
+	@echo "  app-rebuild:  Stop and delete the app service, then start it"
+	@echo "  app-restart:  Restart the app service"
+	@echo "  push:         Add, commit, and push the changes to the remote repository"
+	@echo "  help:         Display this help message"
+	@echo ""
+	@echo "Variables:"
+	@echo "  msg:          Commit message for the push target"
+	@echo ""
+	@echo "Examples:"
+	@echo "  make all"
+	@echo "  make push msg=\"Add a new feature\""
+	@echo ""
+	@echo "For more information, visit"
+
+
+# ---------------------------- End of Makefile -------------------------------
+$(service):
+	$(COMPOSE) -f docker-compose.yaml stop $(service)
+	$(COMPOSE) -f docker-compose.yaml rm -f $(service)
+	$(COMPOSE) -f docker-compose.yaml up --build -d --no-deps $(service)

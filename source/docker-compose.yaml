@@ -31,12 +31,15 @@ services:
     depends_on:
       postgres:
         condition: service_healthy
+      redis:
+        condition: service_healthy
     networks:
       - trans_net
     env_file:
       - .env
     environment:
       DATABASE_URL: postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}
+      REDIS_URL: redis://redis:6379/0
       # DJANGO_SUPERUSER_USERNAME: ${DJANGO_SUPERUSER_USERNAME}
       # DJANGO_SUPERUSER_FIRSTNAME: ${DJANGO_SUPERUSER_FIRSTNAME}
       # DJANGO_SUPERUSER_LASTNAME: ${DJANGO_SUPERUSER_LASTNAME}
@@ -53,14 +56,12 @@ services:
       test: ["CMD", "curl", "-f", "http://localhost:8000/health/"]
       interval: 30s
       timeout: 10s
-      retries: 5
+      retries: 3
+      start_period: 40s
 
   nginx:
     container_name: nginx_server
     image: nginx:1.26
-    # build:
-    #   context: ./transcendence/.
-    #   dockerfile: Dockerfile
     restart: unless-stopped
     depends_on:
       app:
@@ -74,12 +75,45 @@ services:
       # - "443:443"  # If you want to use HTTPS
     volumes:
       - ./nginx_server/conf/nginx.conf:/etc/nginx/nginx.conf:ro
+    command: ["nginx", "-g", "daemon off;"]
+
+  redis:
+    container_name: redis
+    image: redis:6-alpine
+    restart: unless-stopped
+    networks:
+      - trans_net
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
 
 volumes:
   our_db:
+    driver: local
+  redis_data:
     driver: local
 
 networks:
   trans_net:
     name: trans_net
     driver: bridge
+
+  # modsecurity:
+  #   container_name: modsecurity
+  #   image: owasp/modsecurity
+  #   restart: unless-stopped
+  #   depends_on:
+  #     nginx:
+  #       condition: service_healthy
+  #   networks:
+  #     - trans_net
+  #   volumes:
+  #     - ./modsecurity/rules:/etc/modsecurity/rules
+  #   ports:
+  #     - "8080:8080"
+  #   env_file:
+  #     - .env
