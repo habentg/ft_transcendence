@@ -28,6 +28,7 @@ handleLocationChange = async () => {
     // if (path !== '' && path !== 'password_reset_newpass' && path !== 'password_reset_confirm'  && path !== 'oauth' && path !== 'oauth/callback' && path !== 'auth_42' && path !== 'signout'  && path !== 'profile') {
     //     await loadPageSpecificResources(path);
     // }
+    console.log("The path: ", path);
     await loadContent(path);
 };
 
@@ -97,6 +98,7 @@ async function loadContent(route) {
 
 // getting user details after login or auth
 async function loadProtectedPage(route) {
+    console.log("route in Protected Page load:", route);
     console.log("loadProtectedPage");
     try {
         const response = await fetch(`${route}/`, {

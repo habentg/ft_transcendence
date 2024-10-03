@@ -49,6 +49,7 @@ class BaseView(View):
 			'js': self.js,
 			'html': html_content
 		}
+		print('resources:', resources, flush=True)
 		if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
 			return JsonResponse(resources)
 		else:
@@ -87,6 +88,8 @@ class Catch_All(BaseView):
 	js = 'js/404.js'
 
 	def get(self, request):
+		print("request: ", request, flush=True)
+		print('404 page', flush=True)
 		return super().get(request)
 
 # view for the index page
@@ -395,23 +398,34 @@ class TwoFactorAuth(APIView, BaseView):
 				return JsonResponse({'error_msg': 'Invalid OTP!'}, status=status.HTTP_401_UNAUTHORIZED)
 		return JsonResponse({'failure': 'no player found with that email!'}, status=status.HTTP_401_UNAUTHORIZED)
 
-
+# Health check view
 class HealthCheck(View):
 	def get(self, request):
 		try:
-			# Check database connection
 			with connection.cursor() as cursor:
 				cursor.execute("SELECT 1")
+			print("DB connection OK", flush=True)
 			return HttpResponse("OK", status=200, content_type="text/plain")
 		except Exception:
 			return HttpResponse("ERROR", status=500, content_type="text/plain")
 
+# profile view
+class ProfileView(APIView, BaseView):
+	authentication_classes = [JWTCookieAuthentication]
+	permission_classes = [IsAuthenticated]
+	template_name = 'app/profile.html'
+	title = 'Profile'
+	css = 'css/profile.css'
+	js = 'js/profile.js'
 
-""" 
-// access
-eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzI3NjE4MjU0LCJpYXQiOjE3Mjc2MTQ2NTQsImp0aSI6IjM5OWY0Y2NjNzY2ODQ0YzRhN2IxZmY1MmVhOTkxZTQ0IiwidXNlcm5hbWUiOiJyb290In0.wqRd4anZJYF0txOOPbbgRnBbEOcOuivoCYslffuADbc
+	def get(self, request):
+		return super().get(request)
 
-
-// refresh
-eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoicmVmcmVzaCIsImV4cCI6MTcyNzcwMTA1NCwiaWF0IjoxNzI3NjE0NjU0LCJqdGkiOiJkMjE4NjA1M2QyYzE0ODI0ODYzOGZhYzVmNzUxYWFmYyIsInVzZXJuYW1lIjoicm9vdCJ9.nSUm0ZtL8F4ylnu8uSoaQV5KtOn-UQl5R1wOeqlNwtE
- """
+	# def get_context_data(self, request):
+	# 	user = request.user
+	# 	data = {
+	# 		'username': user.username,
+	# 		'email': user.email,
+	# 		'full_name': user.get_full_name(),
+	# 	}
+	# 	return data

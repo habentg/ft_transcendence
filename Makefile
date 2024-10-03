@@ -6,7 +6,7 @@ COMPOSE 		= cd ./source && docker compose
 all: build up
 
 up:
-	$(COMPOSE) -f docker-compose.yaml up -d
+	$(COMPOSE) -f docker-compose.yaml up -d --remove-orphans
 
 build:
 	$(COMPOSE) -f docker-compose.yaml build
@@ -95,10 +95,6 @@ help:
 	@echo "  restart:      Restart the services"
 	@echo "  fclean:       Stop the services, delete all the containers, networks, and volumes"
 	@echo "  rebuild:      Delete all the containers, networks, and volumes, then rebuild the services"
-	@echo "  app-down:     Stop and delete the app service"
-	@echo "  app-up:       Start the app service"
-	@echo "  app-rebuild:  Stop and delete the app service, then start it"
-	@echo "  app-restart:  Restart the app service"
 	@echo "  push:         Add, commit, and push the changes to the remote repository"
 	@echo "  help:         Display this help message"
 	@echo ""
@@ -109,7 +105,6 @@ help:
 	@echo "  make all"
 	@echo "  make push msg=\"Add a new feature\""
 	@echo ""
-	@echo "For more information, visit"
 
 
 # ---------------------------- End of Makefile -------------------------------

@@ -28,6 +28,7 @@ DOMAIN_NAME = os.environ.get('DOMAIN_NAME')
 FOURTYTWO_OAUTH_CLIENT_ID = os.environ.get('CLIENT_ID')
 FOURTYTWO_OAUTH_CLIENT_SECRET = os.environ.get('CLIENT_SECRET')
 FT_USER_PASS = os.environ.get('FT_USER_PASS')
+REDIS_URL = os.environ.get('REDIS_URL')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -64,11 +65,11 @@ MIDDLEWARE = [
 
 CORS_ALLOW_CREDENTIALS = True
 CORS_ALLOWED_ORIGINS = [
-    "http://localhost",  # Add your frontend URL here
+    "http://localhost",  # Add trusted urls here
 ]
 
 CSRF_TRUSTED_ORIGINS = [
-    "http://localhost",  # Add your frontend URL here
+    "http://localhost",  # Add trusted urls here
 ]
 
 
@@ -101,10 +102,11 @@ DATABASES = {
 
 }
 
+# Cache - Redis
 CACHES = {
     "default": {
         "BACKEND": "django_redis.cache.RedisCache",
-        "LOCATION": os.environ.get('REDIS_URL', 'redis://redis:6379/0'),
+        "LOCATION": REDIS_URL,
         "OPTIONS": {
             "CLIENT_CLASS": "django_redis.client.DefaultClient",
         }

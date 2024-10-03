@@ -1,11 +1,12 @@
 # base image
-FROM python:3.12
+FROM python:3.12-alpine
 
 WORKDIR /app
 
-# # Installing system dependencies
-RUN apt-get update && apt-get install -y --no-install-recommends \
-    gcc \
+# Installing system dependencies
+RUN apk update && apk add --no-cache \
+    shadow \ 
+    curl \
     && rm -rf /var/lib/apt/lists
 
 COPY requirements.txt .

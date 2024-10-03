@@ -33,6 +33,16 @@ https://hidora.io/en/ressources/quest-ce-que-modsecurity-et-comment-peut-il-maid
 
 https://docs.nginx.com/nginx-waf/admin-guide/nginx-plus-modsecurity-waf-installation-logging/        -> installation Guide
 
+# hashiCorp Vaults
+
+
+
+# Redis
+
+https://www.ibm.com/topics/redis#:~:text=Caching%20for%20databases%3A%20Redis%20is,of%20traffic%20and%20instances%20required.
+
+https://priyankdesai515.medium.com/make-your-django-rest-api-10-times-faster-with-redis-5736baedb271
+
 
 
 ## Production 
