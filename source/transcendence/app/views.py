@@ -27,6 +27,8 @@ from rest_framework.permissions import IsAuthenticated
 from .auth_middleware import JWTCookieAuthentication, add_token_to_blacklist
 from django.middleware.csrf import get_token
 from django.db import connection
+from rest_framework.response import Response
+from rest_framework import status
 
 # base view for basic pages in our SPA
 """
@@ -49,7 +51,6 @@ class BaseView(View):
 			'js': self.js,
 			'html': html_content
 		}
-		print('resources:', resources, flush=True)
 		if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
 			return JsonResponse(resources)
 		else:
@@ -404,7 +405,6 @@ class HealthCheck(View):
 		try:
 			with connection.cursor() as cursor:
 				cursor.execute("SELECT 1")
-			print("DB connection OK", flush=True)
 			return HttpResponse("OK", status=200, content_type="text/plain")
 		except Exception:
 			return HttpResponse("ERROR", status=500, content_type="text/plain")
@@ -429,3 +429,19 @@ class ProfileView(APIView, BaseView):
 	# 		'full_name': user.get_full_name(),
 	# 	}
 	# 	return data
+
+# Delete account view
+class DeleteAccount(APIView):
+    authentication_classes = [JWTCookieAuthentication]
+    permission_classes = [IsAuthenticated]
+
+    def delete(self, request):
+        player = request.user
+        print('Delete account view: deleting -> ', player, flush=True)
+        player.delete()
+        
+        response = Response({"message": "Account deleted successfully", "redirect": "/"}, status=status.HTTP_200_OK)
+        response.delete_cookie('access_token')
+        response.delete_cookie('refresh_token')
+        response.delete_cookie('is_auth')
+        return response

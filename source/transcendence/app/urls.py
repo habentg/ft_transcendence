@@ -17,5 +17,14 @@ urlpatterns = [
     path('2fa/', TwoFactorAuth.as_view(), name='password_reset_newpass'),
     path('health/', HealthCheck.as_view(), name='health_check'),
     path('profile/', ProfileView.as_view(), name='profile'),
+    path('delete_account/', DeleteAccount.as_view(), name='delete_account'),
     re_path(r'^(?!signup/|home/|signin/).*$', Catch_All.as_view(), name='404'),
 ]
+
+
+
+""" 
+
+    SELECT id, username, first_name, last_name, email, password, tfa, secret, verified, is_superuser, is_staff, is_active, date_joined, last_login FROM app_player;
+
+ """

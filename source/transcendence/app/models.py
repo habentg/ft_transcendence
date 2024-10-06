@@ -1,9 +1,11 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
+from django.utils import timezone
 
-# Custom User Model
+#Custom User Model
 class Player(AbstractUser):
-    username = models.CharField(max_length=150, unique=True, primary_key=True)
+    id = models.BigAutoField(primary_key=True)
+    username = models.CharField(max_length=150, unique=True)
     first_name = models.CharField(max_length=150)
     last_name = models.CharField(max_length=150)
     email = models.EmailField()
@@ -17,14 +19,3 @@ class Player(AbstractUser):
 
     def __str__(self):
         return self.username
-
-# # 2fa model
-# class TwoFactorAuth(models.Model):
-#     player = models.ForeignKey('Player', on_delete=models.CASCADE)
-#     secret = models.CharField(max_length=150)
-#     verified = models.BooleanField(default=False)
-
-#     def __str__(self):
-#         return self.player.username
-    
-

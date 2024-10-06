@@ -1,12 +1,11 @@
 <div class="container my-5">
   <h3 style="text-align: center"><span style="color: rgb(34, 34, 34)">Edit Profile</span></h3>
   <hr />
-  <button type="submit" class="btn btn-dark">Edit Account</button>
-  <button type="submit" class="btn btn-light">Delete Account</button>
   <div class="col-6">
-    <a href="2fa" class="btn btn-light" onclick="route()">Enable 2FA</a>
+    <a href="2fa" class="btn btn-success">Enable 2FA</a>
   </div>
-  <div class="col-6">
-    <a href="delete_acc" class="btn btn-danger" onclick="route()">Delete Account</a>
-  </div>
+  <button type="submit" class="btn btn-danger" onclick="deleteAccount()">Delete Account</button>
+  {% comment %} <div class="col-6">
+    <a href="delete_acc" class="btn btn-danger" onclick="deleteAccount()">Delete Account</a>
+  </div> {% endcomment %}
 </div>
