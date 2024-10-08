@@ -106,6 +106,12 @@ async function loadProtectedPage(route) {
         
         console.log("response:", response);
         if (!response.ok) {
+            if (response.status === 401) {
+                document.cookie = `is_auth=false`
+                history.pushState(null, '', '/home');
+                handleLocationChange();
+                return;
+            }
             throw new Error('Error in protected route function');
         }
         const data = await response.json();

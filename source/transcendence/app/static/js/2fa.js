@@ -1,3 +1,5 @@
+
+// Handle the form submission
 async function handleOTPSubmit(event) {
     event.preventDefault();
 

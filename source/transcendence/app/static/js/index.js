@@ -43,26 +43,6 @@ async function getCSRFToken() {
     return cookieValue;
 }
 
-// // request crsf token
-// async function requestCSRFToken() {
-//     try {
-//         const response = await fetch('/csrf_request/', {
-//             headers: {
-//                 'X-Requested-With': 'XMLHttpRequest'
-//             }
-//         });
-//         if (response.status !== 200) {
-//             throw new Error("Failed to fetch CSRF token");
-//         }
-//         const data = await response.json();
-//         document.cookie = `csrftoken=${cookieValue}`;
-//         return data.csrf_token;
-//     }
-//     catch (error) {
-//         console.error('Failed to fetch CSRF token:', error);
-//     }
-// }
-
 // display error in form submission pages
 function displayError(response) {
     error_msg = 'Some Kind of Error Occurred';
@@ -144,7 +124,7 @@ function deleteCookie(name) {
     document.cookie = cookie;
   }
 
-  function handleToggleButtonClick(event) {
+function handleToggleButtonClick(event) {
     // Handle the toggle button's change event
     const enabled = event.target.checked;
     sessionStorage.setItem('2fa-enabled', enabled.toString());

@@ -24,6 +24,7 @@ import os
 import jwt
 from django.urls import reverse
 from rest_framework.permissions import IsAuthenticated
+from rest_framework.exceptions import AuthenticationFailed
 from .auth_middleware import JWTCookieAuthentication, add_token_to_blacklist
 from django.middleware.csrf import get_token
 from django.db import connection
@@ -67,9 +68,30 @@ class HomeView(APIView, BaseView):
 	title = 'Home Page'
 	css = 'css/home.css'
 	js = 'js/home.js'
+	
+	def get(self, request, *args, **kwargs):
+		try:
+			self.check_authentication(request)
+			return super().get(request)
+		except AuthenticationFailed:
+			return self.handle_unauthenticated(request)
 
-	def get(self, request):
-		return super().get(request)
+	def check_authentication(self, request):
+		for auth_class in self.authentication_classes:
+			try:
+				user_auth_tuple = auth_class().authenticate(request)
+				if user_auth_tuple is not None:
+					request._authenticator = auth_class()
+					request.user, request.auth = user_auth_tuple
+					return
+			except AuthenticationFailed:
+				print('Authentication failed - home except', flush=True)
+		raise AuthenticationFailed('Authentication credentials were not provided.')
+
+	def handle_unauthenticated(self, request):
+		if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+			return JsonResponse({'redirect': reverse('landing')}, status=401)
+		return HttpResponseRedirect(reverse('landing'))
 	
 	def get_context_data(self, request) :
 		user = request.user
@@ -380,7 +402,7 @@ class TwoFactorAuth(APIView, BaseView):
 	def get(self, request):
 		return super().get(request)
 
-	def get_context_data(self):
+	def get_context_data(self, request):
 		return {'email': self.request.user.email}
 	
 	def post(self, request):
@@ -398,6 +420,14 @@ class TwoFactorAuth(APIView, BaseView):
 				print("Invalid OTP!", flush=True)
 				return JsonResponse({'error_msg': 'Invalid OTP!'}, status=status.HTTP_401_UNAUTHORIZED)
 		return JsonResponse({'failure': 'no player found with that email!'}, status=status.HTTP_401_UNAUTHORIZED)
+	
+	def patch(self, request):
+		player = request.user
+		if player:
+			player.tfa = not player.tfa
+			player.save()
+			return JsonResponse({'tfa_enabled': player.tfa}, status=status.HTTP_200_OK)
+		return JsonResponse({'error': 'User not found'}, status=status.HTTP_404_NOT_FOUND)
 
 # Health check view
 class HealthCheck(View):
@@ -421,14 +451,15 @@ class ProfileView(APIView, BaseView):
 	def get(self, request):
 		return super().get(request)
 
-	# def get_context_data(self, request):
-	# 	user = request.user
-	# 	data = {
-	# 		'username': user.username,
-	# 		'email': user.email,
-	# 		'full_name': user.get_full_name(),
-	# 	}
-	# 	return data
+	def get_context_data(self, request):
+		user = request.user
+		data = {
+			'username': user.username,
+			'email': user.email,
+			'full_name': user.get_full_name(),
+			'2fa': user.tfa
+		}
+		return data
 
 # Delete account view
 class DeleteAccount(APIView):
