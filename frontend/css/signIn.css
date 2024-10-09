@@ -5,7 +5,7 @@
 }
 
 .background-image {
-	background-image: url('/download.jpeg');
+	background-image: url('/frontend/imgs/download.jpeg');
 	background-size: cover;
 	background-position: center;
 	background-repeat: no-repeat;
@@ -16,32 +16,32 @@
 	margin-top: -1.4rem; /* Adjusted to accommodate the fixed navbar */
 }
 
-.sign-up-container {
+.sign-in-container {
 	color: white;
 	display: flex;
 	flex-direction: column;
 	align-items: center;
 	justify-content: center;
-	height: 45rem;
-	width: 30rem;
+	height: 25rem;
+	width: 25rem;
 	/* background-color: rgba(0, 0, 0, 0.4); */
 	background-color: rgba(255, 255, 255, 0.3);
 	border-radius: 2rem;
 	font-family: Arial, Helvetica, sans-serif;
 }
 
-.sign-up-container h1 {
+.sign-in-container h1 {
 	font-size: 2.5rem;
 	margin-bottom: 1rem;
 }
 
-.sign-up-container form {
+.sign-in-container form {
 	display: flex;
 	flex-direction: column;
 	align-items: center;
 }
 
-.sign-up-container input {
+.sign-in-container input {
 	width: 20rem;
 	margin: 0.5rem;
 	padding: 0.5rem;
@@ -49,13 +49,13 @@
 	border-radius: 0.5rem;
 }
 
-.sign-up-container col-6 {
+.sign-in-container col-6 {
 	background-color: aqua;
 	display: flex;
 	flex-direction: row;
 }
 
-.sign-up-container button {
+.sign-in-container button {
 	width: 10rem;
 	margin: 0.5rem;
 	padding: 0.5rem;
@@ -66,15 +66,16 @@
 	cursor: pointer;
 }
 
-.sign-up-container button:hover {
+.sign-in-container button:hover {
 	background-color: #84DDFC;
 	color: black;
 }
 
-.sign-up-container hr {
+.sign-in-container hr {
 	width: 10rem;
 	margin-bottom: 1rem;
 }
+
 
 /* Footer styles */
 footer {
