@@ -1,0 +1,138 @@
+* {
+	margin: 0;
+	padding: 0;
+	box-sizing: border-box;
+}
+
+body {
+	background-color: black;
+	color: #000000;
+	display: flex;
+	flex-direction: column; /* Stack elements vertically */
+	/* height: 100vh; Full viewport height */
+}
+
+header {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	text-align: center;
+}
+
+/* Change the background color of the navbar */
+.custom-navbar {
+	background-color: black; 
+	padding: 1rem;
+	margin: 2rem auto;
+	position: fixed; /* Fixed position to stay at the top */
+	top: 0;
+	width: 60%;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	border-radius: 2.5rem;
+	border: 0.1rem solid #84DDFC; /* Corrected border color syntax */
+}
+
+/* Style the brand logo */
+.custom-navbar .navbar-brand {
+	font-size: 1.8rem;
+	font-weight: bold;
+	color: #84DDFC; 
+}
+
+.custom-navbar .navbar-brand:hover {
+	color: #B02C98;
+}
+
+/* Style the navigation links */
+.custom-navbar .nav-link {
+	font-size: 1.2rem;
+	padding: 0.5rem 1rem;
+	color: #84DDFC;
+}
+
+.custom-navbar .nav-link:hover {
+	color: #B02C98;
+}
+
+/* Change navbar toggler color */
+.custom-navbar .navbar-toggler {
+	border-color: #84DDFC;
+} 
+
+.background-image {
+	background-image: url('/download.jpeg');
+	background-size: cover;
+	background-position: center;
+	background-repeat: no-repeat;
+	height: 85vh; /* Height of the background image */
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	margin-top: -1.4rem; /* Adjusted to accommodate the fixed navbar */
+}
+
+.content {
+	flex-direction: column;
+	color: white;
+	/* background-color: rgba(86, 37, 105, 0.5); */
+	/* opacity: 10; */
+	background-color: rgba(255, 255, 255, 0.3);
+	border-radius: 1rem;
+	padding: 2rem;
+}
+
+.content h3, .content p {
+	color: white;
+	font-size: 1.5rem;
+	padding: 1rem;
+}
+
+.content p {
+	font-size: 1rem;
+	padding-top: 3rem;
+}
+
+/* Footer styles */
+footer {
+	background-color: darkgrey;
+	opacity: 0.8;
+    color: white;
+    display: flex;
+    flex-direction: column; 
+    align-items: center; 
+    text-align: center; 
+    padding: 1rem; 
+    margin-top: auto; /* Pushes footer to the bottom */
+    height: 15%; /* Footer height as 10% of the viewport */
+}
+
+footer ul {
+    list-style-type: none; 
+    padding: 0; 
+    margin: 0rem;  
+}
+
+footer ul li {
+    margin: 1rem;
+}
+
+footer h5 {
+    margin-bottom: 2rem; 
+}
+
+.footer-links {
+    display: flex; 
+    gap: 1rem; 
+    justify-content: center; 
+}
+
+footer ul li a {
+    color: white; 
+    text-decoration: none; 
+}
+
+footer ul li a:hover {
+    text-decoration: underline; 
+}

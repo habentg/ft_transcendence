@@ -1,0 +1,120 @@
+* {
+	margin: 0;
+	padding: 0;
+	box-sizing: border-box;
+}
+
+.background-image {
+	background-image: url('/download.jpeg');
+	background-size: cover;
+	background-position: center;
+	background-repeat: no-repeat;
+	height: 85vh; /* Height of the background image */
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	margin-top: -1.4rem; /* Adjusted to accommodate the fixed navbar */
+}
+
+.sign-up-container {
+	color: white;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	height: 45rem;
+	width: 30rem;
+	/* background-color: rgba(0, 0, 0, 0.4); */
+	background-color: rgba(255, 255, 255, 0.3);
+	border-radius: 2rem;
+	font-family: Arial, Helvetica, sans-serif;
+}
+
+.sign-up-container h1 {
+	font-size: 2.5rem;
+	margin-bottom: 1rem;
+}
+
+.sign-up-container form {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+}
+
+.sign-up-container input {
+	width: 20rem;
+	margin: 0.5rem;
+	padding: 0.5rem;
+	border: 0.1rem solid #B02C98;
+	border-radius: 0.5rem;
+}
+
+.sign-up-container col-6 {
+	background-color: aqua;
+	display: flex;
+	flex-direction: row;
+}
+
+.sign-up-container button {
+	width: 10rem;
+	margin: 0.5rem;
+	padding: 0.5rem;
+	border: 0.1rem solid black;
+	border-radius: 0.7rem;
+	background-color:  #3399ff;
+	color: white;
+	cursor: pointer;
+}
+
+.sign-up-container button:hover {
+	background-color: #84DDFC;
+	color: black;
+}
+
+.sign-up-container hr {
+	width: 10rem;
+	margin-bottom: 1rem;
+}
+
+/* Footer styles */
+footer {
+	background-color: darkgrey;
+	opacity: 0.8;
+    color: white;
+    display: flex;
+    flex-direction: column; 
+    align-items: center; 
+    text-align: center; 
+    padding: 1rem; 
+    margin-top: auto; /* Pushes footer to the bottom */
+    height: 15%; /* Footer height as 10% of the viewport */
+}
+
+footer ul {
+    list-style-type: none; 
+    padding: 0; 
+    margin: 0rem;  
+}
+
+footer ul li {
+    margin: 1rem;
+}
+
+footer h5 {
+    margin-bottom: 2rem; 
+}
+
+.footer-links {
+    display: flex; 
+    gap: 1rem; 
+    justify-content: center; 
+}
+
+footer ul li a {
+    color: white; 
+    text-decoration: none; 
+}
+
+footer ul li a:hover {
+    text-decoration: underline; 
+}

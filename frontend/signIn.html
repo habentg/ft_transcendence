@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Sign up</title>
+	<link rel="stylesheet" href="/signIn.css">
+</head>
+<body>
+	<div class="background-image">
+		<div class="sign-in-container">
+			<form class="col-6 mx-auto card p-3 form-cont">
+				<h1>
+				<span >Sign in</span>
+				</h1>
+				<hr />
+			
+				<div class="form-group my-3">
+				<label for="username">Username</label> <br>
+				<input type="text" class="form-control" name="username" id="username" placeholder="Enter username" required />
+				</div>
+			
+				<div class="form-group my-3">
+				<label for="password">Password</label> <br>
+				<input type="password" class="form-control" name="password" id="password" placeholder="Enter password" required />
+				</div>
+			
+				<!-- Submit button -->
+				<button id="signinpForm" type="submit" class="btn btn-dark" >Submit</button>
+				<a href="/home.html">Test</a>
+				
+				<span>or</span>
+				<button type="button" class="btn btn-dark fourty-two">Sign in with 42</button> <br>
+
+				<!-- Link to login page for users who already have an account -->
+				<p class="p-3">Do not have account? <a onclick="route()" href="/signUp.html">Sign up</a></p>
+			
+			</form>
+		
+		</div>
+	</div>
+	<footer>
+		<ul>
+			<li><h5>Beer Pong - Play, Compete, and Have Fun!</h5></li>
+			<li>&copy; 2024 Beer Pong. All rights reserved.</li>
+		</ul>
+		<ul class="footer-links">
+			<li><a href="#">About us</a></li>
+			<li><a href="#">Privacy Policy</a></li>
+			<li><a href="#">Terms and Conditions</a></li>
+			<li><a href="#">Contact us</a></li>
+		</ul>
+	</footer>
+</body>
+</html>

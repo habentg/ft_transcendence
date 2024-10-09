@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Sign up</title>
+	<link rel="stylesheet" href="/signUp.css">
+</head>
+<body>
+	<div class="background-image">
+		<div class="sign-up-container">
+			<form class="col-6 mx-auto card p-3 form-cont">
+				<h1>
+				<span >Sign Up</span>
+				</h1>
+				<hr />
+			
+				<div class="form-group my-3 first-last_name">
+				<div class="first-name">
+					<label for="firstName">First name</label> <br>
+					<input type="text" class="form-control" id="firstName" placeholder="Enter first name" name="first_name"
+					required />
+				</div>
+				<div class="last-name">
+					<label for="lastName">Last name</label> <br>
+					<input type="text" name="lastName" class="form-control" id="lastName" placeholder="Enter last name" required />
+				</div>
+				</div>
+			
+				<div class="form-group my-3">
+				<label for="username">Username</label> <br>
+				<input type="text" class="form-control" name="username" id="username" placeholder="Enter username" required />
+				</div>
+			
+				<div class="form-group my-3">
+				<label for="email">Email</label> <br>
+				<input type="text" class="form-control" name="email" id="email" placeholder="Enter email" required />
+				</div>
+			
+				<div class="form-group my-3">
+				<label for="password">Password</label> <br>
+				<input type="password" class="form-control" name="password" id="password" placeholder="Enter password" required />
+				</div>
+
+				<div class="form-group my-3">
+				<label for="password">Confirm password</label> <br>
+				<input type="password" class="form-control" name="password" id="password" placeholder="Enter the same password" required />
+				</div>
+			
+				<!-- Submit button -->
+				<button id="signupForm" type="submit" class="btn btn-dark">Submit</button>
+				
+				<div class="or-separator">
+				<span>or</span>
+				</div>
+				<button type="button" class="btn btn-dark fourty-two">Sign up with 42</button> <br>
+
+				<!-- Link to login page for users who already have an account -->
+				<p class="p-3">Already have an account? <a onclick="route()" href="/signIn.html">Sign in</a></p>
+			
+			</form>
+		
+		</div>
+	</div>
+	<footer>
+		<ul>
+			<li><h5>Beer Pong - Play, Compete, and Have Fun!</h5></li>
+			<li>&copy; 2024 Beer Pong. All rights reserved.</li>
+		</ul>
+		<ul class="footer-links">
+			<li><a href="#">About us</a></li>
+			<li><a href="#">Privacy Policy</a></li>
+			<li><a href="#">Terms and Conditions</a></li>
+			<li><a href="#">Contact us</a></li>
+		</ul>
+	</footer>
+</body>
+</html>
