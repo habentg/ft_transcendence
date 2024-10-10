@@ -1,145 +1,162 @@
 * {
-	margin: 0;
-	padding: 0;
-	box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html, body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
 }
 
 body {
-	background-color: black;
-	color: #000000;
-	display: flex;
-	flex-direction: column; /* Stack elements vertically */
-	/* height: 100vh; Full viewport height */
+  background-color: black;
+  color: #000000;
+  display: flex;
+  flex-direction: column; /* Stack elements vertically */
+  flex: 1;
 }
 
 header {
-	display: flex;
-	justify-content: center;
-	align-items: center;
-	text-align: center;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+}
+
+.first-page {
+  display: flex;
+  flex:1;
 }
 
 /* Change the background color of the navbar */
 .custom-navbar {
-	background-color: black; 
-	padding: 1rem;
-	margin: 2rem auto;
-	position: fixed; /* Fixed position to stay at the top */
-	top: 0;
-	width: 60%;
-	display: flex;
-	justify-content: center;
-	align-items: center;
-	border-radius: 2.5rem;
-	border: 0.1rem solid #84DDFC; /* Corrected border color syntax */
+  background-color: black;
+  padding: 1rem;
+  margin: 2rem auto;
+  position: fixed; /* Fixed position to stay at the top */
+  top: 0;
+  width: 60%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 2.5rem;
+  border: 0.1rem solid #84ddfc; /* Corrected border color syntax */
 }
 
 /* Style the brand logo */
 .custom-navbar .navbar-brand {
-	font-size: 1.8rem;
-	font-weight: bold;
-	color: #84DDFC; 
+  font-size: 1.8rem;
+  font-weight: bold;
+  color: #84ddfc;
 }
 
+
 .custom-navbar .navbar-brand:hover {
-	color: #B02C98;
+  color: #b02c98;
 }
+
 
 /* Style the navigation links */
 .custom-navbar .nav-link {
-	font-size: 1.2rem;
-	padding: 0.5rem 1rem;
-	color: #84DDFC;
+  font-size: 1.2rem;
+  padding: 0.5rem 1rem;
+  color: #84ddfc;
 }
 
 .custom-navbar .nav-link:hover {
-	color: #B02C98;
+  color: #b02c98;
 }
 
 /* Change navbar toggler color */
 .custom-navbar .navbar-toggler {
-	border-color: #84DDFC;
-} 
+  border-color: #84ddfc;
+}
 
 .background-image {
-	background-image: url('/frontend/imgs/background2.jpg');
-	background-size: cover;
-	background-position: center;
-	background-repeat: no-repeat;
-	height: 85vh; /* Height of the background image */
-	display: flex;
-	justify-content: center;
-	align-items: center;
-	margin-top: -1.4rem; /* Adjusted to accommodate the fixed navbar */
+  background-image: url("/imgs/background2.jpg");
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  /* height: 85vh; */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex: 1;
+  /* margin-top: -1.4rem; */
 }
 
 /* Home: options for user */
 .background-image .content {
-	background-color: rgba(255, 255, 255, 0.5);
-	height: 40rem;
-	width: 30rem;
-	margin-top: 5rem;
-	/* padding: 15rem 10rem; */
-	border-radius: 0.6rem;
+  background-color: rgba(255, 255, 255, 0.5);
+  height: 30rem;
+  width: 25rem;
+  margin: 10rem 0 4rem 0;
+  /* padding: 15rem 10rem; */
+  border-radius: 0.6rem;
 }
 
 .background-image .content ul {
-	list-style-type: none;
-	padding: 0;
+  list-style-type: none;
+  padding: 0;
 }
+
 
 .background-image .content ul li {
-	padding: 2rem;
-	margin: 1.2rem;
-	border: 0.1rem solid #84DDFC;
-	border-radius: 0.5rem;
+  padding: 1rem;
+  margin: 1.2rem;
+  border: 0.1rem solid #84ddfc;
+  border-radius: 0.5rem;
 }
 
+
 .background-image .content ul li a {
-	color: #84DDFC;
-	text-decoration: none;
-	font-size: 1.5rem;
+  color: #84ddfc;
+  text-decoration: none;
+  font-size: 1.5rem;
 }
 
 /* Footer styles */
 footer {
-	background-color: darkgrey;
-	opacity: 0.8;
-    color: white;
-    display: flex;
-    flex-direction: column; 
-    align-items: center; 
-    text-align: center; 
-    padding: 1rem; 
-    margin-top: auto; /* Pushes footer to the bottom */
-    height: 15%; /* Footer height as 10% of the viewport */
+  background-color: darkgrey;
+  opacity: 0.8;
+  color: white;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 1rem;
+  /* height: 15%; */
 }
 
 footer ul {
-    list-style-type: none; 
-    padding: 0; 
-    margin: 0rem;  
+  list-style-type: none;
+  padding: 0;
+  margin: 0rem;
 }
 
 footer ul li {
-    margin: 1rem;
+  margin: 1rem;
 }
 
 footer h5 {
-    margin-bottom: 2rem; 
+  margin-bottom: 2rem;
 }
 
 .footer-links {
-    display: flex; 
-    gap: 1rem; 
-    justify-content: center; 
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
 }
 
 footer ul li a {
-    color: white; 
-    text-decoration: none; 
+  color: white;
+  text-decoration: none;
 }
 
 footer ul li a:hover {
-    text-decoration: underline; 
+  text-decoration: underline;
 }

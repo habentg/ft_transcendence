@@ -1,121 +1,143 @@
 * {
-	margin: 0;
-	padding: 0;
-	box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html, body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
 }
 
 .background-image {
-	background-image: url('/frontend/imgs/download.jpeg');
-	background-size: cover;
-	background-position: center;
-	background-repeat: no-repeat;
-	height: 85vh; /* Height of the background image */
-	display: flex;
-	justify-content: center;
-	align-items: center;
-	margin-top: -1.4rem; /* Adjusted to accommodate the fixed navbar */
+  background-image: url("/imgs/download.jpeg");
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  /* height: 85vh;  */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  /* margin-top: -1.4rem;  */
+  flex: 1;
 }
 
 .sign-in-container {
-	color: white;
-	display: flex;
-	flex-direction: column;
-	align-items: center;
-	justify-content: center;
-	height: 25rem;
-	width: 25rem;
-	/* background-color: rgba(0, 0, 0, 0.4); */
-	background-color: rgba(255, 255, 255, 0.3);
-	border-radius: 2rem;
-	font-family: Arial, Helvetica, sans-serif;
+  color: white;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 25rem;
+  width: 25rem;
+  /* background-color: rgba(0, 0, 0, 0.4); */
+  background-color: rgba(255, 255, 255, 0.3);
+  border-radius: 2rem;
+  font-family: Arial, Helvetica, sans-serif;
 }
 
 .sign-in-container h1 {
-	font-size: 2.5rem;
-	margin-bottom: 1rem;
+  font-size: 2rem;
+  margin-bottom: 1rem;
 }
 
 .sign-in-container form {
-	display: flex;
-	flex-direction: column;
-	align-items: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-size: 1rem;
 }
 
 .sign-in-container input {
-	width: 20rem;
-	margin: 0.5rem;
-	padding: 0.5rem;
-	border: 0.1rem solid #B02C98;
-	border-radius: 0.5rem;
+  width: 20rem;
+  margin: 0.5rem;
+  padding: 0.5rem;
+  border: 0.1rem solid #b02c98;
+  border-radius: 0.5rem;
+}
+
+.sign-in-container label {
+  margin: 0.5rem;
 }
 
 .sign-in-container col-6 {
-	background-color: aqua;
-	display: flex;
-	flex-direction: row;
+  background-color: aqua;
+  display: flex;
+  flex-direction: row;
 }
 
 .sign-in-container button {
-	width: 10rem;
-	margin: 0.5rem;
-	padding: 0.5rem;
-	border: 0.1rem solid black;
-	border-radius: 0.7rem;
-	background-color:  #3399ff;
-	color: white;
-	cursor: pointer;
+  width: 10rem;
+  margin: 0.5rem;
+  padding: 0.5rem;
+  border: 0.1rem solid black;
+  border-radius: 0.7rem;
+  background-color: #3399ff;
+  color: white;
+  cursor: pointer;
+  font-size: 1rem;
 }
 
 .sign-in-container button:hover {
-	background-color: #84DDFC;
-	color: black;
+  background-color: #84ddfc;
+  color: black;
+}
+
+.sign-in-container p a {
+  color:#3399ff;
+}
+
+.sign-in-container p a:hover {
+  color: pink;
 }
 
 .sign-in-container hr {
-	width: 10rem;
-	margin-bottom: 1rem;
+  width: 10rem;
+  margin-bottom: 1rem;
 }
-
 
 /* Footer styles */
 footer {
-	background-color: darkgrey;
-	opacity: 0.8;
-    color: white;
-    display: flex;
-    flex-direction: column; 
-    align-items: center; 
-    text-align: center; 
-    padding: 1rem; 
-    margin-top: auto; /* Pushes footer to the bottom */
-    height: 15%; /* Footer height as 10% of the viewport */
+  background-color: darkgrey;
+  opacity: 0.8;
+  color: white;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 1rem;
+  /* height: 15%;  */
 }
 
 footer ul {
-    list-style-type: none; 
-    padding: 0; 
-    margin: 0rem;  
+  list-style-type: none;
+  padding: 0;
+  margin: 0rem;
 }
 
 footer ul li {
-    margin: 1rem;
+  margin: 1rem;
 }
 
 footer h5 {
-    margin-bottom: 2rem; 
+  margin-bottom: 2rem;
 }
 
 .footer-links {
-    display: flex; 
-    gap: 1rem; 
-    justify-content: center; 
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
 }
 
 footer ul li a {
-    color: white; 
-    text-decoration: none; 
+  color: white;
+  text-decoration: none;
 }
 
 footer ul li a:hover {
-    text-decoration: underline; 
+  text-decoration: underline;
 }
