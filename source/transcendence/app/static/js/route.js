@@ -75,7 +75,7 @@ async function loadContent(route) {
             await loadProtectedPage('/home');
             return ;
         }
-        
+        console.log("route:", route);
         // else - send a request to the server to get the page content
         const response = await fetch(`${route}/`, {
             method: 'GET',
@@ -84,6 +84,13 @@ async function loadContent(route) {
             }
         });
         if (!response.ok) {
+            if (response.status === 401) {
+                document.cookie = `is_auth=false`
+                console.log("redirecting to Landing Page coz you tried to access a protected page");
+                history.pushState(null, '', '/home');
+                handleLocationChange();
+                return;
+            }
             throw new Error("HTTP " + response.status);
         }
         let data = await response.json();
@@ -108,6 +115,7 @@ async function loadProtectedPage(route) {
         if (!response.ok) {
             if (response.status === 401) {
                 document.cookie = `is_auth=false`
+                console.log("redirecting to Landing Page coz you tried to access a protected page");
                 history.pushState(null, '', '/home');
                 handleLocationChange();
                 return;

@@ -20,16 +20,15 @@ from django.utils.encoding import force_bytes, force_str
 from django.shortcuts import render
 from .utils import send_2fa_code
 import pyotp
-import os
 import jwt
 from django.urls import reverse
 from rest_framework.permissions import IsAuthenticated
-from rest_framework.exceptions import AuthenticationFailed
 from .auth_middleware import JWTCookieAuthentication, add_token_to_blacklist
 from django.middleware.csrf import get_token
 from django.db import connection
 from rest_framework.response import Response
 from rest_framework import status
+from rest_framework.exceptions import AuthenticationFailed
 
 # base view for basic pages in our SPA
 """
@@ -60,7 +59,8 @@ class BaseView(View):
 	def get_context_data(self, request):
 		return {}
 
-# view for the HOME page
+# view for the home page
+import urllib.parse
 class HomeView(APIView, BaseView):
 	authentication_classes = [JWTCookieAuthentication]
 	permission_classes = [IsAuthenticated]
@@ -69,29 +69,14 @@ class HomeView(APIView, BaseView):
 	css = 'css/home.css'
 	js = 'js/home.js'
 	
-	def get(self, request, *args, **kwargs):
-		try:
-			self.check_authentication(request)
-			return super().get(request)
-		except AuthenticationFailed:
-			return self.handle_unauthenticated(request)
+	def handle_exception(self, exception):
+		if isinstance(exception, AuthenticationFailed):
+			signin_url = reverse('signin_page')
+			params = urllib.parse.urlencode({'next': self.request.path})
+			print('Profile view: ', exception, flush=True)
+			return HttpResponseRedirect(f'{signin_url}?{params}')
+		return super().handle_exception(exception)
 
-	def check_authentication(self, request):
-		for auth_class in self.authentication_classes:
-			try:
-				user_auth_tuple = auth_class().authenticate(request)
-				if user_auth_tuple is not None:
-					request._authenticator = auth_class()
-					request.user, request.auth = user_auth_tuple
-					return
-			except AuthenticationFailed:
-				print('Authentication failed - home except', flush=True)
-		raise AuthenticationFailed('Authentication credentials were not provided.')
-
-	def handle_unauthenticated(self, request):
-		if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
-			return JsonResponse({'redirect': reverse('landing')}, status=401)
-		return HttpResponseRedirect(reverse('landing'))
 	
 	def get_context_data(self, request) :
 		user = request.user
@@ -102,8 +87,7 @@ class HomeView(APIView, BaseView):
 		}
 		return data
 	
-
-# view for the 404 page
+# view for the 404 page1
 class Catch_All(BaseView):
 	template_name = 'app/404.html'
 	title = 'Error Page'
@@ -111,8 +95,7 @@ class Catch_All(BaseView):
 	js = 'js/404.js'
 
 	def get(self, request):
-		print("request: ", request, flush=True)
-		print('404 page', flush=True)
+		print('404 => with Request: ', request, flush=True)
 		return super().get(request)
 
 # view for the index page
@@ -121,83 +104,83 @@ class Index(BaseView):
 	title = 'Index Page'
 
 	def get(self, request):
-		# print('access_token:', request.COOKIES.get('access_token'), flush=True)
 		return super().get(request)
 
 # view for the sign up page
 @method_decorator(csrf_protect, name='dispatch')
-class SignUpView(BaseView, View):
+class SignUpView(APIView, BaseView):
+	authentication_classes = []
+	permission_classes = []
 	template_name = 'app/signup.html'
 	title = 'Sign Up'
 	css = 'css/signup.css'
 	js = 'js/signup.js'
-	
+
 	def get(self, request):
 		return super().get(request)
 
-	def get_context_data(self, request):
-		return {'csrf_token':get_token(request)}
-	
 	def post(self, request):
-		data = json.loads(request.body)
-		serializer_class = PlayerSignupSerializer(data=data)
-		response = HttpResponse()
-		if serializer_class.is_valid():
-			new_player = serializer_class.save()
+		serializer = PlayerSignupSerializer(data=request.data)
+		if serializer.is_valid():
+			new_player = serializer.save()
 			if new_player:
-				tfa = data.get('two_factor_enabled')
-				if tfa == 'true':
-					new_player.tfa = True
-				else:
-					new_player.tfa = False
 				new_player.last_login = timezone.now()
 				new_player.save()
 				refresh = RefreshToken.for_user(new_player)
+				response = Response(status=status.HTTP_201_CREATED)
 				response.set_cookie('access_token', str(refresh.access_token), httponly=True)
 				response.set_cookie('refresh_token', str(refresh), httponly=True)
-				response.status_code = 201  # created the player
 				return response
-			return JsonResponse({'error_msg': 'Couldnt create the player'}, status=status.HTTP_422_UNPROCESSABLE_ENTITY)
-		return JsonResponse(serializer_class.errors, status=status.HTTP_400_BAD_REQUEST)
+			return Response({'error_msg': 'Couldn\'t create the player'}, status=status.HTTP_422_UNPROCESSABLE_ENTITY)
+		return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+	def get_context_data(self, request):
+		return {'csrf_token': get_token(request)}
 
 # view for the sign in page
 @method_decorator(csrf_protect, name='dispatch')
-class SignInView(BaseView, View):
+class SignInView(APIView, BaseView):
+	authentication_classes = []
+	permission_classes = []
 	template_name = 'app/signin.html'
 	title = 'Sign In'
 	css = 'css/signin.css'
 	js = 'js/signin.js'
 
 	def get(self, request):
+		next_url = request.GET.get('next', '/')
+		context = self.get_context_data(request)
+		context['next'] = next_url
+		print('Signin view: ', context, flush=True)
 		return super().get(request)
 
-	def get_context_data(self, request):
-		return {'csrf_token':get_token(request)}
-
 	def post(self, request):
-		data = json.loads(request.body)
-		serializer_class = PlayerSigninSerializer(data=data)
-		response = HttpResponse()
-		if serializer_class.is_valid():
-			username = serializer_class.validated_data['username']
-			password = serializer_class.validated_data['password']
+		serializer = PlayerSigninSerializer(data=request.data)
+		if serializer.is_valid():
+			username = serializer.validated_data['username']
+			password = serializer.validated_data['password']
 			player = authenticate(username=username, password=password)
 			if player is not None:
 				refresh = RefreshToken.for_user(player)
+				response = Response(status=status.HTTP_200_OK)
 				response.set_cookie('access_token', str(refresh.access_token), httponly=True)
 				response.set_cookie('refresh_token', str(refresh), httponly=True)
-				# Update last_login
 				if player.tfa:
 					if send_2fa_code(player):
 						print('2fa code sent', flush=True)
 						response.status_code = 302  # or 301 for a permanent redirect
 					else:
-						return JsonResponse({'error_msg': 'Couldnt send OTP to the given Email'}, status=status.HTTP_422_UNPROCESSABLE_ENTITY)
+						return Response({'error_msg': 'Couldn\'t send OTP to the given Email'}, 
+                                    status=status.HTTP_422_UNPROCESSABLE_ENTITY)
 				player.last_login = timezone.now() # IF EVERYTHING IS OK, UPDATE LAST LOGIN
 				player.save()
 				return response
-			return JsonResponse({'error_msg': 'Invalid username or password!'}, status=status.HTTP_401_UNAUTHORIZED)
-		return JsonResponse(serializer_class.errors, status=status.HTTP_400_BAD_REQUEST)
+			return Response({'error_msg': 'Invalid username or password!'}, 
+                        status=status.HTTP_401_UNAUTHORIZED)
+		return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+	def get_context_data(self, request):
+		return {'csrf_token': get_token(request)}
 
 class SignOutView(BaseView, View):
 	def get(self, request):
@@ -214,13 +197,14 @@ class SignOutView(BaseView, View):
 			response = HttpResponseRedirect(reverse('landing'))
 			response.delete_cookie('access_token')
 			response.delete_cookie('refresh_token')
+			response.delete_cookie('is_auth')
 			response.singed_out = True
 			return response
 
 # view for the csrf token request
 class CsrfRequest(APIView):
 	def get(self, request):
-		response = HttpResponse()
+		response = Response(status=status.HTTP_200_OK)
 		response.set_cookie('csrftoken', get_token(request))
 		return response
 
@@ -239,6 +223,7 @@ class Auth_42(View):
 
 		return JsonResponse({'authorization_url': authorization_url})
 
+# 42 Oauth2.0 callback
 class OauthCallback(View):
 	def get(self, request):
 		code = request.GET.get('code')
@@ -281,8 +266,30 @@ class OauthCallback(View):
 		)
 
 		if created:
+			# player.set_unusable_password()
+			image_url = user_info['image']['link']
+			from django.core.files import File
+			from urllib.request import urlopen
+			from tempfile import NamedTemporaryFile
+
+			img_temp = NamedTemporaryFile(delete=True)
+			img_temp.write(urlopen(image_url).read())
+			img_temp.flush()
+			player.profile_picture.save(f"{player.username}_profile.jpg", File(img_temp))
+			# print("new user profile picture: ", user_info['image']['link'], flush=True)
 			player.set_password(settings.FT_USER_PASS)
 			player.save()
+
+		# Download and save profile picture
+		if 'image_url' in user_info:  # Adjust this key based on 42's API response
+			from django.core.files import File
+			from urllib.request import urlopen
+			from tempfile import NamedTemporaryFile
+
+			img_temp = NamedTemporaryFile(delete=True)
+			img_temp.write(urlopen(user_info['image_url']).read())
+			img_temp.flush()
+			player.profile_picture.save(f"{player.username}_profile.jpg", File(img_temp))
 
 		# Update last login
 		player.last_login = timezone.now()
@@ -293,8 +300,9 @@ class OauthCallback(View):
 
 		# Set the tokens in cookies
 		response = HttpResponseRedirect(reverse('landing'))
-		response.set_cookie('access_token', str(refresh.access_token), httponly=True)
-		response.set_cookie('refresh_token', str(refresh), httponly=True)
+		# secure=True
+		response.set_cookie('access_token', str(refresh.access_token), httponly=True, samesite='Lax')
+		response.set_cookie('refresh_token', str(refresh), httponly=True, samesite='Lax')
 		response.set_cookie('is_auth', 'true')
 
 		return response
@@ -399,8 +407,14 @@ class TwoFactorAuth(APIView, BaseView):
 	css = 'css/2fa.css'
 	js = 'js/2fa.js'
 
-	def get(self, request):
-		return super().get(request)
+	def handle_exception(self, exception):
+		if isinstance(exception, AuthenticationFailed):
+			signin_url = reverse('signin_page')
+			params = urllib.parse.urlencode({'next': self.request.path})
+			print('Profile view: ', exception, flush=True)
+			return HttpResponseRedirect(f'{signin_url}?{params}')
+		return super().handle_exception(exception)
+
 
 	def get_context_data(self, request):
 		return {'email': self.request.user.email}
@@ -448,31 +462,51 @@ class ProfileView(APIView, BaseView):
 	css = 'css/profile.css'
 	js = 'js/profile.js'
 
-	def get(self, request):
-		return super().get(request)
+	def handle_exception(self, exception):
+		if isinstance(exception, AuthenticationFailed):
+			signin_url = reverse('signin_page')
+			params = urllib.parse.urlencode({'next': self.request.path})
+			print('Profile view: ', exception, flush=True)
+			return HttpResponseRedirect(f'{signin_url}?{params}')
+		return super().handle_exception(exception)
 
 	def get_context_data(self, request):
-		user = request.user
+		player = request.user
+		if player.profile_picture is not None:
+			profile_pic = player.profile_picture.url
+		else:
+			profile_pic = 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT_FUhIoRBZWETlnFjjqAz5w_4nUc1_j70Qzg&s'
+		print("Profile pic: {", player.profile_picture,"}", flush=True)
 		data = {
-			'username': user.username,
-			'email': user.email,
-			'full_name': user.get_full_name(),
-			'2fa': user.tfa
+			'username': player.username,
+			'email': player.email,
+			'full_name': player.get_full_name(),
+			'2fa': player.tfa,
+			 "profile_pic": player.profile_picture
 		}
 		return data
 
-# Delete account view
-class DeleteAccount(APIView):
-    authentication_classes = [JWTCookieAuthentication]
-    permission_classes = [IsAuthenticated]
+	def patch(self, request):
+		data = json.loads(request.body)
+		player = request.user
+		print("Data: ", data, flush=True)
+		if player:
+			if data.get('username') not in ['', None]:
+				player.username = data.get('username')
+			if data.get('email') not in ['', None]:
+				player.email = data.get('email')
+			print("Player: ", player, flush=True)
+			player.save()
+			return JsonResponse({'success': 'Profile updated successfully!'}, status=status.HTTP_200_OK)
+		return JsonResponse({'error': 'User not found'}, status=status.HTTP_404_NOT_FOUND)
 
-    def delete(self, request):
-        player = request.user
-        print('Delete account view: deleting -> ', player, flush=True)
-        player.delete()
-        
-        response = Response({"message": "Account deleted successfully", "redirect": "/"}, status=status.HTTP_200_OK)
-        response.delete_cookie('access_token')
-        response.delete_cookie('refresh_token')
-        response.delete_cookie('is_auth')
-        return response
+	def delete(self, request):
+		player = request.user
+		print('Delete account view: deleting -> ', player, flush=True)
+		player.delete()
+		
+		response = Response({"message": "Account deleted successfully", "redirect": "/"}, status=status.HTTP_200_OK)
+		response.delete_cookie('access_token')
+		response.delete_cookie('refresh_token')
+		response.delete_cookie('is_auth')
+		return response

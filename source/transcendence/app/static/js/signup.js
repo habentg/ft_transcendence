@@ -10,7 +10,6 @@ async function handleSignupSubmit(e) {
         username: document.getElementById('username').value,
         email: document.getElementById('email').value,
         password: document.getElementById('password').value,
-        two_factor_enabled: sessionStorage.getItem('2fa-enabled')
     };
 
     try {
@@ -27,17 +26,8 @@ async function handleSignupSubmit(e) {
         
         console.log("response:", response);
         if (!response.ok) {
-            if (response.status === 302) {
-                // Redirect to the two factor authentication page
-                document.cookie = `is_auth=true`
-                history.pushState(null, '', `/2fa`);
-                handleLocationChange();
-            }
-            else
-            {
-                const responseData = await response.json();
-                displayError(responseData);
-            }
+            const responseData = await response.json();
+            displayError(responseData);
             return;
         }
         // redirect to the protected page

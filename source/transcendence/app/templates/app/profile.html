@@ -2,13 +2,33 @@
   <h3 style="text-align: center"><span style="color: rgb(34, 34, 34)">Edit Profile</span></h3>
   <hr />
   <div class="container">
+    <div class="container" id="profile-pic">
+      {% comment %} {% if profile_picture  %}
+        <img src="'{{ profile_picture }}" alt="{{ username }}'s profile">
+      {% endif %} {% endcomment %}
+      {% comment %} {% elif player.local_profile_picture %}
+      <img src="{{ player.local_profile_picture.url }}" alt="{{ player.username }}'s profile">
+      {% else %}
+          <img src="{% static 'images/default_profile.jpg' %}" alt="Default profile"> {% endcomment %}
+      <img src="{{ profile_pic }}" alt="profile-pic" class="rounded-circle" role="button" style="width: 200px; height: 200px;"/>
+    </div>
     <div class="container username">
       <label for="username">Username</label>
-      <input type="text" class="form-control" id="username" value="{{ username }}" />
+      <input role="button" type="text" class="form-control" id="username" value="{{ username }}" disabled/>
+      <button id="edit-username-icon" class="btn btn-dark"><i class="fa-sharp fa-solid fa-pen" style="color: #74C0FC;"></i></button>
     </div>
     <div class="container email">
       <label for="email">email</label>
-      <input type="text" class="form-control" id="email" value="{{ email }}" />
+      <input type="text" class="form-control" id="email" value="{{ email }}" disabled/>
+      <button id="edit-email-icon" class="btn btn-dark"><i class="fa-sharp fa-solid fa-pen" style="color: #74C0FC;"></i></button>
+    </div>
+    <div class="container password">
+      <label for="password">Password</label>
+      <input type="password" class="form-control" id="password" value="********" disabled/>
+      <button id="edit-password-icon" class="btn btn-dark"><i class="fa-sharp fa-solid fa-pen" style="color: #74C0FC;"></i></button>
+    </div>
+    <div class="container">
+      <button id="update-user-info-btn" class="btn btn-primary">Update User Info</button>
     </div>
   </div>
   <div class="container my-5 d-flex justify-content-center border">

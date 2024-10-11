@@ -60,7 +60,6 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'corsheaders.middleware.CorsMiddleware',
-    # 'app.auth_middleware.JWTAuthMiddleware',
 ]
 
 CORS_ALLOW_CREDENTIALS = True
@@ -112,6 +111,10 @@ CACHES = {
         }
     }
 }
+
+# appending trailing slash to urls if not present
+APPEND_SLASH = False
+# TRAILING_SLASH = False
 
 # Password validation
 # https://docs.djangoproject.com/en/4.2/ref/settings/#auth-password-validators
@@ -265,3 +268,8 @@ DEFAULT_FROM_EMAIL = os.getenv('DEFAULT_FROM_EMAIL')  # Email address that appea
 REDIS_HOST = 'redis'
 REDIS_PORT = 6379
 REDIS_DB = 0
+
+# media settings - for image upload
+MEDIA_URL = '/media/'
+MEDIA_ROOT = BASE_DIR / 'media'
+# print("media-root: ", MEDIA_ROOT, "media-url: ", MEDIA_URL, flush=True)

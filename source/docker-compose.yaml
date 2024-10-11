@@ -63,6 +63,7 @@ services:
       - trans_net
     ports:
       - "80:80"
+      # - dont forget to add secure=true to all the cookies in the app
       # - "443:443"  # If you want to use HTTPS
     volumes:
       - ./nginx_server/conf/nginx.conf:/etc/nginx/nginx.conf:ro

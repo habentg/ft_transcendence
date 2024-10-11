@@ -1,11 +1,10 @@
-from django.conf import settings
-from rest_framework_simplejwt.exceptions import InvalidToken
 from rest_framework_simplejwt.authentication import JWTAuthentication
 from rest_framework_simplejwt.exceptions import InvalidToken, AuthenticationFailed
 import redis
 from django.conf import settings
 import jwt
-from django.conf import settings
+from django.http import HttpResponseRedirect
+from django.urls import reverse
 
 # strict redis instance - comes with redis client
 redis_instance = redis.StrictRedis(host=settings.REDIS_HOST, 
@@ -45,7 +44,7 @@ class JWTCookieAuthentication(JWTAuthentication):
     def authenticate(self, request):
         raw_token = request.COOKIES.get('access_token')
         if raw_token is None:
-            return None
+            raise AuthenticationFailed(f'No token found - redirect to signin {reverse('signin_page')}')
         try:
             if is_token_blacklisted(raw_token):
                 print('trying to access with a blacklisted Token.... ', flush=True)
@@ -57,4 +56,3 @@ class JWTCookieAuthentication(JWTAuthentication):
             raise AuthenticationFailed('Invalid token')
         except Exception as e:
             raise AuthenticationFailed(str(e))
-        
