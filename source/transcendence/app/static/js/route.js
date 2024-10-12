@@ -86,6 +86,8 @@ async function loadContent(route) {
                 
         if (route == 'signout') {
             document.cookie = `is_auth=false`
+            // removing any css js if there is any
+            removeResource();
             history.pushState(null, '', '/');
             handleLocationChange();
             return;
@@ -110,25 +112,3 @@ async function loadContent(route) {
         console.error(`Failed to load -- ${route} -- page content:`, error);
     }
 }
-
-/* CSS and JavaScritp of each page - loading */
-loadCssandJS = (data) => {
-    src = data.js;
-    href = data.css;
-
-    console.log("src:", src);
-    console.log("href:", href);
-    if (href) {
-        let link = document.createElement('link');
-        link.rel = 'stylesheet';
-        link.type = 'text/css';
-        link.href = `/static/${href}`;
-        document.head.appendChild(link);
-    }
-    if (src) {
-        let script = document.createElement('script');
-        script.src = `/static/${src}`;
-        script.defer = true;
-        document.head.appendChild(script);
-    }
-};

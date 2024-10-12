@@ -62,81 +62,6 @@ function displayError(response) {
     document.getElementById('error-msg').style.display = 'block';
 }
 
-
-
-// Load page-specific resources -- CSS and JS
-const loadedResources = new Set();
-
-async function loadPageSpecificResources(route) {
-    console.log('Loading page-specific resources for:', route);
-    // Remove all resources that are not needed
-    // all stylesheets
-
-    // all scripts
-    loadedResources.forEach(id => {
-        if (id !== route) {
-            const css = document.getElementById(`${id}-css`);
-            const script = document.getElementById(`${id}-script`);
-            if (css)
-                css.remove();
-            if (script)
-                script.remove();
-            loadedResources.delete(id);
-        }
-    });
-
-    // Check if the resources for this route are already loaded
-    if (!loadedResources.has(route)) {
-        // Create a new link element for the page-specific CSS
-        const link = document.createElement('link');
-        link.rel = 'stylesheet';
-        link.id = `${route}-css`;
-        link.href = `/static/css/${route}.css`;
-
-        // Create a new script element for the page-specific JS
-        const script = document.createElement('script');
-        script.src = `/static/js/${route}.js`;
-        script.id = `${route}-script`;
-        script.defer = true;
-
-        // Wait for both CSS and JS to load before continuing
-        await Promise.all([
-            new Promise((resolve, reject) => {
-                link.onload = resolve;
-                link.onerror = reject;
-                document.head.appendChild(link);
-            }),
-            new Promise((resolve, reject) => {
-                script.onload = resolve;
-                script.onerror = reject;
-                document.head.appendChild(script);
-            })
-        ]);
-
-        loadedResources.add(route);
-    }
-}
-
-
-function deleteCookie(name) {
-    console.log('Deleting cookie:', name);
-    const cookie = `${name}=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/`;
-    document.cookie = cookie;
-  }
-
-function handleToggleButtonClick(event) {
-    // Handle the toggle button's change event
-    const enabled = event.target.checked;
-    sessionStorage.setItem('2fa-enabled', enabled.toString());
-    if (enabled) {
-        console.log("2FA Enabled");
-        // document.getElementById('2fa-toggle-label').textContent = '2FA Enabled';
-    } else {
-        console.log("2FA Disabled");
-        // document.getElementById('2fa-toggle-label').textContent = '2FA Disabled';
-    }
-}
-
 // 42 Oauth2.0
 /* setting up and initiating an OAuth 2.0 authorization flow with the 42 intranet API. */
 /* Initiating an OAuth 2.0 authorization flow with the 42 intranet API. */
@@ -160,3 +85,63 @@ async function handle42Login() {
         console.error('Error in handle42Login:', error);
     }
 }
+
+
+/* CSS and JavaScritp of each page - loading */
+// Load page-specific resources -- CSS and JS
+// Keep track of currently loaded resources
+let currentResourcesName = {
+    css: null,
+    js: null
+};
+
+/* removing the object form DOM */
+const removeResource = () => {
+    if (currentResourcesName.css !== null) {
+        const prev_css = document.getElementById(`${currentResourcesName.css}-id`);
+        if (prev_css) {
+            prev_css.remove();
+        }
+        currentResourcesName.css = null;
+    }
+    if (currentResourcesName.js !== null) {
+        const prev_js = document.getElementById(`${currentResourcesName.js}-id`);
+        if (prev_js) {
+            prev_js.remove();
+        }
+        currentResourcesName.js = null;
+    }
+};
+
+const loadCssandJS = (data) => {
+    // object deconstruction
+    // fancy way of:
+    /* 
+        cont css_file_path = data.css
+        cont js_file_path = data.js
+    */
+    const { js: js_file_path, css: css_file_path } = data;
+
+    // Remove previous CSS & js
+    removeResource();
+    // loading new css
+    if (css_file_path) {
+        let link = document.createElement('link');
+        link.rel = 'stylesheet';
+        link.type = 'text/css';
+        link.href = `/static/${css_file_path}`;
+        link.id = `${css_file_path}-id`;
+        document.head.appendChild(link);
+        currentResourcesName.css = css_file_path; // hold it for delete
+        
+    }
+    // loading new js
+    if (js_file_path) {
+        let script = document.createElement('script');
+        script.src = `/static/${js_file_path}`;
+        script.id = `${js_file_path}-id`;
+        script.defer = true;
+        document.head.appendChild(script);
+        currentResourcesName.js = js_file_path;
+    }
+};
