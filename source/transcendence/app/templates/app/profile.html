@@ -1,16 +1,14 @@
+{% load static %}
 <div class="container my-5">
   <h3 style="text-align: center"><span style="color: rgb(34, 34, 34)">Edit Profile</span></h3>
   <hr />
   <div class="container">
-    <div class="container" id="profile-pic">
-      {% comment %} {% if profile_picture  %}
-        <img src="'{{ profile_picture }}" alt="{{ username }}'s profile">
-      {% endif %} {% endcomment %}
-      {% comment %} {% elif player.local_profile_picture %}
-      <img src="{{ player.local_profile_picture.url }}" alt="{{ player.username }}'s profile">
+    <div class="container">
+      {% if profile_pic %}
+          <img src="{{ profile_pic }}" alt="profile-pic" class="rounded-circle" role="button" style="width: 200px; height: 200px;"/>
       {% else %}
-          <img src="{% static 'images/default_profile.jpg' %}" alt="Default profile"> {% endcomment %}
-      <img src="{{ profile_pic }}" alt="profile-pic" class="rounded-circle" role="button" style="width: 200px; height: 200px;"/>
+          <img src="{% static 'images/default_profile_pic.jpeg' %}" alt="default-profile-pic" class="rounded-circle" role="button" style="width: 200px; height: 200px;"/>
+      {% endif %}
     </div>
     <div class="container username">
       <label for="username">Username</label>
@@ -30,10 +28,16 @@
     <div class="container">
       <button id="update-user-info-btn" class="btn btn-primary">Update User Info</button>
     </div>
+    <br>
+    <form id="profile-pic-form" method="POST" enctype="multipart/form-data">
+      {% csrf_token %}
+      <input type="file" name="profile-pic" id="profile-pic" class="form-control" accept="image/*"/>
+      <button id="update-profile-pic-btn" class="btn btn-primary">Update Profile Picture</button>
+    </form>
+    <br>
   </div>
   <div class="container my-5 d-flex justify-content-center border">
     <div class="container d-flex p-2 justify-content-between">
-      {% comment %} Here the text content of 2fa is gonna be dynamic {% endcomment %}
       {% if 2fa %}
         <button id="enable-disable-2fa" class="btn btn-warning">Disable 2FA</button>
       {% else %}

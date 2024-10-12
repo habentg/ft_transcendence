@@ -205,6 +205,10 @@ LOGGING = {
         'handlers': ['console'],
         'level': 'INFO',
     },
+    'django.contrib.staticfiles': {
+        'handlers': ['console'],
+        'level': 'DEBUG',
+    },
 }
 
 REST_FRAMEWORK = {
@@ -271,5 +275,5 @@ REDIS_DB = 0
 
 # media settings - for image upload
 MEDIA_URL = '/media/'
-MEDIA_ROOT = BASE_DIR / 'media'
+MEDIA_ROOT = '/app/media'
 # print("media-root: ", MEDIA_ROOT, "media-url: ", MEDIA_URL, flush=True)

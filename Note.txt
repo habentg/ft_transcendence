@@ -37,3 +37,12 @@ TODO DAY BY DAY:
 5. SSL/TLS and HTTPS
 6. healthcheck and monitoring
 7. CI/CD pipeline 
+
+
+
+# 12-Oct-2024 night - to do list
+1. fix double request thats bieng sent with direct browser visit.
+2. fix the url after anauthenticated user tries to access protected page and redirected to signin (with a next paramemeter) the url is not being updated coz the redrection is directly from backend.
+3. implement next paramenter routing
+3. image upload .. 
+4.removing unused css & js from DOM

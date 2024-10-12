@@ -29,6 +29,7 @@ from django.db import connection
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.exceptions import AuthenticationFailed
+import urllib.parse
 
 # base view for basic pages in our SPA
 """
@@ -60,7 +61,6 @@ class BaseView(View):
 		return {}
 
 # view for the home page
-import urllib.parse
 class HomeView(APIView, BaseView):
 	authentication_classes = [JWTCookieAuthentication]
 	permission_classes = [IsAuthenticated]
@@ -73,8 +73,15 @@ class HomeView(APIView, BaseView):
 		if isinstance(exception, AuthenticationFailed):
 			signin_url = reverse('signin_page')
 			params = urllib.parse.urlencode({'next': self.request.path})
-			print('Profile view: ', exception, flush=True)
-			return HttpResponseRedirect(f'{signin_url}?{params}')
+			response = HttpResponseRedirect(f'{signin_url}?{params}')
+			response.delete_cookie('access_token')
+			response.delete_cookie('refresh_token')
+			response.delete_cookie('is_auth')
+			if self.request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+				return JsonResponse({
+					'redirect': f'{signin_url}?{params}'
+				}, status=401)
+			return response
 		return super().handle_exception(exception)
 
 	
@@ -299,7 +306,7 @@ class OauthCallback(View):
 		refresh = RefreshToken.for_user(player)
 
 		# Set the tokens in cookies
-		response = HttpResponseRedirect(reverse('landing'))
+		response = HttpResponseRedirect(reverse('home_page'))
 		# secure=True
 		response.set_cookie('access_token', str(refresh.access_token), httponly=True, samesite='Lax')
 		response.set_cookie('refresh_token', str(refresh), httponly=True, samesite='Lax')
@@ -411,8 +418,15 @@ class TwoFactorAuth(APIView, BaseView):
 		if isinstance(exception, AuthenticationFailed):
 			signin_url = reverse('signin_page')
 			params = urllib.parse.urlencode({'next': self.request.path})
-			print('Profile view: ', exception, flush=True)
-			return HttpResponseRedirect(f'{signin_url}?{params}')
+			response = HttpResponseRedirect(f'{signin_url}?{params}')
+			response.delete_cookie('access_token')
+			response.delete_cookie('refresh_token')
+			response.delete_cookie('is_auth')
+			if self.request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+				return JsonResponse({
+					'redirect': f'{signin_url}?{params}'
+				}, status=401)
+			return response
 		return super().handle_exception(exception)
 
 
@@ -466,24 +480,31 @@ class ProfileView(APIView, BaseView):
 		if isinstance(exception, AuthenticationFailed):
 			signin_url = reverse('signin_page')
 			params = urllib.parse.urlencode({'next': self.request.path})
-			print('Profile view: ', exception, flush=True)
-			return HttpResponseRedirect(f'{signin_url}?{params}')
+			response = HttpResponseRedirect(f'{signin_url}?{params}')
+			response.delete_cookie('access_token')
+			response.delete_cookie('refresh_token')
+			response.delete_cookie('is_auth')
+			if self.request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+				return JsonResponse({
+					'redirect': f'{signin_url}?{params}'
+				}, status=401)
+			return response
 		return super().handle_exception(exception)
 
 	def get_context_data(self, request):
 		player = request.user
-		if player.profile_picture is not None:
-			profile_pic = player.profile_picture.url
-		else:
-			profile_pic = 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT_FUhIoRBZWETlnFjjqAz5w_4nUc1_j70Qzg&s'
-		print("Profile pic: {", player.profile_picture,"}", flush=True)
 		data = {
 			'username': player.username,
 			'email': player.email,
 			'full_name': player.get_full_name(),
 			'2fa': player.tfa,
-			 "profile_pic": player.profile_picture
+			'profile_pic': player.profile_picture.url if player.profile_picture else None,
+			'MEDIA_URL': settings.MEDIA_URL
 		}
+		profile_pic_url = player.profile_picture.url if player.profile_picture else None
+		print(f"Debug: Profile picture URL = {profile_pic_url}", flush=True)
+		print(f"Debug: MEDIA_ROOT = {settings.MEDIA_ROOT}", flush=True)
+		print(f"Debug: MEDIA_URL = {settings.MEDIA_URL}", flush=True)
 		return data
 
 	def patch(self, request):

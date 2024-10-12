@@ -20,14 +20,17 @@ const protectedRoutes = [
     '2fa'
 ]
 
+/* Me is trying to prevent double request */
+let isInitialLoad = true;
+
 // actual function to change the content of the page
 handleLocationChange = async () => {
     let path = (window.location.pathname.slice(1));
-    // Thnking of a way to remove trailing slashes and all
     
-    // if (path !== '' && path !== 'password_reset_newpass' && path !== 'password_reset_confirm'  && path !== 'oauth' && path !== 'oauth/callback' && path !== 'auth_42' && path !== 'signout'  && path !== 'profile') {
-    //     await loadPageSpecificResources(path);
-    // }
+    if (isInitialLoad) {
+        isInitialLoad = false;
+        return ;
+    }
     await loadContent(path);
 };
 
@@ -47,52 +50,58 @@ const route = (event) => {
 
 // Add the route function to the window object -- this makes it globally accessible
 window.route = route;
-// await getCSRFToken();
+
 // Handle initial load and browser back/forward buttons
 window.addEventListener('popstate', handleLocationChange);
-window.addEventListener('load', handleLocationChange);
+
+// Handle initial load
+window.addEventListener('load', async () => {
+    isInitialLoad = true;
+    await handleLocationChange()
+});
 
 // Load the content of the page
 async function loadContent(route) {
-    // const access_token = document.cookie.split('; ').find(row => row.startsWith('access_token')).split('=')[1];
     try {
-        if (protectedRoutes.includes(route)) {
-            if (!isAuthenticated() && route === 'home') { // if not authenticated and trying to access home page -- redirect to landing page
-                history.pushState(null, '', '/');
-                handleLocationChange();
-                return;
-            }
-            else if (!isAuthenticated()) {
-                history.pushState(null, '', '/signin');
-                handleLocationChange();
-                return;
-            }
-            await loadProtectedPage(route);
-            return;
-        }
-        else if (route === '' && isAuthenticated()) { // if authenticated and trying to access the 'landing' page -- redirect to home page
-            history.pushState(null, '', '/home');
-            await loadProtectedPage('/home');
+        // if initial load -- do nothing
+        if (isInitialLoad)
             return ;
+        if (route === '' && isAuthenticated()) { // if authenticated and trying to access the 'landing' page -- redirect to home page
+            history.pushState(null, '', '/home');
+            route = 'home';
         }
-        console.log("route:", route);
+        else if (route === 'home' && !isAuthenticated()) { // if not authenticated and trying to access the 'home' page -- redirect to landing page
+            history.pushState(null, '', '/');
+            route = '';
+        }
         // else - send a request to the server to get the page content
+        // Only make the fetch request if it's not the initial load
         const response = await fetch(`${route}/`, {
             method: 'GET',
             headers: {
                 'X-Requested-With': 'XMLHttpRequest',
-            }
+            },
+            redirect: 'manual' // This tells fetch to not automatically follow redirects
         });
+                
+        if (route == 'signout') {
+            document.cookie = `is_auth=false`
+            history.pushState(null, '', '/');
+            handleLocationChange();
+            return;
+        }
         if (!response.ok) {
+            // may be we will handle other error codes later
+            // if the response is a redirect, then redirect the user to the new location
             if (response.status === 401) {
-                document.cookie = `is_auth=false`
-                console.log("redirecting to Landing Page coz you tried to access a protected page");
-                history.pushState(null, '', '/home');
+                const data = await response.json();
+                history.pushState(null, '', data['redirect']);
                 handleLocationChange();
                 return;
             }
             throw new Error("HTTP " + response.status);
         }
+        console.log("Route: ", route,"load-content response:", response);
         let data = await response.json();
         loadCssandJS(data);
         document.title = data.title;
@@ -102,41 +111,7 @@ async function loadContent(route) {
     }
 }
 
-// getting user details after login or auth
-async function loadProtectedPage(route) {
-    try {
-        const response = await fetch(`${route}/`, {
-            headers: {
-                'X-Requested-With': 'XMLHttpRequest',
-            }
-        });
-        
-        console.log("response:", response);
-        if (!response.ok) {
-            if (response.status === 401) {
-                document.cookie = `is_auth=false`
-                console.log("redirecting to Landing Page coz you tried to access a protected page");
-                history.pushState(null, '', '/home');
-                handleLocationChange();
-                return;
-            }
-            throw new Error('Error in protected route function');
-        }
-        const data = await response.json();
-        if (route === 'signout') {
-            document.cookie = `is_auth=false`
-            history.pushState(null, '', '/');
-            handleLocationChange();
-            return;
-        }
-        loadCssandJS(data);
-        document.title = data.title;
-        document.getElementById('content').innerHTML = data.html;
-    } catch (error) {
-        console.error(error);
-    }
-}
-
+/* CSS and JavaScritp of each page - loading */
 loadCssandJS = (data) => {
     src = data.js;
     href = data.css;

@@ -1,20 +1,19 @@
 from django.urls import path, re_path
 from .views import *
-# from django.urls import URLResolver, URLPattern
-# from django.urls.resolvers import get_resolver
-# from .views import Index, SignUpView, HomeView, SignInView, CsrfRequest, OauthCallback, Catch_All, PasswordReset, PassResetNewPass, PassResetConfirm, TwoFactorAuth, Auth_42, SignOutView, HealthCheck
+from django.http import HttpResponse
+from django.conf import settings
+import os
 
+def debug_media(request, path):
+    file_path = os.path.join(settings.MEDIA_ROOT, path)
+    if os.path.exists(file_path):
+        with open(file_path, 'rb') as f:
+            return HttpResponse(f.read(), content_type="image/jpeg")
+    return HttpResponse("File not found", status=404)
 
-# class TrailingSlashURLResolver(URLResolver):
-#     def resolve(self, path):
-#         if path.endswith('/'):
-#             path = path.rstrip('/')
-#         return super().resolve(path)
-
-# def get_trailing_slash_resolver():
-#     return TrailingSlashURLResolver(get_resolver(None))
-
+# Add this to your urls.py
 urlpatterns = [
+    path('debug-media/<path:path>', debug_media),
     path('', Index.as_view(), name='landing'),
     re_path(r'^home/?$', HomeView.as_view(), name='home_page'),
     re_path(r'^signup/?$', SignUpView.as_view(), name='signup_page'),
@@ -31,6 +30,11 @@ urlpatterns = [
     re_path(r'^profile/?$', ProfileView.as_view(), name='profile'),
     re_path(r'^.*$', Catch_All.as_view(), name='catch_all'),
 ]
+
+from django.conf import settings
+from django.conf.urls.static import static
+if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
 """ 
 
