@@ -30,12 +30,12 @@ TODO DAY BY DAY:
 
 
 ## Production level Architecture Design - by improving the current one
-1. Use a production-grade WSGI server like Gunicorn or uWSGI to run your Django application.
+6. healthcheck and monitoring
 2. collectstatic: to improve performance
+1. Use a production-grade WSGI server like Gunicorn or uWSGI to run your Django application.
+5. SSL/TLS and HTTPS
 3. regular backup for database.
 4. Adding centralized loging solution (DevOps Module)
-5. SSL/TLS and HTTPS
-6. healthcheck and monitoring
 7. CI/CD pipeline 
 
 
@@ -44,7 +44,13 @@ TODO DAY BY DAY:
 1. fix double request thats bieng sent with direct browser visit.
 2. fix the url after anauthenticated user tries to access protected page and redirected to signin (with a next paramemeter) the url is not being updated coz the redrection is directly from backend.
 3.removing unused css & js from DOM
+===DONE!
 
 # 13-Oct-2024 night - to do list
 1. implement next paramenter routing
 2. image upload .. 
+****NOT DONE - but worked on static file serving 
+
+13(evening)-14(night till dawn)
+1. finishing up static file serving
+2. previous days TODO ...

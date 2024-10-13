@@ -488,9 +488,8 @@ class ProfileView(APIView, BaseView):
 			'full_name': player.get_full_name(),
 			'2fa': player.tfa,
 			'profile_pic': player.profile_picture.url if player.profile_picture else None,
-			# 'MEDIA_URL': settings.MEDIA_URL
 		}
-		# profile_pic_url = player.profile_picture.url if player.profile_picture else None
+		print("User profile pic: ", data.get('profile_pic'), flush=True)
 		return data
 
 	def patch(self, request):

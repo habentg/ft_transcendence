@@ -21,7 +21,7 @@ class Player(AbstractUser):
     verified = models.BooleanField(default=False)
     profile_picture = models.ImageField(
         upload_to='profile_pics/',
-        default='profile_pics/default_profile_pic.jpeg',  # Set the default image
+        # default='profile_pics/default_profile_pic.jpeg',  # Set the default image
         validators=[validate_image_size]
     )
 
