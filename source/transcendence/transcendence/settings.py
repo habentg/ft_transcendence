@@ -273,9 +273,8 @@ REDIS_DB = 0
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
 """ basically we will run 'collectstatic' and it will collect all the static files from all the apps and put them in the static folder in the root directory of the project """
 STATIC_URL = 'static/'
-# STATIC_ROOT = '/media_static/static'
+STATIC_ROOT = '/media_static/static'
 
 # Media settings (determines where images will be uploaded)
 MEDIA_URL = 'media/'
-MEDIA_ROOT = BASE_DIR / 'media'
-# MEDIA_ROOT = '/media_static/media'
+MEDIA_ROOT = '/media_static/media'

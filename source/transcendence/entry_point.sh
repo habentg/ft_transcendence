@@ -2,10 +2,10 @@
 
 # Run migrations
 echo "RUNNING MIGRATIONS"
-python manage.py flush --no-input
+# python manage.py flush --no-input # this mf will delete all data from the database (everything!)
 python manage.py makemigrations
 python manage.py migrate
-# python manage.py collectstatic --no-input
+python manage.py collectstatic --no-input
 # updating requirements.txt
 echo "UPDATING REQUIREMENTS.TXT"
 pip freeze > requirements.txt

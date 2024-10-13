@@ -6,3 +6,8 @@ body {
   background-repeat: no-repeat;
   background-attachment: fixed;
 } */
+
+body {
+  background-color: #fd6e6e;
+  color: #000356;
+}
