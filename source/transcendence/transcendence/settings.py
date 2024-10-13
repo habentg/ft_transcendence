@@ -44,7 +44,7 @@ INSTALLED_APPS = [
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
-    'django.contrib.staticfiles',
+    'django.contrib.staticfiles', # for static files
     'corsheaders',
     'rest_framework',
     'rest_framework_simplejwt',
@@ -147,11 +147,6 @@ USE_I18N = True
 USE_TZ = True
 
 
-# Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/4.2/howto/static-files/
-
-STATIC_URL = 'static/'
-
 
 
 import logging
@@ -192,7 +187,7 @@ LOGGING = {
         },
         'django.server': {
             'handlers': ['console'],
-            'level': 'INFO',
+            'level': 'DEBUG',
             'propagate': False,
         },
         'django.request': {
@@ -273,7 +268,14 @@ REDIS_HOST = 'redis'
 REDIS_PORT = 6379
 REDIS_DB = 0
 
-# media settings - for image upload
-MEDIA_URL = '/media/'
-MEDIA_ROOT = '/app/media'
-# print("media-root: ", MEDIA_ROOT, "media-url: ", MEDIA_URL, flush=True)
+
+# Static files (CSS, JavaScript, Images)
+# https://docs.djangoproject.com/en/4.2/howto/static-files/
+""" basically we will run 'collectstatic' and it will collect all the static files from all the apps and put them in the static folder in the root directory of the project """
+STATIC_URL = 'static/'
+# STATIC_ROOT = '/media_static/static'
+
+# Media settings (determines where images will be uploaded)
+MEDIA_URL = 'media/'
+MEDIA_ROOT = BASE_DIR / 'media'
+# MEDIA_ROOT = '/media_static/media'

@@ -42,7 +42,8 @@ services:
       REDIS_URL: redis://redis:6379/0
     volumes:
       - ./transcendence:/app
-      - ./transcendence/media:/app/media
+      # - static-data:/media_static/static
+      # - media-data:/media_static/media
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8000/health/"]
       interval: 5s
@@ -68,6 +69,9 @@ services:
       # - "443:443"  # If you want to use HTTPS
     volumes:
       - ./nginx_server/conf/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./transcendence/media:/media
+      # - static-data:/media_static/static
+      # - media-data:/media_static/media
 
   redis:
     container_name: redis
@@ -89,6 +93,11 @@ volumes:
     driver: local
   redis_data:
     driver: local
+  static-data:
+    driver: local
+  media-data:
+    driver: local
+  
 
 networks:
   trans_net:

@@ -287,17 +287,6 @@ class OauthCallback(View):
 			player.set_password(settings.FT_USER_PASS)
 			player.save()
 
-		# Download and save profile picture
-		if 'image_url' in user_info:  # Adjust this key based on 42's API response
-			from django.core.files import File
-			from urllib.request import urlopen
-			from tempfile import NamedTemporaryFile
-
-			img_temp = NamedTemporaryFile(delete=True)
-			img_temp.write(urlopen(user_info['image_url']).read())
-			img_temp.flush()
-			player.profile_picture.save(f"{player.username}_profile.jpg", File(img_temp))
-
 		# Update last login
 		player.last_login = timezone.now()
 		player.save()
@@ -499,12 +488,9 @@ class ProfileView(APIView, BaseView):
 			'full_name': player.get_full_name(),
 			'2fa': player.tfa,
 			'profile_pic': player.profile_picture.url if player.profile_picture else None,
-			'MEDIA_URL': settings.MEDIA_URL
+			# 'MEDIA_URL': settings.MEDIA_URL
 		}
-		profile_pic_url = player.profile_picture.url if player.profile_picture else None
-		print(f"Debug: Profile picture URL = {profile_pic_url}", flush=True)
-		print(f"Debug: MEDIA_ROOT = {settings.MEDIA_ROOT}", flush=True)
-		print(f"Debug: MEDIA_URL = {settings.MEDIA_URL}", flush=True)
+		# profile_pic_url = player.profile_picture.url if player.profile_picture else None
 		return data
 
 	def patch(self, request):

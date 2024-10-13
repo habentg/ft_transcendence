@@ -3,6 +3,7 @@ from .views import *
 from django.http import HttpResponse
 from django.conf import settings
 import os
+from django.conf import settings
 
 def debug_media(request, path):
     file_path = os.path.join(settings.MEDIA_ROOT, path)
@@ -31,10 +32,7 @@ urlpatterns = [
     re_path(r'^.*$', Catch_All.as_view(), name='catch_all'),
 ]
 
-from django.conf import settings
-from django.conf.urls.static import static
-if settings.DEBUG:
-    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+
 
 """ 
 
