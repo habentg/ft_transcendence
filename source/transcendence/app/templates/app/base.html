@@ -35,11 +35,33 @@
     {% endif %}
   </head>
 
-<body>
+
+  <!-- <nav class="navbar navbar-expand-lg navbar-dark bg-dark custom-navbar">
+    <div class="container-fluid">
+      <a class="navbar-brand" href="#">Beer Pong</a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav ms-auto">
+          <li class="nav-item">
+            <a class="nav-link" href="#">About us</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#">Quick game</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/signUp.html">Sign in</a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>		 -->
+<body >
   <header>
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark p-3">
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark p-3 custom-navbar">
       <div class="container-fluid">
-        <a onclick="route()" class="navbar-brand" href="home">Navbar</a>
+        <a onclick="route()" class="navbar-brand" href="home">Beer Pong</a>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavDropdown"
           aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
           <span class="navbar-toggler-icon"></span>
@@ -50,13 +72,13 @@
               <a onclick="route()" class="nav-link mx-2 active" aria-current="page" href="home">Home</a>
             </li>
             <li class="nav-item">
-              <a onclick="route()" class="nav-link mx-2" href="signin">sign in</a>
+              <a onclick="route()" class="nav-link mx-2" href="signin">Sign in</a>
             </li>
-            <li class="nav-item">
+            <!-- <li class="nav-item">
               <a onclick="route()" class="nav-link mx-2" href="profile">Profile</a>
-            </li>
+            </li> -->
             <li class="nav-item">
-              <a onclick="route()" class="nav-link mx-2" href="signup">sign up</a>
+              <a onclick="route()" class="nav-link mx-2" href="signup">Sign up</a>
             </li>
           </ul>
         </div>
@@ -66,10 +88,17 @@
   <main id="content">
     {{html | safe}}
   </main>
-  <footer class="page-footer shadow">
-    <div class="d-flex justify-content-center align-items-center mx-auto py-4" style="height: 10vh">
-      <small>&copy; Transcendence, 2024. All rights reserved.</small>
-    </div>
-  </footer>
+  <footer>
+		<ul>
+			<li><h5>Beer Pong - Play, Compete, and Have Fun!</h5></li>
+			<li>&copy; 2024 Beer Pong. All rights reserved.</li>
+		</ul>
+		<ul class="footer-links">
+			<li><a href="#">About us</a></li>
+			<li><a href="#">Privacy Policy</a></li>
+			<li><a href="#">Terms and Conditions</a></li>
+			<li><a href="#">Contact us</a></li>
+		</ul>
+	</footer>
 </body>
 </html>
