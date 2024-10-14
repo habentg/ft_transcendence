@@ -1,21 +1,10 @@
 from django.urls import path, re_path
 from .views import *
-from django.http import HttpResponse
-from django.conf import settings
-import os
-from django.conf import settings
 
-def debug_media(request, path):
-    file_path = os.path.join(settings.MEDIA_ROOT, path)
-    if os.path.exists(file_path):
-        with open(file_path, 'rb') as f:
-            return HttpResponse(f.read(), content_type="image/jpeg")
-    return HttpResponse("File not found", status=404)
 
 # Add this to your urls.py
 urlpatterns = [
-    path('debug-media/<path:path>', debug_media),
-    path('', Index.as_view(), name='landing'),
+    path('', LandingPageView.as_view(), name='landing'),
     re_path(r'^home/?$', HomeView.as_view(), name='home_page'),
     re_path(r'^signup/?$', SignUpView.as_view(), name='signup_page'),
     re_path(r'^signin/?$', SignInView.as_view(), name='signin_page'),
@@ -32,10 +21,3 @@ urlpatterns = [
     re_path(r'^.*$', Catch_All.as_view(), name='catch_all'),
 ]
 
-
-
-""" 
-
-    SELECT id, username, first_name, last_name, email, password, tfa, secret, verified, is_superuser, is_staff, is_active, date_joined, last_login FROM app_player;
-
- """

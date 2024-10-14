@@ -4,29 +4,7 @@ TODO: ideas
     * see all friends
     * update or delete a friend 
     * retrieve one friend
-
-~> put the 
-ISSUES:
-# visiting a Protected endpoint directly from the browser -- is going to 404
-    -> Possible fix - Overriding JWTAuthentication()
-# loading page specific resources ---- without cluttering the DOM
-    -> 
-
-
-
-TODO DAY BY DAY:
-=> token blacklisting during SIGNOUT
-    - idea: shortening access_token lifetime, storing backlisted tokens in DB (could be redis, django mem, ..), deleting them after they expire. using the refresh token requesting new access token.
-    
-=> changing 2FA enable/disable from signup
-    - 
-=> Caching and HashiCorp voults
-    - 
-=> changing resources loading -- css and js of each page
-    - 
-=> 
-    - 
-
+~> Front-end form validation - although we can do it in the backend using Serializer -- but sending a request is expensive performance wise
 
 
 ## Production level Architecture Design - by improving the current one
@@ -54,3 +32,8 @@ TODO DAY BY DAY:
 13(evening)-14(night till dawn)
 1. finishing up static file serving
 2. previous days TODO ...
+
+15-oct
+1. user redirect after delete not working
+2. image upload .. 
+3. implement next paramenter routing

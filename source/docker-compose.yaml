@@ -90,7 +90,7 @@ volumes:
     driver: local
   redis_data:
     driver: local
-  media_static_vol:
+  media_static_vol: #media_static_vol - acts as a bridge between your App and Nginx services allowing uploaded media and static files through Django to be immediately available for Nginx to serve. (needs to do do collectstatic for the static files to be available)
     driver: local  
 
 networks:

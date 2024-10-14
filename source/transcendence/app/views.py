@@ -4,7 +4,7 @@ from django.views import View
 from django.utils.decorators import method_decorator
 from rest_framework.views import APIView
 from rest_framework import status
-from app.serializers import PlayerSignupSerializer, PlayerSigninSerializer
+from app.serializers import *
 from rest_framework_simplejwt.tokens import RefreshToken
 from django.views.decorators.csrf import csrf_protect
 import json
@@ -22,12 +22,11 @@ from .utils import send_2fa_code
 import pyotp
 import jwt
 from django.urls import reverse
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated, AllowAny
 from .auth_middleware import JWTCookieAuthentication, add_token_to_blacklist
 from django.middleware.csrf import get_token
 from django.db import connection
 from rest_framework.response import Response
-from rest_framework import status
 from rest_framework.exceptions import AuthenticationFailed
 import urllib.parse
 
@@ -71,20 +70,15 @@ class HomeView(APIView, BaseView):
 	
 	def handle_exception(self, exception):
 		if isinstance(exception, AuthenticationFailed):
-			signin_url = reverse('signin_page')
-			params = urllib.parse.urlencode({'next': self.request.path})
-			response = HttpResponseRedirect(f'{signin_url}?{params}')
+			response = HttpResponseRedirect(reverse('landing'))
 			response.delete_cookie('access_token')
 			response.delete_cookie('refresh_token')
 			response.delete_cookie('is_auth')
-			if self.request.headers.get('X-Requested-With') == 'XMLHttpRequest':
-				return JsonResponse({
-					'redirect': f'{signin_url}?{params}'
-				}, status=401)
+			response.delete_cookie('csrftoken')
+			print('Redirecting to landing page - user', flush=True)
 			return response
 		return super().handle_exception(exception)
 
-	
 	def get_context_data(self, request) :
 		user = request.user
 		data = {
@@ -94,6 +88,18 @@ class HomeView(APIView, BaseView):
 		}
 		return data
 	
+# view for the index page
+class LandingPageView(BaseView):
+	template_name = 'app/index.html'
+	title = 'Index Page'
+
+	def get(self, request):
+		if request.COOKIES.get('access_token') and request.COOKIES.get('refresh_token'):
+			print('Might be - Authenticated user to homepage - redirection', flush=True)
+			return HttpResponseRedirect(reverse('home_page'))
+		print('Unauthenticated User -- serving Landing Page', flush=True)
+		return super().get(request)
+
 # view for the 404 page1
 class Catch_All(BaseView):
 	template_name = 'app/404.html'
@@ -103,14 +109,6 @@ class Catch_All(BaseView):
 
 	def get(self, request):
 		print('404 => with Request: ', request, flush=True)
-		return super().get(request)
-
-# view for the index page
-class Index(BaseView):
-	template_name = 'app/index.html'
-	title = 'Index Page'
-
-	def get(self, request):
 		return super().get(request)
 
 # view for the sign up page
@@ -205,6 +203,7 @@ class SignOutView(BaseView, View):
 			response.delete_cookie('access_token')
 			response.delete_cookie('refresh_token')
 			response.delete_cookie('is_auth')
+			response.delete_cookie('csrftoken')
 			response.singed_out = True
 			return response
 
@@ -480,6 +479,27 @@ class ProfileView(APIView, BaseView):
 			return response
 		return super().handle_exception(exception)
 
+	def patch(self, request):
+		data = json.loads(request.body)
+		player = request.user
+		serializer = PlayerProfileSerializer(player, data=data, partial=True)
+		if serializer.is_valid():
+			serializer.save()  # Use the serializer to update the player object
+			return JsonResponse({'success': 'Account updated successfully!'}, status=status.HTTP_200_OK)
+		return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+	def delete(self, request):
+		player = request.user
+		print('Delete account view: deleting -> ', player, flush=True)
+		player.delete()
+		
+		response = HttpResponseRedirect(reverse('landing'))
+		response.delete_cookie('access_token')
+		response.delete_cookie('refresh_token')
+		response.delete_cookie('is_auth')
+		response.delete_cookie('crsftoken')
+		return response
+
 	def get_context_data(self, request):
 		player = request.user
 		data = {
@@ -489,30 +509,4 @@ class ProfileView(APIView, BaseView):
 			'2fa': player.tfa,
 			'profile_pic': player.profile_picture.url if player.profile_picture else None,
 		}
-		print("User profile pic: ", data.get('profile_pic'), flush=True)
 		return data
-
-	def patch(self, request):
-		data = json.loads(request.body)
-		player = request.user
-		print("Data: ", data, flush=True)
-		if player:
-			if data.get('username') not in ['', None]:
-				player.username = data.get('username')
-			if data.get('email') not in ['', None]:
-				player.email = data.get('email')
-			print("Player: ", player, flush=True)
-			player.save()
-			return JsonResponse({'success': 'Profile updated successfully!'}, status=status.HTTP_200_OK)
-		return JsonResponse({'error': 'User not found'}, status=status.HTTP_404_NOT_FOUND)
-
-	def delete(self, request):
-		player = request.user
-		print('Delete account view: deleting -> ', player, flush=True)
-		player.delete()
-		
-		response = Response({"message": "Account deleted successfully", "redirect": "/"}, status=status.HTTP_200_OK)
-		response.delete_cookie('access_token')
-		response.delete_cookie('refresh_token')
-		response.delete_cookie('is_auth')
-		return response

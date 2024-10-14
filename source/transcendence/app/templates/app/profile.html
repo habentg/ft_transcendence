@@ -17,7 +17,7 @@
     </div>
     <div class="container email">
       <label for="email">email</label>
-      <input type="text" class="form-control" id="email" value="{{ email }}" disabled/>
+      <input type="email" class="form-control" id="email" value="{{ email }}" disabled/>
       <button id="edit-email-icon" class="btn btn-dark"><i class="fa-sharp fa-solid fa-pen" style="color: #74C0FC;"></i></button>
     </div>
     <div class="container password">
@@ -29,10 +29,11 @@
       <button id="update-user-info-btn" class="btn btn-primary">Update User Info</button>
     </div>
     <br>
-    <form id="profile-pic-form" method="POST" enctype="multipart/form-data">
+    {% comment %} encoding type - baically Content-Type {% endcomment %}
+    <form id="profile-pic-form" method="PATCH" enctype="multipart/form-data">
       {% csrf_token %}
       <input type="file" name="profile-pic" id="profile-pic" class="form-control" accept="image/*"/>
-      <button id="update-profile-pic-btn" class="btn btn-primary">Update Profile Picture</button>
+      <button type="submit" id="update-profile-pic-btn" class="btn btn-primary">Update Profile Picture</button>
     </form>
     <br>
   </div>

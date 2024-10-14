@@ -15,6 +15,7 @@ class PlayerSignupSerializer(serializers.ModelSerializer):
 		playa.save()
 		return playa
 
+	# validate username - we can add email uniqueness check here as well - if think is neccessary
 	def validate_username(self, username):
 		if self.Meta.model.objects.filter(username=username).exists():
 			raise serializers.ValidationError("A user with this username already exists.")
@@ -24,3 +25,9 @@ class PlayerSignupSerializer(serializers.ModelSerializer):
 class PlayerSigninSerializer(serializers.Serializer):
 	username = serializers.CharField(max_length=150)
 	password = serializers.CharField(max_length=150, min_length=3, style={'input_type': 'password'})
+
+# user profile serializer class
+class PlayerProfileSerializer(serializers.ModelSerializer):
+	class Meta:
+		model = Player
+		fields = ['first_name', 'last_name', 'username', 'email', 'profile_picture']
