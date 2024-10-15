@@ -1,4 +1,4 @@
-<div class="container-fluid">
+<!-- <div class="container-fluid">
     <div id="landing" class="container">
         <h1>Welcome, {{ full_name }}!</h1>
         <p>Username: {{ username }}</p>
@@ -9,9 +9,47 @@
                 <div class="col-6">
                     <a href="profile" class="btn btn-dark" onclick="route()">Edit Profile</a>
                 </div>
-                <div class="col-6">
-                    <a href="2fa" class="btn btn-light" onclick="route()">Enable 2FA</a>
+            </div>
+        </div>
+    </div>
+</div> -->
+
+<div class="first-page">
+    <div class="background-image">
+        <div style="color: white;">
+            <div id="landing">
+                <h1>Welcome, {{ full_name }}!</h1>
+                <p>Username: {{ username }}</p>
+                <p>Email: {{ email }}</p>
+                
+                <div class="container">
+                    <div class="row">
+                        <div class="col-6">
+                            <a href="profile" class="btn btn-dark" onclick="route()">Edit Profile</a>
+                        </div>
+                    </div>
                 </div>
             </div>
+        </div>
+
+        <div class="content text-center">
+            <ul class="options">
+                <li>
+                    <a href="#">Local Game</a>
+                </li>
+                <li>
+                    <a href="#">Create tournament</a>
+                </li>
+                <li>
+                    <a href="#">Customise Play</a>
+                </li>
+                <li>
+                    <a href="#">Settings</a>
+                </li>
+                <li>
+                    <a href="#">Other Game</a>
+                </li>
+            </ul>
+        </div>
     </div>
 </div>

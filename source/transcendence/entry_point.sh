@@ -2,9 +2,10 @@
 
 # Run migrations
 echo "RUNNING MIGRATIONS"
-python manage.py flush --no-input
+# python manage.py flush --no-input # this mf will delete all data from the database (everything!)
 python manage.py makemigrations
 python manage.py migrate
+python manage.py collectstatic --no-input
 # updating requirements.txt
 echo "UPDATING REQUIREMENTS.TXT"
 pip freeze > requirements.txt
@@ -27,4 +28,6 @@ EOF
 
 # Run server
 echo "RUNNING SERVER"
+# this will start the Django development server (built-in WSGI server)
+# This WSGI server is responsible for receiving requests from Nginx and passing them to the Django application.
 python manage.py runserver 0.0.0.0:8000 --verbosity 2

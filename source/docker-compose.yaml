@@ -3,8 +3,8 @@ version: '3.8'
 services:
   postgres:
     container_name: postgresql
-    image: postgres:latest
-    restart: always
+    image: postgres:15-alpine
+    restart: unless-stopped
     volumes:
       - our_db:/var/lib/postgresql/data
     networks:
@@ -27,9 +27,11 @@ services:
     build:
       context: ./transcendence/.
       dockerfile: Dockerfile
-    restart: always
+    restart: unless-stopped
     depends_on:
       postgres:
+        condition: service_healthy
+      redis:
         condition: service_healthy
     networks:
       - trans_net
@@ -37,48 +39,95 @@ services:
       - .env
     environment:
       DATABASE_URL: postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}
-      DJANGO_SUPERUSER_USERNAME: ${DJANGO_SUPERUSER_USERNAME}
-      DJANGO_SUPERUSER_FIRSTNAME: ${DJANGO_SUPERUSER_FIRSTNAME}
-      DJANGO_SUPERUSER_LASTNAME: ${DJANGO_SUPERUSER_LASTNAME}
-      DJANGO_SUPERUSER_EMAIL: ${DJANGO_SUPERUSER_EMAIL}
-      DJANGO_SUPERUSER_PASSWORD: ${DJANGO_SUPERUSER_PASSWORD}
-      DOMAIN_NAME: ${DOMAIN_NAME}
-      EMAIL_HOST_USER: ${EMAIL_HOST_USER}
-      EMAIL_HOST_PASSWORD: ${EMAIL_HOST_PASSWORD}
-      DEFAULT_FROM_EMAIL: ${DEFAULT_FROM_EMAIL}
+      REDIS_URL: redis://redis:6379/0
     volumes:
       - ./transcendence:/app
+      - media_static_vol:/media_static
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8000/health/"]
-      interval: 30s
-      timeout: 10s
+      interval: 5s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+
+  redis:
+    container_name: redis
+    image: redis:6-alpine
+    restart: unless-stopped
+    networks:
+      - trans_net
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 5s
       retries: 5
 
   nginx:
     container_name: nginx_server
-    image: nginx:latest
-    # build:
-    #   context: ./transcendence/.
-    #   dockerfile: Dockerfile
-    restart: always
+    image: nginx_image
+    build:
+      context: ./nginx_server/.
+      dockerfile: Dockerfile
+    restart: unless-stopped
     depends_on:
       app:
         condition: service_healthy
     networks:
       - trans_net
-    # env_file:
-    #   - .env
     ports:
       - "80:80"
+      # - dont forget to add secure=true to all the cookies in the app
       # - "443:443"  # If you want to use HTTPS
     volumes:
       - ./nginx_server/conf/nginx.conf:/etc/nginx/nginx.conf:ro
+      - media_static_vol:/media_static
+      # - ./transcendence/media:/media
 
 volumes:
   our_db:
     driver: local
+  redis_data:
+    driver: local
+  media_static_vol: #media_static_vol - acts as a bridge between your App and Nginx services allowing uploaded media and static files through Django to be immediately available for Nginx to serve. (needs to do do collectstatic for the static files to be available)
+    driver: local  
 
 networks:
   trans_net:
     name: trans_net
     driver: bridge
+  
+# Cyber security module - 1 (I will get back to it if I find it necessary, for now it sounds like an overkill)
+  # vault:
+  #   image: hashicorp/vault
+  #   container_name: hashicorp_vault
+  #   ports:
+  #     - "8200:8200"
+  #   volumes:
+  #     - ./vault/config:/vault/config
+  #     - ./vault/data:/vault/data
+  #     - ./vault/logs:/vault/logs
+  #   cap_add:
+  #     - IPC_LOCK
+  #   environment:
+  #     - VAULT_ADDR=http://0.0.0.0:8200
+  #   command: server
+  #   networks:
+  #     - trans_net
+
+  # modsecurity:
+  #   container_name: modsecurity
+  #   image: owasp/modsecurity
+  #   restart: unless-stopped
+  #   depends_on:
+  #     nginx:
+  #       condition: service_healthy
+  #   networks:
+  #     - trans_net
+  #   volumes:
+  #     - ./modsecurity/rules:/etc/modsecurity/rules
+  #   ports:
+  #     - "8080:8080"
+  #   env_file:
+  #     - .env

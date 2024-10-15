@@ -3,10 +3,10 @@ COMPOSE 		= cd ./source && docker compose
 
 
 # ----------------------- creating services --------------------------
-all: build up
+all: build up collectstatic
 
 up:
-	$(COMPOSE) -f docker-compose.yaml up -d
+	$(COMPOSE) -f docker-compose.yaml up -d --remove-orphans
 
 build:
 	$(COMPOSE) -f docker-compose.yaml build
@@ -14,7 +14,7 @@ build:
 down:
 	$(COMPOSE) -f docker-compose.yaml down
 
-re: down up # rebuilding the services without deleting the persistent storages
+re: down up collectstatic# rebuilding the services without deleting the persistent storages
 
 
 # ----------------------- restarting services --------------------------
@@ -25,7 +25,7 @@ start:
 stop:
 	$(COMPOSE) -f docker-compose.yaml stop
 
-restart: stop start # restarting the services (volumes, network, and images stay the same)
+restart: stop start collectstatic # restarting the services (volumes, network, and images stay the same)
 
 
 # ----------------------- Deleting resources and rebuilding --------------------------
@@ -56,8 +56,9 @@ app-down:
 nginx-rebuild:
 	$(COMPOSE) -f docker-compose.yaml stop nginx
 	$(COMPOSE) -f docker-compose.yaml rm -f nginx
-# @docker image rm app_image
 	$(COMPOSE) -f docker-compose.yaml up --build -d --no-deps nginx
+
+app-nginx-rebuild: app-rebuild nginx-rebuild
 
 
 # ---------------------------- git push target -------------------------------
@@ -77,3 +78,42 @@ push:
 # ---------------------------- PHONY PHONY ... -------------------------------
 .PHONY: up down fclean re restart rebuild
 
+
+
+# ---------------------------- Help target -------------------------------
+help:
+	@echo "Usage: make [target]"
+	@echo ""
+	@echo "Targets:"
+	@echo "  all:          Build and start the services"
+	@echo "  up:           Start the services"
+	@echo "  build:        Build the services"
+	@echo "  down:         Stop the services"
+	@echo "  re:           Rebuild the services without deleting the persistent storages"
+	@echo "  start:        Start the services"
+	@echo "  stop:         Stop the services"
+	@echo "  restart:      Restart the services"
+	@echo "  fclean:       Stop the services, delete all the containers, networks, and volumes"
+	@echo "  rebuild:      Delete all the containers, networks, and volumes, then rebuild the services"
+	@echo "  push:         Add, commit, and push the changes to the remote repository"
+	@echo "  help:         Display this help message"
+	@echo ""
+	@echo "Variables:"
+	@echo "  msg:          Commit message for the push target"
+	@echo ""
+	@echo "Examples:"
+	@echo "  make all"
+	@echo "  make push msg=\"Add a new feature\""
+	@echo ""
+
+
+# ---------------------------- End of Makefile -------------------------------
+
+# ---------------------------- django related Operattions -------------------------------
+
+collectstatic:
+	$(COMPOSE) -f docker-compose.yaml exec app python manage.py collectstatic --noinput
+
+migrate:
+	$(COMPOSE) -f docker-compose.yaml exec app python manage.py makemigrations
+	$(COMPOSE) -f docker-compose.yaml exec app python manage.py migrate
