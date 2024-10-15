@@ -90,7 +90,9 @@ class HomeView(APIView, BaseView):
 	
 # view for the index page
 class LandingPageView(BaseView):
-	template_name = 'app/index.html'
+	template_name = 'app/landing.html'
+	# css = 'css/landing.css'
+	# js = 'js/landing.js'
 	title = 'Index Page'
 
 	def get(self, request):
