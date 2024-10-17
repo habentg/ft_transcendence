@@ -16,6 +16,15 @@ down:
 
 re: down up# rebuilding the services without deleting the persistent storages
 
+# ---------------------------- django related Operattions -------------------------------
+
+collectstatic:
+	$(COMPOSE) -f docker-compose.yaml exec app python manage.py --noinput
+
+migrate:
+	$(COMPOSE) -f docker-compose.yaml exec app python manage.py makemigrations
+	$(COMPOSE) -f docker-compose.yaml exec app python manage.py migrate
+
 
 # ----------------------- restarting services --------------------------
 
@@ -109,11 +118,3 @@ help:
 
 # ---------------------------- End of Makefile -------------------------------
 
-# ---------------------------- django related Operattions -------------------------------
-
-collectstatic:
-	$(COMPOSE) -f docker-compose.yaml exec app python manage.py --noinput
-
-migrate:
-	$(COMPOSE) -f docker-compose.yaml exec app python manage.py makemigrations
-	$(COMPOSE) -f docker-compose.yaml exec app python manage.py migrate

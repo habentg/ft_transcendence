@@ -20,10 +20,32 @@
       <input type="email" class="form-control" id="email" value="{{ email }}" disabled/>
       <button id="edit-email-icon" class="btn btn-dark"><i class="fa-sharp fa-solid fa-pen" style="color: #74C0FC;"></i></button>
     </div>
-    <div class="container password">
+    <div class="container">
       <label for="password">Password</label>
       <input type="password" class="form-control" id="password" value="********" disabled/>
       <button id="edit-password-icon" class="btn btn-dark"><i class="fa-sharp fa-solid fa-pen" style="color: #74C0FC;"></i></button>
+      {% comment %} gonna be a modal {% endcomment %}
+      <div class="container m-5" id="pass-change-div" style="display:none;background:gray;">
+        <form class="p-5" id="update-pass-form">
+          {% csrf_token %}
+          <div class="alert alert-danger" role="alert" id="error-msg" style="display: none;"></div>
+          <hr>
+          <div class="form-group m-3">
+            <label for="curr-password">Password</label>
+            <input type="password" class="form-control" id="curr-password" placeholder="current password">
+          </div>
+          <div class="form-group m-3">
+            <label for="new-password">New Password</label>
+            <input type="password" class="form-control" id="new-password" placeholder="new password">
+          </div>
+          <div class="form-group m-3">
+            <label for="confirm-password">Confirm Password</label>
+            <input type="password" class="form-control" id="confirm-password" placeholder="confirm new password">
+          </div>
+          <button type="button" class="btn btn-primary" id="update-pass-btn">Submit</button>
+        </form>
+      </div>
+
     </div>
     <div class="container">
       <button id="update-user-info-btn" class="btn btn-primary">Update User Info</button>

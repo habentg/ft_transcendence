@@ -38,8 +38,8 @@ class PlayerProfileSerializer(serializers.ModelSerializer):
 			instance.profile_picture = profile_picture
 		return super().update(instance, validated_data)
 
-# # user password update/change serializer class - we doing it this way coz password update needs more validation
-# class ChangePasswordSerializer(serializers.Serializer):
-# 	old_password = serializers.CharField(max_length=150, min_length=3, style={'input_type': 'password'})
-# 	new_password = serializers.CharField(max_length=150, min_length=3, style={'input_type': 'password'})
-# 	confirm_password = serializers.CharField(max_length=150, min_length=3, style={'input_type': 'password'})
+# user password update/change serializer class - we doing it this way coz password update needs more validation
+class ChangePasswordSerializer(serializers.Serializer):
+	current_password = serializers.CharField(max_length=150, min_length=3)
+	new_password = serializers.CharField(max_length=150, min_length=3)
+	confirm_password = serializers.CharField(max_length=150, min_length=3)

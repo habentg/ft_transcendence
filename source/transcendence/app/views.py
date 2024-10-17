@@ -22,7 +22,7 @@ from .utils import send_2fa_code
 import pyotp
 import jwt
 from django.urls import reverse
-from rest_framework.permissions import IsAuthenticated, AllowAny
+from rest_framework.permissions import IsAuthenticated
 from .auth_middleware import JWTCookieAuthentication, add_token_to_blacklist
 from django.middleware.csrf import get_token
 from django.db import connection
@@ -476,7 +476,6 @@ class ProfileView(APIView, BaseView):
 
 	def patch(self, request):
 		Player = get_user_model()
-		print("All players: ", Player.objects.all(), flush=True)
 		player = request.user
 		serializer = PlayerProfileSerializer(player, data=request.data, partial=True)
 		if serializer.is_valid():
@@ -508,3 +507,24 @@ class ProfileView(APIView, BaseView):
 		return data
 	
 # updating user password
+class UpdatePlayerPassword(APIView):
+	authentication_classes = [JWTCookieAuthentication]
+	permission_classes = [IsAuthenticated]
+	
+	def patch(self, request):
+		player = request.user
+		Player = get_user_model()
+		players_queryset = Player.objects.all()
+		print("All players: ", Player.objects.all(), flush=True)
+		serializer = ChangePasswordSerializer(data=request.data)
+		if serializer.is_valid():
+			print("Valid serializer data: ", serializer.validated_data, flush=True)
+			if not player.check_password(serializer.validated_data['current_password']):
+				return JsonResponse({'error_msg': 'Invalid current password!'}, status=status.HTTP_400_BAD_REQUEST)
+			if serializer.validated_data['new_password'] != serializer.validated_data['confirm_password']:
+				return JsonResponse({'error_msg': 'Mismatch while confirming password!'}, status=status.HTTP_400_BAD_REQUEST)
+			player.set_password(serializer.validated_data['new_password'])
+			player.save()
+			return JsonResponse({'success': 'Password updated successfully!'}, status=status.HTTP_200_OK)
+		return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+	

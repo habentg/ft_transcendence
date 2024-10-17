@@ -24,7 +24,6 @@ async function handleSignInSubmit(e) {
         if (!response.ok) {
             if (response.status === 302) {
                 // Redirect to the two factor authentication page
-                document.cookie = `is_auth=true`
                 history.pushState(null, '', `/2fa`);
                 handleLocationChange();
             }
@@ -36,7 +35,6 @@ async function handleSignInSubmit(e) {
             return;
         }
         // redirect to the protected page
-        document.cookie = `is_auth=true`
         history.pushState(null, '', `/home`);
         handleLocationChange();
     } catch (error) {

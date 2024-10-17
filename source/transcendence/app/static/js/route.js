@@ -38,7 +38,6 @@ async function loadContent(route) {
             redirect: 'manual' // This tells fetch to not automatically follow redirects
         });
         if (route == 'signout') {
-            // document.cookie = `is_auth=false`
             // removing any css js if there is any
             removeResource();
             history.pushState(null, '', '/');

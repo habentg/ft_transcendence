@@ -5,7 +5,9 @@ echo "RUNNING MIGRATIONS"
 # python manage.py flush --no-input # this mf will delete all data from the database (everything!)
 python manage.py makemigrations
 python manage.py migrate
-python manage.py collectstatic --no-input
+
+# collecting all the static files from the apps and copying them to the STATIC_ROOT directory - (centralized location for nginx to 'em) 
+# python manage.py collectstatic --no-input
 # updating requirements.txt
 echo "UPDATING REQUIREMENTS.TXT"
 pip freeze > requirements.txt

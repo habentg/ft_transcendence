@@ -72,8 +72,9 @@ async function UpdateUserInfo() {
     try {
         // user input validation here maybe
         const formData = {
+            // can add firstname and lastname here
             username: document.getElementById('username').value,
-            email: document.getElementById('email').value
+            email: document.getElementById('email').value,
         }
         console.log(formData);
         const response = await fetch('/profile/', {
@@ -131,8 +132,51 @@ async function UploadNewProfilePic() {
     }
 }
 
+// update user password
+async function updatePlayerPassword () {
+    try {
+        const formData = {
+            current_password: document.getElementById('curr-password').value,
+            new_password: document.getElementById('new-password').value,
+            confirm_password: document.getElementById('confirm-password').value
+        }
+        console.log("Update password form data: ", formData);
+        const response = await fetch('/update_password/', {
+            method: 'PATCH',
+            headers: {
+                'content-type': 'application/json',
+                'X-CSRFToken': await getCSRFToken()
+            },
+            body: JSON.stringify(formData)
+        });
+    
+        console.log("Password update response: ", response);
+        if (!response.ok) {
+            const responseData = await response.json();
+            displayError(responseData);
+            return;
+        }
+        console.log("Password updated");
+        history.pushState(null, '', `/profile`);
+        handleLocationChange();
+    } catch (error) {
+        console.error('Error:', error);
+    }
+}
+
 // a function to initialize the profile page and add event listeners
 function initProfilePage() {
+    const changePassIcon = document.getElementById('edit-password-icon');
+
+    if (changePassIcon) {
+        changePassIcon.addEventListener('click',  () => {
+            const changePassIcon = document.getElementById('pass-change-div');
+            changePassIcon.style.display = 'block';
+            // makeFieldEditable('password')
+            const updatePassSubmitBtn = document.getElementById('update-pass-btn');
+            updatePassSubmitBtn.addEventListener('click', updatePlayerPassword);
+        });
+    } 
     const deleteAccountBtn = document.getElementById('delete-acc-btn');
     const enableDisable2FABtn = document.getElementById('enable-disable-2fa');
     const editUsernameIcon = document.getElementById('edit-username-icon');
@@ -148,25 +192,20 @@ function initProfilePage() {
     }
     
     if (editUsernameIcon) {
-        editUsernameIcon.addEventListener('click', () => makeFieldEditable('username'));
+        editUsernameIcon.addEventListener('click', () => {
+            makeFieldEditable('username');
+        });
     }
-    
     if (editEmailIcon) {
         editEmailIcon.addEventListener('click', () => makeFieldEditable('email'));
     }
-    
+    if (updatePFPBtn) {
+        updatePFPBtn.addEventListener('click', UploadNewProfilePic);
+    }
     if (updateUserInfoBtn) {
         updateUserInfoBtn.addEventListener('click', UpdateUserInfo);
     }
-    if (updatePFPBtn) {
-        updatePFPBtn.addEventListener('click', UploadNewProfilePic);
-    }
-    if (updatePFPBtn) {
-        updatePFPBtn.addEventListener('click', UploadNewProfilePic);
-    }
 }
-
-
 
 // initialize the profile page
 initProfilePage();

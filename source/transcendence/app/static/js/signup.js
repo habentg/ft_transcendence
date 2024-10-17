@@ -23,7 +23,6 @@ async function handleSignupSubmit(e) {
             body: JSON.stringify(formData)
         });
 
-        
         console.log("response:", response);
         if (!response.ok) {
             const responseData = await response.json();
@@ -31,7 +30,6 @@ async function handleSignupSubmit(e) {
             return;
         }
         // redirect to the protected page
-        document.cookie = `is_auth=true`
         history.pushState(null, '', `/home`);
         handleLocationChange();
     } catch (error) {
