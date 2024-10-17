@@ -1,3 +1,63 @@
-body {
-    background-color: rgb(35, 44, 216);
+.background-image {
+    background-image: url('/static/images/background2.jpg');
+    height: 100vh;
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex: 1;
 }
+
+.background-image .blur-layer {
+    border: var(--sds-size-stroke-border) solid rgba(255, 255, 255, 0.10);
+    background: linear-gradient(140deg, rgba(255, 255, 255, 0.12) -1.82%, rgba(255, 255, 255, 0.04) 68.19%, rgba(255, 255, 255, 0.03) 80.14%);
+    box-shadow: 0px 4px 24px -1px rgba(0, 0, 0, 0.20);
+    backdrop-filter: blur(30rem);
+    height: 70rem;
+    width: 65rem;
+    margin: 10rem 0 4rem 0;
+    border-radius: 0.6rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.blur-layer h2 {
+    color: white;
+    font-size: 2rem;
+    /* margin-bottom: 2rem; */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.blur-layer .profile-info {
+    display: flex;
+    flex-direction: column;
+    justify-content:left;
+}
+
+
+.username, .email {
+    width: auto; /* Adjust this width as needed */
+    display: inline-block; /* Allows elements to sit next to each other */
+    margin-left: 2rem; /* Adds space between the two blocks */
+}
+
+
+.blur-layer .profile-info input {
+    width: 20rem;
+    border-radius: 0.5rem;
+    border: 0.1rem solid #84ddfc;
+}
+
+.pro-pic {
+    width: 10rem;
+    height: 10rem;
+    border-radius: 50%;
+    margin: 1rem;
+}
+

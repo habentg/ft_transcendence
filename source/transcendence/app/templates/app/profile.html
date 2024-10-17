@@ -1,91 +1,94 @@
 {% load static %}
-<div class="container my-5">
-  <h3 style="text-align: center"><span style="color: rgb(34, 34, 34)">Edit Profile</span></h3>
-  <hr />
-  <div class="container">
-    <div class="container">
-      {% if profile_pic %}
-          <img src="{{ profile_pic }}" alt="profile-pic" class="rounded-circle" role="button" style="width: 200px; height: 200px;"/>
-      {% else %}
-          <img src="{% static 'images/default_profile_pic.jpeg' %}" alt="default-profile-pic" class="rounded-circle" role="button" style="width: 200px; height: 200px;"/>
-      {% endif %}
-    </div>
-    <div class="container username">
-      <label for="username">Username</label>
-      <input role="button" type="text" class="form-control" id="username" value="{{ username }}" disabled/>
-      <button id="edit-username-icon" class="btn btn-dark"><i class="fa-sharp fa-solid fa-pen" style="color: #74C0FC;"></i></button>
-    </div>
-    <div class="container email">
-      <label for="email">email</label>
-      <input type="email" class="form-control" id="email" value="{{ email }}" disabled/>
-      <button id="edit-email-icon" class="btn btn-dark"><i class="fa-sharp fa-solid fa-pen" style="color: #74C0FC;"></i></button>
-    </div>
-    <div class="container">
-      <label for="password">Password</label>
-      <input type="password" class="form-control" id="password" value="********" disabled/>
-      <button id="edit-password-icon" class="btn btn-dark"><i class="fa-sharp fa-solid fa-pen" style="color: #74C0FC;"></i></button>
-      {% comment %} gonna be a modal {% endcomment %}
-      <div class="container m-5" id="pass-change-div" style="display:none;background:gray;">
-        <form class="p-5" id="update-pass-form">
-          {% csrf_token %}
-          <div class="alert alert-danger" role="alert" id="error-msg" style="display: none;"></div>
-          <hr>
-          <div class="form-group m-3">
-            <label for="curr-password">Password</label>
-            <input type="password" class="form-control" id="curr-password" placeholder="current password">
-          </div>
-          <div class="form-group m-3">
-            <label for="new-password">New Password</label>
-            <input type="password" class="form-control" id="new-password" placeholder="new password">
-          </div>
-          <div class="form-group m-3">
-            <label for="confirm-password">Confirm Password</label>
-            <input type="password" class="form-control" id="confirm-password" placeholder="confirm new password">
-          </div>
-          <button type="button" class="btn btn-primary" id="update-pass-btn">Submit</button>
-        </form>
-      </div>
 
+<div class="background-image">
+  <div class="container my-5 blur-layer">
+    <h3 style="text-align: center"><span style="color: rgb(34, 34, 34)">Edit Profile</span></h3>
+    <hr />
+    <div class="container profile-info">
+      <div class="container">
+        {% if profile_pic %}
+            <img src="{{ profile_pic }}" alt="profile-pic" class="rounded-circle" role="button" style="width: 200px; height: 200px;"/>
+        {% else %}
+            <img src="{% static 'images/default_profile_pic.jpeg' %}" alt="default-profile-pic" class="rounded-circle" role="button" style="width: 200px; height: 200px;"/>
+        {% endif %}
+      </div>
+      <div class="container username">
+        <label for="username">Username</label>
+        <input role="button" type="text" class="form-control" id="username" value="{{ username }}" disabled/>
+        <button id="edit-username-icon" class="btn btn-dark"><i class="fa-sharp fa-solid fa-pen" style="color: #74C0FC;"></i></button>
+      </div>
+      <div class="container email">
+        <label for="email">email</label>
+        <input type="email" class="form-control" id="email" value="{{ email }}" disabled/>
+        <button id="edit-email-icon" class="btn btn-dark"><i class="fa-sharp fa-solid fa-pen" style="color: #74C0FC;"></i></button>
+      </div>
+      <div class="container">
+        <label for="password">Password</label>
+        <input type="password" class="form-control" id="password" value="********" disabled/>
+        <button id="edit-password-icon" class="btn btn-dark"><i class="fa-sharp fa-solid fa-pen" style="color: #74C0FC;"></i></button>
+        {% comment %} gonna be a modal {% endcomment %}
+        <div class="container m-5" id="pass-change-div" style="display:none;background:gray;">
+          <form class="p-5" id="update-pass-form">
+            {% csrf_token %}
+            <div class="alert alert-danger" role="alert" id="error-msg" style="display: none;"></div>
+            <hr>
+            <div class="form-group m-3">
+              <label for="curr-password">Password</label>
+              <input type="password" class="form-control" id="curr-password" placeholder="current password">
+            </div>
+            <div class="form-group m-3">
+              <label for="new-password">New Password</label>
+              <input type="password" class="form-control" id="new-password" placeholder="new password">
+            </div>
+            <div class="form-group m-3">
+              <label for="confirm-password">Confirm Password</label>
+              <input type="password" class="form-control" id="confirm-password" placeholder="confirm new password">
+            </div>
+            <button type="button" class="btn btn-primary" id="update-pass-btn">Submit</button>
+          </form>
+        </div>
+
+      </div>
+      <div class="container">
+        <button id="update-user-info-btn" class="btn btn-primary">Update User Info</button>
+      </div>
+      <br>
+      {% comment %} encoding type - baically Content-Type {% endcomment %}
+      <form id="profile-pic-form" enctype="multipart/form-data">
+        {% csrf_token %}
+        <input type="file" name="profile-pic" id="profile-pic" class="form-control" accept="image/*"/>
+        <button type="button" id="update-profile-pic-btn" class="btn btn-primary">Update Profile Picture</button>
+      </form>
+      <br>
     </div>
-    <div class="container">
-      <button id="update-user-info-btn" class="btn btn-primary">Update User Info</button>
-    </div>
-    <br>
-    {% comment %} encoding type - baically Content-Type {% endcomment %}
-    <form id="profile-pic-form" enctype="multipart/form-data">
-      {% csrf_token %}
-      <input type="file" name="profile-pic" id="profile-pic" class="form-control" accept="image/*"/>
-      <button type="button" id="update-profile-pic-btn" class="btn btn-primary">Update Profile Picture</button>
-    </form>
-    <br>
-  </div>
-  <div class="container my-5 d-flex justify-content-center border">
-    <div class="container d-flex p-2 justify-content-between">
-      {% if 2fa %}
-        <button id="enable-disable-2fa" class="btn btn-warning">Disable 2FA</button>
-      {% else %}
-        <button id="enable-disable-2fa" class="btn btn-success">Enable 2FA</button>
-      {% endif %}
-      <button id="delete-acc-btn" type="button" class="btn btn-danger">Delete Account</button>
-      <div class="col-6">
-        <a onclick="route()" class="btn btn-primary" href="signout">Sign Out</a>
+    <div class="container my-5 d-flex justify-content-center border">
+      <div class="container d-flex p-2 justify-content-between">
+        {% if 2fa %}
+          <button id="enable-disable-2fa" class="btn btn-warning">Disable 2FA</button>
+        {% else %}
+          <button id="enable-disable-2fa" class="btn btn-success">Enable 2FA</button>
+        {% endif %}
+        <button id="delete-acc-btn" type="button" class="btn btn-danger">Delete Account</button>
+        <div class="col-6">
+          <a onclick="route()" class="btn btn-primary" href="signout">Sign Out</a>
+        </div>
       </div>
     </div>
-  </div>
-  <div class="input-group mb-3">
-    <div class="form-floating">
-      <input type="text" class="form-control" id="floatingInputGroup1" placeholder="Username" required>
-      <label for="floatingInputGroup1">Username</label>
+    <div class="input-group mb-3">
+      <div class="form-floating">
+        <input type="text" class="form-control" id="floatingInputGroup1" placeholder="Username" required>
+        <label for="floatingInputGroup1">Username</label>
+      </div>
     </div>
-  </div>
-  <div class="input-group has-validation">
-    <span class="input-group-text">@</span>
-    <div class="form-floating is-invalid">
-      <input type="text" class="form-control is-invalid" id="floatingInputGroup2" placeholder="Username" required>
-      <label for="floatingInputGroup2">Username</label>
+    <div class="input-group has-validation">
+      <span class="input-group-text">@</span>
+      <div class="form-floating is-invalid">
+        <input type="text" class="form-control is-invalid" id="floatingInputGroup2" placeholder="Username" required>
+        <label for="floatingInputGroup2">Username</label>
+      </div>
+      <div class="invalid-feedback">
+        Please choose a username.
+      </div> 
     </div>
-    <div class="invalid-feedback">
-      Please choose a username.
-    </div> 
   </div>
 </div>
