@@ -1,12 +1,4 @@
 
-function isAuthenticated() {
-    const token = getCookie('is_auth');
-    if (token === 'true') {
-        return true;
-    }
-    return false;
-}
-
 // get csrf token
 function getCookie(tokenName) {
     let cookieValue = null;

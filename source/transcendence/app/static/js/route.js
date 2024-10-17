@@ -3,7 +3,7 @@
 let isInitialLoad = true;
 
 // actual function to change the content of the page
-handleLocationChange = async () => {
+async function handleLocationChange() {
     let path = (window.location.pathname.slice(1));
     
     if (isInitialLoad) {
@@ -14,7 +14,7 @@ handleLocationChange = async () => {
 };
 
 // routing function -- without reloading the page
-const route = (event) => {
+function route(event) {
     event = event || window.event;
     event.preventDefault();
 
@@ -22,24 +22,10 @@ const route = (event) => {
     let path = new URL(href).pathname;
     if (path === window.location.pathname)
         return;
-    // if initial load -- do nothing
-    if (isInitialLoad)
-        return ;
     history.pushState(null, '', path);
     handleLocationChange();
 };
 
-// Add the route function to the window object -- this makes it globally accessible
-window.route = route;
-
-// Handle initial load and browser back/forward buttons
-window.addEventListener('popstate', handleLocationChange);
-
-// Handle initial load
-window.addEventListener('load', async () => {
-    isInitialLoad = true;
-    await handleLocationChange()
-});
 
 // Load the content of the page
 async function loadContent(route) {
@@ -51,7 +37,6 @@ async function loadContent(route) {
             },
             redirect: 'manual' // This tells fetch to not automatically follow redirects
         });
-        console.log("In Load Content: ", response);
         if (route == 'signout') {
             // document.cookie = `is_auth=false`
             // removing any css js if there is any
@@ -60,6 +45,7 @@ async function loadContent(route) {
             handleLocationChange();
             return;
         }
+        console.log("response:",response);
         if (!response.ok) {
             // may be we will handle other error codes later
             // if the response is a redirect, then redirect the user to the new location
@@ -71,7 +57,6 @@ async function loadContent(route) {
             }
             throw new Error("HTTP " + response.status);
         }
-        console.log("Route: ", route,"load-content response:", response);
         let data = await response.json();
         loadCssandJS(data);
         document.title = data.title;
@@ -80,3 +65,17 @@ async function loadContent(route) {
         console.error(`Failed to load -- ${route} -- page content:`, error);
     }
 }
+
+async function initApp() {
+    
+    // Handle initial load and browser back/forward buttons
+    window.addEventListener('popstate', handleLocationChange);
+    
+    // Handle initial load
+    window.addEventListener('load', async () => {
+        isInitialLoad = true;
+        await handleLocationChange()
+    });
+};
+
+initApp();

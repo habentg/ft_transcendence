@@ -27,7 +27,6 @@ SECRET_KEY = os.environ.get('SECRET_KEY')
 DOMAIN_NAME = os.environ.get('DOMAIN_NAME')
 FOURTYTWO_OAUTH_CLIENT_ID = os.environ.get('CLIENT_ID')
 FOURTYTWO_OAUTH_CLIENT_SECRET = os.environ.get('CLIENT_SECRET')
-FT_USER_PASS = os.environ.get('FT_USER_PASS')
 REDIS_URL = os.environ.get('REDIS_URL')
 
 # SECURITY WARNING: don't run with debug turned on in production!

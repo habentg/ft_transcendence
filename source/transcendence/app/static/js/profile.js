@@ -14,9 +14,9 @@ async function deleteAccount() {
         console.log("Delete account response: ", response);
         
         if (response.ok) {
-            const data = await response.json();
-            
-            history.pushState(null, '', `/home`);
+            // const data = await response.json();
+            console.log("Account deleted");
+            history.pushState(null, '', `/`);
             handleLocationChange();
         } else {
             console.error('Failed to delete account');
@@ -94,9 +94,42 @@ async function UpdateUserInfo() {
             throw new Error('Failed to update user info');
         }
     } catch (error) {
-        
+        console.error('Error:', error);
     }
 };
+
+// upload profile picture
+async function UploadNewProfilePic() {
+    try {
+        // user input validation here maybe
+        const profilePicFile = document.getElementById('profile-pic').files[0];
+        console.log("Profile pic file:", profilePicFile);
+        // using FormData to send the file - browser will set the correct headers
+        const formData = new FormData();
+        if (profilePicFile === undefined) 
+            throw new Error('No file selected');
+        formData.append('profile_picture', profilePicFile);
+        const response = await fetch('/profile/', {
+            method: 'PATCH',
+            headers: {
+                'X-CSRFToken': await getCSRFToken()
+            },
+            // sending body directly as FormData - no need to stringify
+            body: formData
+        });
+
+        if (response.ok) {
+            console.log("Profile pic updated");
+            // update the user info in the DOM
+            history.pushState(null, '', `/profile`);
+            handleLocationChange();
+        } else {
+            throw new Error('Failed to update profile pic');
+        }
+    } catch (error) {
+        console.error('Error:', error);
+    }
+}
 
 // a function to initialize the profile page and add event listeners
 function initProfilePage() {
@@ -105,26 +138,35 @@ function initProfilePage() {
     const editUsernameIcon = document.getElementById('edit-username-icon');
     const editEmailIcon = document.getElementById('edit-email-icon');
     const updateUserInfoBtn = document.getElementById('update-user-info-btn');
-
+    const updatePFPBtn = document.getElementById('update-profile-pic-btn');
     if (deleteAccountBtn) {
         deleteAccountBtn.addEventListener('click', deleteAccount);
     }
-
+    
     if (enableDisable2FABtn) {
         enableDisable2FABtn.addEventListener('click', handleEnableDisable2FA);
     }
-
+    
     if (editUsernameIcon) {
         editUsernameIcon.addEventListener('click', () => makeFieldEditable('username'));
     }
-
+    
     if (editEmailIcon) {
         editEmailIcon.addEventListener('click', () => makeFieldEditable('email'));
     }
-
+    
     if (updateUserInfoBtn) {
         updateUserInfoBtn.addEventListener('click', UpdateUserInfo);
     }
+    if (updatePFPBtn) {
+        updatePFPBtn.addEventListener('click', UploadNewProfilePic);
+    }
+    if (updatePFPBtn) {
+        updatePFPBtn.addEventListener('click', UploadNewProfilePic);
+    }
 }
 
+
+
+// initialize the profile page
 initProfilePage();

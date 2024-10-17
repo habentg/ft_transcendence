@@ -30,10 +30,10 @@
     </div>
     <br>
     {% comment %} encoding type - baically Content-Type {% endcomment %}
-    <form id="profile-pic-form" method="PATCH" enctype="multipart/form-data">
+    <form id="profile-pic-form" enctype="multipart/form-data">
       {% csrf_token %}
       <input type="file" name="profile-pic" id="profile-pic" class="form-control" accept="image/*"/>
-      <button type="submit" id="update-profile-pic-btn" class="btn btn-primary">Update Profile Picture</button>
+      <button type="button" id="update-profile-pic-btn" class="btn btn-primary">Update Profile Picture</button>
     </form>
     <br>
   </div>
@@ -49,5 +49,21 @@
         <a onclick="route()" class="btn btn-primary" href="signout">Sign Out</a>
       </div>
     </div>
+  </div>
+  <div class="input-group mb-3">
+    <div class="form-floating">
+      <input type="text" class="form-control" id="floatingInputGroup1" placeholder="Username" required>
+      <label for="floatingInputGroup1">Username</label>
+    </div>
+  </div>
+  <div class="input-group has-validation">
+    <span class="input-group-text">@</span>
+    <div class="form-floating is-invalid">
+      <input type="text" class="form-control is-invalid" id="floatingInputGroup2" placeholder="Username" required>
+      <label for="floatingInputGroup2">Username</label>
+    </div>
+    <div class="invalid-feedback">
+      Please choose a username.
+    </div> 
   </div>
 </div>

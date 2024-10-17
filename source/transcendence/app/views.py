@@ -29,6 +29,9 @@ from django.db import connection
 from rest_framework.response import Response
 from rest_framework.exceptions import AuthenticationFailed
 import urllib.parse
+from django.core.files import File
+from urllib.request import urlopen
+from tempfile import NamedTemporaryFile
 
 # base view for basic pages in our SPA
 """
@@ -73,7 +76,6 @@ class HomeView(APIView, BaseView):
 			response = HttpResponseRedirect(reverse('landing'))
 			response.delete_cookie('access_token')
 			response.delete_cookie('refresh_token')
-			response.delete_cookie('is_auth')
 			response.delete_cookie('csrftoken')
 			print('Redirecting to landing page - user', flush=True)
 			return response
@@ -204,7 +206,6 @@ class SignOutView(BaseView, View):
 			response = HttpResponseRedirect(reverse('landing'))
 			response.delete_cookie('access_token')
 			response.delete_cookie('refresh_token')
-			response.delete_cookie('is_auth')
 			response.delete_cookie('csrftoken')
 			response.singed_out = True
 			return response
@@ -274,18 +275,13 @@ class OauthCallback(View):
 		)
 
 		if created:
-			# player.set_unusable_password()
 			image_url = user_info['image']['link']
-			from django.core.files import File
-			from urllib.request import urlopen
-			from tempfile import NamedTemporaryFile
-
 			img_temp = NamedTemporaryFile(delete=True)
 			img_temp.write(urlopen(image_url).read())
 			img_temp.flush()
 			player.profile_picture.save(f"{player.username}_profile.jpg", File(img_temp))
 			# print("new user profile picture: ", user_info['image']['link'], flush=True)
-			player.set_password(settings.FT_USER_PASS)
+			player.set_unusable_password() # User can't login with password
 			player.save()
 
 		# Update last login
@@ -300,7 +296,6 @@ class OauthCallback(View):
 		# secure=True
 		response.set_cookie('access_token', str(refresh.access_token), httponly=True, samesite='Lax')
 		response.set_cookie('refresh_token', str(refresh), httponly=True, samesite='Lax')
-		response.set_cookie('is_auth', 'true')
 
 		return response
 
@@ -411,7 +406,6 @@ class TwoFactorAuth(APIView, BaseView):
 			response = HttpResponseRedirect(f'{signin_url}?{params}')
 			response.delete_cookie('access_token')
 			response.delete_cookie('refresh_token')
-			response.delete_cookie('is_auth')
 			if self.request.headers.get('X-Requested-With') == 'XMLHttpRequest':
 				return JsonResponse({
 					'redirect': f'{signin_url}?{params}'
@@ -473,7 +467,6 @@ class ProfileView(APIView, BaseView):
 			response = HttpResponseRedirect(f'{signin_url}?{params}')
 			response.delete_cookie('access_token')
 			response.delete_cookie('refresh_token')
-			response.delete_cookie('is_auth')
 			if self.request.headers.get('X-Requested-With') == 'XMLHttpRequest':
 				return JsonResponse({
 					'redirect': f'{signin_url}?{params}'
@@ -482,9 +475,10 @@ class ProfileView(APIView, BaseView):
 		return super().handle_exception(exception)
 
 	def patch(self, request):
-		data = json.loads(request.body)
+		Player = get_user_model()
+		print("All players: ", Player.objects.all(), flush=True)
 		player = request.user
-		serializer = PlayerProfileSerializer(player, data=data, partial=True)
+		serializer = PlayerProfileSerializer(player, data=request.data, partial=True)
 		if serializer.is_valid():
 			serializer.save()  # Use the serializer to update the player object
 			return JsonResponse({'success': 'Account updated successfully!'}, status=status.HTTP_200_OK)
@@ -498,8 +492,8 @@ class ProfileView(APIView, BaseView):
 		response = HttpResponseRedirect(reverse('landing'))
 		response.delete_cookie('access_token')
 		response.delete_cookie('refresh_token')
-		response.delete_cookie('is_auth')
 		response.delete_cookie('crsftoken')
+		response.status_code = 200
 		return response
 
 	def get_context_data(self, request):
@@ -512,3 +506,5 @@ class ProfileView(APIView, BaseView):
 			'profile_pic': player.profile_picture.url if player.profile_picture else None,
 		}
 		return data
+	
+# updating user password

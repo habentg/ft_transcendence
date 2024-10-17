@@ -3,7 +3,12 @@ from django.contrib.auth.models import AbstractUser
 from django.core.exceptions import ValidationError
 
 def validate_image_size(image):
-    file_size = image.file.size
+    if hasattr(image, 'size'):
+        file_size = image.size # This is for ImageField
+    elif hasattr(image, 'file'):
+        file_size = image.file.size # This is for FileField
+    else:
+        file_size = image.getbuffer().nbytes # This is for InMemoryUploadedFile
     limit_mb = 5
     if file_size > limit_mb * 1024 * 1024:
         raise ValidationError(f"Max size of file is {limit_mb} MB")

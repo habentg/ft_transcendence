@@ -31,3 +31,15 @@ class PlayerProfileSerializer(serializers.ModelSerializer):
 	class Meta:
 		model = Player
 		fields = ['first_name', 'last_name', 'username', 'email', 'profile_picture']
+	# update profile picture - kinda tricky so updating it manually, the other fields will be updated by the default update method
+	def update(self, instance, validated_data):
+		profile_picture = validated_data.pop('profile_picture', None)
+		if profile_picture:
+			instance.profile_picture = profile_picture
+		return super().update(instance, validated_data)
+
+# # user password update/change serializer class - we doing it this way coz password update needs more validation
+# class ChangePasswordSerializer(serializers.Serializer):
+# 	old_password = serializers.CharField(max_length=150, min_length=3, style={'input_type': 'password'})
+# 	new_password = serializers.CharField(max_length=150, min_length=3, style={'input_type': 'password'})
+# 	confirm_password = serializers.CharField(max_length=150, min_length=3, style={'input_type': 'password'})
