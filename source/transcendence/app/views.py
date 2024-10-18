@@ -32,6 +32,7 @@ import urllib.parse
 from django.core.files import File
 from urllib.request import urlopen
 from tempfile import NamedTemporaryFile
+from rest_framework import viewsets
 
 # base view for basic pages in our SPA
 """
@@ -77,7 +78,7 @@ class HomeView(APIView, BaseView):
 			response.delete_cookie('access_token')
 			response.delete_cookie('refresh_token')
 			response.delete_cookie('csrftoken')
-			print('Redirecting to landing page - user', flush=True)
+			response.status_code = 302
 			return response
 		return super().handle_exception(exception)
 
@@ -99,9 +100,7 @@ class LandingPageView(BaseView):
 
 	def get(self, request):
 		if request.COOKIES.get('access_token') and request.COOKIES.get('refresh_token'):
-			print('Might be - Authenticated user to homepage - redirection', flush=True)
 			return HttpResponseRedirect(reverse('home_page'))
-		print('Unauthenticated User -- serving Landing Page', flush=True)
 		return super().get(request)
 
 # view for the 404 page1
@@ -112,7 +111,7 @@ class Catch_All(BaseView):
 	js = 'js/404.js'
 
 	def get(self, request):
-		print('404 => with Request: ', request, flush=True)
+		print('404 page: ', request)
 		return super().get(request)
 
 # view for the sign up page
@@ -160,7 +159,6 @@ class SignInView(APIView, BaseView):
 		next_url = request.GET.get('next', '/')
 		context = self.get_context_data(request)
 		context['next'] = next_url
-		print('Signin view: ', context, flush=True)
 		return super().get(request)
 
 	def post(self, request):
@@ -176,7 +174,6 @@ class SignInView(APIView, BaseView):
 				response.set_cookie('refresh_token', str(refresh), httponly=True)
 				if player.tfa:
 					if send_2fa_code(player):
-						print('2fa code sent', flush=True)
 						response.status_code = 302  # or 301 for a permanent redirect
 					else:
 						return Response({'error_msg': 'Couldn\'t send OTP to the given Email'}, 
@@ -197,12 +194,8 @@ class SignOutView(BaseView, View):
 		if token_string:
 			try:
 				add_token_to_blacklist(token_string)
-			except jwt.ExpiredSignatureError:
-				print('Token has expired')
-			except jwt.InvalidTokenError as e:
-				print(f'Token is invalid: {e}')
-			except jwt.DecodeError as e:
-				print(f'Token decoding error: {e}')
+			except jwt.ExpiredSignatureError or jwt.InvalidTokenError or jwt.DecodeError as e:
+				print('Token has: ', e)
 			response = HttpResponseRedirect(reverse('landing'))
 			response.delete_cookie('access_token')
 			response.delete_cookie('refresh_token')
@@ -280,7 +273,6 @@ class OauthCallback(View):
 			img_temp.write(urlopen(image_url).read())
 			img_temp.flush()
 			player.profile_picture.save(f"{player.username}_profile.jpg", File(img_temp))
-			# print("new user profile picture: ", user_info['image']['link'], flush=True)
 			player.set_unusable_password() # User can't login with password
 			player.save()
 
@@ -409,7 +401,7 @@ class TwoFactorAuth(APIView, BaseView):
 			if self.request.headers.get('X-Requested-With') == 'XMLHttpRequest':
 				return JsonResponse({
 					'redirect': f'{signin_url}?{params}'
-				}, status=401)
+				}, status=302)
 			return response
 		return super().handle_exception(exception)
 
@@ -421,15 +413,12 @@ class TwoFactorAuth(APIView, BaseView):
 		data = json.loads(request.body)
 		player = request.user
 		if player:
-			print("Player username!: ", player.username, flush=True)
 			totp = pyotp.TOTP(player.secret, interval=300)
 			if totp.verify(data['otp']):
-				print("Valid OTP", flush=True)
 				player.verified = True
 				player.save()
 				return JsonResponse({'redirect': 'home'}, status=status.HTTP_200_OK)
 			else:
-				print("Invalid OTP!", flush=True)
 				return JsonResponse({'error_msg': 'Invalid OTP!'}, status=status.HTTP_401_UNAUTHORIZED)
 		return JsonResponse({'failure': 'no player found with that email!'}, status=status.HTTP_401_UNAUTHORIZED)
 	
@@ -467,34 +456,28 @@ class ProfileView(APIView, BaseView):
 			response = HttpResponseRedirect(f'{signin_url}?{params}')
 			response.delete_cookie('access_token')
 			response.delete_cookie('refresh_token')
-			if self.request.headers.get('X-Requested-With') == 'XMLHttpRequest':
-				return JsonResponse({
-					'redirect': f'{signin_url}?{params}'
-				}, status=401)
 			return response
 		return super().handle_exception(exception)
 
-	def patch(self, request):
-		Player = get_user_model()
-		player = request.user
-		serializer = PlayerProfileSerializer(player, data=request.data, partial=True)
-		if serializer.is_valid():
-			serializer.save()  # Use the serializer to update the player object
-			return JsonResponse({'success': 'Account updated successfully!'}, status=status.HTTP_200_OK)
-		return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 	def delete(self, request):
 		player = request.user
-		print('Delete account view: deleting -> ', player, flush=True)
 		player.delete()
 		
 		response = HttpResponseRedirect(reverse('landing'))
 		response.delete_cookie('access_token')
 		response.delete_cookie('refresh_token')
-		response.delete_cookie('crsftoken')
-		response.status_code = 200
+		response.delete_cookie('csrftoken')
+		response.status_code = 200 # coz the browser will try to redirect to the url in the response with delete method - wont work
 		return response
 
+	def patch(self, request):
+		serializer = PlayerProfileSerializer(request.user, data=request.data, partial=True)
+		if serializer.is_valid():
+			serializer.save()  # Use the serializer to update the player object
+			return JsonResponse({'success': 'Account updated successfully!'}, status=status.HTTP_200_OK)
+		return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+	
 	def get_context_data(self, request):
 		player = request.user
 		data = {
@@ -514,11 +497,8 @@ class UpdatePlayerPassword(APIView):
 	def patch(self, request):
 		player = request.user
 		Player = get_user_model()
-		players_queryset = Player.objects.all()
-		print("All players: ", Player.objects.all(), flush=True)
 		serializer = ChangePasswordSerializer(data=request.data)
 		if serializer.is_valid():
-			print("Valid serializer data: ", serializer.validated_data, flush=True)
 			if not player.check_password(serializer.validated_data['current_password']):
 				return JsonResponse({'error_msg': 'Invalid current password!'}, status=status.HTTP_400_BAD_REQUEST)
 			if serializer.validated_data['new_password'] != serializer.validated_data['confirm_password']:
@@ -527,4 +507,31 @@ class UpdatePlayerPassword(APIView):
 			player.save()
 			return JsonResponse({'success': 'Password updated successfully!'}, status=status.HTTP_200_OK)
 		return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-	
+
+
+import logging
+logger = logging.getLogger(__name__)
+# /friends endpoint
+class FriendsViewSet(viewsets.ViewSet):
+	authentication_classes = [JWTCookieAuthentication]
+	permission_classes = [IsAuthenticated]
+
+	def list(self, request):
+		logger.debug("List method called")
+		players_qset = Player.objects.all()
+		logger.debug(f"Number of players: {players_qset.count()}")
+		serializer = FriendsSerializer(players_qset, many=True)
+		logger.debug(f"Serialized data: {serializer.data}")
+		return Response(serializer.data)
+
+	# def retrieve(self, request, pk=None):
+	# 	player = Player.objects.get(pk=pk)
+	# 	serializer = FriendsSerializer(player)
+	# 	return Response(serializer.data)
+from rest_framework.decorators import api_view
+from rest_framework.response import Response
+
+@api_view(['GET'])
+def friends_list(request):
+    print("Friends list view called", flush=True)
+    return Response({"message": "Friends list view"})

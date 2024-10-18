@@ -17,11 +17,11 @@ async function handleLocationChange() {
 function route(event) {
     event = event || window.event;
     event.preventDefault();
-
+    
     let href = event.target.href;
     let path = new URL(href).pathname;
-    if (path === window.location.pathname)
-        return;
+    // if (path === window.location.pathname)
+    //     return;
     history.pushState(null, '', path);
     handleLocationChange();
 };
@@ -35,8 +35,9 @@ async function loadContent(route) {
             headers: {
                 'X-Requested-With': 'XMLHttpRequest',
             },
-            redirect: 'manual' // This tells fetch to not automatically follow redirects
         });
+        
+        // signout is a special case
         if (route == 'signout') {
             // removing any css js if there is any
             removeResource();
@@ -44,12 +45,13 @@ async function loadContent(route) {
             handleLocationChange();
             return;
         }
-        console.log("response:",response);
+        console.log("Loading content for:", route, "Response:", response);
         if (!response.ok) {
             // may be we will handle other error codes later
             // if the response is a redirect, then redirect the user to the new location
-            if (response.status === 401) {
+            if (response.status === 302) {
                 const data = await response.json();
+                console.log("Redirecting to:", data['redirect']);
                 history.pushState(null, '', data['redirect']);
                 handleLocationChange();
                 return;

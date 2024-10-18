@@ -17,11 +17,8 @@ def is_token_blacklisted(token_string):
         token = jwt.decode(token_string, algorithms=["HS256"], key=settings.SECRET_KEY, options={"verify_exp": True})
         jti = token['jti']
         return redis_instance.exists(jti)
-    except jwt.ExpiredSignatureError: # Token has expired, return True to indicate it's blacklisted
-        print("Token has expired", flush=True)
-        return True
-    except jwt.InvalidTokenError: # Token is invalid, return True to indicate it's blacklisted
-        print("Token is invalid", flush=True)
+    except jwt.ExpiredSignatureError or jwt.InvalidTokenError or Exception as e: # Token has expired, return True to indicate it's blacklisted
+        print("Token is: ", e, flush=True)
         return True
 
 # extracts JTI (JSON Token Identifier) from token and adds it to blacklist using SETEX command - sets key with expiry time (auto deletes)
@@ -32,10 +29,8 @@ def add_token_to_blacklist(token_string):
         expires_in = token['exp'] - token['iat']
         jti = token['jti']
         redis_instance.setex(jti, expires_in, 'blacklisted')
-    except jwt.ExpiredSignatureError:
-        print('Token has expired', flush=True)
-    except jwt.InvalidTokenError:
-        print('Token is invalid', flush=True)
+    except jwt.ExpiredSignatureError or jwt.InvalidTokenError  or Exception as e:
+        print('Token has: ', e, flush=True)
     print('Token added to blacklist', flush=True)
 
 
@@ -44,15 +39,13 @@ class JWTCookieAuthentication(JWTAuthentication):
     def authenticate(self, request):
         raw_token = request.COOKIES.get('access_token')
         if raw_token is None:
-            raise AuthenticationFailed(f'No token found - redirect to signin {reverse('signin_page')}')
+            raise AuthenticationFailed(f'No token found in cookies')
         try:
             if is_token_blacklisted(raw_token):
                 print('trying to access with a blacklisted Token.... ', flush=True)
-                raise AuthenticationFailed('Token is blacklisted')
+                raise AuthenticationFailed('This Token is blacklisted')
             validated_token = self.get_validated_token(raw_token)
             user = self.get_user(validated_token)
             return (user, validated_token)
-        except InvalidToken:
-            raise AuthenticationFailed('Invalid token')
-        except Exception as e:
+        except InvalidToken or AuthenticationFailed or Exception as e:
             raise AuthenticationFailed(str(e))

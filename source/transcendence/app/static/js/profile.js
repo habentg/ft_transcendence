@@ -10,21 +10,24 @@ async function deleteAccount() {
                 'X-CSRFToken': m_csrf_token
             }
         });
-
-        console.log("Delete account response: ", response);
-        
-        if (response.ok) {
+        /* Reason for 200 status response:
+        when a browser receives a 302 redirect in response to a DELETE request,
+        it typically sends the subsequent request to the redirect location using 
+        the same HTTP method (will result an error - coz landing page endpoint expects get only)
+        */
+        if (response.status === 200) {
             // const data = await response.json();
-            console.log("Account deleted");
+            console.log("Account deleted successfully");
             history.pushState(null, '', `/`);
             handleLocationChange();
-        } else {
-            console.error('Failed to delete account');
+            return ;
         }
+        throw new Error('Failed to delete account');
     } catch (error) {
         console.error('Error:', error);
     }
 };
+
 
 // enabling 2fa
 /* 

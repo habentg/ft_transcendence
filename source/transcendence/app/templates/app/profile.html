@@ -69,26 +69,14 @@
           <button id="enable-disable-2fa" class="btn btn-success">Enable 2FA</button>
         {% endif %}
         <button id="delete-acc-btn" type="button" class="btn btn-danger">Delete Account</button>
+
         <div class="col-6">
           <a onclick="route()" class="btn btn-primary" href="signout">Sign Out</a>
         </div>
       </div>
     </div>
-    <div class="input-group mb-3">
-      <div class="form-floating">
-        <input type="text" class="form-control" id="floatingInputGroup1" placeholder="Username" required>
-        <label for="floatingInputGroup1">Username</label>
-      </div>
-    </div>
-    <div class="input-group has-validation">
-      <span class="input-group-text">@</span>
-      <div class="form-floating is-invalid">
-        <input type="text" class="form-control is-invalid" id="floatingInputGroup2" placeholder="Username" required>
-        <label for="floatingInputGroup2">Username</label>
-      </div>
-      <div class="invalid-feedback">
-        Please choose a username.
-      </div> 
+    <div class="col-6">
+      <a onclick="route()" class="btn btn-danger" href="friends">Friends</a>
     </div>
   </div>
 </div>

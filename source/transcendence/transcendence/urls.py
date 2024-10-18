@@ -17,10 +17,19 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 
+# /users - Get, Post
+# /users/1 - Get, Put, Delete
+# from app.views import FriendsViewSet
+# from rest_framework.routers import DefaultRouter
+
+# router = DefaultRouter()
+# router.register(r'friends', FriendsViewSet, basename='friends')
+# urlpatterns = router.urls
 
 
 urlpatterns = [
-    path('admin', admin.site.urls),
+    # path('admin', admin.site.urls),
     path('', include('app.urls')),
+    # path('api/', include(router.urls)),
 ]
 # + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
