@@ -2,20 +2,9 @@ from django.urls import path, re_path, include
 from .views import *
 
 
-
-# /users - Get, Post
-# /users/1 - Get, Put, Delete
-from rest_framework.routers import DefaultRouter
-
-friends_router = DefaultRouter()
-friends_router.register(r'friends', FriendsViewSet, basename='friends')
-urlpatterns = friends_router.urls
-
 # Add this to your urls.py
 urlpatterns = [
     path('', LandingPageView.as_view(), name='landing'),
-    re_path(r'^friends/?$', friends_list),
-    # path('friends/', include(friends_router.urls), name='friends'),
     re_path(r'^home/?$', HomeView.as_view(), name='home_page'),
     re_path(r'^signup/?$', SignUpView.as_view(), name='signup_page'),
     re_path(r'^signin/?$', SignInView.as_view(), name='signin_page'),

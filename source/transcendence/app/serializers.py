@@ -43,9 +43,3 @@ class ChangePasswordSerializer(serializers.Serializer):
 	current_password = serializers.CharField(max_length=150, min_length=3)
 	new_password = serializers.CharField(max_length=150, min_length=3)
 	confirm_password = serializers.CharField(max_length=150, min_length=3)
-
-# friends serializer class
-class FriendsSerializer(serializers.ModelSerializer):
-	class Meta:
-		model = Player
-		fields = ['username', 'email', 'profile_picture']

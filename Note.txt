@@ -8,6 +8,13 @@ TODO: ideas
 
 ~> User input should be validated in both the frontend and the backend.
 
+~> use Swagger UI for API documentation.
+    * resources
+    https://www.youtube.com/watch?v=XBxssKYf5G0&list=PLOLrQ9Pn6cawinBJbH5d9IfloO9RRPMiq&index=25
+
+
+
+
 
 ## Production level Architecture Design - by improving the current one
 6. healthcheck and monitoring

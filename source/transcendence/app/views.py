@@ -507,31 +507,3 @@ class UpdatePlayerPassword(APIView):
 			player.save()
 			return JsonResponse({'success': 'Password updated successfully!'}, status=status.HTTP_200_OK)
 		return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-
-import logging
-logger = logging.getLogger(__name__)
-# /friends endpoint
-class FriendsViewSet(viewsets.ViewSet):
-	authentication_classes = [JWTCookieAuthentication]
-	permission_classes = [IsAuthenticated]
-
-	def list(self, request):
-		logger.debug("List method called")
-		players_qset = Player.objects.all()
-		logger.debug(f"Number of players: {players_qset.count()}")
-		serializer = FriendsSerializer(players_qset, many=True)
-		logger.debug(f"Serialized data: {serializer.data}")
-		return Response(serializer.data)
-
-	# def retrieve(self, request, pk=None):
-	# 	player = Player.objects.get(pk=pk)
-	# 	serializer = FriendsSerializer(player)
-	# 	return Response(serializer.data)
-from rest_framework.decorators import api_view
-from rest_framework.response import Response
-
-@api_view(['GET'])
-def friends_list(request):
-    print("Friends list view called", flush=True)
-    return Response({"message": "Friends list view"})

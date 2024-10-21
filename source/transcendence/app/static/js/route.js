@@ -20,15 +20,39 @@ function route(event) {
     
     let href = event.target.href;
     let path = new URL(href).pathname;
-    // if (path === window.location.pathname)
-    //     return;
+    if (path === window.location.pathname)
+        return;
     history.pushState(null, '', path);
     handleLocationChange();
 };
 
+// let account_routes = ['signin', 'signup', 'signout', 'forgot-password', 'reset-password'];
+// let game_routes = ['game', 'leaderboard', 'game-history', 'game-detail'];
+// let user_routes = ['profile', 'change-password', 'delete-account'];
+// let friend_routes = ['friends', 'friend-request'];
+// let other_routes = ['home', 'about', 'contact', '404', 'tos', 'privacy'];
 
+// function determineRoute(route) {
+//     if (route === '' || route === '/')
+//         route = 'home';
+//     if (account_routes.includes(route))
+//         route = 'account/' + route;
+//     else if (game_routes.includes(route))
+//         route = 'game/' + route;
+//     else if (user_routes.includes(route))
+//         route = 'user/' + route;
+//     else if (friend_routes.includes(route))
+//         route = 'friend/' + route;
+//     else if (other_routes.includes(route))
+//         route = 'other/' + route;
+//     else
+//         route = 'other/404';
+//     return route;
+// }
 // Load the content of the page
 async function loadContent(route) {
+    // // bunch of ifs to correcly route to the correct "App" in django
+    // const route = determineRoute(route);
     try {
         const response = await fetch(`${route}/`, {
             method: 'GET',
@@ -54,6 +78,11 @@ async function loadContent(route) {
                 console.log("Redirecting to:", data['redirect']);
                 history.pushState(null, '', data['redirect']);
                 handleLocationChange();
+                return;
+            }
+            if (response.status === 401) {
+                // removing any css js if there is any
+                console.log("Unauthorized, asdf asdf asfd");
                 return;
             }
             throw new Error("HTTP " + response.status);
