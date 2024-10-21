@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from app.models import Player
+from account.models import Player
 
 # friends serializer class
 class FriendsSerializer(serializers.ModelSerializer):

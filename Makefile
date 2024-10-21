@@ -118,3 +118,6 @@ help:
 
 # ---------------------------- End of Makefile -------------------------------
 
+migrations:
+	$(COMPOSE) -f docker-compose.yaml exec app python manage.py makemigrations
+	$(COMPOSE) -f docker-compose.yaml exec app python manage.py migrate

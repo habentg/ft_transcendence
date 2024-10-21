@@ -1,7 +1,7 @@
 from rest_framework import viewsets
 from rest_framework.permissions import IsAuthenticated
-from app.auth_middleware import JWTCookieAuthentication
-from app.models import Player
+from account.auth_middleware import JWTCookieAuthentication
+from account.models import Player
 from .serializers import FriendsSerializer
 
 # Create your views here.

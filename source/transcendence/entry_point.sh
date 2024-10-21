@@ -22,7 +22,7 @@ python manage.py createsuperuser --noinput \
 
 # Set password coz there is no --password option
 python manage.py shell <<EOF
-from app.models import Player
+from account.models import Player
 player = Player.objects.get(username='$DJANGO_SUPERUSER_USERNAME')
 player.set_password('$DJANGO_SUPERUSER_PASSWORD')
 player.save()

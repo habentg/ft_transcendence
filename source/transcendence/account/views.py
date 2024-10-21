@@ -4,7 +4,7 @@ from django.views import View
 from django.utils.decorators import method_decorator
 from rest_framework.views import APIView
 from rest_framework import status
-from app.serializers import *
+from account.serializers import *
 from rest_framework_simplejwt.tokens import RefreshToken
 from django.views.decorators.csrf import csrf_protect
 import json
@@ -32,7 +32,6 @@ import urllib.parse
 from django.core.files import File
 from urllib.request import urlopen
 from tempfile import NamedTemporaryFile
-from rest_framework import viewsets
 
 # base view for basic pages in our SPA
 """
@@ -58,7 +57,7 @@ class BaseView(View):
 		if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
 			return JsonResponse(resources)
 		else:
-			return render(request, 'app/base.html', resources)
+			return render(request, 'account/base.html', resources)
 
 	def get_context_data(self, request):
 		return {}
@@ -67,7 +66,7 @@ class BaseView(View):
 class HomeView(APIView, BaseView):
 	authentication_classes = [JWTCookieAuthentication]
 	permission_classes = [IsAuthenticated]
-	template_name = 'app/home.html'
+	template_name = 'account/home.html'
 	title = 'Home Page'
 	css = 'css/home.css'
 	js = 'js/home.js'
@@ -93,7 +92,7 @@ class HomeView(APIView, BaseView):
 	
 # view for the index page
 class LandingPageView(BaseView):
-	template_name = 'app/landing.html'
+	template_name = 'account/landing.html'
 	css = 'css/landing.css'
 	# js = 'js/landing.js'
 	title = 'Index Page'
@@ -105,7 +104,7 @@ class LandingPageView(BaseView):
 
 # view for the 404 page1
 class Catch_All(BaseView):
-	template_name = 'app/404.html'
+	template_name = 'account/404.html'
 	title = 'Error Page'
 	css = 'css/404.css'
 	js = 'js/404.js'
@@ -119,7 +118,7 @@ class Catch_All(BaseView):
 class SignUpView(APIView, BaseView):
 	authentication_classes = []
 	permission_classes = []
-	template_name = 'app/signup.html'
+	template_name = 'account/signup.html'
 	title = 'Sign Up'
 	css = 'css/signup.css'
 	js = 'js/signup.js'
@@ -150,7 +149,7 @@ class SignUpView(APIView, BaseView):
 class SignInView(APIView, BaseView):
 	authentication_classes = []
 	permission_classes = []
-	template_name = 'app/signin.html'
+	template_name = 'account/signin.html'
 	title = 'Sign In'
 	css = 'css/signin.css'
 	js = 'js/signin.js'
@@ -293,7 +292,7 @@ class OauthCallback(View):
 
 	
 class PasswordReset(BaseView):
-	template_name = 'app/password_reset.html'
+	template_name = 'account/password_reset.html'
 	title = 'Password Reset'
 	css = 'css/password_reset.css'
 	js = 'js/password_reset.js'
@@ -318,7 +317,7 @@ class PasswordReset(BaseView):
 		from_email = settings.DEFAULT_FROM_EMAIL
 		recipient_list = [player.email]
 		subject = "Password Reset Requested"
-		email_template_name = "app/password_reset_email_tamplate.txt"
+		email_template_name = "account/password_reset_email_tamplate.txt"
 		c = {
 			'email': player.email,
 			'domain': settings.DOMAIN_NAME,
@@ -332,7 +331,7 @@ class PasswordReset(BaseView):
 		send_mail(subject, email_body, from_email, recipient_list, fail_silently=False)
 
 class PassResetNewPass(View):
-	template_name = 'app/change_pass.html'
+	template_name = 'account/change_pass.html'
 	title = 'Password Reset'
 	js = 'js/password_reset.js'
 	css = 'css/password_reset.css'
@@ -355,9 +354,9 @@ class PassResetNewPass(View):
 				'uidb64': uidb64,
 				'token': token
 			}
-			return render(request, 'app/base.html', resources)
+			return render(request, 'account/base.html', resources)
 		else:
-			return render(request, 'app/invalid_token.html')
+			return render(request, 'account/invalid_token.html')
 
 	def post(self, request, uidb64, token):
 		data = json.loads(request.body)
@@ -378,7 +377,7 @@ class PassResetNewPass(View):
 			return JsonResponse({'error_msg': 'Invalid password reset request'}, status=status.HTTP_400_BAD_REQUEST)
 
 class PassResetConfirm(BaseView):
-	template_name = 'app/password_reset_complete.html'
+	template_name = 'account/password_reset_complete.html'
 	title = 'Password Reset'
 
 
@@ -386,7 +385,7 @@ class PassResetConfirm(BaseView):
 class TwoFactorAuth(APIView, BaseView):
 	authentication_classes = [JWTCookieAuthentication]
 	permission_classes = [IsAuthenticated]
-	template_name = 'app/2fa.html'
+	template_name = 'account/2fa.html'
 	title = 'Two Factor Authentication'
 	css = 'css/2fa.css'
 	js = 'js/2fa.js'
@@ -444,7 +443,7 @@ class HealthCheck(View):
 class ProfileView(APIView, BaseView):
 	authentication_classes = [JWTCookieAuthentication]
 	permission_classes = [IsAuthenticated]
-	template_name = 'app/profile.html'
+	template_name = 'account/profile.html'
 	title = 'Profile'
 	css = 'css/profile.css'
 	js = 'js/profile.js'

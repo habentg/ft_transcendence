@@ -16,16 +16,12 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
-from friendship.views import FriendsViewSet
-# /friends - Get, Post
-# /friends/1 - Get, Put, Delete
-from rest_framework.routers import DefaultRouter
 
-friends_router = DefaultRouter()
-friends_router.register(r'friends', FriendsViewSet, basename='friends')
 urlpatterns = [
     path('admin', admin.site.urls),
-    path('', include('app.urls')),
-    path('', include(friends_router.urls), name='friends'), # /friends
+    path('', include('account.urls')),
+    path('account/', include('account.urls')),
+    path('friends/', include('friendship.urls')),
+    # path('game/', include('game.urls')),
+    # path('other/', include('other.urls')),
 ]
-# + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
