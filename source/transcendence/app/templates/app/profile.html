@@ -56,7 +56,7 @@
       
     
       <!-- Password change section -->
-      <div class="container mt-4" id="pass-change-div" style="display:none;">
+      <!-- <div class="container mt-4" id="pass-change-div" style="display:none;">
         <form id="update-pass-form">
           {% csrf_token %}
           <div class="alert alert-danger" role="alert" id="error-msg" style="display: none;"></div>
@@ -74,16 +74,17 @@
           </div>
           <button type="button" class="btn btn-primary mt-2" id="update-pass-btn">Update Password</button>
         </form>
-      </div>
+      </div> -->
 
       <!-- Profile picture upload -->
-      <div class="container mt-4">
+      <!-- <div class="container mt-4" id="update-profile-div" style="display: none;">
         <form id="profile-pic-form" enctype="multipart/form-data">
           {% csrf_token %}
           <input type="file" name="profile-pic" id="profile-pic" class="form-control-file"/>
           <button type="button" id="update-profile-pic-btn" class="btn btn-primary mt-2">Update Profile Picture</button>
         </form>
-      </div>
+      </div> -->
+      
     <div class="container my-5 d-flex border options">
       <div class="container d-flex p-2 justify-content-between">
         {% if 2fa %}
@@ -97,22 +98,6 @@
         </div>
       </div>
     </div>
-    <!-- <div class="input-group mb-3">
-      <div class="form-floating">
-        <input type="text" class="form-control" id="floatingInputGroup1" placeholder="Username" required>
-        <label for="floatingInputGroup1">Username</label>
-      </div>
-    </div>
-    <div class="input-group has-validation">
-      <span class="input-group-text">@</span>
-      <div class="form-floating is-invalid">
-        <input type="text" class="form-control is-invalid" id="floatingInputGroup2" placeholder="Username" required>
-        <label for="floatingInputGroup2">Username</label>
-      </div>
-      <div class="invalid-feedback">
-        Please choose a username.
-      </div> 
-    </div> -->
     <div class="col-6">
       <a onclick="route()" class="btn btn-danger" href="friends">Friends</a>
     </div>

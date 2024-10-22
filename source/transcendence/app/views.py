@@ -500,12 +500,16 @@ class UpdatePlayerPassword(APIView):
 		serializer = ChangePasswordSerializer(data=request.data)
 		if serializer.is_valid():
 			if not player.check_password(serializer.validated_data['current_password']):
+				print("Invalid current password", flush=True)
 				return JsonResponse({'error_msg': 'Invalid current password!'}, status=status.HTTP_400_BAD_REQUEST)
 			if serializer.validated_data['new_password'] != serializer.validated_data['confirm_password']:
+				print("password mismatch", flush=True)
 				return JsonResponse({'error_msg': 'Mismatch while confirming password!'}, status=status.HTTP_400_BAD_REQUEST)
 			player.set_password(serializer.validated_data['new_password'])
 			player.save()
+			print("password update success", flush=True)
 			return JsonResponse({'success': 'Password updated successfully!'}, status=status.HTTP_200_OK)
+		print("password error: ", serializer.errors, flush=True)
 		return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
