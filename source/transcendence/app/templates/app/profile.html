@@ -20,6 +20,15 @@
       
         <div class="form-container">
             <div class="form-group row">
+                <label for="full_name" class="col-sm-3 col-form-label">Name</label>
+                <div class="col-sm-7">
+                    <input type="text" class="form-control" id="full_name" value="{{ full_name }}" disabled />
+                </div>
+                <div class="col-sm-2 edit-icon">
+                    <button id="edit-name-icon" class="btn btn-light"><i class="fa-solid fa-pen"></i></button>
+                </div>
+            </div>
+            <div class="form-group row">
                 <label for="username" class="col-sm-3 col-form-label">Username</label>
                 <div class="col-sm-7">
                     <input type="text" class="form-control" id="username" value="{{ username }}" disabled />
@@ -40,19 +49,19 @@
             </div>
     
             <div class="form-group row">
-                <label for="password" class="col-sm-3 col-form-label">Password</label>
-                <div class="col-sm-7">
-                    <input type="password" class="form-control" id="password" value="********" disabled />
-                </div>
-                <div class="col-sm-2 edit-icon">
-                    <button id="edit-password-icon" class="btn btn-light"><i class="fa-solid fa-pen"></i></button>
-                </div>
-            </div>
+              <label for="password" class="col-sm-3 col-form-label">Password</label>
+              <div class="col-sm-7">
+                  <button id="change-password-btn" class="btn btn-primary">Change Password</button>
+              </div>
+              <!-- <div class="col-sm-2 edit-icon">
+                  <button id="edit-password-icon" class="btn btn-light"><i class="fa-solid fa-pen"></i></button>
+              </div> -->
+          </div>
         </div> <br>
       </div>
-      <div class="text-center mt-5 ">
+      <!-- <div class="text-center mt-5 ">
         <button id="update-user-info-btn" class="btn btn-primary">Update Profile</button>
-      </div>
+      </div> -->
       
     
       <!-- Password change section -->

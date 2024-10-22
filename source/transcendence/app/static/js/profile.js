@@ -76,10 +76,11 @@ async function UpdateUserInfo() {
         // user input validation here maybe
         const formData = {
             // can add firstname and lastname here
-            username: document.getElementById('username').value,
-            email: document.getElementById('email').value,
+            full_name: document.getElementById('new-fullname').value,
+            username: document.getElementById('new-username').value,
+            email: document.getElementById('new-email').value,
         }
-        console.log(formData);
+        console.log(formData.full_name);
         const response = await fetch('/profile/', {
             method: 'PATCH',
             headers: {
@@ -88,12 +89,15 @@ async function UpdateUserInfo() {
             },
             body: JSON.stringify(formData)
         });
-
+        // print full name
+        
         if (response.ok) {
+            console.log("Full name: ", formData.full_name);
             console.log("User info updated");
             // update the user info in the DOM
             history.pushState(null, '', `/profile`);
             handleLocationChange();
+            closeUsernameModal();
         } else {
             throw new Error('Failed to update user info');
         }
@@ -238,8 +242,8 @@ async function updatePlayerPassword () {
             return;
         }
         console.log("Password updated");
-        // history.pushState(null, '', `/profile`);
-        // handleLocationChange();
+        history.pushState(null, '', `/profile`);
+        handleLocationChange();
         // close the modal
         closePasswordModal();
         // after modal is closed, display password update success message / modal
@@ -310,6 +314,73 @@ function handleOutsideClick(event) {
     }
 }
 
+// update username modal
+function updateUsernameModal() {
+    const existingModal = document.getElementById('username-modal');
+    if (existingModal) {
+        existingModal.remove();
+    }
+
+    // Create the modal
+    const modal = document.createElement('div');
+    modal.id = 'username-modal';
+    modal.className = 'username-modal';
+
+    // Create the modal content
+    const modalContent = document.createElement('div');
+    modalContent.className = 'modal-content';
+    
+    const full_name = document.getElementById('full_name').value;
+    const username = document.getElementById('username').value;
+    const email = document.getElementById('email').value;
+    console.log("Fullname", `${full_name}`);
+
+    modalContent.innerHTML = `
+        <h2 class="modal-title">Update Profile</h2>
+        <input type="text" id="new-fullname" class="modal-input" value="${full_name}" />
+        <input type="text" id="new-username" class="modal-input" value="${username}" />
+        <input type="email" id="new-email" class="modal-input" value="${ email }" />
+        <div id="error-msg" class="username-error-msg" style="display:none;"></div>
+        <button id="update-username-btn" class="modal-button modal-upload-btn">Update Profile</button>
+        <button id="close-username-modal" class="modal-button modal-close-btn">Cancel</button>
+    `;
+
+    modal.appendChild(modalContent);
+    document.body.appendChild(modal);
+
+    // Show the modal
+    modal.style.display = 'block';
+
+    // Add event listener to the update username button
+    const updateUsernameBtn = document.getElementById('update-username-btn');
+    updateUsernameBtn.addEventListener('click', UpdateUserInfo);
+    console.log( document.getElementById('username').value);
+
+    // Add event listener to close the modal
+    const closeBtn = document.getElementById('close-username-modal');
+    closeBtn.addEventListener('click', closeUsernameModal);
+
+    // Close the modal if user clicks outside of it
+    window.addEventListener('click', handleUsernameOutsideClick);
+}
+
+// close the username modal
+function closeUsernameModal() {
+    const modal = document.getElementById('username-modal');
+    if (modal) {
+        modal.style.display = 'none';
+        modal.remove(); // Remove the modal from the DOM
+    }
+}
+
+// close the username modal if user clicks outside of it
+function handleUsernameOutsideClick(event) {
+    const modal = document.getElementById('username-modal');
+    if (event.target === modal) {
+        closeUsernameModal();
+    }
+}
+
 // a function to initialize the profile page and add event listeners
 function initProfilePage() {
 
@@ -322,8 +393,7 @@ function initProfilePage() {
     //         updatePassSubmitBtn.addEventListener('click', updatePlayerPassword);
     //     });
     // }
-
-    const changePassIcon = document.getElementById('edit-password-icon');
+    const changePassIcon = document.getElementById('change-password-btn');
     if (changePassIcon) {
         changePassIcon.addEventListener('click', createAndShowPasswordModal);
     }
@@ -335,10 +405,11 @@ function initProfilePage() {
 
     const deleteAccountBtn = document.getElementById('delete-acc-btn');
     const enableDisable2FABtn = document.getElementById('enable-disable-2fa');
+    const editNameIcon = document.getElementById('edit-name-icon');
     const editUsernameIcon = document.getElementById('edit-username-icon');
     const editEmailIcon = document.getElementById('edit-email-icon');
     const updateUserInfoBtn = document.getElementById('update-user-info-btn');
-    const updatePFPBtn = document.getElementById('update-profile-pic-btn');
+    // const updatePFPBtn = document.getElementById('update-profile-pic-btn');
     if (deleteAccountBtn) {
         deleteAccountBtn.addEventListener('click', deleteAccount);
     }
@@ -348,19 +419,29 @@ function initProfilePage() {
     }
     
     if (editUsernameIcon) {
+        editNameIcon.addEventListener('click', () => {
+            updateUsernameModal();
+        });
+    }
+    if (editNameIcon) {
         editUsernameIcon.addEventListener('click', () => {
-            makeFieldEditable('username');
+            updateUsernameModal();
+        });
+    }
+    if (editEmailIcon) {
+        editEmailIcon.addEventListener('click', () => {
+            updateUsernameModal();
         });
     }
     if (editEmailIcon) {
         editEmailIcon.addEventListener('click', () => makeFieldEditable('email'));
     }
-    if (updatePFPBtn) {
-        updatePFPBtn.addEventListener('click', UploadNewProfilePic);
-    }
-    if (updateUserInfoBtn) {
-        updateUserInfoBtn.addEventListener('click', UpdateUserInfo);
-    }
+    // if (updatePFPBtn) {
+    //     updatePFPBtn.addEventListener('click', UploadNewProfilePic);
+    // }
+    // if (updateUserInfoBtn) {
+    //     updateUserInfoBtn.addEventListener('click', UpdateUserInfo);
+    // }
 }
 
 // initialize the profile page

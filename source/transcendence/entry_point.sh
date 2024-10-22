@@ -3,7 +3,7 @@
 # Run migrations
 echo "RUNNING MIGRATIONS"
 # python manage.py flush --no-input # this mf will delete all data from the database (everything!)
-python manage.py makemigrations
+python manage.py makemigrations # sql script creation
 python manage.py migrate
 
 # collecting all the static files from the apps and copying them to the STATIC_ROOT directory - (centralized location for nginx to 'em) 
@@ -15,8 +15,6 @@ pip freeze > requirements.txt
 # Create superuser
 echo "CREATING SUPER-USER"
 python manage.py createsuperuser --noinput \
-    --first_name="$DJANGO_SUPERUSER_FIRSTNAME" \
-    --last_name="$DJANGO_SUPERUSER_LASTNAME" \
     --username="$DJANGO_SUPERUSER_USERNAME" \
     --email="$DJANGO_SUPERUSER_EMAIL"
 
@@ -24,6 +22,7 @@ python manage.py createsuperuser --noinput \
 python manage.py shell <<EOF
 from account.models import Player
 player = Player.objects.get(username='$DJANGO_SUPERUSER_USERNAME')
+player.full_name = "$DJANGO_SUPERUSER_FULL_NAME"
 player.set_password('$DJANGO_SUPERUSER_PASSWORD')
 player.save()
 EOF
