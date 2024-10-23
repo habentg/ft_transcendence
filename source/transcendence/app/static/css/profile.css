@@ -15,7 +15,7 @@
     backdrop-filter: blur(20px);
     box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
     width: 50rem;
-    padding: 2rem;
+    padding-top: 0.5rem;
     border-radius: 10px;
 }
 
@@ -33,12 +33,12 @@ h3 {
     padding-left: 1rem;
 }
 
-#edit-username-icon, #edit-email-icon, #edit-password-icon {
+#edit-username-icon, #edit-email-icon, #edit-name-icon {
     background: rgba(255, 255, 255, 0.1);
     border: none;
 }
 
-#edit-username-icon:hover, #edit-email-icon:hover, #edit-password-icon:hover {
+#edit-username-icon:hover, #edit-email-icon:hover, #edit-name-icon:hover {
     background: #3399ff;
 }
 

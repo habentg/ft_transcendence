@@ -63,6 +63,12 @@ async function loadContent(route) {
                 'X-Requested-With': 'XMLHttpRequest',
             },
         });
+        if (route == 'signin' || route == 'signup') {
+            // Change the nav for sign up by droping the sign up and login buttons
+            document.getElementById('signup').style.display = "none";
+            document.getElementById('signin').style.display = "none";
+            document.getElementById('home').style.display = "none";
+        }
         
         // signout is a special case
         if (route == 'signout') {
