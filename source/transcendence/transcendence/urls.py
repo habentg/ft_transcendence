@@ -29,7 +29,7 @@ from django.urls import path, include
 
 urlpatterns = [
     # path('admin', admin.site.urls),
-    path('', include('app.urls')),
+    path('', include('app.urls')), # this sends all the requests to app.urls basically
     # path('api/', include(router.urls)),
 ]
 # + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
