@@ -43,7 +43,7 @@ fclean: down
 	@yes | docker system prune --all
 	@docker volume ls -q | grep -q . && docker volume rm $$(docker volume ls -q) || true 
 
-rebuild: fclean all collectstatic
+rebuild: fclean all
 
 # ----------------------- Managing app service only --------------------------
 
