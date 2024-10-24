@@ -98,7 +98,6 @@ help:
 	@echo "  up:           Start the services"
 	@echo "  build:        Build the services"
 	@echo "  down:         Stop the services"
-	@echo "  re:           Rebuild the services without deleting the persistent storages"
 	@echo "  start:        Start the services"
 	@echo "  stop:         Stop the services"
 	@echo "  restart:      Restart the services"

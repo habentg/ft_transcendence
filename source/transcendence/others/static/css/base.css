@@ -20,6 +20,7 @@ body {
 }
 
 body {
+  /* min-width: 700px; This will be added for min width of the body */
   background-color: white;
 }
 

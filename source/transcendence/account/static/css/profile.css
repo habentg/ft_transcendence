@@ -14,7 +14,6 @@
     background: rgba(255, 255, 255, 0.1);
     backdrop-filter: blur(20px);
     box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
-    width: 50rem;
     padding-top: 0.5rem;
     border-radius: 10px;
 }
@@ -304,4 +303,51 @@ hr {
     font-size: 0.9em;
     margin-bottom: 10px;
     display: none;
+}
+
+.table {
+    border: 1px solid #9c10a0;
+    width: fit-content;
+}
+
+.table th, .table td {
+    background-color: transparent; /* Transparent cell backgrounds */
+    border: 1px solid #9c10a0;
+}
+
+.table th {
+    color: whitesmoke; /* Set header text color */
+}
+
+.table td {
+    color: whitesmoke; /* Set cell text color */
+}
+
+.text-center {
+    text-align: center; /* Center text in the table */
+}
+
+.border-right {
+    border-right: 1px solid #9c10a0; /* Vertical line between columns */
+}
+
+.table th:last-child,
+.table td:last-child {
+    border-right: none; /* Remove the border from the last column */
+}
+
+.pagination {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: 20px;
+}
+
+.pagination button {
+    margin: 0 5px;
+}
+
+/* make class table headers widder */
+.table_headers {
+    width: 200px;
 }
