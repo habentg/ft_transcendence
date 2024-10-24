@@ -14,5 +14,6 @@ class FriendsViewSet(viewsets.ModelViewSet):
 		return Player.objects.all()
 		
 	def list(self, request, *args, **kwargs):
+		print('FriendsViewSet', flush=True)
 		print(self.get_queryset(), flush=True)
 		return super().list(request, *args, **kwargs)

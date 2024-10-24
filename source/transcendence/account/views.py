@@ -32,86 +32,7 @@ import urllib.parse
 from django.core.files import File
 from urllib.request import urlopen
 from tempfile import NamedTemporaryFile
-
-# base view for basic pages in our SPA
-"""
-	-> Basic Get view for all pages
-	-> If the request is an AJAX request (click route), return the html content as JSON
-	-> If the request is not an AJAX request (direct url visit), return the html content as a rendered page
-"""
-class BaseView(View):
-	template_name = None
-	title = None
-	css = None
-	js = None
-	
-	def get(self, request):
-		context = self.get_context_data(request)
-		html_content = render_to_string(self.template_name, context)
-		resources = {
-			'title': self.title,
-			'css': self.css,
-			'js': self.js,
-			'html': html_content
-		}
-		if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
-			return JsonResponse(resources)
-		else:
-			return render(request, 'account/base.html', resources)
-
-	def get_context_data(self, request):
-		return {}
-
-# view for the home page
-class HomeView(APIView, BaseView):
-	authentication_classes = [JWTCookieAuthentication]
-	permission_classes = [IsAuthenticated]
-	template_name = 'account/home.html'
-	title = 'Home Page'
-	css = 'css/home.css'
-	js = 'js/home.js'
-	
-	def handle_exception(self, exception):
-		if isinstance(exception, AuthenticationFailed):
-			response = HttpResponseRedirect(reverse('landing'))
-			response.delete_cookie('access_token')
-			response.delete_cookie('refresh_token')
-			response.delete_cookie('csrftoken')
-			response.status_code = 302
-			return response
-		return super().handle_exception(exception)
-
-	def get_context_data(self, request) :
-		user = request.user
-		data = {
-			'username': user.username,
-			'email': user.email,
-			'full_name': user.get_full_name(),
-		}
-		return data
-	
-# view for the index page
-class LandingPageView(BaseView):
-	template_name = 'account/landing.html'
-	css = 'css/landing.css'
-	# js = 'js/landing.js'
-	title = 'Index Page'
-
-	def get(self, request):
-		if request.COOKIES.get('access_token') and request.COOKIES.get('refresh_token'):
-			return HttpResponseRedirect(reverse('home_page'))
-		return super().get(request)
-
-# view for the 404 page1
-class Catch_All(BaseView):
-	template_name = 'account/404.html'
-	title = 'Error Page'
-	css = 'css/404.css'
-	js = 'js/404.js'
-
-	def get(self, request):
-		print('404 page: ', request)
-		return super().get(request)
+from others.views import BaseView
 
 # view for the sign up page
 @method_decorator(csrf_protect, name='dispatch')
@@ -202,13 +123,6 @@ class SignOutView(BaseView, View):
 			response.singed_out = True
 			return response
 
-# view for the csrf token request
-class CsrfRequest(APIView):
-	def get(self, request):
-		response = Response(status=status.HTTP_200_OK)
-		response.set_cookie('csrftoken', get_token(request))
-		return response
-
 # 42 Oauth2.0 callback
 # DOC: https://api.intra.42.fr/apidoc/guides/web_application_flow
 class Auth_42(View):
@@ -256,13 +170,13 @@ class OauthCallback(View):
 		
 		user_info = user_info_response.json()
 		
+
 		# Find or create user
 		player, created = Player.objects.get_or_create(
 			username=user_info['login'],
 			defaults={
 				'email': user_info['email'],
-				'first_name': user_info['first_name'],
-				'last_name': user_info['last_name'],
+				'full_name': user_info['usual_full_name'],
 			}
 		)
 
@@ -354,7 +268,7 @@ class PassResetNewPass(View):
 				'uidb64': uidb64,
 				'token': token
 			}
-			return render(request, 'account/base.html', resources)
+			return render(request, 'others/base.html', resources)
 		else:
 			return render(request, 'account/invalid_token.html')
 
@@ -429,15 +343,6 @@ class TwoFactorAuth(APIView, BaseView):
 			return JsonResponse({'tfa_enabled': player.tfa}, status=status.HTTP_200_OK)
 		return JsonResponse({'error': 'User not found'}, status=status.HTTP_404_NOT_FOUND)
 
-# Health check view
-class HealthCheck(View):
-	def get(self, request):
-		try:
-			with connection.cursor() as cursor:
-				cursor.execute("SELECT 1")
-			return HttpResponse("OK", status=200, content_type="text/plain")
-		except Exception:
-			return HttpResponse("ERROR", status=500, content_type="text/plain")
 
 # profile view
 class ProfileView(APIView, BaseView):
@@ -482,7 +387,7 @@ class ProfileView(APIView, BaseView):
 		data = {
 			'username': player.username,
 			'email': player.email,
-			'full_name': player.get_full_name(),
+			'full_name': player.full_name,
 			'2fa': player.tfa,
 			'profile_pic': player.profile_picture.url if player.profile_picture else None,
 		}
@@ -499,10 +404,17 @@ class UpdatePlayerPassword(APIView):
 		serializer = ChangePasswordSerializer(data=request.data)
 		if serializer.is_valid():
 			if not player.check_password(serializer.validated_data['current_password']):
+				print("Invalid current password", flush=True)
 				return JsonResponse({'error_msg': 'Invalid current password!'}, status=status.HTTP_400_BAD_REQUEST)
 			if serializer.validated_data['new_password'] != serializer.validated_data['confirm_password']:
+				print("password mismatch", flush=True)
 				return JsonResponse({'error_msg': 'Mismatch while confirming password!'}, status=status.HTTP_400_BAD_REQUEST)
 			player.set_password(serializer.validated_data['new_password'])
 			player.save()
+			print("password update success", flush=True)
 			return JsonResponse({'success': 'Password updated successfully!'}, status=status.HTTP_200_OK)
+		print("password error: ", serializer.errors, flush=True)
 		return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+

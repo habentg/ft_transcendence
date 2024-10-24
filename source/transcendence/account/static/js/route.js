@@ -14,7 +14,7 @@ async function handleLocationChange() {
 };
 
 // routing function -- without reloading the page
-function route(event) {
+function appRouter(event) {
     event = event || window.event;
     event.preventDefault();
     
@@ -26,17 +26,18 @@ function route(event) {
     handleLocationChange();
 };
 
-let account_routes = ['home', 'signin', 'signup', 'signout', 'forgot-password', 'reset-password'];
+let account_routes = ['signin', 'signup', 'signout', 'forgot-password', 'reset-password'];
 let game_routes = ['game', 'leaderboard', 'game-history', 'game-detail'];
 let user_routes = ['profile', 'change-password', 'delete-account'];
 let friend_routes = ['friends', 'friend-request'];
-// let other_routes = ['home', 'about', 'contact', '404', 'tos', 'privacy'];
+let other_routes = ['home', 'about', 'contact', '404', 'tos', 'privacy'];
 
 function determineRoute(route) {
     if (route === '' || route === '/')
         route = 'home';
     if (account_routes.includes(route))
         route = 'account/' + route;
+        // accountRouter(route);
     else if (game_routes.includes(route))
         route = 'game/' + route;
     else if (user_routes.includes(route))
@@ -44,11 +45,13 @@ function determineRoute(route) {
     else if (friend_routes.includes(route))
         route = 'friend/' + route;
     else if (other_routes.includes(route))
-        route = 'other/' + route;
+        route = route;
+    //    othersRouter(route);
     else
         route = 'other/404';
     return route;
 }
+
 // Load the content of the page
 async function loadContent(route) {
     // // bunch of ifs to correcly route to the correct "App" in django
@@ -95,6 +98,7 @@ async function loadContent(route) {
         console.error(`Failed to load -- ${route} -- page content:`, error);
     }
 }
+
 
 async function initApp() {
     

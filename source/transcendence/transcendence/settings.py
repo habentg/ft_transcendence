@@ -49,6 +49,7 @@ INSTALLED_APPS = [
     'rest_framework_simplejwt',
     'account',
     'friendship',
+    'others',
 ]
 
 MIDDLEWARE = [
@@ -77,7 +78,7 @@ ROOT_URLCONF = 'transcendence.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [BASE_DIR / 'templates'], # for html templates
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -273,7 +274,12 @@ REDIS_DB = 0
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
 """ basically we will run 'collectstatic' and it will collect all the static files from all the apps and put them in the static folder in the root directory of the project """
 STATIC_URL = 'static/'
+# to be commented out when deploying
 STATIC_ROOT = BASE_DIR / 'static'
+STATICFILES_DIRS = [
+    BASE_DIR / "others" / "static",
+    BASE_DIR / "account" / "static",
+]
 # STATIC_ROOT = '/media_static/static'
 
 # Media settings (determines where images will be uploaded)

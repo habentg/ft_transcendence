@@ -19,7 +19,7 @@ re: down up # rebuilding the services without deleting the persistent storages
 # ---------------------------- django related Operattions -------------------------------
 
 collectstatic:
-	$(COMPOSE) -f docker-compose.yaml exec app python manage.py --noinput
+	$(COMPOSE) -f docker-compose.yaml exec app python manage.py collectstatic --noinput
 
 migrate:
 	$(COMPOSE) -f docker-compose.yaml exec app python manage.py makemigrations
@@ -43,7 +43,7 @@ fclean: down
 	@yes | docker system prune --all
 	@docker volume ls -q | grep -q . && docker volume rm $$(docker volume ls -q) || true 
 
-rebuild: fclean all 
+rebuild: fclean all collectstatic
 
 # ----------------------- Managing app service only --------------------------
 
@@ -117,7 +117,3 @@ help:
 
 
 # ---------------------------- End of Makefile -------------------------------
-
-migrations:
-	$(COMPOSE) -f docker-compose.yaml exec app python manage.py makemigrations
-	$(COMPOSE) -f docker-compose.yaml exec app python manage.py migrate

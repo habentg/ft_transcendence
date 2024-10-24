@@ -6,9 +6,12 @@ class PlayerSignupSerializer(serializers.ModelSerializer):
 	password = serializers.CharField(max_length=100, min_length=3, style={'input_type': 'password'}, write_only=True)
 	class Meta:
 		model = Player
-		fields = ['first_name', 'last_name', 'username', 'email', 'password']
+		fields = ['full_name', 'username', 'email', 'password']
+		# fields = ['full_name', 'username', 'email', 'password']
 
 	def create(self, validated_data):
+		if (validated_data['password'] != self.initial_data['confirm_password']):
+			raise serializers.ValidationError("Passwords do not match from backend.")
 		user_password = validated_data.pop('password')
 		playa = self.Meta.model(**validated_data)
 		playa.set_password(user_password)
@@ -30,7 +33,8 @@ class PlayerSigninSerializer(serializers.Serializer):
 class PlayerProfileSerializer(serializers.ModelSerializer):
 	class Meta:
 		model = Player
-		fields = ['first_name', 'last_name', 'username', 'email', 'profile_picture']
+		fields = ['full_name', 'username', 'email', 'profile_picture']
+
 	# update profile picture - kinda tricky so updating it manually, the other fields will be updated by the default update method
 	def update(self, instance, validated_data):
 		profile_picture = validated_data.pop('profile_picture', None)

@@ -15,19 +15,21 @@ def validate_image_size(image):
 
 #Custom User Model
 class Player(AbstractUser):
+    full_name = models.CharField(max_length=150, blank=True)
     id = models.BigAutoField(primary_key=True)
     username = models.CharField(max_length=150, unique=True)
-    first_name = models.CharField(max_length=150)
-    last_name = models.CharField(max_length=150)
+    # first_name = models.CharField(max_length=150)
+    # last_name = models.CharField(max_length=150)
     email = models.EmailField()
+    password = models.CharField(max_length=150)
     password = models.CharField(max_length=150)
     tfa = models.BooleanField(default=False)
     secret = models.CharField(max_length=150, blank=True)
     verified = models.BooleanField(default=False)
     profile_picture = models.ImageField(
         upload_to='profile_pics/',
-        # default='profile_pics/default_profile_pic.jpeg',  # Set the default image
         validators=[validate_image_size]
+        # default='profile_pics/default_profile_pic.jpeg',  # Set the default image
     )
 
     USERNAME_FIELD = 'username'
@@ -35,3 +37,4 @@ class Player(AbstractUser):
 
     def __str__(self):
         return self.username
+

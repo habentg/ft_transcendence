@@ -15,7 +15,7 @@
     backdrop-filter: blur(20px);
     box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
     width: 50rem;
-    padding: 2rem;
+    padding-top: 0.5rem;
     border-radius: 10px;
 }
 
@@ -33,12 +33,12 @@ h3 {
     padding-left: 1rem;
 }
 
-#edit-username-icon, #edit-email-icon, #edit-password-icon {
+#edit-username-icon, #edit-email-icon, #edit-name-icon {
     background: rgba(255, 255, 255, 0.1);
     border: none;
 }
 
-#edit-username-icon:hover, #edit-email-icon:hover, #edit-password-icon:hover {
+#edit-username-icon:hover, #edit-email-icon:hover, #edit-name-icon:hover {
     background: #3399ff;
 }
 
@@ -54,7 +54,7 @@ h3 {
 }
 
 .user-details {
-    /* background-color: #b02c98; */
+    background-color: #b02c98;
     display: flex;
     flex-direction: column;
     padding: 2rem;
@@ -118,4 +118,190 @@ hr {
     justify-content: center;
     align-items: center;
     gap: 2rem;
+}
+
+
+/* Modal */
+.profile-pic-modal {
+    display: none;
+    position: fixed;
+    /* z-index: 1000; */
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    margin-top: 5rem;
+    overflow: auto;
+    background-color: rgba(0,0,0,0.4);
+}
+
+.modal-content {
+    background-color: #fefefe;
+    margin: 15% auto;
+    padding: 1rem;
+    border: 1px solid black;
+    width: 80%;
+    max-width: 500px;
+    border-radius: 5px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+.modal-title {
+    margin-top: 0;
+    color: #333;
+}
+
+.modal-input {
+    display: block;
+    width: 100%;
+    padding: 10px;
+    margin: 10px 0;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+
+.profile-pic-modal  .modal-button {
+    /* width: 80%; */
+    padding: 5px 10px;
+    margin: 10px 10px 0 0;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.modal-upload-btn {
+    background-color: #4CAF50;
+    color: white;
+}
+
+.modal-close-btn {
+    background-color: #f44336;
+    color: white;
+}
+
+/* Modal for change password */
+.password-change-modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0,0,0,0.4);
+}
+
+.password-modal-content {
+    background-color: #fefefe;
+    margin: 15% auto;
+    padding: 20px;
+    border: 1px solid #888;
+    width: 80%;
+    max-width: 500px;
+    border-radius: 5px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+.password-form-group {
+    margin-bottom: 15px;
+}
+
+.password-form-group label {
+    display: block;
+    margin-bottom: 5px;
+}
+
+.password-form-group input {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+
+.password-error-msg {
+    color: #f44336;
+    margin-bottom: 10px;
+    display: none;
+}
+
+
+/* Modal container for changing username */
+.username-modal {
+    position: fixed;
+    z-index: 1000; /* Ensure the modal appears on top */
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5); /* Background overlay */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* Modal content box */
+.modal-content {
+    background-color: white;
+    padding: 20px;
+    border-radius: 10px;
+    width: 90%;
+    max-width: 400px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+    text-align: center;
+}
+
+/* Modal title */
+.modal-title {
+    font-size: 1.5em;
+    margin-bottom: 20px;
+}
+
+/* Modal input field */
+.modal-input {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 20px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 1em;
+}
+
+/* Buttons */
+.modal-button {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    font-size: 1em;
+    cursor: pointer;
+    margin: 5px;
+    transition: background-color 0.3s ease;
+}
+
+/* Update button */
+.modal-upload-btn {
+    background-color: #28a745;
+    color: white;
+}
+
+.modal-upload-btn:hover {
+    background-color: #218838;
+}
+
+/* Cancel button */
+.modal-close-btn {
+    background-color: #dc3545;
+    color: white;
+}
+
+.modal-close-btn:hover {
+    background-color: #c82333;
+}
+
+/* Error message styling */
+.username-error-msg {
+    color: red;
+    font-size: 0.9em;
+    margin-bottom: 10px;
+    display: none;
 }
