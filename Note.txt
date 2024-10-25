@@ -46,3 +46,8 @@ TODO: ideas
 1. user redirect after delete not working
 2. image upload .. 
 3. implement next paramenter routing
+
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~ FRIENDSHIP todo's ~~~~~~~~~~~~~~~~~~~~~~~~~~ 
+TODO:
+~--> when a user is deleted (either by himself or by the admin), should be removed from all the players friend lists;

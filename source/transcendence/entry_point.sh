@@ -24,6 +24,7 @@ python manage.py createsuperuser --noinput \
 python manage.py shell <<EOF
 from account.models import Player
 player = Player.objects.get(username='$DJANGO_SUPERUSER_USERNAME')
+player.full_name = '$DJANGO_SUPERUSER_FULLNAME'
 player.set_password('$DJANGO_SUPERUSER_PASSWORD')
 player.save()
 EOF

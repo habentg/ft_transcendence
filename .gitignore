@@ -15,3 +15,4 @@
 
 # Ignore .git files
 .git/
+./leetcode/
