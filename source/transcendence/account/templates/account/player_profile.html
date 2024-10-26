@@ -2,14 +2,28 @@
 
 <div class="background-image">
   <div class="container my-5 blur-layer">
-    <h3 style="text-align: center"><span style="color: rgb(34, 34, 34)">Edit Profile</span></h3>
+    <h3 style="text-align: center">
+      <span style="color: rgb(34, 34, 34)">Edit Profile</span>
+    </h3>
     <hr />
     <div class="container profile-info">
       <div class="container">
         {% if profile_pic %}
-            <img src="{{ profile_pic }}" alt="profile-pic" class="rounded-circle" role="button" style="width: 200px; height: 200px;"/>
+        <img
+          src="{{ profile_pic }}"
+          alt="profile-pic"
+          class="rounded-circle"
+          role="button"
+          style="width: 200px; height: 200px"
+        />
         {% else %}
-            <img src="{% static 'images/default_profile_pic.jpeg' %}" alt="default-profile-pic" class="rounded-circle" role="button" style="width: 200px; height: 200px;"/>
+        <img
+          src="{% static 'images/default_profile_pic.jpeg' %}"
+          alt="default-profile-pic"
+          class="rounded-circle"
+          role="button"
+          style="width: 200px; height: 200px"
+        />
         {% endif %}
       </div>
       <div class="container username">
@@ -21,6 +35,7 @@
       <div class="container">
         <button id="add_friend" class="btn btn-primary">Add friend</button>
       </div>
-      <br>
+      <br />
+    </div>
   </div>
 </div>
