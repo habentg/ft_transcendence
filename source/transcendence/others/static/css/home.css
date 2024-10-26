@@ -10,7 +10,7 @@
 }
 
 .background-image {
-  background-image: url('/static/images/background2.jpg');
+  /* background-image: url('/static/images/background2.jpg'); */
   height: 100vh;
   background-size: cover;
   background-position: center;

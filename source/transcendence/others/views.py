@@ -27,8 +27,8 @@ class BaseView(View):
 	css = None
 	js = None
 	
-	def get(self, request):
-		context = self.get_context_data(request)
+	def get(self, request, *args, **kwargs):
+		context = self.get_context_data(request, **kwargs)
 		html_content = render_to_string(self.template_name, context)
 		resources = {
 			'title': self.title,
@@ -41,8 +41,35 @@ class BaseView(View):
 		else:
 			return render(request, 'others/base.html', resources)
 
-	def get_context_data(self, request):
+	def get_context_data(self, request, **kwargs):
 		return {}
+
+class PlayerProfileView(APIView, BaseView):
+	authentication_classes = [JWTCookieAuthentication]
+	permission_classes = [IsAuthenticated]
+
+	template_name = 'others/player_profile.html'
+	# title = 'Player Profile'
+	# css = 'css/player_profile.css'
+	# js = 'js/player_profile.js'
+
+	def get(self, request, *args, **kwargs):  # Use standard args and kwargs
+		print('Player Profile queried player: ', kwargs.get('username'), flush=True)    
+		return super().get(request, *args, **kwargs)  # Pass both args and kwargs
+
+	def get_context_data(self, request, **kwargs):  # Standardize to use kwargs
+		print('Player Profile queried player: ', kwargs.get('username'), flush=True)    
+		queried_user = request.user
+		if kwargs.get('username') and kwargs.get('username') != request.user.username:
+			queried_user = Player.objects.get(username=kwargs.get('username'))
+
+		return {
+			'username': queried_user.username,
+			'email': queried_user.email,
+			'full_name': queried_user.full_name,
+			'2fa': queried_user.tfa,
+			'profile_pic': queried_user.profile_picture.url if queried_user.profile_picture else None,
+		}	
 
 # view for the home page
 class HomeView(APIView, BaseView):
@@ -111,3 +138,4 @@ class CsrfRequest(APIView):
 		response = Response(status=status.HTTP_200_OK)
 		response.set_cookie('csrftoken', get_token(request))
 		return response
+

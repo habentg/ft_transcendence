@@ -2,7 +2,27 @@
 /* Me is trying to prevent double request */
 let isInitialLoad = true;
 
+// function to update the UI
+/* 
+    updates the URL in the browser based on:
+        - if the route is deep or not;
+    calls the handleLocationChange function;
+*/
+function updateUI(path, deep_route) {
+    console.log("Routing to:", path);
+    if (deep_route)
+        history.pushState(null, '', `${path}`);
+    else
+        history.pushState(null, '', `${window.baseUrl}${path}`);
+    handleLocationChange();
+}
+
 // actual function to change the content of the page
+/*
+    extract the path from the browser URL;
+    load the content of the page;
+    NOTE: this will be used almost everywhere in this SPA;
+*/
 async function handleLocationChange() {
     let path = (window.location.pathname.slice(1));
     
@@ -13,7 +33,14 @@ async function handleLocationChange() {
     await loadContent(path);
 };
 
-// routing function -- without reloading the page
+// routing function
+/* 
+    for click events;
+    creates URL obj with the "href" form the <a>;
+    path extration from the URL obj;
+    if the path is the same as the current path, do nothing - avoiding unnecessary requests;
+    then update the UI;
+*/
 function appRouter(event) {
     event = event || window.event;
     event.preventDefault();
@@ -22,8 +49,7 @@ function appRouter(event) {
     let path = new URL(href).pathname;
     if (path === window.location.pathname)
         return;
-    history.pushState(null, '', path);
-    handleLocationChange();
+    updateUI(path, false);
 };
 
 let account_routes = ['signin', 'signup', 'signout', 'forgot-password', 'reset-password'];
@@ -110,6 +136,7 @@ async function initApp() {
         isInitialLoad = true;
         await handleLocationChange()
     });
+    window.baseUrl = 'http://localhost';
 };
 
 initApp();

@@ -44,5 +44,9 @@ https://www.ibm.com/topics/redis#:~:text=Caching%20for%20databases%3A%20Redis%20
 https://priyankdesai515.medium.com/make-your-django-rest-api-10-times-faster-with-redis-5736baedb271
 
 
+# friendship system
+https://developer.mozilla.org/en-US/docs/Learn/Server-side/Django/Models
+
+
 
 ## Production 
