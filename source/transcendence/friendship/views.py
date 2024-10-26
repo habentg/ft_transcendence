@@ -2,6 +2,7 @@ from rest_framework import viewsets
 from rest_framework.permissions import IsAuthenticated
 from account.auth_middleware import JWTCookieAuthentication
 from account.models import Player
+from .models import *
 from .serializers import FriendsSerializer
 
 # Create your views here.
@@ -15,5 +16,5 @@ class FriendsViewSet(viewsets.ModelViewSet):
 		
 	def list(self, request, *args, **kwargs):
 		print('FriendsViewSet', flush=True)
-		print(self.get_queryset(), flush=True)
+		# print(self.fr(), flush=True)
 		return super().list(request, *args, **kwargs)

@@ -8,4 +8,5 @@ urlpatterns = [
     re_path(r'^home/?$', HomeView.as_view(), name='home_page'),
     re_path(r'^health/?$', HealthCheck.as_view(), name='health_check'),
     re_path(r'^csrf_request/?$', CsrfRequest.as_view(), name='crf_request'),
+    re_path(r'^player_profile/<username>?$', PlayerProfileView.as_view(), name='player_profile'),
 ]

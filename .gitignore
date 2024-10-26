@@ -1,5 +1,5 @@
 # Ignore .env file in the source directory
-**/.env
+source/.env
 
 # Ignore __pycache__ directories
 **/__pycache__/
@@ -8,10 +8,13 @@
 **/*.pyc
 
 # Ignore the build directory
-./.vscode/
+.vscode/
 
 # Ignore .txt files
 *.txt
 
 # Ignore .git files
 .git/
+
+# Ignore the leetcode directory
+leetcode/

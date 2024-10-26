@@ -16,7 +16,7 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
-from others.views import Catch_All
+from others.views import Catch_All, PlayerProfileView
 from django.urls import path, include
 
 from rest_framework.routers import DefaultRouter
@@ -29,8 +29,9 @@ urlpatterns = [
     path('admin', admin.site.urls),
     path('', include('others.urls')),
     path('', include('account.urls')),
-    path('', include(friends_router.urls), name='friends'), # /friends
-    # path('', include('friendship.urls')),
+    path('', include('friendship.urls')),
+    path('player_profile/<username>', PlayerProfileView.as_view(), name='player_profile'),
+    # path('', include(friends_router.urls), name='friends'), # /friends
     # path('game/', include('game.urls')),
     # path('other/', include('other.urls')),
     path('', Catch_All.as_view, name='404')#404
