@@ -1,18 +1,3 @@
-
-/* body {
-  background-image: url('/static/images/Gaming-0_generated.jpg');
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
-  background-attachment: fixed;
-} */
-
-/* 
-body {
-  background-color: #555252;
-  color: #e9e9e9;
-} */
-
 * {
   margin: 0;
   padding: 0;
@@ -33,16 +18,17 @@ header {
 
 .custom-navbar {
   background-color: black;
-  padding: 1rem;
-  margin: 2rem auto;
-  position: fixed; 
+  /* padding: 0; */
+  margin: 15px auto;
+  position: fixed;
   top: 0;
   width: 60%;
+  height: 55px;
   display: flex;
   justify-content: center;
   align-items: center;
-  border-radius: 2.5rem;
-  border: 0.1rem solid #84ddfc; 
+  border-radius: 40px;
+  border: 1px solid #84ddfc;
 }
 
 /* Style the brand logo */
@@ -72,12 +58,6 @@ header {
   border-color: #84ddfc;
 }
 
-* {
-	margin: 0;
-	padding: 0;
-	box-sizing: border-box;
-}
-
 footer {
   background-color: darkgrey;
   opacity: 0.8;
@@ -86,7 +66,7 @@ footer {
   flex-direction: column;
   align-items: center;
   text-align: center;
-  padding: 1rem;
+  /* padding: 1rem; */
   /* height: 15%;  */
 }
 
@@ -97,16 +77,16 @@ footer ul {
 }
 
 footer ul li {
-  margin: 1rem;
+  margin: 10px;
 }
 
 footer h5 {
-  margin-bottom: 2rem;
+  margin-bottom: 20px;
 }
 
 .footer-links {
   display: flex;
-  gap: 1rem;
+  gap: 20px;
   justify-content: center;
 }
 
