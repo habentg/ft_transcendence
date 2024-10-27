@@ -34,8 +34,9 @@ async function handlePassResetSubmit(e) {
         localStorage.setItem('token', token);
     
         // Redirect to the password reset new password page
-        history.pushState(null, '', `/password_reset_confirm`);
-        handleLocationChange();
+        updateUI(`/password_reset_confirm`, false);
+        // history.pushState(null, '', `/password_reset_confirm`);
+        // handleLocationChange();
     } catch (error) {
         console.error('Error:', error);
     }
@@ -74,8 +75,9 @@ async function handlePassChangeSubmit(e) {
         }
         alert("Password reset successfully! Please sign in with your new password.");
         // Redirect to the signin page
-        history.pushState(null, '', `/signin`);
-        handleLocationChange();
+        updateUI(`/signin`, false);
+        // history.pushState(null, '', `/signin`);
+        // handleLocationChange();
         // Clear the local storage
         localStorage.removeItem('uidb64');
         localStorage.removeItem('token');

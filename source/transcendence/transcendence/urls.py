@@ -19,20 +19,11 @@ from django.urls import path, include
 from others.views import Catch_All, PlayerProfileView
 from django.urls import path, include
 
-from rest_framework.routers import DefaultRouter
-from friendship.views import *
-
-friends_router = DefaultRouter()
-friends_router.register(r'friends', FriendsViewSet, basename='friends')
-
 urlpatterns = [
     path('admin', admin.site.urls),
     path('', include('others.urls')),
     path('', include('account.urls')),
     path('', include('friendship.urls')),
     path('player_profile/<username>', PlayerProfileView.as_view(), name='player_profile'),
-    # path('', include(friends_router.urls), name='friends'), # /friends
-    # path('game/', include('game.urls')),
-    # path('other/', include('other.urls')),
     path('', Catch_All.as_view, name='404')#404
 ]

@@ -40,8 +40,9 @@ async function handleSignupSubmit(e) {
             return;
         }
         // redirect to the protected page
-        history.pushState(null, '', `/home`);
-        handleLocationChange();
+        updateUI(`/home`, false);
+        // history.pushState(null, '', `/home`);
+        // handleLocationChange();
     } catch (error) {
         console.error('Error:', error);
     }

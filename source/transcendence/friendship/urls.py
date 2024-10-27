@@ -10,5 +10,8 @@ friends_router.register(r'friends', FriendsViewSet, basename='friends')
 
 # Add this to your urls.py
 urlpatterns = [
-    path('', include(friends_router.urls), name='friends'), # /friends
+    path('friend_request/<str:username>/', FriendRequestView.as_view(), name='friend_request'),
+    # re_path(r'friend_request/<str:username>/?$', FriendRequestView.as_view(), name='friend_request'), # /friend
+    # path('', include(friends_router.urls), name='friends'), # /friends
+    # path('friends', include(friends_router.urls), name='friends'), # /friends/1
 ]

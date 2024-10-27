@@ -39,7 +39,17 @@
         </div>
         <div class="container my-5 d-flex justify-content-center">
           <div class="d-flex justify-content-between align-items-center ">
-            <button id="add_firend_btn" class="btn btn-primary mx-2">Add Friend</button>
+            {% if friendship_status == 'PENDING'%}
+              <button id="accept_friend_btn" class="btn btn-primary mx-2">Accept Friend Request</button>
+              <button id="reject_friend_btn" class="btn btn-danger mx-2">Reject Friend Request</button>
+            {% elif friendship_status == 'ACCEPTED' %}
+              <button id="unfriend_btn" class="btn btn-danger mx-2">Unfriend</button>
+            {% elif friendship_status == 'REJECTED' %}
+              <button id="add_friend_btn" class="btn btn-primary mx-2">Add Friend</button>
+            {% else %}
+              <button id="add_friend_btn" class="btn btn-primary mx-2">Add Friend</button>
+            {% endif %}
+            {% comment %} <button id="add_friend_btn" class="btn btn-primary mx-2">Add Friend</button> {% endcomment %}
           </div>
         </div>
       </div>

@@ -33,6 +33,8 @@ from django.core.files import File
 from urllib.request import urlopen
 from tempfile import NamedTemporaryFile
 from others.views import BaseView
+from friendship.models import FriendList
+from django.shortcuts import get_object_or_404
 
 # view for the sign up page
 @method_decorator(csrf_protect, name='dispatch')
@@ -58,6 +60,8 @@ class SignUpView(APIView, BaseView):
 				response = Response(status=status.HTTP_201_CREATED)
 				response.set_cookie('access_token', str(refresh.access_token), httponly=True)
 				response.set_cookie('refresh_token', str(refresh), httponly=True)
+				# create a friend list for the new player
+				FriendList.objects.create(player=new_player)
 				return response
 			return Response({'error_msg': 'Couldn\'t create the player'}, status=status.HTTP_422_UNPROCESSABLE_ENTITY)
 		return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

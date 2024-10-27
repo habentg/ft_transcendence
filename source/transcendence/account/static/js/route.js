@@ -9,11 +9,14 @@ let isInitialLoad = true;
     calls the handleLocationChange function;
 */
 function updateUI(path, deep_route) {
-    console.log("Routing to:", path);
-    if (deep_route)
+    if (deep_route) {
+        console.log("UpdateUI - Routing to:", `${path}`);
         history.pushState(null, '', `${path}`);
-    else
+    }
+    else {
+        console.log("UpdateUI - Routing to:", `${window.baseUrl}${path}`);
         history.pushState(null, '', `${window.baseUrl}${path}`);
+    }
     handleLocationChange();
 }
 
@@ -46,9 +49,12 @@ function appRouter(event) {
     event.preventDefault();
     
     let href = event.target.href;
-    let path = new URL(href).pathname;
+    let urlObj = new URL(href);
+    let path = urlObj.pathname;
+    console.log("AppRoute - Routing to:", urlObj);
     if (path === window.location.pathname)
         return;
+    console.log("AppRoute - Routing to:", path);
     updateUI(path, false);
 };
 
@@ -94,8 +100,9 @@ async function loadContent(route) {
         if (route == 'signout') {
             // removing any css js if there is any
             removeResource();
-            history.pushState(null, '', '/');
-            handleLocationChange();
+            updateUI('/', false);
+            // history.pushState(null, '', '/');
+            // handleLocationChange();
             return;
         }
         console.log("Loading content for:", route, "Response:", response);
@@ -105,8 +112,9 @@ async function loadContent(route) {
             if (response.status === 302) {
                 const data = await response.json();
                 console.log("Redirecting to:", data['redirect']);
-                history.pushState(null, '', data['redirect']);
-                handleLocationChange();
+                updateUI(data['redirect'], false);
+                // history.pushState(null, '', data['redirect']);
+                // handleLocationChange();
                 return;
             }
             if (response.status === 401) {

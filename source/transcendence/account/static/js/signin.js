@@ -24,8 +24,9 @@ async function handleSignInSubmit(e) {
         if (!response.ok) {
             if (response.status === 302) {
                 // Redirect to the two factor authentication page
-                history.pushState(null, '', `/2fa`);
-                handleLocationChange();
+                updateUI(`/2fa`, false);
+                // history.pushState(null, '', `/2fa`);
+                // handleLocationChange();
             }
             else
             {
@@ -35,8 +36,9 @@ async function handleSignInSubmit(e) {
             return;
         }
         // redirect to the protected page
-        history.pushState(null, '', `/home`);
-        handleLocationChange();
+        updateUI(`/home`, false);
+        // history.pushState(null, '', `/home`);
+        // handleLocationChange();
     } catch (error) {
         console.error('Error:', error);
     }
