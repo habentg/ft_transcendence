@@ -1,6 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
 from django.core.exceptions import ValidationError
+from friendship.models import *
 
 def validate_image_size(image):
     if hasattr(image, 'size'):
@@ -39,4 +40,16 @@ class Player(AbstractUser):
 
     def __str__(self):
         return self.username
+
+    def get_friendship_status(self, other_player):
+        """Returns the friendship status with another player"""
+        try:
+            # Check for an existing friend request from either direction
+            friend_request = FriendRequest.objects.filter(sender=self, receiver=other_player).first() or FriendRequest.objects.filter(sender=other_player, receiver=self).first()
+
+            if friend_request:
+                return friend_request.status  # 'PENDING', 'ACCEPTED', or 'DECLINED'
+            return 'NO_REQUEST'
+        except FriendRequest.DoesNotExist:
+            return 'NO_REQUEST'
 

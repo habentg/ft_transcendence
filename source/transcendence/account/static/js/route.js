@@ -39,14 +39,19 @@ async function handleLocationChange() {
     then update the UI;
 */
 function appRouter(event) {
-  event = event || window.event;
-  event.preventDefault();
+    event = event || window.event;
+    event.preventDefault();
+    
+    let href = event.target.href;
+    let urlObj = new URL(href);
+    let path = urlObj.pathname;
+    console.log("AppRoute - Routing to:", urlObj);
+    if (path === window.location.pathname)
+        return;
+    console.log("AppRoute - Routing to:", path);
+    updateUI(path, false);
+};
 
-  let href = event.target.href;
-  let path = new URL(href).pathname;
-  if (path === window.location.pathname) return;
-  updateUI(path, false);
-}
 
 let account_routes = [
   "signin",
@@ -92,28 +97,27 @@ async function loadContent(route) {
       // Remove any CSS/JS if necessary
       removeResource();
 
-      // Update the history state
-      history.pushState(null, "", "/");
-
+      
       // Select the navbar element
       const navbar = document.getElementById("navbarNavDropdown");
-
+      
       // Update the navbar for unauthenticated users
       navbar.innerHTML = `
-                <ul class="navbar-nav ms-auto">
-                    <li class="nav-item">
-                        <a onclick="appRouter()" class="nav-link mx-2" href="home">Home</a>
-                    </li>
-                    <li class="nav-item">
-                        <a onclick="appRouter()" class="nav-link mx-2" href="signin">Sign in</a>
-                    </li>
-                    <li class="nav-item">
-                        <a onclick="appRouter()" class="nav-link mx-2" href="signup">Sign up</a>
-                    </li>
-                </ul>
-            `;
+      <ul class="navbar-nav ms-auto">
+      <li class="nav-item">
+      <a onclick="appRouter()" class="nav-link mx-2" href="home">Home</a>
+      </li>
+      <li class="nav-item">
+      <a onclick="appRouter()" class="nav-link mx-2" href="signin">Sign in</a>
+      </li>
+      <li class="nav-item">
+      <a onclick="appRouter()" class="nav-link mx-2" href="signup">Sign up</a>
+      </li>
+      </ul>
+      `;
       // Handle any additional logic for location change
-      handleLocationChange();
+      // Update the history state
+      updateUI("/", false);
       return;
     }
 

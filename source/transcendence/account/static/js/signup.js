@@ -35,17 +35,18 @@ async function handleSignupSubmit(e) {
       body: JSON.stringify(formData),
     });
 
-    console.log("response:", response);
-    if (!response.ok) {
-      const responseData = await response.json();
-      console.log("responseData:", responseData);
-      displayError({ error_msg: responseData[0] });
-      return;
+        console.log("response:", response);
+        if (!response.ok) {
+            const responseData = await response.json();
+            console.log("responseData:", responseData);
+            displayError({error_msg: responseData[0]});
+            return;
+        }
+        // redirect to the protected page
+        updateUI(`/home`, false);
+        // history.pushState(null, '', `/home`);
+        // handleLocationChange();
+    } catch (error) {
+        console.error('Error:', error);
     }
-    // redirect to the protected page
-    history.pushState(null, "", `/home`);
-    handleLocationChange();
-  } catch (error) {
-    console.error("Error:", error);
-  }
 }

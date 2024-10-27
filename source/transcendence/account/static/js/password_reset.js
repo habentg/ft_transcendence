@@ -29,16 +29,17 @@ async function handlePassResetSubmit(e) {
     const uidb64 = responseData.uidb64;
     const token = responseData.token;
 
-    // Store the uidb64 and token in the local storage
-    localStorage.setItem("uidb64", uidb64);
-    localStorage.setItem("token", token);
-
-    // Redirect to the password reset new password page
-    history.pushState(null, "", `/password_reset_confirm`);
-    handleLocationChange();
-  } catch (error) {
-    console.error("Error:", error);
-  }
+        // Store the uidb64 and token in the local storage
+        localStorage.setItem('uidb64', uidb64);
+        localStorage.setItem('token', token);
+    
+        // Redirect to the password reset new password page
+        updateUI(`/password_reset_confirm`, false);
+        // history.pushState(null, '', `/password_reset_confirm`);
+        // handleLocationChange();
+    } catch (error) {
+        console.error('Error:', error);
+    }
 }
 
 // Handle the password change
@@ -52,39 +53,31 @@ async function handlePassChangeSubmit(e) {
     new_password: document.getElementById("new_password").value,
   };
 
-  if (formData.new_password !== document.getElementById("confirm_pass").value) {
-    alert("Passwords do not match");
-    return;
-  }
-
-  try {
-    const m_csrf_token = await getCSRFToken();
-    const response = await fetch(
-      `/password_reset_newpass/${uidb64}/${token}/`,
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "X-CSRFToken": m_csrf_token,
-        },
-        body: JSON.stringify(formData),
-      }
-    );
-    const responseData = await response.json();
-    if (!response.ok) {
-      alert("Password couldn't reset: " + responseData.error_msg);
-      return;
+    try {
+        const m_csrf_token = await getCSRFToken();
+        const response = await fetch(`/password_reset_newpass/${uidb64}/${token}/`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': m_csrf_token
+            },
+            body: JSON.stringify(formData)
+        });
+        const responseData = await response.json();
+        if (!response.ok) {
+            alert("Password couldn't reset: " + responseData.error_msg);
+            return;
+        }
+        alert("Password reset successfully! Please sign in with your new password.");
+        // Redirect to the signin page
+        updateUI(`/signin`, false);
+        // history.pushState(null, '', `/signin`);
+        // handleLocationChange();
+        // Clear the local storage
+        localStorage.removeItem('uidb64');
+        localStorage.removeItem('token');
     }
-    alert(
-      "Password reset successfully! Please sign in with your new password."
-    );
-    // Redirect to the signin page
-    history.pushState(null, "", `/signin`);
-    handleLocationChange();
-    // Clear the local storage
-    localStorage.removeItem("uidb64");
-    localStorage.removeItem("token");
-  } catch (error) {
-    console.error("Error:", error);
-  }
+    catch (error) {
+        console.error('Error:', error);
+    }
 }

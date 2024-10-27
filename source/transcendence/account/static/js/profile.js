@@ -18,22 +18,21 @@ async function deleteAccount() {
     if (response.status === 200) {
       // const data = await response.json();
       console.log("Account deleted successfully");
-      history.pushState(null, "", `/`);
       const navbar = document.getElementById("navbarNavDropdown");
       navbar.innerHTML = `
-                <ul class="navbar-nav ms-auto">
-                <li class="nav-item">
-                <a onclick="appRouter()" class="nav-link mx-2" href="home">Home</a>
-                </li>
-                <li class="nav-item">
-                <a onclick="appRouter()" class="nav-link mx-2" href="signin">Sign in</a>
-                </li>
-                <li class="nav-item">
-                <a onclick="appRouter()" class="nav-link mx-2" href="signup">Sign up</a>
-                </li>
-                </ul>
-            `;
-      handleLocationChange();
+      <ul class="navbar-nav ms-auto">
+      <li class="nav-item">
+      <a onclick="appRouter()" class="nav-link mx-2" href="home">Home</a>
+      </li>
+      <li class="nav-item">
+      <a onclick="appRouter()" class="nav-link mx-2" href="signin">Sign in</a>
+      </li>
+      <li class="nav-item">
+      <a onclick="appRouter()" class="nav-link mx-2" href="signup">Sign up</a>
+      </li>
+      </ul>
+      `;
+      updateUI('/', false);
       return;
     }
     throw new Error("Failed to delete account");
@@ -81,70 +80,73 @@ function makeFieldEditable(fieldId) {
 
 // updating user info
 async function UpdateUserInfo() {
-  try {
-    // user input validation here maybe
-    const formData = {
-      // can add firstname and lastname here
-      full_name: document.getElementById("new-fullname").value,
-      username: document.getElementById("new-username").value,
-      email: document.getElementById("new-email").value,
-    };
-    console.log(formData.full_name);
-    const response = await fetch("/profile/", {
-      method: "PATCH",
-      headers: {
-        "Content-Type": "application/json",
-        "X-CSRFToken": await getCSRFToken(),
-      },
-      body: JSON.stringify(formData),
-    });
-    // print full name
-
-    if (response.ok) {
-      console.log("Full name: ", formData.full_name);
-      console.log("User info updated");
-      // update the user info in the DOM
-      history.pushState(null, "", `/profile`);
-      handleLocationChange();
-      closeUsernameModal();
-    } else {
-      throw new Error("Failed to update user info");
+    try {
+        // user input validation here maybe
+        const formData = {
+            // can add firstname and lastname here
+            full_name: document.getElementById('new-fullname').value,
+            username: document.getElementById('new-username').value,
+            email: document.getElementById('new-email').value,
+        }
+        console.log(formData.full_name);
+        const response = await fetch('/profile/', {
+            method: 'PATCH',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': await getCSRFToken()
+            },
+            body: JSON.stringify(formData)
+        });
+        // print full name
+        
+        if (response.ok) {
+            console.log("Full name: ", formData.full_name);
+            console.log("User info updated");
+            // update the user info in the DOM
+            updateUI('/profile', false);
+            // history.pushState(null, '', `/profile`);
+            // handleLocationChange();
+            closeUsernameModal();
+        } else {
+            throw new Error('Failed to update user info');
+        }
+    } catch (error) {
+        console.error('Error:', error);
     }
-  } catch (error) {
-    console.error("Error:", error);
-  }
 }
 
 // upload profile picture
 async function UploadNewProfilePic() {
-  try {
-    // user input validation here maybe
-    const profilePicFile = document.getElementById("profile-pic").files[0];
-    console.log("Profile pic file:", profilePicFile);
-    if (profilePicFile === undefined) throw new Error("No file selected");
-    // using FormData to send the file - browser will set the correct headers
-    const formData = new FormData();
-    formData.append("profile_picture", profilePicFile);
-    const response = await fetch("/profile/", {
-      method: "PATCH",
-      headers: {
-        "X-CSRFToken": await getCSRFToken(),
-      },
-      // sending body directly as FormData - no need to stringify
-      body: formData,
-    });
+    try {
+        // user input validation here maybe
+        const profilePicFile = document.getElementById('profile-pic').files[0];
+        console.log("Profile pic file:", profilePicFile);
+        if (profilePicFile === undefined) 
+            throw new Error('No file selected');
+        // using FormData to send the file - browser will set the correct headers
+        const formData = new FormData();
+        formData.append('profile_picture', profilePicFile);
+        const response = await fetch('/profile/', {
+            method: 'PATCH',
+            headers: {
+                'X-CSRFToken': await getCSRFToken()
+            },
+            // sending body directly as FormData - no need to stringify
+            body: formData
+        });
 
-    if (response.ok) {
-      console.log("Profile pic updated");
-      // update the user info in the DOM
-      history.pushState(null, "", `/profile`);
-      handleLocationChange();
-    } else {
-      throw new Error("Failed to update profile pic");
+        if (response.ok) {
+            console.log("Profile pic updated");
+            // update the user info in the DOM
+            updateUI('/profile', false);
+            // history.pushState(null, '', `/profile`);
+            // handleLocationChange();
+        } else {
+            throw new Error('Failed to update profile pic');
+        }
+    } catch (error) {
+        console.error('Error:', error);
     }
-  } catch (error) {
-    console.error("Error:", error);
-  }
 }
 
 function createAndShowPasswordModal() {
@@ -224,39 +226,40 @@ function handlePasswordOutsideClick(event) {
 // }
 
 // update user password
-async function updatePlayerPassword() {
-  try {
-    const formData = {
-      current_password: document.getElementById("curr-password").value,
-      new_password: document.getElementById("new-password").value,
-      confirm_password: document.getElementById("confirm-password").value,
-    };
-    console.log("Update password form data: ", formData);
-    const response = await fetch("/update_password/", {
-      method: "PATCH",
-      headers: {
-        "content-type": "application/json",
-        "X-CSRFToken": await getCSRFToken(),
-      },
-      body: JSON.stringify(formData),
-    });
-
-    console.log("Password update response: ", response);
-    if (!response.ok) {
-      const responseData = await response.json();
-      console.log("Json response: ", responseData);
-      displayError(responseData);
-      return;
+async function updatePlayerPassword () {
+    try {
+        const formData = {
+            current_password: document.getElementById('curr-password').value,
+            new_password: document.getElementById('new-password').value,
+            confirm_password: document.getElementById('confirm-password').value
+        }
+        console.log("Update password form data: ", formData);
+        const response = await fetch('/update_password/', {
+            method: 'PATCH',
+            headers: {
+                'content-type': 'application/json',
+                'X-CSRFToken': await getCSRFToken()
+            },
+            body: JSON.stringify(formData)
+        });
+    
+        console.log("Password update response: ", response);
+        if (!response.ok) {
+            const responseData = await response.json();
+            console.log("Json response: ", responseData);
+            displayError(responseData);
+            return;
+        }
+        console.log("Password updated");
+        updateUI('/profile', false);
+        // history.pushState(null, '', `/profile`);
+        // handleLocationChange();
+        // close the modal
+        closePasswordModal();
+        // after modal is closed, display password update success message / modal
+    } catch (error) {
+        console.error('Error:', error);
     }
-    console.log("Password updated");
-    history.pushState(null, "", `/profile`);
-    handleLocationChange();
-    // close the modal
-    closePasswordModal();
-    // after modal is closed, display password update success message / modal
-  } catch (error) {
-    console.error("Error:", error);
-  }
 }
 
 //  Helper function for updating profile picture modal

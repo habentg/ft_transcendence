@@ -51,7 +51,7 @@ class PlayerProfileView(APIView, BaseView):
 	template_name = 'others/player_profile.html'
 	# title = 'Player Profile'
 	# css = 'css/player_profile.css'
-	# js = 'js/player_profile.js'
+	js = 'js/friend.js'
 
 	def get(self, request, *args, **kwargs):  # Use standard args and kwargs
 		print('Player Profile queried player: ', kwargs.get('username'), flush=True)    
@@ -68,6 +68,7 @@ class PlayerProfileView(APIView, BaseView):
 			'email': queried_user.email,
 			'full_name': queried_user.full_name,
 			'2fa': queried_user.tfa,
+			'friendship_status': queried_user.get_friendship_status(request.user),
 			'profile_pic': queried_user.profile_picture.url if queried_user.profile_picture else None,
 		}	
 

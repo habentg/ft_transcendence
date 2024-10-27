@@ -8,34 +8,38 @@ async function handleSignInSubmit(e) {
     password: document.getElementById("password").value,
   };
 
-  try {
-    const m_csrf_token = await getCSRFToken();
-    console.log("CSRF Token:", m_csrf_token);
-    const response = await fetch("/signin/", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "X-CSRFToken": m_csrf_token,
-      },
-      body: JSON.stringify(formData),
-    });
-
-    console.log("response:", response);
-    if (!response.ok) {
-      if (response.status === 302) {
-        // Redirect to the two factor authentication page
-        history.pushState(null, "", `/2fa`);
-        handleLocationChange();
-      } else {
-        const responseData = await response.json();
-        displayError(responseData);
-      }
-      return;
+    try {
+        const m_csrf_token = await getCSRFToken();
+        console.log("CSRF Token:", m_csrf_token);
+        const response = await fetch('/signin/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': m_csrf_token
+            },
+            body: JSON.stringify(formData)
+        });
+        
+        console.log("response:", response);
+        if (!response.ok) {
+            if (response.status === 302) {
+                // Redirect to the two factor authentication page
+                updateUI(`/2fa`, false);
+                // history.pushState(null, '', `/2fa`);
+                // handleLocationChange();
+            }
+            else
+            {
+                const responseData = await response.json();
+                displayError(responseData);
+            }
+            return;
+        }
+        // redirect to the protected page
+        updateUI(`/home`, false);
+        // history.pushState(null, '', `/home`);
+        // handleLocationChange();
+    } catch (error) {
+        console.error('Error:', error);
     }
-    // redirect to the protected page
-    history.pushState(null, "", `/home`);
-    handleLocationChange();
-  } catch (error) {
-    console.error("Error:", error);
-  }
 }

@@ -25,8 +25,7 @@ async function handleOTPSubmit(event) {
     }
 
     // redirect to the protected page
-    history.pushState(null, "", `/${responseData.redirect}`);
-    handleLocationChange();
+    updateUI(`/${responseData.redirect}`, false);
   } catch (error) {
     console.error("Error:", error);
   }

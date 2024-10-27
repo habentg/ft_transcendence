@@ -41,7 +41,7 @@
   <header>
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark p-1 fixed-top custom-navbar">
       <div class="container-fluid">
-        <a onclick="appRouter()" class="navbar-brand" href="home">Beer Pong</a>
+        <a onclick="appRouter()" class="navbar-brand" href="/home">Beer Pong</a>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavDropdown"
           aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
           <span class="navbar-toggler-icon"></span>
@@ -52,25 +52,25 @@
           <ul class="navbar-nav ms-auto">
             <li class="nav-item">
               <a onclick="appRouter()" class="nav-link mx-2 {% if request.path == '/' %}active{% endif %}"
-                aria-current="page" href="home">Home</a>
+                aria-current="page" href="/home">Home</a>
             </li>
             {% if user.is_authenticated %}
             <li class="nav-item">
               <a onclick="appRouter()" class="nav-link mx-2 {% if 'profile' in request.path %}active{% endif %}"
-                href="profile">Profile</a>
+                href="/profile">Profile</a>
             </li>
             <li class="nav-item">
               <a onclick="appRouter()" class="nav-link mx-2 {% if 'signout' in request.path %}active{% endif %}"
-                href="signout">Signout</a>
+                href="/signout">Signout</a>
             </li>
             {% else %}
             <li class="nav-item">
               <a onclick="appRouter()" class="nav-link mx-2 {% if 'signin' in request.path %}active{% endif %}"
-                href="signin">Sign in</a>
+                href="/signin">Sign in</a>
             </li>
             <li class="nav-item">
               <a onclick="appRouter()" class="nav-link mx-2 {% if 'signup' in request.path %}active{% endif %}"
-                href="signup">Sign up</a>
+                href="/signup">Sign up</a>
             </li>
             {% endif %}
           </ul>
