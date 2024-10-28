@@ -9,21 +9,11 @@
     <div class="container profile-info">
       <div class="container">
         {% if profile_pic %}
-        <img
-          src="{{ profile_pic }}"
-          alt="profile-pic"
-          class="rounded-circle"
-          role="button"
-          style="width: 200px; height: 200px"
-        />
+        <img src="{{ profile_pic }}" alt="profile-pic" class="rounded-circle" role="button"
+          style="width: 200px; height: 200px" />
         {% else %}
-        <img
-          src="{% static 'images/default_profile_pic.jpeg' %}"
-          alt="default-profile-pic"
-          class="rounded-circle"
-          role="button"
-          style="width: 200px; height: 200px"
-        />
+        <img src="{% static 'images/default_profile_pic.jpeg' %}" alt="default-profile-pic" class="rounded-circle"
+          role="button" style="width: 200px; height: 200px" />
         {% endif %}
       </div>
       <div class="container username">

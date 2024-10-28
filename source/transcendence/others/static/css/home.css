@@ -1,16 +1,5 @@
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
-
-.first-page {
-  display: flex;
-  flex: 1;
-}
-
 .background-image {
-  /* background-image: url('/static/images/background2.jpg'); */
+  background-image: url('/static/images/background2.jpg');
   height: 100vh;
   background-size: cover;
   background-position: center;
@@ -22,7 +11,7 @@
   flex: 1;
 }
 
-.background-image .content {
+.content {
   /* background-color: rgba(255, 255, 255, 0.5); */
   border: var(--sds-size-stroke-border) solid rgba(255, 255, 255, 0.10);
   background: linear-gradient(140deg, rgba(255, 255, 255, 0.12) -1.82%, rgba(255, 255, 255, 0.04) 68.19%, rgba(255, 255, 255, 0.03) 80.14%);
@@ -34,22 +23,27 @@
   border-radius: 0.6rem;
 }
 
-.background-image .content ul {
-  list-style-type: none;
-  padding: 0;
-}
+.list-group {
+  padding: 2rem;
 
-
-.background-image .content ul li {
-  padding: 1rem;
-  margin: 1.2rem;
-  border: 0.1rem solid #84ddfc;
   border-radius: 0.5rem;
 }
 
+.list-group-item {
+  height: 80px;
+  padding: 10px;
+  /* margin: 0.8rem ; */
+  border: 2px solid #84ddfc; 
+  border-radius: 0.5rem;
+  background-color: transparent; 
+  color: white; 
+  display: flex; 
+  align-items: center;
+  justify-content: center;
+}
 
-.background-image .content ul li a {
-  color: #84ddfc;
-  text-decoration: none;
-  font-size: 1.5rem;
+.list-group-item:hover {
+  /* add good effect */
+  background-color: rgb(48, 206, 156);
+  color: black;
 }

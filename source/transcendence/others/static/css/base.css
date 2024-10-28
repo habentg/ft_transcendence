@@ -4,9 +4,14 @@
   box-sizing: border-box;
 }
 
+html,
 body {
   /* min-width: 700px; This will be added for min width of the body */
-  background-color: white;
+  background-color: rgb(0, 0, 0);
+  height: 100%;
+  width: 100%;
+  min-width: 415px;
+  min-height: 810px;
 }
 
 header {
@@ -56,6 +61,15 @@ header {
 /* Change navbar toggler color */
 .custom-navbar .navbar-toggler {
   border-color: #84ddfc;
+}
+
+#content {
+  /* margin-top: 55px; */
+  /* display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center; */
+  height: 100%;
 }
 
 footer {

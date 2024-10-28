@@ -1,0 +1,29 @@
+.background-image {
+    background-image: url('/static/images/background2.jpg');
+    height: 100vh;
+    background-size: cover;
+    background-position: center;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex: 1;
+}
+
+.blur-layer {
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(20px);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
+    padding-top: 0.5rem;
+    border-radius: 10px;
+}
+
+.d-flex {
+    flex-direction: column; 
+    align-items: center; 
+}
+
+.btn {
+    margin-bottom: 2rem; 
+}
+

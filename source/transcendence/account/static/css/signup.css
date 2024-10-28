@@ -1,3 +1,10 @@
+.sign_up_page {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  height: 100vh;
+}
+
 .background-image {
   background-image: url('/static/images/download.jpeg');
   background-size: cover;
@@ -10,10 +17,11 @@
 }
 
 .form-cont {
-  margin: 100px;
-  padding-bottom: 100px;
-  border-radius: 15px;
-  width: 450px;
+  margin: 80px 80px;
+  border-radius: 1.5rem;
+  min-width: 25rem;
+  max-width: 35rem;
+  padding-bottom: 3rem;
   border: var(--sds-size-stroke-border) solid rgba(255, 255, 255, 0.10);
   background: linear-gradient(140deg, rgba(255, 255, 255, 0.12) -1.82%, rgba(255, 255, 255, 0.04) 68.19%, rgba(255, 255, 255, 0.03) 80.14%);
   box-shadow: 0px 4px 24px -1px rgba(0, 0, 0, 0.20);
@@ -22,14 +30,14 @@
 }
 
 .form-cont h1 {
-  font-size: 25px;
+  font-size: 30px;
   color: white;
 }
 
 .form-cont input {
   border: 0.1rem solid #b02c98;
   margin: 0rem;
-  height: 30px;
+  /* height: 2rem; */
 }
 
 .form-cont label {
@@ -46,7 +54,7 @@
   background-color: #3399ff;
   color: white;
   border: none;
-  /* padding: 0.5rem 1rem; */
+  padding: 0.5rem 1rem;
   margin: 10px 0;
   border-radius: 0.5rem;
 }
@@ -63,7 +71,6 @@
 .form-cont p a:hover {
   color: #b02c98;
 }
-
 
 .first-name,
 .last-name {

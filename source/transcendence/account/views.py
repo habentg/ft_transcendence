@@ -417,4 +417,20 @@ class UpdatePlayerPassword(APIView):
 		return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
+class PlayerSettings(APIView, BaseView):
+	authentication_classes = [JWTCookieAuthentication]
+	permission_classes = [IsAuthenticated]
+	template_name = 'account/settings.html'
+	title = 'settings'
+	css = 'css/settings.css'
+	js = 'js/settings.js'
+
+	def get(self, request):
+		return super().get(request)
+	
+	def get_context_data(self, request):
+		player = request.user
+		return {
+			'2fa': player.tfa,
+		}
 

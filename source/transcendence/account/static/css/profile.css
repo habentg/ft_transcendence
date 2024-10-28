@@ -18,13 +18,13 @@
     border-radius: 10px;
 }
 
-
-h3 {
+h3, .welcome {
     color: white;
 }
 
 .form-group {
     margin-bottom: 0.6rem;
+    /* width: 400px; */
     color: white;
 }
 
@@ -32,23 +32,34 @@ h3 {
     padding-left: 1rem;
 }
 
-#edit-username-icon, #edit-email-icon, #edit-name-icon {
+#update-user-info {
+    margin-left:5rem;
+}
+
+/* #edit-username-icon,
+#edit-email-icon,
+#edit-name-icon {
     background: rgba(255, 255, 255, 0.1);
     border: none;
 }
 
-#edit-username-icon:hover, #edit-email-icon:hover, #edit-name-icon:hover {
+#edit-username-icon:hover,
+#edit-email-icon:hover,
+#edit-name-icon:hover {
     background: #3399ff;
-}
+} */
 
 .profile-dom {
     display: flex;
-    align-items: center; /* Ensures the profile picture is vertically aligned with the form */
-    position: relative; /* Establishes a positioning context for the icon */
+    align-items: center;
+    /* Ensures the profile picture is vertically aligned with the form */
+    position: relative;
+    /* Establishes a positioning context for the icon */
 }
 
 .icon {
-    position: absolute; /* Allows positioning within the .profile-dom */
+    position: absolute;
+    /* Allows positioning within the .profile-dom */
 
 }
 
@@ -102,13 +113,15 @@ hr {
 .user-details {
     /* background-color: #b02c98; */
     display: flex;
-    flex-direction: row; /* Ensures items are aligned in a row */
+    flex-direction: row;
+    /* Ensures items are aligned in a row */
     padding: 2rem;
     border-radius: 5px;
 }
 
 .form-container {
-    flex-grow: 1; /* Ensures the form takes up available space next to the image */
+    flex-grow: 1;
+    /* Ensures the form takes up available space next to the image */
 }
 
 .options {
@@ -131,7 +144,7 @@ hr {
     height: 100%;
     margin-top: 5rem;
     overflow: auto;
-    background-color: rgba(0,0,0,0.4);
+    background-color: rgba(0, 0, 0, 0.4);
 }
 
 .modal-content {
@@ -142,7 +155,7 @@ hr {
     width: 80%;
     max-width: 500px;
     border-radius: 5px;
-    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
 .modal-title {
@@ -159,7 +172,7 @@ hr {
     border-radius: 4px;
 }
 
-.profile-pic-modal  .modal-button {
+.profile-pic-modal .modal-button {
     /* width: 80%; */
     padding: 5px 10px;
     margin: 10px 10px 0 0;
@@ -188,7 +201,7 @@ hr {
     width: 100%;
     height: 100%;
     overflow: auto;
-    background-color: rgba(0,0,0,0.4);
+    background-color: rgba(0, 0, 0, 0.4);
 }
 
 .password-modal-content {
@@ -199,7 +212,7 @@ hr {
     width: 80%;
     max-width: 500px;
     border-radius: 5px;
-    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
 .password-form-group {
@@ -228,12 +241,14 @@ hr {
 /* Modal container for changing username */
 .username-modal {
     position: fixed;
-    z-index: 1000; /* Ensure the modal appears on top */
+    z-index: 1000;
+    /* Ensure the modal appears on top */
     left: 0;
     top: 0;
     width: 100%;
     height: 100%;
-    background-color: rgba(0, 0, 0, 0.5); /* Background overlay */
+    background-color: rgba(0, 0, 0, 0.5);
+    /* Background overlay */
     display: flex;
     justify-content: center;
     align-items: center;
@@ -310,30 +325,37 @@ hr {
     width: fit-content;
 }
 
-.table th, .table td {
-    background-color: transparent; /* Transparent cell backgrounds */
+.table th,
+.table td {
+    background-color: transparent;
+    /* Transparent cell backgrounds */
     border: 1px solid #9c10a0;
 }
 
 .table th {
-    color: whitesmoke; /* Set header text color */
+    color: whitesmoke;
+    /* Set header text color */
 }
 
 .table td {
-    color: whitesmoke; /* Set cell text color */
+    color: whitesmoke;
+    /* Set cell text color */
 }
 
 .text-center {
-    text-align: center; /* Center text in the table */
+    text-align: center;
+    /* Center text in the table */
 }
 
 .border-right {
-    border-right: 1px solid #9c10a0; /* Vertical line between columns */
+    border-right: 1px solid #9c10a0;
+    /* Vertical line between columns */
 }
 
 .table th:last-child,
 .table td:last-child {
-    border-right: none; /* Remove the border from the last column */
+    border-right: none;
+    /* Remove the border from the last column */
 }
 
 .pagination {

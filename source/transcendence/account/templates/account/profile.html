@@ -8,21 +8,18 @@
           <h3 class="text-center"><span>Profile</span></h3>
           <hr />
           <div class="container profile-info">
+            <!-- Welcome full name -->
+            <div class="container welcome text-center">
+              <h4>Welcome, <span>{{ full_name }}</span>!</h4>
+            </div>
             <div class="container user-details d-flex align-items-center">
               <div class="profile-dom me-4 position-relative">
                 {% if profile_pic %}
-                <img
-                  src="{{ profile_pic }}"
-                  alt="Profile Picture"
-                  class="rounded-circle profile-pic"
-                  style="height: 160px; width: 160px"
-                />
+                <img src="{{ profile_pic }}" alt="Profile Picture" class="rounded-circle profile-pic"
+                  style="height: 160px; width: 160px" />
                 {% else %}
-                <img
-                  src="{% static 'images/default_profile_pic.jpeg' %}"
-                  alt="Default Profile Picture"
-                  class="rounded-circle profile-pic"
-                />
+                <img src="{% static 'images/default_profile_pic.jpeg' %}" alt="Default Profile Picture"
+                  class="rounded-circle profile-pic" />
                 {% endif %}
                 <div class="col-sm-2 icon position-absolute bottom-0 end-0 p-1">
                   <button id="change-profile-pic" class="btn btn-light">
@@ -32,65 +29,30 @@
               </div>
               <div class="form-container w-100">
                 <div class="form-group row">
-                  <label for="full_name" class="col-sm-3 col-form-label"
-                    >Name</label
-                  >
+                  <label for="full_name" class="col-sm-3 col-form-label">Name</label>
                   <div class="col-sm-7">
-                    <input
-                      type="text"
-                      class="form-control"
-                      id="full_name"
-                      value="{{ full_name }}"
-                      disabled
-                    />
-                  </div>
-                  <div class="col-sm-2 edit-icon">
-                    <button id="edit-name-icon" class="btn btn-light">
-                      <i class="fa-solid fa-pen"></i>
-                    </button>
+                    <input type="text" class="form-control" id="full_name" value="{{ full_name }}" disabled />
                   </div>
                 </div>
                 <div class="form-group row">
-                  <label for="username" class="col-sm-3 col-form-label"
-                    >Username</label
-                  >
+                  <label for="username" class="col-sm-3 col-form-label">Username</label>
                   <div class="col-sm-7">
-                    <input
-                      type="text"
-                      class="form-control"
-                      id="username"
-                      value="{{ username }}"
-                      disabled
-                    />
-                  </div>
-                  <div class="col-sm-2 edit-icon">
-                    <button id="edit-username-icon" class="btn btn-light">
-                      <i class="fa-solid fa-pen"></i>
-                    </button>
+                    <input type="text" class="form-control" id="username" value="{{ username }}" disabled />
                   </div>
                 </div>
                 <div class="form-group row">
-                  <label for="email" class="col-sm-3 col-form-label"
-                    >Email</label
-                  >
+                  <label for="email" class="col-sm-3 col-form-label">Email</label>
                   <div class="col-sm-7">
-                    <input
-                      type="email"
-                      class="form-control"
-                      id="email"
-                      value="{{ email }}"
-                      disabled
-                    />
-                  </div>
-                  <div class="col-sm-2 edit-icon">
-                    <button id="edit-email-icon" class="btn btn-light">
-                      <i class="fa-solid fa-pen"></i>
-                    </button>
+                    <input type="email" class="form-control" id="email" value="{{ email }}" disabled />
                   </div>
                 </div>
+                <button id="update-user-info" class="btn btn-light">
+                  Update profile
+                </button>
+
               </div>
             </div>
-            <div class="container my-5 d-flex justify-content-center">
+            <!-- <div class="container my-5 d-flex justify-content-center">
               <div class="d-flex justify-content-between align-items-center">
                 <button id="change-password-btn" class="btn btn-primary mx-2">
                   Change Password
@@ -104,23 +66,14 @@
                   Enable 2FA
                 </button>
                 {% endif %}
-                <button
-                  id="delete-acc-btn"
-                  type="button"
-                  class="btn btn-danger mx-2"
-                >
+                <button id="delete-acc-btn" type="button" class="btn btn-danger mx-2">
                   Delete Account
                 </button>
                 <div>
-                  <a
-                    onclick="appRouter()"
-                    class="btn btn-warning mx-2"
-                    href="signout"
-                    >Sign Out</a
-                  >
+                  <a onclick="appRouter()" class="btn btn-warning mx-2" href="signout">Sign Out</a>
                 </div>
               </div>
-            </div>
+            </div> -->
           </div>
         </div>
       </div>
