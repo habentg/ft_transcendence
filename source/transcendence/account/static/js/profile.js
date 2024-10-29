@@ -41,35 +41,6 @@ async function deleteAccount() {
   }
 }
 
-// enabling 2fa
-/* 
-    1. button click:
-        - modal opens (with a button to continue) to inform user about 2fa
-
-        */
-async function handleEnableDisable2FA() {
-  try {
-    const response = await fetch("/2fa/", {
-      method: "PATCH",
-      headers: {
-        "Content-Type": "application/json",
-        "X-Requested-With": "XMLHttpRequest",
-        "X-CSRFToken": await getCSRFToken(),
-      },
-    });
-    if (response.ok) {
-      console.log("2FA status updated");
-      if (this.textContent.trim() === "Enable 2FA")
-        this.textContent = "Disable 2FA";
-      else this.textContent = "Enable 2FA";
-    } else {
-      throw new Error("Failed to update 2FA status");
-    }
-  } catch (error) {
-    console.error("Error:", error);
-  }
-}
-
 // editing user info
 function makeFieldEditable(fieldId) {
   console.log(`Make ${fieldId} editable`);
@@ -149,75 +120,7 @@ async function UploadNewProfilePic() {
     }
 }
 
-function createAndShowPasswordModal() {
-  // Remove any existing modal
-  const existingModal = document.getElementById("password-change-modal");
-  if (existingModal) {
-    existingModal.remove();
-  }
 
-  // Create the modal
-  const modal = document.createElement("div");
-  modal.id = "password-change-modal";
-  modal.className = "password-change-modal";
-
-  // Create the modal content
-  const modalContent = document.createElement("div");
-  modalContent.className = "password-modal-content";
-
-  modalContent.innerHTML = `
-        <h2 class="modal-title">Change Password</h2>
-        <div class="password-error-msg" id="error-msg" sytle="display:none;"></div>
-        <form id="update-pass-form">
-            <div class="password-form-group">
-                <label for="curr-password">Current Password</label>
-                <input type="password" id="curr-password" placeholder="Enter current password">
-            </div>
-            <div class="password-form-group">
-                <label for="new-password">New Password</label>
-                <input type="password" id="new-password" placeholder="Enter new password">
-            </div>
-            <div class="password-form-group">
-                <label for="confirm-password">Confirm New Password</label>
-                <input type="password" id="confirm-password" placeholder="Confirm new password">
-            </div>
-            <button type="button" id="update-pass-btn" class="modal-button modal-upload-btn">Update Password</button>
-            <button type="button" id="close-password-modal" class="modal-button modal-close-btn">Cancel</button>
-        </form>
-    `;
-
-  modal.appendChild(modalContent);
-  document.body.appendChild(modal);
-
-  // Show the modal
-  modal.style.display = "block";
-
-  // Add event listener to the update password button
-  const updatePassBtn = document.getElementById("update-pass-btn");
-  updatePassBtn.addEventListener("click", updatePlayerPassword);
-
-  // Add event listener to close the modal
-  const closeBtn = document.getElementById("close-password-modal");
-  closeBtn.addEventListener("click", closePasswordModal);
-
-  // Close the modal if user clicks outside of it
-  window.addEventListener("click", handlePasswordOutsideClick);
-}
-
-function closePasswordModal() {
-  const modal = document.getElementById("password-change-modal");
-  if (modal) {
-    modal.style.display = "none";
-    modal.remove(); // Remove the modal from the DOM
-  }
-}
-
-function handlePasswordOutsideClick(event) {
-  const modal = document.getElementById("password-change-modal");
-  if (event.target === modal) {
-    closePasswordModal();
-  }
-}
 
 // function displayError(error) {
 //     const errorMsg = document.getElementById('password-error-msg');
@@ -341,9 +244,10 @@ function updateUsernameModal() {
   const modalContent = document.createElement("div");
   modalContent.className = "modal-content";
 
-  const full_name = document.getElementById("full_name").value;
-  const username = document.getElementById("username").value;
-  const email = document.getElementById("email").value;
+  const full_name = document.getElementById("full_name").textContent;
+  const username = document.getElementById("username").textContent;
+  const email = document.getElementById("email").textContent;
+  
   console.log("Fullname", `${full_name}`);
 
   modalContent.innerHTML = `
@@ -394,61 +298,28 @@ function handleUsernameOutsideClick(event) {
 
 // a function to initialize the profile page and add event listeners
 function initProfilePage() {
-  // if (changePassIcon) {
-  //     changePassIcon.addEventListener('click',  () => {
-  //         const changePassIcon = document.getElementById('pass-change-div');
-  //         changePassIcon.style.display = 'block';
-  //         // makeFieldEditable('password')
-  //         const updatePassSubmitBtn = document.getElementById('update-pass-btn');
-  //         updatePassSubmitBtn.addEventListener('click', updatePlayerPassword);
-  //     });
-  // }
-  const changePassIcon = document.getElementById("change-password-btn");
-  if (changePassIcon) {
-    changePassIcon.addEventListener("click", createAndShowPasswordModal);
-  }
-
+  
   const updateProfilePicBtn = document.getElementById("change-profile-pic");
   if (updateProfilePicBtn) {
     updateProfilePicBtn.addEventListener("click", createAndShowModal);
   }
+  
+  // const deleteAccountBtn = document.getElementById("delete-acc-btn");
+  // const enableDisable2FABtn = document.getElementById("enable-disable-2fa");
+  // const changePassIcon = document.getElementById("change-password-btn");
+  // if (changePassIcon) {
+  //   changePassIcon.addEventListener("click", createAndShowPasswordModal);
+  // }
+  // if (deleteAccountBtn) {
+  //   deleteAccountBtn.addEventListener("click", deleteAccount);
+  // }
 
-  const deleteAccountBtn = document.getElementById("delete-acc-btn");
-  const enableDisable2FABtn = document.getElementById("enable-disable-2fa");
-  // const editNameIcon = document.getElementById("edit-name-icon");
-  // const editUsernameIcon = document.getElementById("edit-username-icon");
-  // const editEmailIcon = document.getElementById("edit-email-icon");
+  // if (enableDisable2FABtn) {
+  //   enableDisable2FABtn.addEventListener("click", handleEnableDisable2FA);
+  // }
+
   const updateUserInfoBtn = document.getElementById("update-user-info");
-  // const updatePFPBtn = document.getElementById('update-profile-pic-btn');
-  if (deleteAccountBtn) {
-    deleteAccountBtn.addEventListener("click", deleteAccount);
-  }
 
-  if (enableDisable2FABtn) {
-    enableDisable2FABtn.addEventListener("click", handleEnableDisable2FA);
-  }
-
-  // if (editUsernameIcon) {
-  //   editNameIcon.addEventListener("click", () => {
-  //     updateUsernameModal();
-  //   });
-  // }
-  // if (editNameIcon) {
-  //   editUsernameIcon.addEventListener("click", () => {
-  //     updateUsernameModal();
-  //   });
-  // }
-  // if (editEmailIcon) {
-  //   editEmailIcon.addEventListener("click", () => {
-  //     updateUsernameModal();
-  //   });
-  // }
-  // if (editEmailIcon) {
-  //   editEmailIcon.addEventListener("click", () => makeFieldEditable("email"));
-  // }
-  // if (updatePFPBtn) {
-  //     updatePFPBtn.addEventListener('click', UploadNewProfilePic);
-  // }
   if (updateUserInfoBtn) {
     updateUserInfoBtn.addEventListener("click", () => {
       console.log("Update user info");

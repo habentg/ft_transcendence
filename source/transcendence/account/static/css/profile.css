@@ -18,7 +18,8 @@
     border-radius: 10px;
 }
 
-h3, .welcome {
+h3,
+.welcome {
     color: white;
 }
 
@@ -33,7 +34,7 @@ h3, .welcome {
 }
 
 #update-user-info {
-    margin-left:5rem;
+    margin: 10px 0px 0px 60px;
 }
 
 /* #edit-username-icon,
@@ -121,6 +122,8 @@ hr {
 
 .form-container {
     flex-grow: 1;
+    color: white;
+    margin: 10px;
     /* Ensures the form takes up available space next to the image */
 }
 
@@ -191,51 +194,7 @@ hr {
     color: white;
 }
 
-/* Modal for change password */
-.password-change-modal {
-    display: none;
-    position: fixed;
-    z-index: 1000;
-    left: 0;
-    top: 0;
-    width: 100%;
-    height: 100%;
-    overflow: auto;
-    background-color: rgba(0, 0, 0, 0.4);
-}
 
-.password-modal-content {
-    background-color: #fefefe;
-    margin: 15% auto;
-    padding: 20px;
-    border: 1px solid #888;
-    width: 80%;
-    max-width: 500px;
-    border-radius: 5px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-}
-
-.password-form-group {
-    margin-bottom: 15px;
-}
-
-.password-form-group label {
-    display: block;
-    margin-bottom: 5px;
-}
-
-.password-form-group input {
-    width: 100%;
-    padding: 8px;
-    border: 1px solid #ddd;
-    border-radius: 4px;
-}
-
-.password-error-msg {
-    color: #f44336;
-    margin-bottom: 10px;
-    display: none;
-}
 
 
 /* Modal container for changing username */
@@ -372,4 +331,100 @@ hr {
 /* make class table headers widder */
 .table_headers {
     width: 200px;
+}
+
+
+
+
+
+/* Friends (not done) */
+
+.friends-section {
+    background-color: #9c10a0;
+    border-radius: 10px;
+    padding: 1rem;
+    margin-top: 2rem;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.friends-section h3 {
+    color: white;
+    margin-bottom: 1rem;
+}
+
+.friends-list {
+    margin-bottom: 1rem;
+}
+
+.friend-item {
+    display: flex;
+    align-items: center;
+    padding: 0.5rem 0;
+    color: white;
+}
+
+.friend-item img {
+    border-radius: 50%;
+    margin-right: 10px;
+}
+
+.add-friend {
+    display: flex;
+    align-items: center;
+    margin-top: 1rem;
+}
+
+#friend-search {
+    flex: 1;
+    padding: 0.5rem;
+    border: 1px solid rgba(255, 255, 255, 0.5);
+    border-radius: 5px;
+    background: rgba(255, 255, 255, 0.1);
+    color: white;
+}
+
+#add-friend-btn {
+    margin-left: 10px;
+}
+
+.friend-requests {
+    margin-top: 1rem;
+}
+
+.request-item {
+    display: flex;
+    align-items: center;
+    padding: 0.5rem 0;
+    color: white;
+}
+
+.request-item button {
+    margin-left: 10px;
+}
+
+.btn-success {
+    background-color: #28a745;
+    border: none;
+}
+
+.btn-danger {
+    background-color: #dc3545;
+    border: none;
+}
+
+.btn-light {
+    background-color: rgba(255, 255, 255, 0.2);
+    color: white;
+    border: none;
+}
+
+.btn-light:hover {
+    background-color: rgba(255, 255, 255, 0.4);
+}
+
+.no-friends-message,
+.no-requests-message {
+    text-align: center;
+    color: white;
+    margin-top: 1rem;
 }

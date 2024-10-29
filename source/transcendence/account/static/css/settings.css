@@ -19,11 +19,157 @@
 }
 
 .d-flex {
-    flex-direction: column; 
-    align-items: center; 
+    flex-direction: column;
+    align-items: center;
 }
 
 .btn {
-    margin-bottom: 2rem; 
+    margin-bottom: 2rem;
+    height: 4.5rem;
+    width: 20rem;
 }
 
+span {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: white;
+}
+
+/* Modal for change password */
+.password-change-modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0, 0, 0, 0.4);
+}
+
+.password-modal-content {
+    background-color: #84DDFC;
+    margin: 15% auto;
+    padding: 20px;
+    border: 1px solid #888;
+    width: 80%;
+    max-width: 500px;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.password-form-group {
+    margin-bottom: 15px;
+}
+
+.password-form-group label {
+    display: block;
+    margin-bottom: 5px;
+}
+
+.password-form-group input {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+
+.password-error-msg {
+    color: #f44336;
+    margin-bottom: 10px;
+    display: none;
+}
+
+/* Modal content box */
+.modal-content {
+    background-color: white;
+    padding: 20px;
+    border-radius: 10px;
+    width: 90%;
+    max-width: 400px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+    text-align: center;
+}
+
+/* Modal title */
+.modal-title {
+    font-size: 1.5em;
+    margin-bottom: 20px;
+}
+
+/* Modal input field */
+.modal-input {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 20px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 1em;
+}
+
+/* Buttons */
+.modal-button {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    font-size: 1em;
+    cursor: pointer;
+    margin: 5px;
+    transition: background-color 0.3s ease;
+}
+
+/* Update button */
+.modal-upload-btn {
+    background-color: #28a745;
+    color: white;
+}
+
+.modal-upload-btn:hover {
+    background-color: #218838;
+}
+
+/* Cancel button */
+.modal-close-btn {
+    background-color: #dc3545;
+    color: white;
+}
+
+.modal-close-btn:hover {
+    background-color: #c82333;
+}
+
+.delete-account-modal {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 1000;
+}
+
+.delete-account-modal-content {
+    position: relative;
+    background-color: rgb(238, 136, 108);
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    width: 400px;
+    text-align: center;
+    transform: translate(-50%, -50%);
+    top: 50%;
+    left: 50%;
+}
+
+/* Responsive Adjustments */
+@media (max-width: 400px) {
+    .delete-account-modal-content {
+        width: 90%;
+        /* Adjust width for small screens */
+    }
+}
