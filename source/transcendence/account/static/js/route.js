@@ -96,26 +96,8 @@ async function loadContent(route) {
     if (route === "signout") {
       // Remove any CSS/JS if necessary
       removeResource();
-
-      
-      // Select the navbar element
-      const navbar = document.getElementById("navbarNavDropdown");
-      
-      // Update the navbar for unauthenticated users
-      navbar.innerHTML = `
-      <ul class="navbar-nav ms-auto">
-      <li class="nav-item">
-      <a onclick="appRouter()" class="nav-link mx-2" href="home">Home</a>
-      </li>
-      <li class="nav-item">
-      <a onclick="appRouter()" class="nav-link mx-2" href="signin">Sign in</a>
-      </li>
-      <li class="nav-item">
-      <a onclick="appRouter()" class="nav-link mx-2" href="signup">Sign up</a>
-      </li>
-      </ul>
-      `;
-      // Handle any additional logic for location change
+      // Update the navbar
+      updateNavBar(false);
       // Update the history state
       updateUI("/", false);
       return;

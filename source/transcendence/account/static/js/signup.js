@@ -42,6 +42,8 @@ async function handleSignupSubmit(e) {
             displayError({error_msg: responseData[0]});
             return;
         }
+        // update the navbar
+        updateNavBar(true);
         // redirect to the protected page
         updateUI(`/home`, false);
         // history.pushState(null, '', `/home`);

@@ -23,9 +23,11 @@ python manage.py createsuperuser --noinput \
 # Set password coz there is no --password option
 python manage.py shell <<EOF
 from account.models import Player
+from friendship.models import FriendList
 player = Player.objects.get(username='$DJANGO_SUPERUSER_USERNAME')
 player.full_name = '$DJANGO_SUPERUSER_FULLNAME'
 player.set_password('$DJANGO_SUPERUSER_PASSWORD')
+FriendList.objects.create(player=player)
 player.save()
 EOF
 

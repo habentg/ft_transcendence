@@ -1,7 +1,8 @@
 document.getElementById("searchIcon").addEventListener("click", (event) => {
   const query = document.getElementById("searchInput").value;
-  console.log("This: ", query);
+  console.log("uppp This: ", query);
   if (query) {
+    console.log("searching for: ", query);
     loadProfile(query);
   } else console.log("your search is empty");
 });
@@ -13,13 +14,19 @@ async function loadProfile(username) {
     return;
   }
   try {
-    const response = await fetch(`player_profile/${username}`, {
+    // updateUI(`/profile/${username}`, false);
+    const response = await fetch(`profile/${username}`, {
       method: "GET",
       headers: {
         "X-Requested-With": "XMLHttpRequest",
       },
     });
     if (!response.ok) {
+      // user not found
+      if (response.status === 404) {
+        updateUI(`/`, false);
+        return;
+      }
       throw new Error("HTTP " + response.status);
     }
     let data = await response.json();
@@ -28,7 +35,7 @@ async function loadProfile(username) {
     history.pushState(
       { username: username },
       "",
-      `/player_profile/${username}`
+      `/profile/${username}`
     );
   } catch (error) {
     console.error(`Failed to load -- ${username} -- profile content:`, error);

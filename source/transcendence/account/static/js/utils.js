@@ -131,3 +131,39 @@ const loadCssandJS = (data) => {
     currentResourcesName.js = js_file_path;
   }
 };
+
+
+// update the Navbar for authenticated users && for signout and deleted users
+function updateNavBar(isAuthenticated) {
+  const navbar = document.getElementById("navbarNavDropdown");
+  if (isAuthenticated) {
+    navbar.innerHTML = `
+    <ul class="navbar-nav ms-auto">
+    <li class="nav-item">
+    <a onclick="appRouter()" class="nav-link mx-2 active" href="/home">Home</a>
+    </li>
+    <li class="nav-item">
+    <a onclick="appRouter()" class="nav-link mx-2" href="/profile">Profile</a>
+    </li>
+    <li class="nav-item">
+    <a onclick="appRouter()" class="nav-link mx-2" href="/signout">Sign out</a>
+    </li>
+    </ul>
+    `;
+  }
+  else {
+    navbar.innerHTML = `
+    <ul class="navbar-nav ms-auto">
+    <li class="nav-item">
+    <a onclick="appRouter()" class="nav-link mx-2 active" href="/home">Home</a>
+    </li>
+    <li class="nav-item">
+    <a onclick="appRouter()" class="nav-link mx-2" href="/signin">Sign in</a>
+    </li>
+    <li class="nav-item">
+    <a onclick="appRouter()" class="nav-link mx-2" href="/signup">Sign up</a>
+    </li>
+    </ul>
+    `;
+  }
+}

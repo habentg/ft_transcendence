@@ -15,8 +15,8 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
-from django.urls import path, include
-from others.views import Catch_All, PlayerProfileView
+from django.urls import path, include, re_path
+from others.views import Catch_All
 from django.urls import path, include
 
 urlpatterns = [
@@ -24,6 +24,5 @@ urlpatterns = [
     path('', include('others.urls')),
     path('', include('account.urls')),
     path('', include('friendship.urls')),
-    path('player_profile/<username>', PlayerProfileView.as_view(), name='player_profile'),
     path('', Catch_All.as_view, name='404')#404
 ]

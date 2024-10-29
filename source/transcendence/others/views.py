@@ -12,6 +12,7 @@ from django.db import connection
 from rest_framework.response import Response
 from django.middleware.csrf import get_token
 from rest_framework import status
+from django.shortcuts import get_object_or_404
 
 
 
@@ -29,6 +30,11 @@ class BaseView(View):
 	
 	def get(self, request, *args, **kwargs):
 		context = self.get_context_data(request, **kwargs)
+		if 'error_msg' in context:
+			self.template_name = 'others/404.html'
+			self.title = 'Error Page'
+			self.css = 'css/404.css'
+			self.js = 'js/404.js'
 		html_content = render_to_string(self.template_name, context)
 		resources = {
 			'title': self.title,
@@ -43,34 +49,6 @@ class BaseView(View):
 
 	def get_context_data(self, request, **kwargs):
 		return {}
-
-class PlayerProfileView(APIView, BaseView):
-	authentication_classes = [JWTCookieAuthentication]
-	permission_classes = [IsAuthenticated]
-
-	template_name = 'others/player_profile.html'
-	# title = 'Player Profile'
-	# css = 'css/player_profile.css'
-	js = 'js/friend.js'
-
-	def get(self, request, *args, **kwargs):  # Use standard args and kwargs
-		print('Player Profile queried player: ', kwargs.get('username'), flush=True)    
-		return super().get(request, *args, **kwargs)  # Pass both args and kwargs
-
-	def get_context_data(self, request, **kwargs):  # Standardize to use kwargs
-		print('Player Profile queried player: ', kwargs.get('username'), flush=True)    
-		queried_user = request.user
-		if kwargs.get('username') and kwargs.get('username') != request.user.username:
-			queried_user = Player.objects.get(username=kwargs.get('username'))
-
-		return {
-			'username': queried_user.username,
-			'email': queried_user.email,
-			'full_name': queried_user.full_name,
-			'2fa': queried_user.tfa,
-			'friendship_status': queried_user.get_friendship_status(request.user),
-			'profile_pic': queried_user.profile_picture.url if queried_user.profile_picture else None,
-		}	
 
 # view for the home page
 class HomeView(APIView, BaseView):

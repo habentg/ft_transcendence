@@ -1,8 +1,6 @@
 from django.urls import path, re_path, include
 from .views import *
 
-
-# Add this to your urls.py
 urlpatterns = [
     re_path(r'^signup/?$', SignUpView.as_view(), name='signup_page'),
     re_path(r'^signin/?$', SignInView.as_view(), name='signin_page'),

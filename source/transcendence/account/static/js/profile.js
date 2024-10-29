@@ -22,13 +22,13 @@ async function deleteAccount() {
       navbar.innerHTML = `
       <ul class="navbar-nav ms-auto">
       <li class="nav-item">
-      <a onclick="appRouter()" class="nav-link mx-2" href="home">Home</a>
+      <a onclick="appRouter()" class="nav-link mx-2" href="/home">Home</a>
       </li>
       <li class="nav-item">
-      <a onclick="appRouter()" class="nav-link mx-2" href="signin">Sign in</a>
+      <a onclick="appRouter()" class="nav-link mx-2" href="/signin">Sign in</a>
       </li>
       <li class="nav-item">
-      <a onclick="appRouter()" class="nav-link mx-2" href="signup">Sign up</a>
+      <a onclick="appRouter()" class="nav-link mx-2" href="/signup">Sign up</a>
       </li>
       </ul>
       `;
