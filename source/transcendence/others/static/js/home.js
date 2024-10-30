@@ -14,29 +14,32 @@ async function loadProfile(username) {
     return;
   }
   try {
-    // updateUI(`/profile/${username}`, false);
-    const response = await fetch(`profile/${username}`, {
-      method: "GET",
-      headers: {
-        "X-Requested-With": "XMLHttpRequest",
-      },
-    });
-    if (!response.ok) {
-      // user not found
-      if (response.status === 404) {
-        updateUI(`/`, false);
-        return;
-      }
-      throw new Error("HTTP " + response.status);
-    }
-    let data = await response.json();
+    // const response = await fetch(`profile/${username}`, {
+    //   method: "GET",
+    //   headers: {
+    //     "X-Requested-With": "XMLHttpRequest",
+    //   },
+    // });
+    // if (!response.ok) {
+    //   // user not found
+    //   if (response.status === 404) {
+    //     updateUI(`/`, false);
+    //     return;
+    //   }
+    //   throw new Error("HTTP " + response.status);
+    // }
+    // let data = await response.json();
+    // document.getElementById("content").innerHTML = data.html;
+    // history.pushState(
+    //   { username: username },
+    //   "",
+    //   `/profile/${username}`
+    // );
     document.title = `${username} - Profile Page`;
-    document.getElementById("content").innerHTML = data.html;
-    history.pushState(
-      { username: username },
-      "",
-      `/profile/${username}`
-    );
+    updateUI(`/profile/${username}`, true);
+    // history.pushState("", "", `/profile/${username}`);
+    // handleLocationChange();
+
   } catch (error) {
     console.error(`Failed to load -- ${username} -- profile content:`, error);
   }

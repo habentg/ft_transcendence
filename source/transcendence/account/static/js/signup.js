@@ -17,7 +17,6 @@ async function handleSignupSubmit(e) {
     confirm_password: document.getElementById("confirm-password").value,
   };
 
-  console.log("formData:", formData);
   // Validate the form data
   if (formData.confirm_password !== formData.password) {
     console.log("Passwords do not match");
@@ -39,7 +38,7 @@ async function handleSignupSubmit(e) {
         if (!response.ok) {
             const responseData = await response.json();
             console.log("responseData:", responseData);
-            displayError({error_msg: responseData[0]});
+            displayError(responseData);
             return;
         }
         // update the navbar

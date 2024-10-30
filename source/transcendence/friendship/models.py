@@ -77,19 +77,14 @@ class FriendRequest(models.Model):
         
         sender_friends.friends.add(self.receiver)
         receiver_friends.friends.add(self.sender)
+        print(f"Friendship created between {self.sender.username} and {self.receiver.username}", flush=True)
 
     def decline(self):
         """Decline the friend request"""
         self.status = 'DECLINED'
         self.save()
 
-    # def cancel(self):
-    #     """Decline the friend request"""
-    #     self.status = 'CANCELLED'
-    #     self.save()
-
-    # def getSender(self):
-    #     return self.sender.username
-    
-    # def getReceiver(self):
-    #     return self.receiver.username
+    def cancel(self):
+        """Decline the friend request"""
+        self.status = 'CANCELLED'
+        self.save()
