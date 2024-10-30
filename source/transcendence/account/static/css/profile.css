@@ -1,6 +1,13 @@
+.setting {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    height: 100%;
+}
+
 .background-image {
     background-image: url('/static/images/background2.jpg');
-    height: 100vh;
+    height: 100%;
     background-size: cover;
     background-position: center;
     display: flex;
@@ -14,18 +21,12 @@
     background: rgba(255, 255, 255, 0.1);
     backdrop-filter: blur(20px);
     box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
-    padding-top: 0.5rem;
+    /* padding-top: 0.5rem; */
     border-radius: 10px;
 }
 
 h3,
 .welcome {
-    color: white;
-}
-
-.form-group {
-    margin-bottom: 0.6rem;
-    /* width: 400px; */
     color: white;
 }
 
@@ -36,19 +37,6 @@ h3,
 #update-user-info {
     margin: 10px 0px 0px 60px;
 }
-
-/* #edit-username-icon,
-#edit-email-icon,
-#edit-name-icon {
-    background: rgba(255, 255, 255, 0.1);
-    border: none;
-}
-
-#edit-username-icon:hover,
-#edit-email-icon:hover,
-#edit-name-icon:hover {
-    background: #3399ff;
-} */
 
 .profile-dom {
     display: flex;
@@ -332,10 +320,6 @@ hr {
 .table_headers {
     width: 200px;
 }
-
-
-
-
 
 /* Friends (not done) */
 

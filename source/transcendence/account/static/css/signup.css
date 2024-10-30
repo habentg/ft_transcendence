@@ -2,7 +2,7 @@
   display: flex;
   flex-direction: column;
   flex: 1;
-  height: 100vh;
+  height: 100%;
 }
 
 .background-image {
@@ -64,6 +64,10 @@
   color: black;
 }
 
+.form-cont p {
+  margin: 10px 0 10px 0;
+}
+
 .form-cont p a {
   color: #3399ff;
 }
@@ -84,9 +88,16 @@
   /* margin: 0.5rem; */
 }
 
-.or-separator span {
-  margin: 0 15px;
-  font-weight: 800;
+span {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 5px ;
+  font-weight: 600;
+}
+
+hr {
+  margin: 0 0.5rem;
 }
 
 .or-separator:before,

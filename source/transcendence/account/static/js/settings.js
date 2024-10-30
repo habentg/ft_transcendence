@@ -60,9 +60,14 @@ async function handleEnableDisable2FA() {
     });
     if (response.ok) {
       console.log("2FA status updated");
-      if (this.textContent.trim() === "Enable 2FA")
+      if (this.textContent.trim() === "Enable 2FA") {
+        this.className = "btn btn-danger";
         this.textContent = "Disable 2FA";
-      else this.textContent = "Enable 2FA";
+      }
+      else {
+        this.textContent = "Enable 2FA"
+        this.className = "btn btn-success";
+      }
     } else {
       throw new Error("Failed to update 2FA status");
     }
