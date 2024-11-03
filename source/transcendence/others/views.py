@@ -118,3 +118,41 @@ class CsrfRequest(APIView):
 		response.set_cookie('csrftoken', get_token(request))
 		return response
 
+
+""" Searching users """
+class SearchUsers(APIView, BaseView):
+	authentication_classes = [JWTCookieAuthentication]
+	permission_classes = [IsAuthenticated]
+	template = 'others/search_result.html'
+
+	def get(self, request, *args, **kwargs):
+		# http://localhost/search?username=asdfsdaf
+		data = request.data
+		search_param = request.GET.get('username', '')
+		if not search_param:
+			return JsonResponse({
+				'html': render_to_string(self.template, {'players': []})
+			})
+		print("search action:", request.headers.get('action'))
+		players = []
+		if request.headers.get('action') == 'friends':
+			friends = request.user.friend_list.friends.all().filter(username__icontains=search_param)
+			print('querying all Friends')
+		if request.headers.get('action') == 'friend_requests':
+			friend_requests = request.user.received_requests.all().filter(sender__username__icontains=search_param)
+			print('querying all friend requests')
+		else:
+			print('querying All players')
+		if search_param:
+			players = Player.objects.filter(username__icontains=search_param)
+		else:
+			players = Player.objects.all()
+
+		context = {
+			'players': players, 
+			'current_user': request.user
+		}
+		# becareful with direct broswer url visit
+		return JsonResponse({
+			'html': render_to_string(self.template, context)
+		})

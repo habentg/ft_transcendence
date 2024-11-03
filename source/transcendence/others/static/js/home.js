@@ -14,31 +14,20 @@ async function loadProfile(username) {
     return;
   }
   try {
-    // const response = await fetch(`profile/${username}`, {
-    //   method: "GET",
-    //   headers: {
-    //     "X-Requested-With": "XMLHttpRequest",
-    //   },
-    // });
-    // if (!response.ok) {
-    //   // user not found
-    //   if (response.status === 404) {
-    //     updateUI(`/`, false);
-    //     return;
-    //   }
-    //   throw new Error("HTTP " + response.status);
-    // }
-    // let data = await response.json();
-    // document.getElementById("content").innerHTML = data.html;
-    // history.pushState(
-    //   { username: username },
-    //   "",
-    //   `/profile/${username}`
-    // );
-    document.title = `${username} - Profile Page`;
-    updateUI(`/profile/${username}`, true);
-    // history.pushState("", "", `/profile/${username}`);
-    // handleLocationChange();
+    const response = await fetch(`search?username=${username}`, {
+      method: "GET",
+      headers: {
+        "X-Requested-With": "XMLHttpRequest",
+        'action': 'all_players'
+      },
+      // body: JSON.stringify({'action': 'all_players'}),  // Browser said it wont send 'body' in GET request, so I put it in headers
+    });
+    if (response.ok) {
+      history.pushState({ username }, "", `/search?username=${username}`);
+      const responseData = await response.json();
+      const resultsDiv = document.getElementById("searchResults");
+      resultsDiv.innerHTML = responseData.html;
+    }
 
   } catch (error) {
     console.error(`Failed to load -- ${username} -- profile content:`, error);

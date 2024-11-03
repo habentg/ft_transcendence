@@ -1,0 +1,41 @@
+{% load static %}
+<div class="container border">
+  <div class="container">
+    {% if players %}
+      <h3>{{ players|length }} Results Found</h3>
+      {% for player in players %}
+        <div class="container border my-2">
+          <div class="container d-flex">
+            <div class="container border d-flex user_id_container">
+              <div class="container">
+                {% if player.profile_picture %}
+                  <img src="{{ player.profile_picture.url }}" alt="Profile Picture" class="rounded-circle profile-pic" style="height: 70px; width: 70px;" />
+                {% else %}
+                  <img src="{% static 'images/default_profile_pic.jpeg' %}" width="70" height="70" alt="IMG" class="rounded-circle" />
+                {% endif %}
+              </div>
+              <div class="container">
+                <a href="/profile/{{ player.username }}"><h6>{{ player.username }}</h6></a>
+                <p>{{ player.full_name }}</p>
+              </div>
+            </div>
+            <div class="container border fiendship_status_buttons_container">
+              {% comment %}bunch of if{% endcomment %}
+              {% if player.username == current_user.username %}
+                <a class="btn btn-primary" onclick="appRoute()" href="/profile/{{ player.username }}">UR Profile</a>
+                {% else %}
+                <a class="btn btn-primary" onclick="appRoute()" href="/profile/{{ player.username }}">Vist Profile</a>
+                {% comment %} {% elif current_user.friend_list.friends.filter(username=player.username).exists() %}
+                <a class="btn btn-primary" onclick="appRoute()" href="/profile/{{ player.username }}">Friend</a> {% endcomment %}
+              {% comment %} {% elif current_user.friend_list.friend_requests.filter(username=player.username).exists() %} {% endcomment %}
+
+              {% endif %}
+            </div>
+          </div>
+        </div>
+      {% endfor %}
+    {% else %}
+      <h3>No Results Found</h3>
+    {% endif %}
+  </div>
+</div>

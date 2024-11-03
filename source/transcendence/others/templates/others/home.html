@@ -1,19 +1,24 @@
-
 {% load static %}
 
 <div class="first-page">
   <div class="background-image">
-    <div class="container content text-center" style="background: red">
-      <input type="text" id="searchInput" placeholder="Search for users..." />
-      <button id="searchIcon" type="button">
-        <i class="fa-solid fa-search"></i>
-      </button>
+    <div class="container content text-center"  style="width:1000px;background: red">
+      <div class="container d-flex">
+        <div class="container">
+          <input type="text" id="searchInput" placeholder="Search for users..." />
+          <button id="searchIcon" type="btn"><i class="fa-solid fa-search"></i></button>
+        </div>
+        <div class="container">
+          <button id="friends_btn" type="btn btn-primary">friends</button>
+        </div>
+        <div class="container">
+          <button id="friend_requests_btn" type="btn btn-primary">friend_requests</button>
+        </div>
+      </div>
       <div id="searchResults"></div>
     </div>
     <div class="list-group content">
-      <a href="#" class="list-group-item">
-      Local Game
-      </a>
+      <a href="#" class="list-group-item">Local Game</a>
       <a onclick="appRouter()" href="/profile" class="list-group-item">Profile</a>
       <a href="#" class="list-group-item">Create tournament</a>
       <a onclick="appRouter()" href="/settings" class="list-group-item">Settings</a>
