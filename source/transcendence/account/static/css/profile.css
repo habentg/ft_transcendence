@@ -1,10 +1,3 @@
-.setting {
-    display: flex;
-    flex-direction: column;
-    flex: 1;
-    height: 100%;
-}
-
 .background-image {
     background-image: url('/static/images/background2.jpg');
     height: 100%;
@@ -21,98 +14,33 @@
     background: rgba(255, 255, 255, 0.1);
     backdrop-filter: blur(20px);
     box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
-    /* padding-top: 0.5rem; */
     border-radius: 10px;
 }
+
 
 h3,
 .welcome {
     color: white;
 }
 
-.form-container label {
-    padding-left: 1rem;
-}
-
-#update-user-info {
-    margin: 10px 0px 0px 60px;
-}
-
 .profile-dom {
     display: flex;
     align-items: center;
-    /* Ensures the profile picture is vertically aligned with the form */
     position: relative;
-    /* Establishes a positioning context for the icon */
 }
 
-.icon {
-    position: absolute;
-    /* Allows positioning within the .profile-dom */
-
-}
-
+/* 
 .user-details {
-    background-color: #b02c98;
     display: flex;
     flex-direction: column;
     padding: 2rem;
     border-radius: 5px;
-    /* justify-content: center;
-    align-items: center; */
-}
-
-.profile-info-container {
-    display: flex;
-    flex-direction: row;
-    justify-content: space-between;
-    align-items: center;
-}
-
-input {
-    border: 2px solid #74C0FC;
-    border-radius: 0.3rem;
-}
-
-button {
-    transition: all 0.2s ease-in-out;
-}
-
-button:hover {
-    /* transform: scale(1.05); */
-    color: #b02c98;
-}
-
-.btn-light {
-    border: 1px solid #ccc;
-    background-color: white;
-}
-
-hr {
-    border-top: 1px solid #ccc;
-}
-
-#pass-change-div {
-    background: rgba(240, 240, 240, 0.9);
-    padding: 2rem;
-    border-radius: 5px;
-}
-
-
-.user-details {
-    /* background-color: #b02c98; */
-    display: flex;
-    flex-direction: row;
-    /* Ensures items are aligned in a row */
-    padding: 2rem;
-    border-radius: 5px;
-}
+} */
 
 .form-container {
     flex-grow: 1;
     color: white;
     margin: 10px;
-    /* Ensures the form takes up available space next to the image */
 }
 
 .options {
@@ -123,19 +51,18 @@ hr {
     gap: 2rem;
 }
 
-
 /* Modal */
 .profile-pic-modal {
-    display: none;
+    display: flex;
+    justify-content: center;
+    align-items: center;
     position: fixed;
-    /* z-index: 1000; */
-    left: 0;
     top: 0;
+    left: 0;
     width: 100%;
     height: 100%;
-    margin-top: 5rem;
-    overflow: auto;
-    background-color: rgba(0, 0, 0, 0.4);
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 1000;
 }
 
 .modal-content {
@@ -187,18 +114,16 @@ hr {
 
 /* Modal container for changing username */
 .username-modal {
-    position: fixed;
-    z-index: 1000;
-    /* Ensure the modal appears on top */
-    left: 0;
-    top: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.5);
-    /* Background overlay */
     display: flex;
     justify-content: center;
     align-items: center;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 1000;
 }
 
 /* Modal content box */
@@ -277,6 +202,15 @@ hr {
     background-color: transparent;
     /* Transparent cell backgrounds */
     border: 1px solid #9c10a0;
+    white-space: nowrap;
+    /* Prevents text from wrapping */
+    overflow: hidden;
+    /* Hides overflow */
+    text-overflow: ellipsis;
+    /* Adds ellipsis for long text */
+    max-width: 150px;
+    /* Optional: Set a max width if needed */
+
 }
 
 .table th {

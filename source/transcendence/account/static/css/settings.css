@@ -20,14 +20,10 @@
     margin-top: 50px;
 }
 
-.d-flex {
-    flex-direction: column;
-    align-items: center;
-}
 
 .btn {
     margin-bottom: 2rem;
-    height: 4.5rem;
+    height: 4rem;
     width: 20rem;
 }
 
@@ -38,12 +34,12 @@ span {
     color: white;
 }
 
-h2 {
+/* h2 {
     color: white;
-    margin-bottom: 2rem;
+    margin-bottom: 1rem;
     display: flex;
     justify-content: center;
-}
+} */
 
 /* Modal for change password */
 .password-change-modal {

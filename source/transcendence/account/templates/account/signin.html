@@ -4,38 +4,66 @@
   <div class="background-image">
     <div class="container my-5">
       <!-- Sign form -->
-      <form class="col-6 mx-auto card p-3 form-cont" onsubmit="handleSignInSubmit(event)">
+      <form
+        class="col-md-8 col-lg-6 mx-auto card p-4 form-cont"
+        onsubmit="handleSignInSubmit(event)"
+      >
         {% csrf_token %}
-        <!-- <h1 style="text-align: center"> -->
         <span>
-          <h2>Sign In</h2>
+          <h2 class="text-center">Sign In</h2>
         </span>
-        <!-- </h1> -->
         <hr />
-        <div class="alert alert-danger" role="alert" id="error-msg" style="display: none"></div>
+        <div
+          class="alert alert-danger"
+          role="alert"
+          id="error-msg"
+          style="display: none"
+        ></div>
+
         <div class="form-group my-2">
           <label for="username">Username</label>
-          <input type="text" class="form-control" name="username" id="username" placeholder="Enter username" required />
+          <input
+            type="text"
+            class="form-control"
+            name="username"
+            id="username"
+            placeholder="Enter username"
+            required
+          />
         </div>
 
         <div class="form-group my-2">
           <label for="password">Password</label>
-          <input type="password" class="form-control" name="password" id="password" placeholder="Enter password"
-            required />
+          <input
+            type="password"
+            class="form-control"
+            name="password"
+            id="password"
+            placeholder="Enter password"
+            required
+          />
         </div>
-        <p> <a onclick="appRouter()" href="/password_reset">Forgot Password?</a> </p>
-        <button type="submit" class="btn btn-dark">Submit</button>
 
+        <p>
+          <a href="/password_reset" class="text-primary">Forgot Password?</a>
+        </p>
+        <button type="submit" class="btn btn-primary w-100 mb-3">Submit</button>
 
         <div class="or-separator">
           <span>or</span>
         </div>
-        <button onclick="handle42Login()" type="button" class="btn btn-dark my-2 fourty-two">
+
+        <button
+          onclick="handle42Login()"
+          type="button"
+          class="btn btn-secondary w-100 my-3 fourty-two"
+        >
           42
         </button>
-        <p>
-          Doesnt have an account?
-          <a onclick="appRouter()" href="/signup">Sign up</a>
+
+        <p class="text-center mt-2">
+          Don’t have an account?
+          <a href="/signup" class="text-primary">Sign up</a>
         </p>
       </form>
     </div>

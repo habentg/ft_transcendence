@@ -1,68 +1,122 @@
 {% load static %}
 
-<div class="sign_up_page">
-  <div class="background-image">
+<div
+  class="sign_up_page d-flex flex-column justify-content-center align-items-center"
+>
+  <div class="background-image w-100 h-100">
     <div class="container my-5">
       <!-- Sign form -->
-      <form class="col-6 mx-auto card p-3 form-cont" onsubmit="handleSignupSubmit(event)">
+      <form
+        class="col-12 col-md-8 col-lg-6 mx-auto card p-4 form-cont"
+        onsubmit="handleSignupSubmit(event)"
+      >
         {% csrf_token %}
-        <!-- <h1 style="text-align: center"> -->
-        <span> <h2> Sign Up </h2></span>
-        <!-- </h1> -->
+        <div class="text-center mb-3">
+          <h2>Sign Up</h2>
+        </div>
         <hr />
 
         <!-- Display error/success messages -->
-        <div class="alert alert-danger" role="alert" id="error-msg" style="display: none"></div>
+        <div
+          class="alert alert-danger"
+          role="alert"
+          id="error-msg"
+          style="display: none"
+        ></div>
 
-        <div class="form-group my-2 first-last_name">
-          <div class="first-name">
+        <div class="form-group row gx-2 mb-3">
+          <div class="col">
             <label for="firstName">First name</label>
-            <input type="text" class="form-control" id="firstName" placeholder="Enter First name" name="first_name"
-              required />
+            <input
+              type="text"
+              class="form-control"
+              id="firstName"
+              placeholder="Enter First name"
+              name="first_name"
+              required
+            />
           </div>
-          <div class="last-name">
+          <div class="col">
             <label for="lastName">Last name</label>
-            <input type="text" name="lastName" class="form-control" id="lastName" placeholder="Enter Last name"
-              required />
+            <input
+              type="text"
+              name="lastName"
+              class="form-control"
+              id="lastName"
+              placeholder="Enter Last name"
+              required
+            />
           </div>
         </div>
 
-        <div class="form-group my-2">
+        <div class="form-group mb-3">
           <label for="username">Username</label>
-          <input type="text" class="form-control" name="username" id="username" placeholder="Enter username" required />
+          <input
+            type="text"
+            class="form-control"
+            name="username"
+            id="username"
+            placeholder="Enter username"
+            required
+          />
         </div>
 
-        <div class="form-group my-2">
+        <div class="form-group mb-3">
           <label for="email">Email</label>
-          <input type="text" class="form-control" name="email" id="email" placeholder="Enter email" required />
+          <input
+            type="email"
+            class="form-control"
+            name="email"
+            id="email"
+            placeholder="Enter email"
+            required
+          />
         </div>
 
-        <div class="form-group my-2">
+        <div class="form-group mb-3">
           <label for="password">Password</label>
-          <input type="password" class="form-control" name="password" id="password" placeholder="Enter password"
-            required />
+          <input
+            type="password"
+            class="form-control"
+            name="password"
+            id="password"
+            placeholder="Enter password"
+            required
+          />
         </div>
 
-        <div class="form-group my-2">
+        <div class="form-group mb-3">
           <label for="confirm-password">Confirm password</label>
-          <input type="password" class="form-control" name="confirm-password" id="confirm-password"
-            placeholder="Re-enter password" required />
+          <input
+            type="password"
+            class="form-control"
+            name="confirm-password"
+            id="confirm-password"
+            placeholder="Re-enter password"
+            required
+          />
         </div>
 
         <!-- Submit button -->
-        <button id="signupForm" type="submit" class="btn btn-dark">
+        <button id="signupForm" type="submit" class="btn btn-primary w-100 mb-3">
           Submit
         </button>
 
         <!-- Link to login page for users who already have an account -->
-        
-        <div class="or-separator">
+        <div class="or-separator my-3">
           <span>or</span>
         </div>
-        <button onclick="handle42Login()" type="button" class="btn btn-dark my-2 fourty-two">
+
+        <button
+          onclick="handle42Login()"
+          type="button"
+          class="btn btn-secondary w-100 my-3 fourty-two"
+
+        >
           42
         </button>
-        <p class="p-1">
+
+        <p class="text-center mt-3">
           Already have an account?
           <a onclick="appRouter()" href="/signin">Sign in</a>
         </p>

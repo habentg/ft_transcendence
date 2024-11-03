@@ -1,30 +1,35 @@
-<!-- {% load static %} -->
+{% load static %}
 
 <div class="setting">
-	<div class="background-image">
-		<div class="blur-layer">
-			<h2> Settings </h2>
-			<div class="container my-5 d-flex flex-column align-items-center">
-				<button id="change-password-btn" class="btn btn-primary mx-2 w-100">
-					Change Password
-				</button>
-				<div class="my-1"></div>
-				{% if 2fa %}
-				<button id="enable-disable-2fa" class="btn btn-warning mx-2 w-100">
-					Disable 2FA
-				</button>
-				{% else %}
-				<button id="enable-disable-2fa" class="btn btn-success mx-2 w-100">
-					Enable 2FA
-				</button>
-				{% endif %}
-				<div class="my-1"></div>
-				<button id="delete-acc-btn" type="button" class="btn btn-danger mx-2 w-100">
-					Delete Account
-				</button>
-				<div class="my-1"></div>
-				<a onclick="appRouter()" class="btn btn-warning mx-2 w-100" href="/signout">Sign Out</a>
-			</div>
-		</div>
-	</div>
+  <div class="background-image">
+    <div class="blur-layer text-center p-4">
+      <h2 class="text-white mb-4">Settings</h2>
+      <div class="container my-5 d-flex flex-column align-items-center">
+        <button id="change-password-btn" class="btn btn-primary w-100 mb-3">
+          Change Password
+        </button>
+
+        {% if 2fa %}
+        <button id="enable-disable-2fa" class="btn btn-warning w-100 mb-3">
+          Disable 2FA
+        </button>
+        {% else %}
+        <button id="enable-disable-2fa" class="btn btn-success w-100 mb-3">
+          Enable 2FA
+        </button>
+        {% endif %}
+
+        <button
+          id="delete-acc-btn"
+          type="button"
+          class="btn btn-danger w-100 mb-3"
+        >
+          Delete Account
+        </button>
+        <a onclick="appRouter()" class="btn btn-warning w-100 mb-3" href="/signout"
+          >Sign Out</a
+        >
+      </div>
+    </div>
+  </div>
 </div>

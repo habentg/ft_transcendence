@@ -1,8 +1,8 @@
 .sign_up_page {
   display: flex;
-  flex-direction: column;
-  flex: 1;
-  height: 100%;
+  align-items: center;
+  justify-content: center;
+  min-height: 100%;
 }
 
 .background-image {
@@ -10,94 +10,33 @@
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  flex: 1;
+  width: 100%;
+  height: 100%;
 }
 
 .form-cont {
-  margin: 80px 80px;
+  /* margin-top: 5; */
   border-radius: 1.5rem;
-  min-width: 25rem;
-  max-width: 35rem;
-  padding-bottom: 3rem;
   border: var(--sds-size-stroke-border) solid rgba(255, 255, 255, 0.10);
   background: linear-gradient(140deg, rgba(255, 255, 255, 0.12) -1.82%, rgba(255, 255, 255, 0.04) 68.19%, rgba(255, 255, 255, 0.03) 80.14%);
   box-shadow: 0px 4px 24px -1px rgba(0, 0, 0, 0.20);
   backdrop-filter: blur(30rem);
   color: white;
+  /* padding-bottom: 1.5rem; */
 }
 
-.form-cont h1 {
-  font-size: 30px;
-  color: white;
+.form-cont h2 {
+  font-size: 1.8rem;
 }
 
-.form-cont input {
-  border: 0.1rem solid #b02c98;
-  margin: 0rem;
-  /* height: 2rem; */
+.form-cont .form-control {
+  border: 1px solid #b02c98;
 }
 
-.form-cont label {
-  font-size: 15px;
-}
-
-.form-cont .first-last_name {
-  display: inline-flex;
-  gap: 10px;
-}
-
-.form-cont button {
-  /* background-color: #4169e1; */
-  background-color: #3399ff;
-  color: white;
-  border: none;
-  padding: 0.5rem 1rem;
-  margin: 10px 0;
-  border-radius: 0.5rem;
-}
-
-.form-cont button:hover {
-  background-color: #b02c98;
-  color: black;
-}
-
-.form-cont p {
-  margin: 10px 0 10px 0;
-}
-
-.form-cont p a {
-  color: #3399ff;
-}
-
-.form-cont p a:hover {
-  color: #b02c98;
-}
-
-.first-name,
-.last-name {
-  flex: 1;
-}
-
-.or-separator {
+.form-cont .or-separator {
   display: flex;
   align-items: center;
   justify-content: center;
-  /* margin: 0.5rem; */
-}
-
-span {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  margin: 5px ;
-  font-weight: 600;
-}
-
-hr {
-  margin: 0 0.5rem;
 }
 
 .or-separator:before,
@@ -105,4 +44,5 @@ hr {
   content: "";
   flex: 1;
   border-bottom: 1px solid #ccc;
+  margin: 0 0.5rem;
 }
