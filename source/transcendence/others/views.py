@@ -128,25 +128,22 @@ class SearchUsers(APIView, BaseView):
 	def get(self, request, *args, **kwargs):
 		# http://localhost/search?username=asdfsdaf
 		data = request.data
-		search_param = request.GET.get('username', '')
+		search_param = request.GET.get('q', '')
 		if not search_param:
 			return JsonResponse({
 				'html': render_to_string(self.template, {'players': []})
 			})
 		print("search action:", request.headers.get('action'))
 		players = []
-		if request.headers.get('action') == 'friends':
-			friends = request.user.friend_list.friends.all().filter(username__icontains=search_param)
+		if search_param == 'friends':
+			players = request.user.friend_list.friends.all()
 			print('querying all Friends')
-		if request.headers.get('action') == 'friend_requests':
-			friend_requests = request.user.received_requests.all().filter(sender__username__icontains=search_param)
+		if search_param == 'friend_requests':
+			players = request.user.received_requests.all()
 			print('querying all friend requests')
-		else:
-			print('querying All players')
-		if search_param:
+		else: # if not it should be a username
 			players = Player.objects.filter(username__icontains=search_param)
-		else:
-			players = Player.objects.all()
+			print('querying All players')
 
 		context = {
 			'players': players, 
