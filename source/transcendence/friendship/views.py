@@ -25,7 +25,7 @@ class PlayerProfileView(APIView, BaseView):
 
 	template_name = 'friendship/player_profile.html'
 	# title = 'Player Profile'
-	# css = 'css/player_profile.css'
+	css = 'css/player_profile.css'
 	js = 'js/friend.js'
 
 	def handle_exception(self, exception):

@@ -1,6 +1,6 @@
 .background-image {
     background-image: url('/static/images/background2.jpg');
-    height: 100%;
+    height: 100%; 
     background-size: cover;
     background-position: center;
     display: flex;
@@ -15,11 +15,12 @@
     backdrop-filter: blur(20px);
     box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
     border-radius: 10px;
+    padding: 1rem; 
 }
 
-
 h3,
-.welcome {
+.welcome,
+hr {
     color: white;
 }
 
@@ -27,15 +28,8 @@ h3,
     display: flex;
     align-items: center;
     position: relative;
+    flex-wrap: wrap; 
 }
-
-/* 
-.user-details {
-    display: flex;
-    flex-direction: column;
-    padding: 2rem;
-    border-radius: 5px;
-} */
 
 .form-container {
     flex-grow: 1;
@@ -51,7 +45,7 @@ h3,
     gap: 2rem;
 }
 
-/* Modal */
+/* Modal styles */
 .profile-pic-modal {
     display: flex;
     justify-content: center;
@@ -91,7 +85,6 @@ h3,
 }
 
 .profile-pic-modal .modal-button {
-    /* width: 80%; */
     padding: 5px 10px;
     margin: 10px 10px 0 0;
     border: none;
@@ -108,9 +101,6 @@ h3,
     background-color: #f44336;
     color: white;
 }
-
-
-
 
 /* Modal container for changing username */
 .username-modal {
@@ -150,7 +140,6 @@ h3,
     margin-bottom: 20px;
     border: 1px solid #ccc;
     border-radius: 5px;
-    font-size: 1em;
 }
 
 /* Buttons */
@@ -192,51 +181,42 @@ h3,
     display: none;
 }
 
+/* Table styles */
 .table {
     border: 1px solid #9c10a0;
-    width: fit-content;
+    width: 100%; 
+    table-layout: auto; /
 }
 
 .table th,
 .table td {
     background-color: transparent;
-    /* Transparent cell backgrounds */
     border: 1px solid #9c10a0;
-    white-space: nowrap;
-    /* Prevents text from wrapping */
-    overflow: hidden;
-    /* Hides overflow */
-    text-overflow: ellipsis;
-    /* Adds ellipsis for long text */
-    max-width: 150px;
-    /* Optional: Set a max width if needed */
-
+    white-space: nowrap; 
+    overflow: hidden; 
+    text-overflow: ellipsis; 
+    max-width: 150px; 
 }
 
 .table th {
     color: whitesmoke;
-    /* Set header text color */
 }
 
 .table td {
     color: whitesmoke;
-    /* Set cell text color */
 }
 
 .text-center {
     text-align: center;
-    /* Center text in the table */
 }
 
 .border-right {
     border-right: 1px solid #9c10a0;
-    /* Vertical line between columns */
 }
 
 .table th:last-child,
 .table td:last-child {
     border-right: none;
-    /* Remove the border from the last column */
 }
 
 .pagination {
@@ -250,7 +230,6 @@ h3,
     margin: 0 5px;
 }
 
-/* make class table headers widder */
 .table_headers {
     width: 200px;
 }

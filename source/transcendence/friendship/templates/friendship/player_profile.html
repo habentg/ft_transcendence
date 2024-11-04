@@ -2,55 +2,64 @@
 
 <div class="background-image">
   <div class="container my-5 blur-layer">
-    <h3 class="text-center"><span>{{ queried_player.full_name }}'s Profile</span></h3>
-    <hr />
-    <div class="container profile-info">
-      <div class="container user-details d-flex align-items-center">
-        <div class="profile-dom me-4 position-relative">
-          {% if queried_player.profile_picture %}
-          <img src="{{ queried_player.profile_picture.url }}" alt="Profile Picture" class="rounded-circle profile-pic"
-            style="height: 160px; width: 160px" />
-          {% else %}
-          <img src="{% static 'images/default_profile_pic.jpeg' %}" alt="Default Profile Picture"
-            class="rounded-circle profile-pic" />
-          {% endif %}
-        </div>
+    <section class="w-100 px-4 py-5" >
+      <h3 class="text-center"><span>{{ queried_player.full_name }}'s Profile</span></h3>
+      <hr />
+      <div class="row d-flex justify-content-center">
+        <div class="col col-lg-6 col-md-9 col-sm-2 col-xl-6">
+          <div class="card" style="border-radius: 15px;">
+            <div class="card-body p-4">
+              <div class="d-flex">
+                <!-- Profile Picture Section -->
+                <div class="flex-shrink-0">
+                  {% if queried_player.profile_picture %}
+                  <img src="{{ queried_player.profile_picture.url }}" alt="Profile Picture" class="rounded-circle img-fluid"
+                    style="width: 130px; height: 130px; border-radius: 10px;" />
+                  {% else %}
+                  <img src="{% static 'images/default_profile_pic.jpeg' %}" alt="Default Profile Picture"
+                    class="rounded-circle img-fluid" style="width: 130px; height: 130px; border-radius: 10px;" />
+                  {% endif %}
+                </div>
 
-        <div class="form-container">
-          <div class="form-group row">
-            <label for="full_name" class="col-sm-3 col-form-label">Name</label>
-            <div class="col-sm-7">
-              <input type="text" class="form-control" id="full_name" value="{{ queried_player.full_name }}" disabled />
-            </div>
-          </div>
-          <div class="form-group row">
-            <label for="username" class="col-sm-3 col-form-label">Username</label>
-            <div class="col-sm-7">
-              <input type="text" class="form-control" id="username" value="{{ queried_player.username }}" disabled />
-            </div>
-          </div>
+                <!-- User Info and Actions -->
+                <div class="flex-grow-1 ms-4">
+                  <h5 id="full_name" class="mb-1" data-full-name="{{ queried_player.full_name }}">{{ queried_player.full_name }}</h5>
+                  <p id="username" class="mb-2 pb-1" data-username="{{ queried_player.username }}">{{ queried_player.username }}</p>
 
-          <div class="form-group row">
-            <label for="email" class="col-sm-3 col-form-label">Email</label>
-            <div class="col-sm-7">
-              <input type="email" class="form-control" id="email" value="{{ queried_player.email }}" disabled />
-            </div>
-          </div> <br>
-        </div>
-        {% comment %} Setting up what buttons to display based on thier friendship/freind request status - POV of the user loged in {% endcomment %}
-        {% if is_friend %}
-          <button id="unfriend_btn" type="button" class="btn btn-danger">Un-Friend</button>
-        {% elif is_requested_by_me %}
-          <button id="cancel_request_btn" type="button" class="btn btn-danger">Cancel Friend Request</button>
-        {% elif am_i_requested %}
-          <button id="accept_request_btn" type="button" class="btn btn-success">Accept Friend Request</button>
-          <button id="decline_request_btn" type="button" class="btn btn-warning">Decline Friend Request</button>
-        {% elif not is_self %}
-          <button id="add_friend_btn" type="button" class="btn btn-danger">Send Friend Request</button>
-        {% comment %} we can add edit profile and shit here that are only specific to the current user {% endcomment %}
-        {% endif %}
-        <br />
-      </div>
-    </div>
-  </div>
+                  <!-- User Stats -->
+                  <div class="d-flex justify-content-start align-items-center">
+                    <div >
+                      <p class="small text-muted mb-1">Friends</p>
+                      <p class="mb-1">{{ queried_player.followers_count|default:0 }}</p>
+                    </div>
+                    <div class="ms-3">
+                      <p class="small text-muted mb-1">Points</p>
+                      <p class="mb-1">{{ queried_player.rating|default:0 }}</p>
+                    </div>
+                  </div>
+
+                  <!-- Actions Section -->
+                  <div class="d-flex pt-1">
+                    {% if is_friend %}
+                    <button id="unfriend_btn" type="button" class="btn btn-danger">Un-Friend</button>
+                    {% elif is_requested_by_me %}
+                    <button id="cancel_request_btn" type="button" class="btn btn-danger">Cancel
+                      Request</button>
+                    {% elif am_i_requested %}
+                    <button id="accept_request_btn" type="button" class="btn btn-success me-1">Accept
+                      Request</button>
+                    <button id="decline_request_btn" type="button" class="btn btn-warning">Decline
+                      Request</button>
+                    {% elif not is_self %}
+                    <button id="add_friend_btn" type="button" class="btn btn-primary">Send Request</button>
+                    {% endif %}
+                  </div>
+                </div>
+              </div>
+            </div> 
+          </div> 
+        </div> 
+      </div> 
+    </section>
+  </div> 
 </div>

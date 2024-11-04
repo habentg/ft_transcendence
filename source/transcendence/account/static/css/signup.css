@@ -2,7 +2,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  min-height: 100%;
+  height: 100%;
 }
 
 .background-image {
@@ -10,12 +10,10 @@
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
-  width: 100%;
-  height: 100%;
 }
 
 .form-cont {
-  /* margin-top: 5; */
+  margin-top: 8rem;
   border-radius: 1.5rem;
   border: var(--sds-size-stroke-border) solid rgba(255, 255, 255, 0.10);
   background: linear-gradient(140deg, rgba(255, 255, 255, 0.12) -1.82%, rgba(255, 255, 255, 0.04) 68.19%, rgba(255, 255, 255, 0.03) 80.14%);
@@ -29,8 +27,14 @@
   font-size: 1.8rem;
 }
 
-.form-cont .form-control {
-  border: 1px solid #b02c98;
+.form-cont button {
+  color: white;
+  border: none;
+  transition: background-color 0.3s;
+}
+
+.form-cont button:hover {
+  background-color: #b02c98;
 }
 
 .form-cont .or-separator {
@@ -45,4 +49,8 @@
   flex: 1;
   border-bottom: 1px solid #ccc;
   margin: 0 0.5rem;
+}
+
+h2 {
+  margin: 0;
 }
