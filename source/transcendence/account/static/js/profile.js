@@ -32,7 +32,7 @@ async function deleteAccount() {
       </li>
       </ul>
       `;
-      updateUI('/', false);
+      await updateUI('/', false);
       return;
     }
     throw new Error("Failed to delete account");
@@ -74,9 +74,7 @@ async function UpdateUserInfo() {
             console.log("Full name: ", formData.full_name);
             console.log("User info updated");
             // update the user info in the DOM
-            updateUI('/profile', false);
-            // history.pushState(null, '', `/profile`);
-            // handleLocationChange();
+            await updateUI('/profile', false);
             closeUsernameModal();
         } else {
             throw new Error('Failed to update user info');
@@ -109,9 +107,7 @@ async function UploadNewProfilePic() {
         if (response.ok) {
             console.log("Profile pic updated");
             // update the user info in the DOM
-            updateUI('/profile', false);
-            // history.pushState(null, '', `/profile`);
-            // handleLocationChange();
+            await updateUI('/profile', false);
         } else {
             throw new Error('Failed to update profile pic');
         }
@@ -154,9 +150,7 @@ async function updatePlayerPassword () {
             return;
         }
         console.log("Password updated");
-        updateUI('/profile', false);
-        // history.pushState(null, '', `/profile`);
-        // handleLocationChange();
+        await updateUI('/profile', false);
         // close the modal
         closePasswordModal();
         // after modal is closed, display password update success message / modal

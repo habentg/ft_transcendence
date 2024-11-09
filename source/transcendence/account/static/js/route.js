@@ -4,30 +4,22 @@ let isInitialLoad = true;
 // function to update the UI
 /* 
     updates the URL in the browser based on:
+        - prevent double request;
         - if the route is deep or not;
-    calls the handleLocationChange function;
+        - calls a function to load the content of the page;
 */
-function updateUI(path, deep_route) {
-  console.log("Routing to:", path);
-  if (deep_route) history.pushState(null, "", `${path}`);
-  else history.pushState(null, "", `${window.baseUrl}${path}`);
-  handleLocationChange();
-}
 
-// actual function to change the content of the page
-/*
-    extract the path from the browser URL;
-    load the content of the page;
-    NOTE: this will be used almost everywhere in this SPA;
-*/
-async function handleLocationChange() {
-  let path = window.location.pathname.slice(1);
-
+async function updateUI(path, deep_route) {
   if (isInitialLoad) {
     isInitialLoad = false;
     return;
   }
-  await loadContent(path);
+  console.log("updateUI() of:", path);
+  if (deep_route)
+    history.pushState(null, "", `${path}`);
+  else
+    history.pushState(null, "", `${window.baseUrl}${path}`);
+  await loadContent(`${window.baseUrl}${path}`);
 }
 
 // routing function
@@ -38,18 +30,16 @@ async function handleLocationChange() {
     if the path is the same as the current path, do nothing - avoiding unnecessary requests;
     then update the UI;
 */
-function appRouter(event) {
+async function appRouter(event) {
     event = event || window.event;
     event.preventDefault();
     
     let href = event.target.href;
     let urlObj = new URL(href);
     let path = urlObj.pathname;
-    console.log("AppRoute - Routing to:", urlObj);
     if (path === window.location.pathname)
         return;
-    console.log("AppRoute - Routing to:", path);
-    updateUI(path, false);
+    await updateUI(path, false);
 };
 
 
@@ -81,9 +71,6 @@ function determineRoute(route) {
 
 // Load the content of the page
 async function loadContent(route) {
-  // // bunch of ifs to correcly route to the correct "App" in django
-  // const route = determineRoute(route);
-  
   try {
     const response = await fetch(`${route}/`, {
       method: "GET",
@@ -93,13 +80,14 @@ async function loadContent(route) {
     });
 
     // signout is a special case
-    if (route === "signout") {
+    if (route === `${window.baseUrl}/signout`) {
       // Remove any CSS/JS if necessary
       removeResource();
       // Update the navbar
       updateNavBar(false);
       // Update the history state
-      updateUI("/", false);
+      console.log("Signing out");
+      await updateUI("/", false);
       return;
     }
 
@@ -130,9 +118,28 @@ async function loadContent(route) {
   }
 }
 
+// actual function to change the content of the page
+/*
+    extract the path from the browser URL;
+    load the content of the page;
+    NOTE: this will be used almost everywhere in this SPA;
+*/
+async function handleLocationChange() {
+  let path = window.location.pathname.slice(1);
+
+  if (isInitialLoad) {
+    isInitialLoad = false;
+    return;
+  }
+  console.log("handleLocationChange() of:", path);
+  await loadContent(path);
+}
+
 async function initApp() {
   // Handle initial load and browser back/forward buttons
-  window.addEventListener("popstate", handleLocationChange);
+  window.addEventListener("popstate", async () => {
+    await handleLocationChange();
+  });
 
   // Handle initial load
   window.addEventListener("load", async () => {

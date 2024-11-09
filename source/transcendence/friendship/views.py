@@ -24,7 +24,7 @@ class PlayerProfileView(APIView, BaseView):
 	permission_classes = [IsAuthenticated]
 
 	template_name = 'friendship/player_profile.html'
-	# title = 'Player Profile'
+	title = 'Player Profile'
 	css = 'css/player_profile.css'
 	js = 'js/friend.js'
 
@@ -56,23 +56,6 @@ class PlayerProfileView(APIView, BaseView):
 			'is_self': queried_user == request.user,
 		}
 		return data
-
-# # Create your views here.
-# class FriendsViewSet(viewsets.ModelViewSet):
-# 	authentication_classes = [JWTCookieAuthentication]
-# 	permission_classes = [IsAuthenticated]
-# 	serializer_class = FriendsSerializer
-
-# 	def get_queryset(self):
-# 		return Player.objects.all()
-		
-# 	def list(self, request, *args, **kwargs):
-# 		print('FriendsViewSet', flush=True)
-# 		return super().list(request, *args, **kwargs)
-# 	def create(self, request, *args, **kwargs):
-# 		print('FriendsViewSet: ', kwargs.get('username'), flush=True)
-# 		return super().create(request, *args, **kwargs)
-
 
 # FRIEND REQUESTS - FROM SENDER PERSPECTIVE
 class FriendRequestView(APIView):

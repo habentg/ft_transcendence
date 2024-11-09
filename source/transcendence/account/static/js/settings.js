@@ -32,7 +32,7 @@ async function deleteAccount() {
 		</li>
 		</ul>
 		`;
-      updateUI("/", false);
+      await updateUI("/", false);
       closeDeleteAccountModal();
       return;
     }
@@ -102,7 +102,7 @@ async function updatePlayerPassword() {
       return;
     }
     console.log("Password updated");
-    updateUI("/profile", false);
+    await updateUI("/profile", false);
     // history.pushState(null, '', `/profile`);
     // handleLocationChange();
     // close the modal

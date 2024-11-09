@@ -13,7 +13,9 @@ from rest_framework.response import Response
 from django.middleware.csrf import get_token
 from rest_framework import status
 from django.shortcuts import get_object_or_404
-
+import urllib.parse
+from django.core.files import File
+from urllib.request import urlopen
 
 
 # base view for basic pages in our SPA
@@ -124,32 +126,56 @@ class SearchUsers(APIView, BaseView):
 	authentication_classes = [JWTCookieAuthentication]
 	permission_classes = [IsAuthenticated]
 	template = 'others/search_result.html'
+	css = 'css/search.css'
+	js = 'js/friend.js'
+
+	def handle_exception(self, exception):
+		if isinstance(exception, AuthenticationFailed):
+			signin_url = reverse('signin_page')
+			params = urllib.parse.urlencode({'next': self.request.path})
+			response = HttpResponseRedirect(f'{signin_url}?{params}')
+			response.delete_cookie('access_token')
+			response.delete_cookie('refresh_token')
+			return response
+		return super().handle_exception(exception)
 
 	def get(self, request, *args, **kwargs):
-		# http://localhost/search?username=asdfsdaf
+		if (request.headers.get('X-Requested-With') != 'XMLHttpRequest'):
+			return HttpResponseRedirect(reverse('home_page'))
+		# http://localhost/search?q=asdfsdaf
 		data = request.data
 		search_param = request.GET.get('q', '')
 		if not search_param:
 			return JsonResponse({
-				'html': render_to_string(self.template, {'players': []})
+				'html': render_to_string(self.template, {'players': []}),
+				'css' : self.css,
+				'js' : self.js
 			})
-		print("search action:", request.headers.get('action'))
 		players = []
+		"""
+			friend requests are structured like this: <QuerySet [<FriendRequest: root → hatesfam : (PENDING)>]>
+			-> that's why we need to extract the sender from the request (we need friend requests sent to the user)
+		"""
 		if search_param == 'friends':
 			players = request.user.friend_list.friends.all()
-			print('querying all Friends')
-		if search_param == 'friend_requests':
-			players = request.user.received_requests.all()
-			print('querying all friend requests')
+			print("Friends : ", players, flush=True)
+			print('querying all Friends', flush=True)
+		elif search_param == 'friend_requests':
+			friend_requests = request.user.received_requests.all()
+			players = [fr.sender for fr in friend_requests]  # Extracting the users who sent requests
 		else: # if not it should be a username
 			players = Player.objects.filter(username__icontains=search_param)
-			print('querying All players')
+			print("ALL Players : ", players, flush=True)
+			print('querying all players - containing {}'.format(search_param), flush=True)
 
 		context = {
 			'players': players, 
-			'current_user': request.user
+			'current_user': request.user,
+			'search_type': search_param
 		}
 		# becareful with direct broswer url visit
 		return JsonResponse({
-			'html': render_to_string(self.template, context)
+			'html': render_to_string(self.template, context),
+			'css' : self.css,
+			'js' : self.js
 		})

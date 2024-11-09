@@ -10,11 +10,6 @@ source/.env
 # Ignore the build directory
 .vscode/
 
-# Ignore .txt files
-*.txt
-
 # Ignore .git files
 .git/
 
-# Ignore the leetcode directory
-leetcode/

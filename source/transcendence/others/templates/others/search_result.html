@@ -15,22 +15,25 @@
                 {% endif %}
               </div>
               <div class="container">
-                <a href="/profile/{{ player.username }}"><h6>{{ player.username }}</h6></a>
+                <a onclick="appRouter()" href="/profile/{{ player.username }}">{{ player.username }}</a>
                 <p>{{ player.full_name }}</p>
               </div>
             </div>
-            <div class="container border fiendship_status_buttons_container">
-              {% comment %}bunch of if{% endcomment %}
-              {% if player.username == current_user.username %}
-                <a class="btn btn-primary" onclick="appRoute()" href="/profile/{{ player.username }}">UR Profile</a>
-                {% else %}
-                <a class="btn btn-primary" onclick="appRoute()" href="/profile/{{ player.username }}">Vist Profile</a>
-                {% comment %} {% elif current_user.friend_list.friends.filter(username=player.username).exists() %}
-                <a class="btn btn-primary" onclick="appRoute()" href="/profile/{{ player.username }}">Friend</a> {% endcomment %}
-              {% comment %} {% elif current_user.friend_list.friend_requests.filter(username=player.username).exists() %} {% endcomment %}
-
-              {% endif %}
-            </div>
+            {% if search_type == 'friends' %}
+              <div class="container border ">
+                <button id="chat_btn" type="button" class="btn btn-dark">Chat</button>
+                <a onclick="appRouter()" href="/profile/{{ player.username }}" class="btn">Visit</a>
+              </div>
+              {% elif search_type == 'friend_requests' %}
+              <div class="container border friend_requests_response_btns">
+                <button type="button" class="btn btn-success acc_req_btn" data-username="{{player.username}}">Acc</button>
+                <button type="button" class="btn btn-danger rej_req_btn" data-username="{{player.username}}">Rej</button>
+              </div>
+              {% else%}
+              <div class="container border ">
+                <a onclick="appRouter()" href="/profile/{{ player.username }}" class="btn btn-primary">Visit</a>
+              </div>
+            {% endif %}
           </div>
         </div>
       {% endfor %}

@@ -44,7 +44,7 @@ async function handleSignupSubmit(e) {
         // update the navbar
         updateNavBar(true);
         // redirect to the protected page
-        updateUI(`/home`, false);
+        await updateUI(`/home`, false);
         // history.pushState(null, '', `/home`);
         // handleLocationChange();
     } catch (error) {

@@ -66,8 +66,12 @@ try:
             print(f"Failed to create user {username}: {str(e)}")
         except Exception as e:
             print(f"Unexpected error creating user {username}: {str(e)}")
-    except Exception as e:
-        print(could not open file!)
+except FileNotFoundError:
+    print("Could not find dummy_users.json file!")
+except json.JSONDecodeError:
+    print("Error parsing dummy_users.json file!")
+except Exception as e:
+    print(f"Unexpected error: {str(e)}")
 
 print("User creation process completed")
 EOF

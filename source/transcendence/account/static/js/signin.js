@@ -24,7 +24,7 @@ async function handleSignInSubmit(e) {
         if (!response.ok) {
             if (response.status === 302) {
                 // Redirect to the two factor authentication page
-                updateUI(`/2fa`, false);
+                await updateUI(`/2fa`, false);
                 // history.pushState(null, '', `/2fa`);
                 // handleLocationChange();
             }
@@ -37,7 +37,7 @@ async function handleSignInSubmit(e) {
         }
         // redirect to the protected page
         updateNavBar(true); // update the navbar for authenticated users
-        updateUI(`/home`, false);
+        await updateUI(`/home`, false);
         // history.pushState(null, '', `/home`);
         // handleLocationChange();
     } catch (error) {

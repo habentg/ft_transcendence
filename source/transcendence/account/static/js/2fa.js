@@ -24,7 +24,7 @@ async function handleOTPSubmit(event) {
       return;
     }
     // redirect to the protected page
-    updateUI(`/${responseData.redirect}`, false);
+    await updateUI(`/${responseData.redirect}`, false);
   } catch (error) {
     console.error("Error:", error);
   }

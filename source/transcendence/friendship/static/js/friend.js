@@ -1,9 +1,15 @@
+/* reataching the eventListners for the buttons
+
+  @ spent days figuring out this shit
+*/
+
 async function addFriendRequest() {
   console.log("addFriendRequest");
 
   const toBeFriend = document
     .getElementById("username")
     .getAttribute("data-username");
+    console.log("toBeFriend: ", toBeFriend);
   try {
     const response = await fetch(`/friend_request/${toBeFriend}/`, {
       method: "POST",
@@ -15,11 +21,8 @@ async function addFriendRequest() {
     console.log("Response status:", response.status); // Log the response status
 
     if (response.status === 201) {
-      const addFriendBtn = document.getElementById("add_friend_btn");
-      if (addFriendBtn) {
-        addFriendBtn.id = "cancel_request_btn";
-        addFriendBtn.innerText = "Cancel Friend Request";
-      }
+      await updateUI(`/profile/${toBeFriend}`, false);
+      // attachFriendEventListners();
       return;
     }
 
@@ -35,6 +38,7 @@ async function cancelFriendRequest() {
   const toBeFriend = document
   .getElementById("username")
   .getAttribute("data-username");
+  console.log("toBeFriend: ", toBeFriend);
   try {
     const response = await fetch(`/friend_request/${toBeFriend}/`, {
       method: "PATCH",
@@ -46,14 +50,8 @@ async function cancelFriendRequest() {
     console.log("Response status:", response.status); // Log the response status
 
     if (response.status === 200) {
-      // successfully cancelled the friend request
-      const cancelFriendRequestBtn =
-        document.getElementById("cancel_request_btn");
-      if (cancelFriendRequestBtn) {
-        console.log("we editing the cancel request button");
-        cancelFriendRequestBtn.id = "add_friend_btn";
-        cancelFriendRequestBtn.innerText = "Send Friend Request";
-      }
+      await updateUI(`/profile/${toBeFriend}`, false);
+      // attachFriendEventListners();
       console.log("Cancelled friend request");
       return;
     }
@@ -65,11 +63,9 @@ async function cancelFriendRequest() {
   }
 }
 
-async function acceptOrDeclineFriendRequest(action) {
+async function acceptOrDeclineFriendRequest(action, toBeFriend, direct_from_profile=true) {
   console.log("acceptOrDeclineFriendRequest");
-  const toBeFriend = document
-  .getElementById("username")
-  .getAttribute("data-username");
+
   try {
     const response = await fetch(`/friend_request_response/${toBeFriend}/`, {
       method: "PATCH",
@@ -85,7 +81,18 @@ async function acceptOrDeclineFriendRequest(action) {
 
     if (response.status === 200) {
       console.log(" ---- Friend request fulfilled ---- ");
-      // updateUI(`/profile/${toBeFriend}/`, false)
+      if (direct_from_profile) {
+        await updateUI(`/profile/${toBeFriend}/`, false);
+        // attachFriendEventListners(); // reattach event listeners after updating the UI
+      }
+      else {
+        console.log(" friend request " + action + "ed from the friend requests list");
+        // const friend_requests_response_btns = document.getElementsByClassName("friend_requests_response_btns");
+        // friend_requests_response_btns.removeChild(friend_requests_response_btns.childNodes[0]);
+        // friend_requests_response_btns.removeChild(friend_requests_response_btns.childNodes[1]);
+        // friend_requests_response_btns.appendChild(document.createTextNode("Friend request " + action + "ed"));
+
+      }
       return;
     }
 
@@ -113,7 +120,8 @@ async function removeFriend() {
 
     if (response.status === 200) {
       console.log(" ---- removed a friend  ---- ");
-      // updateUI(`/profile/${toBeFriend}`, false)
+      await updateUI(`/profile/${toBeFriend}`, false);
+      attachFriendEventListners();
       return;
     }
 
@@ -124,7 +132,8 @@ async function removeFriend() {
   }
 }
 
-function friend() {
+
+function attachFriendEventListners() {
   const addFriendBtn = document.getElementById("add_friend_btn");
   if (addFriendBtn) {
     console.log("addFriend - addEventListener");
@@ -136,19 +145,24 @@ function friend() {
     console.log("cancelFriendRequest - addEventListener");
     cancelFriendRequestBtn.addEventListener("click", cancelFriendRequest);
   }
-
   const acceptFriendBtn = document.getElementById("accept_request_btn");
   if (acceptFriendBtn) {
     acceptFriendBtn.addEventListener("click", () => {
       console.log("accept friend request");
-      acceptOrDeclineFriendRequest("accept");
+      const toBeFriend = document
+      .getElementById("username")
+      .getAttribute("data-username");
+      acceptOrDeclineFriendRequest("accept", toBeFriend, true);
     });
   }
   const declineFriendBtn = document.getElementById("decline_request_btn");
   if (declineFriendBtn) {
     declineFriendBtn.addEventListener("click", () => {
       console.log("decline friend request");
-      acceptOrDeclineFriendRequest("decline");
+      const toBeFriend = document
+      .getElementById("username")
+      .getAttribute("data-username");
+      acceptOrDeclineFriendRequest("decline", toBeFriend, true);
     });
   }
   const removeFriendBtn = document.getElementById("unfriend_btn");
@@ -158,4 +172,4 @@ function friend() {
 }
 
 // instead of calling friend() directly, we wait for the DOM to load
-document.addEventListener("DOMContentLoaded", friend);
+document.addEventListener("DOMContentLoaded", attachFriendEventListners);
