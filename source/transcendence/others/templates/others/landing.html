@@ -1,26 +1,25 @@
 {% load static %}
 
-<!-- <div id="landing" class="container">
-  <h1>Welcome to Our App!</h1>
-  <p>Please sign in or create an account to get started.</p>
-  <button id="signin-btn">Sign In</button>
-  <button id="signup-btn">Sign Up</button>
-</div> -->
-
-<div
-  id="landing"
-  class="first-page d-flex align-items-center justify-content-center"
->
+<div id="landing" class="first-page vh-100">
   <div class="background-image">
-    <div class="content text-center px-3 py-4">
-      <h3 class="display-5 fw-bold">
-        Experience the thrill of ping pong like never before
-        right here on our platform!
-      </h3>
-      <p class="lead">
-        Play anytime, anywhere. <br />
-        Compete, connect, and have fun!
-      </p>
+    <div class="content-wrapper container px-3">
+      <div class="content text-center p-3 p-md-4">
+        <h1 class="title-gradient mb-3 mb-md-4">
+          Experience the thrill of ping pong like never before!
+        </h1>
+        <p class="subtitle mb-4">
+          Play anytime, anywhere. <br class="d-none d-md-block" />
+          Compete, connect, and have fun with players worldwide!
+        </p>
+        <div class="d-grid gap-2 d-sm-flex justify-content-sm-center">
+          <a href="/signin" class="btn btn-primary px-4 me-sm-3">
+            <i class="fas fa-sign-in-alt me-2"></i>Sign In
+          </a>
+          <a href="/signup" class="btn btn-outline-light px-4">
+            <i class="fas fa-user-plus me-2"></i>Sign Up
+          </a>
+        </div>
+      </div>
     </div>
   </div>
 </div>

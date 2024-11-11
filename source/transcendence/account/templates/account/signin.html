@@ -1,68 +1,49 @@
 {% load static %}
 
-<div class="signin_page">
-  <div class="background-image">
-    <div class="container my-5">
-      <!-- Sign form -->
-      <form
-        class="col-md-8 col-lg-6 mx-auto card p-4 form-cont"
-        onsubmit="handleSignInSubmit(event)"
-      >
+<div class="sign_in_page">
+  <div class="background-image w-100">
+    <div class="container py-5">
+      <form class="col-12 col-md-8 col-lg-6 mx-auto form-cont" onsubmit="handleSignInSubmit(event)">
         {% csrf_token %}
-        <span>
-          <h2 class="text-center">Sign In</h2>
-        </span>
+        <div class="text-center mb-3">
+          <h2>Sign In</h2>
+        </div>
         <hr />
-        <div
-          class="alert alert-danger"
-          role="alert"
-          id="error-msg"
-          style="display: none"
-        ></div>
 
-        <div class="form-group my-2">
-          <label for="username">Username</label>
-          <input
-            type="text"
-            class="form-control"
-            name="username"
-            id="username"
-            placeholder="Enter username"
-            required
-          />
+        <div class="alert alert-danger" role="alert" id="error-msg" style="display: none"></div>
+
+        <div class="mb-3">
+          <label for="username" class="form-label">Username</label>
+          <input type="text" class="form-control" name="username" id="username" required />
         </div>
 
-        <div class="form-group my-2">
-          <label for="password">Password</label>
-          <input
-            type="password"
-            class="form-control"
-            name="password"
-            id="password"
-            placeholder="Enter password"
-            required
-          />
+        <div class="mb-3">
+          <label for="password" class="form-label">Password</label>
+          <div class="input-group">
+            <input type="password" class="form-control" name="password" id="password" required />
+            <button class="btn btn-outline-light toggle-password" type="button" data-target="password">
+              <i class="fas fa-eye"></i>
+            </button>
+          </div>
+          <div class="d-flex justify-content-end mt-2">
+            <a href="/password_reset" class="text-primary small">Forgot Password?</a>
+          </div>
         </div>
 
-        <p>
-          <a href="/password_reset" class="text-primary">Forgot Password?</a>
-        </p>
-        <button type="submit" class="btn btn-primary w-100 mb-3">Submit</button>
+        <button type="submit" class="btn btn-primary w-100 mb-3">
+          <i class="fas fa-sign-in-alt me-2"></i>Sign In
+        </button>
 
-        <div class="or-separator">
+        <div class="or-separator my-3">
           <span>or</span>
         </div>
 
-        <button
-          onclick="handle42Login()"
-          type="button"
-          class="btn btn-secondary w-100 my-3 fourty-two"
-        >
-          42
+        <button onclick="handle42Login()" type="button" class="btn btn-outline-light w-100 mb-3">
+          <i class="fas fa-school me-2"></i>Sign in with 42
         </button>
 
-        <p class="mt-1">
-          Don’t have an account?
+        <p class="text-center mb-0">
+          Don't have an account?
           <a href="/signup" class="text-primary">Sign up</a>
         </p>
       </form>

@@ -6,109 +6,276 @@
 
 html,
 body {
-  /* min-width: 700px; This will be added for min width of the body */
   background-color: rgb(0, 0, 0);
-  height: 100%;
+  min-height: 100vh;
   width: 100%;
   min-width: 415px;
-  min-height: 810px;
-}
-
-header {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  text-align: center;
-}
-
-.custom-navbar {
-  background-color: black;
-  /* padding: 0; */
-  margin: 20px auto;
-  position: fixed;
-  top: 0;
-  width: 60%;
-  height: 55px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  border-radius: 40px;
-  border: 1px solid #84ddfc;
-}
-
-/* Style the brand logo */
-.custom-navbar .navbar-brand {
-  font-size: 1.8rem;
-  font-weight: bold;
-  color: #84ddfc;
-}
-
-.custom-navbar .navbar-brand:hover {
-  color: #b02c98;
-}
-
-/* Style the navigation links */
-.custom-navbar .nav-link {
-  font-size: 1.2rem;
-  padding: 0.5rem 1rem;
-  color: #84ddfc;
-}
-
-.custom-navbar .nav-link:hover {
-  color: #b02c98;
-}
-
-/* Change navbar toggler color */
-.custom-navbar .navbar-toggler {
-  border-color: #84ddfc;
-}
-
-#content {
-  /* margin-top: 55px; */
-  /* display: flex;
-  justify-content: center;
-  align-items: center;
-  text-align: center; */
-  height: 100%;
-}
-
-footer {
-  background-color: darkgrey;
-  opacity: 0.8;
-  color: white;
   display: flex;
   flex-direction: column;
-  align-items: center;
-  text-align: center;
-  /* padding: 1rem; */
-  /* height: 15%;  */
 }
 
-footer ul {
-  list-style-type: none;
-  padding: 0;
-  margin: 0rem;
+/* Navbar Styles */
+.custom-navbar {
+  background: rgba(0, 0, 0, 0.8);
+  backdrop-filter: blur(10px);
+  margin: 15px auto;
+  position: fixed;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 90%;
+  max-width: 1200px;
+  border-radius: 15px;
+  border: 1px solid rgba(132, 221, 252, 0.2);
+  padding: 0.25rem 1rem;
+  z-index: 1000;
+  transition: all 0.3s ease;
+  height: 50px;
 }
 
-footer ul li {
-  margin: 10px;
+.custom-navbar:hover {
+  border-color: rgba(132, 221, 252, 0.4);
+  box-shadow: 0 0 20px rgba(132, 221, 252, 0.2);
 }
 
-footer h5 {
-  margin-bottom: 20px;
+/* Brand Logo */
+.navbar-brand {
+  font-size: 1.3rem;
+  font-weight: bold;
+  color: #84ddfc !important;
+  transition: all 0.3s ease;
+  padding: 0.25rem 0;
 }
 
-.footer-links {
+.navbar-brand:hover {
+  color: #b02c98 !important;
+  transform: translateY(-1px);
+}
+
+/* Navigation Links */
+.nav-link {
+  font-size: 0.95rem;
+  padding: 0.35rem 0.75rem;
+  color: #84ddfc !important;
+  transition: all 0.3s ease;
+  border-radius: 8px;
+}
+
+.nav-link:hover {
+  color: #b02c98 !important;
+  transform: translateY(-1px);
+}
+
+/* Button-style nav links */
+.nav-link.btn {
+  padding: 0.35rem 1rem;
+  margin: 0.15rem;
+}
+
+.nav-link.btn-primary {
+  background: linear-gradient(45deg, #84ddfc, #b02c98);
+  border: none;
+  color: white !important;
+}
+
+.nav-link.btn-outline-primary {
+  border: 2px solid #84ddfc;
+  background: transparent;
+}
+
+.nav-link.btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 15px rgba(132, 221, 252, 0.3);
+}
+
+/* Profile and Notification Icons */
+.profile-link, 
+.nav-link .notification-badge {
+  position: relative;
+  width: 32px;
+  height: 32px;
   display: flex;
-  gap: 20px;
+  align-items: center;
   justify-content: center;
+  border-radius: 50%;
+  background: rgba(132, 221, 252, 0.1);
+  padding: 0;
+  margin: 0;
 }
 
-footer ul li a {
-  color: white;
-  text-decoration: none;
+/* Notification specific styles */
+.nav-link.position-relative {
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  margin: 0 0.5rem;
+  border-radius: 50%;
+  background: rgba(132, 221, 252, 0.1);
 }
 
-footer ul li a:hover {
-  text-decoration: underline;
+.nav-link.position-relative i {
+  font-size: 0.9rem;
+}
+
+.notification-badge::after {
+  content: '';
+  position: absolute;
+  top: 2px;
+  right: 2px;
+  width: 8px;
+  height: 8px;
+  background-color: #b02c98;
+  border-radius: 50%;
+  border: 2px solid rgba(0, 0, 0, 0.8);
+}
+
+/* Navbar Toggler */
+.navbar-toggler {
+  border: 1px solid rgba(132, 221, 252, 0.5);
+  padding: 0.2rem 0.4rem;
+}
+
+.navbar-toggler:focus {
+  box-shadow: 0 0 0 0.25rem rgba(132, 221, 252, 0.25);
+}
+
+/* Main Content */
+#content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  margin-top: 80px;
+}
+
+/* Footer Styles */
+.footer {
+    background: rgba(0, 0, 0, 0.8);
+    backdrop-filter: blur(10px);
+    border-top: 1px solid rgba(132, 221, 252, 0.2);
+    color: white;
+}
+
+.footer-brand {
+    color: #84ddfc;
+    font-weight: bold;
+}
+
+.footer h5 {
+    color: #84ddfc;
+    font-size: 1.1rem;
+    font-weight: 600;
+}
+
+.footer-link {
+    color: #adb5bd;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    display: inline-block;
+}
+
+.footer-link:hover {
+    color: #84ddfc;
+    transform: translateX(5px);
+}
+
+.social-links a {
+    color: #adb5bd;
+    font-size: 1.2rem;
+    transition: all 0.3s ease;
+}
+
+.social-links a:hover {
+    color: #84ddfc;
+    transform: translateY(-2px);
+}
+
+.footer .list-unstyled li {
+    color: #adb5bd;
+    transition: all 0.3s ease;
+}
+
+.footer .list-unstyled li:hover {
+    color: #84ddfc;
+}
+
+.footer .border-top {
+    border-color: rgba(132, 221, 252, 0.2) !important;
+}
+
+.footer-tagline {
+    color: white;
+    font-size: 1rem;
+    opacity: 0.9;
+}
+
+/* Responsive Adjustments */
+@media (max-width: 991px) {
+  .custom-navbar {
+    height: auto;
+    padding: 0.5rem 1rem;
+  }
+
+  .navbar-brand {
+    font-size: 1.2rem;
+  }
+
+  .nav-link {
+    padding: 0.5rem 1rem;
+  }
+
+  .nav-link.position-relative,
+  .profile-link {
+    width: 100%;
+    height: auto;
+    padding: 0.5rem;
+    border-radius: 8px;
+    margin: 0.25rem 0;
+  }
+
+  .notification-badge::after {
+    top: 8px;
+    right: calc(50% - 20px);
+  }
+
+  .footer {
+    text-align: center;
+  }
+
+  .footer .social-links {
+    margin-bottom: 2rem;
+  }
+
+  .footer h5 {
+    margin-top: 1rem;
+  }
+}
+
+@media (max-width: 576px) {
+  .custom-navbar {
+    width: 98%;
+    margin: 5px auto;
+  }
+
+  .navbar-brand {
+    font-size: 1.1rem;
+  }
+
+  .nav-link {
+    font-size: 0.9rem;
+  }
+
+  .footer {
+    padding: 2rem 0;
+  }
+
+  .footer-brand {
+    font-size: 1.2rem;
+  }
+
+  .footer h5 {
+    font-size: 1rem;
+  }
 }
