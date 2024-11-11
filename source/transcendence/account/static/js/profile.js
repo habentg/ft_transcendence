@@ -32,7 +32,7 @@ async function deleteAccount() {
       </li>
       </ul>
       `;
-      await updateUI('/', false);
+      updateUI('/', false);
       return;
     }
     throw new Error("Failed to delete account");
@@ -52,14 +52,25 @@ function makeFieldEditable(fieldId) {
 // updating user info
 async function UpdateUserInfo() {
     try {
-        // user input validation here maybe
         const formData = {
-            // can add firstname and lastname here
-            full_name: document.getElementById('new-fullname').value,
-            username: document.getElementById('new-username').value,
-            email: document.getElementById('new-email').value,
+            full_name: document.getElementById('new-fullname').value.trim(),
+            username: document.getElementById('new-username').value.trim(),
+            email: document.getElementById('new-email').value.trim(),
+        };
+
+        // Basic validation
+        if (!formData.full_name || !formData.username || !formData.email) {
+            displayError({ error_msg: "All fields are required" });
+            return;
         }
-        console.log(formData.full_name);
+
+        // Email validation
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(formData.email)) {
+            displayError({ error_msg: "Please enter a valid email address" });
+            return;
+        }
+
         const response = await fetch('/profile/', {
             method: 'PATCH',
             headers: {
@@ -68,17 +79,16 @@ async function UpdateUserInfo() {
             },
             body: JSON.stringify(formData)
         });
-        // print full name
-        
-        if (response.ok) {
-            console.log("Full name: ", formData.full_name);
-            console.log("User info updated");
-            // update the user info in the DOM
-            await updateUI('/profile', false);
-            closeUsernameModal();
-        } else {
-            throw new Error('Failed to update user info');
+
+        if (!response.ok) {
+            const errorData = await response.json();
+            displayError(errorData);
+            return;
         }
+
+        // Success - close modal and update UI
+        closeUsernameModal();
+        updateUI('/profile', false);
     } catch (error) {
         console.error('Error:', error);
     }
@@ -159,46 +169,52 @@ async function updatePlayerPassword () {
     }
 }
 
-//  Helper function for updating profile picture modal
+// Profile Picture Modal
 function createAndShowModal() {
-  // Remove any existing modal
   const existingModal = document.getElementById("profile-pic-modal");
-  if (existingModal) {
-    existingModal.remove();
-  }
+  if (existingModal) existingModal.remove();
 
-  // Create the modal
   const modal = document.createElement("div");
   modal.id = "profile-pic-modal";
-  modal.className = "profile-pic-modal";
-
-  // Create the modal content
-  const modalContent = document.createElement("div");
-  modalContent.className = "modal-content";
-
-  modalContent.innerHTML = `
-        <h2 class="modal-title">Update Profile Picture</h2>
-        <input type="file" id="profile-pic" accept="image/*" class="modal-input">
-        <button id="update-profile-pic-btn" class="modal-button modal-upload-btn">Upload New Profile Picture</button>
-        <button id="close-modal" class="modal-button modal-close-btn">Cancel</button>
-    `;
-
-  modal.appendChild(modalContent);
-  document.body.appendChild(modal);
-
-  // Show the modal
+  modal.className = "modal fade show";
   modal.style.display = "block";
+  modal.style.backgroundColor = "rgba(0, 0, 0, 0.5)";
 
-  // Add event listener to the upload button
-  const uploadBtn = document.getElementById("update-profile-pic-btn");
-  uploadBtn.addEventListener("click", handleUpload);
+  modal.innerHTML = `
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="content modal-content p-4">
+        <div class="modal-header border-0">
+          <h5 class="modal-title">Update Profile Picture</h5>
+          <button type="button" class="btn-close btn-close-white" id="close-modal"></button>
+        </div>
+        <div class="modal-body py-4">
+          <div class="file-upload-wrapper">
+            <input type="file" id="profile-pic" accept="image/*" class="form-control bg-transparent text-white">
+            <small class="text-muted mt-2 d-block">Supported formats: JPG, PNG, GIF (Max size: 5MB)</small>
+          </div>
+        </div>
+        <div class="modal-footer border-0">
+          <button id="update-profile-pic-btn" class="btn btn-primary">
+            <i class="fas fa-upload me-2"></i>Upload
+          </button>
+          <button id="close-modal-btn" class="btn btn-outline-light">
+            Cancel
+          </button>
+        </div>
+      </div>
+    </div>
+  `;
 
-  // Add event listener to close the modal
-  const closeBtn = document.getElementById("close-modal");
-  closeBtn.addEventListener("click", closeModal);
+  document.body.appendChild(modal);
+  document.body.classList.add('modal-open');
 
-  // Close the modal if user clicks outside of it
-  window.addEventListener("click", handleOutsideClick);
+  // Event Listeners
+  modal.querySelector('#close-modal').addEventListener('click', closeModal);
+  modal.querySelector('#close-modal-btn').addEventListener('click', closeModal);
+  modal.querySelector('#update-profile-pic-btn').addEventListener('click', handleUpload);
+  modal.addEventListener('click', (e) => {
+    if (e.target === modal) closeModal();
+  });
 }
 
 function handleUpload() {
@@ -209,84 +225,79 @@ function handleUpload() {
 function closeModal() {
   const modal = document.getElementById("profile-pic-modal");
   if (modal) {
-    modal.style.display = "none";
-    modal.remove(); // Remove the modal from the DOM
+    modal.remove();
+    document.body.classList.remove('modal-open');
   }
 }
 
-function handleOutsideClick(event) {
-  const modal = document.getElementById("profile-pic-modal");
-  if (event.target === modal) {
-    closeModal();
-  }
-}
-
-// update username modal
+// Update User Info Modal
 function updateUsernameModal() {
-  console.log("Update username modal");
   const existingModal = document.getElementById("username-modal");
-  if (existingModal) {
-    existingModal.remove();
-  }
+  if (existingModal) existingModal.remove();
 
-  // Create the modal
+  // Get the text content from spans inside the profile details
+  const full_name = document.querySelector('.profile-info h3').textContent.trim();
+  const username = document.querySelector('.profile-info p:first-of-type').textContent.replace('@', '').trim();
+  const email = document.querySelector('.profile-info p:last-of-type').textContent.trim();
+
   const modal = document.createElement("div");
   modal.id = "username-modal";
-  modal.className = "username-modal";
-
-  // Create the modal content
-  const modalContent = document.createElement("div");
-  modalContent.className = "modal-content";
-
-  const full_name = document.getElementById("full_name").textContent;
-  const username = document.getElementById("username").textContent;
-  const email = document.getElementById("email").textContent;
-  
-  console.log("Fullname", `${full_name}`);
-
-  modalContent.innerHTML = `
-        <h2 class="modal-title">Update Profile</h2>
-        <input type="text" id="new-fullname" class="modal-input" value="${full_name}" />
-        <input type="text" id="new-username" class="modal-input" value="${username}" />
-        <input type="email" id="new-email" class="modal-input" value="${email}" />
-        <div id="error-msg" class="username-error-msg" style="display:none;"></div>
-        <button id="update-username-btn" class="modal-button modal-upload-btn">Update Profile</button>
-        <button id="close-username-modal" class="modal-button modal-close-btn">Cancel</button>
-    `;
-
-  modal.appendChild(modalContent);
-  document.body.appendChild(modal);
-
-  // Show the modal
+  modal.className = "modal fade show";
   modal.style.display = "block";
+  modal.style.backgroundColor = "rgba(0, 0, 0, 0.5)";
 
-  // Add event listener to the update username button
-  const updateUsernameBtn = document.getElementById("update-username-btn");
-  updateUsernameBtn.addEventListener("click", UpdateUserInfo);
-  console.log(document.getElementById("username").value);
+  modal.innerHTML = `
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="content modal-content p-4">
+        <div class="modal-header border-0">
+          <h5 class="modal-title">Update Profile Information</h5>
+          <button type="button" class="btn-close btn-close-white" id="close-username-modal"></button>
+        </div>
+        <div class="modal-body">
+          <div class="mb-3">
+            <label for="new-fullname" class="form-label">Full Name</label>
+            <input type="text" id="new-fullname" class="form-control bg-transparent text-white" value="${full_name}">
+          </div>
+          <div class="mb-3">
+            <label for="new-username" class="form-label">Username</label>
+            <input type="text" id="new-username" class="form-control bg-transparent text-white" value="${username}">
+          </div>
+          <div class="mb-3">
+            <label for="new-email" class="form-label">Email</label>
+            <input type="email" id="new-email" class="form-control bg-transparent text-white" value="${email}">
+          </div>
+          <div id="error-msg" class="alert alert-danger" style="display:none;"></div>
+        </div>
+        <div class="modal-footer border-0">
+          <button id="update-username-btn" class="btn btn-primary">
+            <i class="fas fa-save me-2"></i>Save Changes
+          </button>
+          <button id="close-username-modal-btn" class="btn btn-outline-light">
+            Cancel
+          </button>
+        </div>
+      </div>
+    </div>
+  `;
 
-  // Add event listener to close the modal
-  const closeBtn = document.getElementById("close-username-modal");
-  closeBtn.addEventListener("click", closeUsernameModal);
+  document.body.appendChild(modal);
+  document.body.classList.add('modal-open');
 
-  // Close the modal if user clicks outside of it
-  window.addEventListener("click", handleUsernameOutsideClick);
+  // Event Listeners
+  modal.querySelector('#close-username-modal').addEventListener('click', closeUsernameModal);
+  modal.querySelector('#close-username-modal-btn').addEventListener('click', closeUsernameModal);
+  modal.querySelector('#update-username-btn').addEventListener('click', UpdateUserInfo);
+  modal.addEventListener('click', (e) => {
+    if (e.target === modal) closeUsernameModal();
+  });
 }
 
-// close the username modal
+// Close Modal Functions
 function closeUsernameModal() {
   const modal = document.getElementById("username-modal");
   if (modal) {
-    modal.style.display = "none";
-    modal.remove(); // Remove the modal from the DOM
-  }
-}
-
-// close the username modal if user clicks outside of it
-function handleUsernameOutsideClick(event) {
-  const modal = document.getElementById("username-modal");
-  if (event.target === modal) {
-    closeUsernameModal();
+    modal.remove();
+    document.body.classList.remove('modal-open');
   }
 }
 
@@ -298,20 +309,6 @@ function initProfilePage() {
     updateProfilePicBtn.addEventListener("click", createAndShowModal);
   }
   
-  // const deleteAccountBtn = document.getElementById("delete-acc-btn");
-  // const enableDisable2FABtn = document.getElementById("enable-disable-2fa");
-  // const changePassIcon = document.getElementById("change-password-btn");
-  // if (changePassIcon) {
-  //   changePassIcon.addEventListener("click", createAndShowPasswordModal);
-  // }
-  // if (deleteAccountBtn) {
-  //   deleteAccountBtn.addEventListener("click", deleteAccount);
-  // }
-
-  // if (enableDisable2FABtn) {
-  //   enableDisable2FABtn.addEventListener("click", handleEnableDisable2FA);
-  // }
-
   const updateUserInfoBtn = document.getElementById("update-user-info");
 
   if (updateUserInfoBtn) {
@@ -320,6 +317,20 @@ function initProfilePage() {
       updateUsernameModal();
     });
   }
+}
+
+// Display error message in modal
+function displayError(errorData) {
+    const errorMsg = document.getElementById('error-msg');
+    if (errorMsg) {
+        errorMsg.textContent = errorData.error_msg || "An error occurred";
+        errorMsg.style.display = 'block';
+        
+        // Hide error message after 3 seconds
+        setTimeout(() => {
+            errorMsg.style.display = 'none';
+        }, 3000);
+    }
 }
 
 // initialize the profile page

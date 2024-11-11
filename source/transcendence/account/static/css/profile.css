@@ -1,327 +1,229 @@
+.profile-page {
+    min-height: 100%;
+    width: 100%;
+}
+
 .background-image {
-    background-image: url('/static/images/background2.jpg');
-    height: 100%; 
+    background-image: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), url('/static/images/background2.jpg');
     background-size: cover;
     background-position: center;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    flex: 1;
+    min-height: 100%;
 }
 
-.blur-layer {
+.content {
+    background: linear-gradient(140deg,
+        rgba(255, 255, 255, 0.12) -1.82%,
+        rgba(255, 255, 255, 0.04) 68.19%,
+        rgba(255, 255, 255, 0.03) 80.14%);
+    backdrop-filter: blur(10px);
     border: 1px solid rgba(255, 255, 255, 0.1);
-    background: rgba(255, 255, 255, 0.1);
-    backdrop-filter: blur(20px);
-    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
-    border-radius: 10px;
-    padding: 1rem; 
-}
-
-h3,
-.welcome,
-hr {
+    border-radius: 15px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
     color: white;
 }
 
-.profile-dom {
+/* Profile Card Styles */
+.profile-pic-container {
+    margin-bottom: 1rem;
+}
+
+.profile-pic {
+    width: 150px;
+    height: 150px;
+    object-fit: cover;
+    border: 3px solid #84ddfc;
+    padding: 3px;
+}
+
+.profile-details .detail-item {
     display: flex;
     align-items: center;
-    position: relative;
-    flex-wrap: wrap; 
+    margin-bottom: 0.5rem;
+    color: #ccc;
 }
 
-.form-container {
-    flex-grow: 1;
-    color: white;
-    margin: 10px;
-}
-
-.options {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    gap: 2rem;
-}
-
-/* Modal styles */
-.profile-pic-modal {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.5);
-    z-index: 1000;
-}
-
-.modal-content {
-    background-color: #fefefe;
-    margin: 15% auto;
-    padding: 1rem;
-    border: 1px solid black;
-    width: 80%;
-    max-width: 500px;
-    border-radius: 5px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-}
-
-.modal-title {
-    margin-top: 0;
-    color: #333;
-}
-
-.modal-input {
-    display: block;
-    width: 100%;
-    padding: 10px;
-    margin: 10px 0;
-    border: 1px solid #ddd;
-    border-radius: 4px;
-}
-
-.profile-pic-modal .modal-button {
-    padding: 5px 10px;
-    margin: 10px 10px 0 0;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-}
-
-.modal-upload-btn {
-    background-color: #4CAF50;
-    color: white;
-}
-
-.modal-close-btn {
-    background-color: #f44336;
-    color: white;
-}
-
-/* Modal container for changing username */
-.username-modal {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.5);
-    z-index: 1000;
-}
-
-/* Modal content box */
-.modal-content {
-    background-color: white;
-    padding: 20px;
-    border-radius: 10px;
-    width: 90%;
-    max-width: 400px;
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
-    text-align: center;
-}
-
-/* Modal title */
-.modal-title {
-    font-size: 1.5em;
-    margin-bottom: 20px;
-}
-
-/* Modal input field */
-.modal-input {
-    width: 100%;
-    padding: 10px;
-    margin-bottom: 20px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-}
-
-/* Buttons */
-.modal-button {
-    padding: 10px 20px;
-    border: none;
-    border-radius: 5px;
-    font-size: 1em;
-    cursor: pointer;
-    margin: 5px;
-    transition: background-color 0.3s ease;
-}
-
-/* Update button */
-.modal-upload-btn {
-    background-color: #28a745;
-    color: white;
-}
-
-.modal-upload-btn:hover {
-    background-color: #218838;
-}
-
-/* Cancel button */
-.modal-close-btn {
-    background-color: #dc3545;
-    color: white;
-}
-
-.modal-close-btn:hover {
-    background-color: #c82333;
-}
-
-/* Error message styling */
-.username-error-msg {
-    color: red;
-    font-size: 0.9em;
-    margin-bottom: 10px;
-    display: none;
-}
-
-/* Table styles */
+/* Game History Styles */
 .table {
-    border: 1px solid #9c10a0;
-    width: 100%; 
-    table-layout: auto; /
+    color: white;
+    margin-bottom: 0;
 }
 
-.table th,
-.table td {
-    background-color: transparent;
-    border: 1px solid #9c10a0;
-    white-space: nowrap; 
-    overflow: hidden; 
-    text-overflow: ellipsis; 
-    max-width: 150px; 
+.table thead th {
+    border-bottom: 2px solid #84ddfc;
+    color: #84ddfc;
+    font-weight: 500;
 }
 
-.table th {
-    color: whitesmoke;
-}
-
-.table td {
-    color: whitesmoke;
-}
-
-.text-center {
-    text-align: center;
-}
-
-.border-right {
-    border-right: 1px solid #9c10a0;
-}
-
-.table th:last-child,
-.table td:last-child {
-    border-right: none;
-}
-
-.pagination {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin-top: 20px;
-}
-
-.pagination button {
-    margin: 0 5px;
-}
-
-.table_headers {
-    width: 200px;
-}
-
-/* Friends (not done) */
-
-.friends-section {
-    background-color: #9c10a0;
-    border-radius: 10px;
+.table td, .table th {
+    background-color: rgba(45, 73, 84, 0.8);
+    border-color: rgba(132, 221, 252, 0.2);
     padding: 1rem;
-    margin-top: 2rem;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    vertical-align: middle;
 }
 
-.friends-section h3 {
-    color: white;
-    margin-bottom: 1rem;
+.table tbody tr {
+    transition: all 0.3s ease;
 }
 
-.friends-list {
-    margin-bottom: 1rem;
+.badge {
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
 }
 
-.friend-item {
-    display: flex;
-    align-items: center;
-    padding: 0.5rem 0;
-    color: white;
-}
-
-.friend-item img {
-    border-radius: 50%;
-    margin-right: 10px;
-}
-
-.add-friend {
-    display: flex;
-    align-items: center;
-    margin-top: 1rem;
-}
-
-#friend-search {
-    flex: 1;
-    padding: 0.5rem;
-    border: 1px solid rgba(255, 255, 255, 0.5);
-    border-radius: 5px;
-    background: rgba(255, 255, 255, 0.1);
-    color: white;
-}
-
-#add-friend-btn {
-    margin-left: 10px;
-}
-
-.friend-requests {
-    margin-top: 1rem;
-}
-
-.request-item {
-    display: flex;
-    align-items: center;
-    padding: 0.5rem 0;
-    color: white;
-}
-
-.request-item button {
-    margin-left: 10px;
-}
-
-.btn-success {
-    background-color: #28a745;
+/* Button Styles */
+.btn-primary {
+    background: linear-gradient(45deg, #84ddfc, #b02c98);
     border: none;
+    transition: all 0.3s ease;
 }
 
-.btn-danger {
-    background-color: #dc3545;
-    border: none;
+.btn-primary:hover {
+    transform: translateY(-2px);
+    background: linear-gradient(45deg, #b02c98, #84ddfc);
+    box-shadow: 0 4px 15px rgba(132, 221, 252, 0.3);
+}
+
+.btn-outline-light {
+    border: 2px solid #84ddfc;
+    color: #84ddfc;
+}
+
+.btn-outline-light:hover {
+    background: #84ddfc;
+    color: #000;
+    transform: translateY(-2px);
 }
 
 .btn-light {
-    background-color: rgba(255, 255, 255, 0.2);
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
     color: white;
-    border: none;
 }
 
 .btn-light:hover {
-    background-color: rgba(255, 255, 255, 0.4);
+    background: rgba(255, 255, 255, 0.2);
+    color: white;
 }
 
-.no-friends-message,
-.no-requests-message {
-    text-align: center;
+/* Text Colors */
+.text-muted {
+    color: #adb5bd !important;
+}
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+    .container {
+        padding: 1rem;
+    }
+    
+    .profile-pic {
+        width: 120px;
+        height: 120px;
+    }
+    
+    .table-responsive {
+        margin: 0 -1rem;
+    }
+    
+    .table td, .table th {
+        padding: 0.75rem;
+    }
+}
+
+/* Animation */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.content {
+    animation: fadeIn 0.5s ease-out;
+}
+
+/* Modal Styles */
+.modal {
+    backdrop-filter: blur(8px);
+}
+
+.modal-content {
+    background: linear-gradient(140deg,
+        rgba(255, 255, 255, 0.12) -1.82%,
+        rgba(255, 255, 255, 0.04) 68.19%,
+        rgba(255, 255, 255, 0.03) 80.14%);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+}
+
+.modal-header, .modal-footer {
+    border-color: rgba(255, 255, 255, 0.1);
+}
+
+.modal-title {
+    color: #84ddfc;
+}
+
+.form-control {
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
     color: white;
-    margin-top: 1rem;
+}
+
+.form-control:focus {
+    background: rgba(255, 255, 255, 0.15);
+    border-color: #84ddfc;
+    color: white;
+    box-shadow: 0 0 0 0.25rem rgba(132, 221, 252, 0.25);
+}
+
+.form-label {
+    color: #adb5bd;
+    font-size: 0.9rem;
+}
+
+.file-upload-wrapper {
+    position: relative;
+}
+
+.btn-close-white {
+    filter: invert(1) grayscale(100%) brightness(200%);
+}
+
+.alert-danger {
+    background: rgba(220, 53, 69, 0.1);
+    border: 1px solid rgba(220, 53, 69, 0.2);
+    color: #dc3545;
+}
+
+@media (max-width: 576px) {
+    .modal-dialog {
+        margin: 1rem;
+    }
+    
+    .modal-body {
+        padding: 1rem;
+    }
+    
+    .btn {
+        padding: 0.5rem 1rem;
+        font-size: 0.9rem;
+    }
+}
+
+/* Add to your modal styles section */
+.modal-content .form-control::placeholder {
+    color: rgba(255, 255, 255, 0.6) !important;
+}
+
+.modal-content input:-webkit-autofill,
+.modal-content input:-webkit-autofill:hover,
+.modal-content input:-webkit-autofill:focus {
+    -webkit-text-fill-color: white;
+    -webkit-box-shadow: 0 0 0px 1000px rgba(255, 255, 255, 0.1) inset;
+    transition: background-color 5000s ease-in-out 0s;
 }

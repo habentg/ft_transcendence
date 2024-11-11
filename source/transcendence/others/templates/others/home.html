@@ -11,7 +11,12 @@
               <!-- Search Bar -->
               <div class="col-md-6">
                 <div class="input-group">
-                  <input type="text" id="searchInput" class="form-control" placeholder="Search for users...">
+                  <input
+                    type="text"
+                    id="searchInput"
+                    class="form-control"
+                    placeholder="Search for users..."
+                  />
                   <button id="searchIcon" class="btn btn-primary">
                     <i class="fa-solid fa-search"></i>
                   </button>
@@ -44,7 +49,11 @@
                 </a>
               </div>
               <div class="col-md-6">
-                <a href="/profile" class="menu-item d-flex align-items-center p-3">
+                <a
+                  onclick="appRouter()"
+                  class="menu-item d-flex align-items-center p-3"
+                  href="/profile"
+                >
                   <i class="fas fa-user fa-2x me-3"></i>
                   <span>Profile</span>
                 </a>
@@ -56,7 +65,11 @@
                 </a>
               </div>
               <div class="col-md-6">
-                <a href="/settings" class="menu-item d-flex align-items-center p-3">
+                <a
+                  onclick="appRouter()"
+                  href="/settings"
+                  class="menu-item d-flex align-items-center p-3"
+                >
                   <i class="fas fa-cog fa-2x me-3"></i>
                   <span>Settings</span>
                 </a>
