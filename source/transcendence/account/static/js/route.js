@@ -110,7 +110,7 @@ async function loadContent(route) {
       throw new Error("HTTP " + response.status);
     }
     let data = await response.json();
-    loadCssandJS(data);
+    loadCssandJS(data, true); // load the css and js of the page - remove the previous ones(true)
     document.title = data.title;
     document.getElementById("content").innerHTML = data.html;
   } catch (error) {

@@ -18,7 +18,7 @@ async function search(query_parameter) {
       const responseData = await response.json();
       const resultsDiv = document.getElementById("searchResults");
       resultsDiv.innerHTML = responseData.html;
-      loadCssandJS(responseData);
+      loadCssandJS(responseData, false);
       attachSearchEventListners();
     }
 

@@ -100,7 +100,7 @@ const removeResource = () => {
   }
 };
 
-const loadCssandJS = (data) => {
+const loadCssandJS = (data, remove_prev_resources) => {
   // object deconstruction
   // fancy way of:
   /* 
@@ -110,7 +110,9 @@ const loadCssandJS = (data) => {
   const { js: js_file_path, css: css_file_path } = data;
 
   // Remove previous CSS & js
-  removeResource();
+  if (remove_prev_resources) {
+    removeResource();
+  }
   // loading new css
   if (css_file_path) {
     let link = document.createElement("link");

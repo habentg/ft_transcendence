@@ -8,6 +8,9 @@ all: build up
 up:
 	$(COMPOSE) -f docker-compose.yaml up -d --remove-orphans
 
+create_users:
+	$(COMPOSE) -f docker-compose.yaml exec app sh create_alot_of_users_for_testing.sh
+
 build:
 	$(COMPOSE) -f docker-compose.yaml build
 
