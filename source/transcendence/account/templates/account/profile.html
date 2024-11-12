@@ -10,15 +10,13 @@
             <div class="text-center mb-4">
               <div class="profile-pic-container position-relative d-inline-block">
                 {% if profile_pic %}
-                <img src="{{ profile_pic }}" alt="Profile Picture" class="profile-pic rounded-circle" />
+                  <img src="{{ profile_pic }}" alt="Profile Picture" class="profile-pic rounded-circle" />
                 {% else %}
-                <img src="{% static 'images/default_profile_pic.jpeg' %}" alt="Default Profile Picture" class="profile-pic rounded-circle" />
+                  <img src="{% static 'images/default_profile_pic.jpeg' %}" alt="Default Profile Picture" class="profile-pic rounded-circle" />
                 {% endif %}
-                <button id="change-profile-pic" class="btn btn-light btn-sm position-absolute bottom-0 end-0">
-                  <i class="fa-solid fa-pen"></i>
-                </button>
+                <button id="change-profile-pic" class="btn btn-light btn-sm position-absolute bottom-0 end-0"><i class="fa-solid fa-pen"></i></button>
               </div>
-              
+
               <div class="profile-info mt-3">
                 <h3 class="mb-1">{{ full_name }}</h3>
                 <p class="text-muted mb-1">@{{ username }}</p>
@@ -26,7 +24,7 @@
                   <i class="fas fa-envelope me-2"></i>{{ email }}
                 </p>
               </div>
-              
+
               <div class="d-flex justify-content-center gap-4 mb-3">
                 <div class="text-center">
                   <h5 class="mb-1">{{ queried_player.followers_count|default:0 }}</h5>
@@ -37,10 +35,8 @@
                   <small class="text-muted">Points</small>
                 </div>
               </div>
-              
-              <button id="update-user-info" class="btn btn-primary">
-                <i class="fas fa-edit me-2"></i>Update Profile
-              </button>
+
+              <button id="update-user-info" class="btn btn-primary"><i class="fas fa-edit me-2"></i>Update Profile</button>
             </div>
           </div>
         </div>
@@ -49,7 +45,7 @@
         <div class="col-lg-8">
           <div class="content game-history-card p-4">
             <h3 class="text-center mb-4">Game History</h3>
-            
+
             <div class="table-responsive">
               <table class="table table-hover">
                 <thead>
@@ -68,7 +64,9 @@
                         <span class="player-name">You vs Player2</span>
                       </div>
                     </td>
-                    <td><span class="badge bg-success">Won</span></td>
+                    <td>
+                      <span class="badge bg-success">Won</span>
+                    </td>
                     <td>5 - 3</td>
                     <td>+25</td>
                     <td>Today</td>
@@ -79,7 +77,9 @@
                         <span class="player-name">You vs Player2</span>
                       </div>
                     </td>
-                    <td><span class="badge bg-success">Won</span></td>
+                    <td>
+                      <span class="badge bg-success">Won</span>
+                    </td>
                     <td>5 - 2</td>
                     <td>+25</td>
                     <td>Today</td>
@@ -90,7 +90,9 @@
                         <span class="player-name">You vs Player3</span>
                       </div>
                     </td>
-                    <td><span class="badge bg-danger">Lost</span></td>
+                    <td>
+                      <span class="badge bg-danger">Lost</span>
+                    </td>
                     <td>3 - 5</td>
                     <td>-15</td>
                     <td>Yesterday</td>
@@ -101,7 +103,9 @@
                         <span class="player-name">You vs Player3</span>
                       </div>
                     </td>
-                    <td><span class="badge bg-danger">Lost</span></td>
+                    <td>
+                      <span class="badge bg-danger">Lost</span>
+                    </td>
                     <td>2 - 5</td>
                     <td>-15</td>
                     <td>Yesterday</td>
@@ -112,17 +116,13 @@
 
             <!-- Pagination -->
             <div class="d-flex justify-content-center gap-2 mt-4">
-              <button id="prev-page" class="btn btn-outline-light" disabled>
-                <i class="fas fa-chevron-left"></i>
-              </button>
+              <button id="prev-page" class="btn btn-outline-light" disabled><i class="fas fa-chevron-left"></i></button>
               <span id="page-numbers" class="d-flex gap-2">
                 <button class="btn btn-primary">1</button>
                 <button class="btn btn-outline-light">2</button>
                 <button class="btn btn-outline-light">3</button>
               </span>
-              <button id="next-page" class="btn btn-outline-light">
-                <i class="fas fa-chevron-right"></i>
-              </button>
+              <button id="next-page" class="btn btn-outline-light"><i class="fas fa-chevron-right"></i></button>
             </div>
           </div>
         </div>

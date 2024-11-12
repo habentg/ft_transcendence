@@ -3,16 +3,15 @@
   <hr />
   <div class="friends-list">
     {% for friend in friends %}
-    <div class="friend-item d-flex align-items-center">
-      <img src="{{ friend.profile_pic }}" alt="{{ friend.full_name }}'s Profile Picture" class="rounded-circle"
-        style="height: 40px; width: 40px; margin-right: 10px;" />
-      <a href="/profile/{{ friend.username }}">{{ friend.full_name }}</a>
-    </div>
+      <div class="friend-item d-flex align-items-center">
+        <img src="{{ friend.profile_pic }}" alt="{{ friend.full_name }}'s Profile Picture" class="rounded-circle" style="height: 40px; width: 40px; margin-right: 10px;" />
+        <a href="/profile/{{ friend.username }}">{{ friend.full_name }}</a>
+      </div>
     {% endfor %}
     {% if friends|length == 0 %}
-    <div class="no-friends-message" style="text-align: center;">
-      <p>You have no friends yet. Start connecting!</p>
-    </div>
+      <div class="no-friends-message" style="text-align: center;">
+        <p>You have no friends yet. Start connecting!</p>
+      </div>
     {% endif %}
   </div>
   <div class="add-friend">
@@ -23,16 +22,16 @@
     <h5>Friend Requests</h5>
     <div class="request-list">
       {% for request in friend_requests %}
-      <div class="request-item d-flex align-items-center">
-        <span>{{ request.full_name }}</span>
-        <button class="btn btn-success" id="accept-{{ request.id }}">Accept</button>
-        <button class="btn btn-danger" id="decline-{{ request.id }}">Decline</button>
-      </div>
+        <div class="request-item d-flex align-items-center">
+          <span>{{ request.full_name }}</span>
+          <button class="btn btn-success" id="accept-{{ request.id }}">Accept</button>
+          <button class="btn btn-danger" id="decline-{{ request.id }}">Decline</button>
+        </div>
       {% endfor %}
       {% if friend_requests|length == 0 %}
-      <div class="no-requests-message" style="text-align: center;">
-        <p>You have no friend requests.</p>
-      </div>
+        <div class="no-requests-message" style="text-align: center;">
+          <p>You have no friend requests.</p>
+        </div>
       {% endif %}
     </div>
   </div>

@@ -34,7 +34,9 @@ async function appRouter(event) {
     event = event || window.event;
     event.preventDefault();
     
-    let href = event.target.href;
+    // let href = event.target.href;
+    // Now you can use the href or other logic to route internally
+    const href = event.target.closest('a').href;
     let urlObj = new URL(href);
     let path = urlObj.pathname;
     if (path === window.location.pathname)

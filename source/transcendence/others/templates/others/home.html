@@ -11,25 +11,14 @@
               <!-- Search Bar -->
               <div class="col-md-6">
                 <div class="input-group">
-                  <input
-                    type="text"
-                    id="searchInput"
-                    class="form-control"
-                    placeholder="Search for users..."
-                  />
-                  <button id="searchIcon" class="btn btn-primary">
-                    <i class="fa-solid fa-search"></i>
-                  </button>
+                  <input type="text" id="searchInput" class="form-control" placeholder="Search for users..." />
+                  <button id="searchIcon" class="btn btn-primary"><i class="fa-solid fa-search"></i></button>
                 </div>
               </div>
               <!-- Friend Buttons -->
               <div class="col-md-6 d-flex gap-2 justify-content-md-end">
-                <button id="friends_btn" class="btn btn-outline-light">
-                  <i class="fas fa-users me-2"></i>Friends
-                </button>
-                <button id="friend_requests_btn" class="btn btn-outline-light">
-                  <i class="fas fa-user-plus me-2"></i>Requests
-                </button>
+                <button id="friends_btn" class="btn btn-outline-light"><i class="fas fa-users me-2"></i>Friends</button>
+                <button id="friend_requests_btn" class="btn btn-outline-light"><i class="fas fa-user-plus me-2"></i>Requests</button>
               </div>
             </div>
             <div id="searchResults" class="mt-3"></div>
@@ -49,11 +38,7 @@
                 </a>
               </div>
               <div class="col-md-6">
-                <a
-                  onclick="appRouter()"
-                  class="menu-item d-flex align-items-center p-3"
-                  href="/profile"
-                >
+                <a onclick="appRouter(event)" class="menu-item d-flex align-items-center p-3" href="/profile">
                   <i class="fas fa-user fa-2x me-3"></i>
                   <span>Profile</span>
                 </a>
@@ -65,11 +50,7 @@
                 </a>
               </div>
               <div class="col-md-6">
-                <a
-                  onclick="appRouter()"
-                  href="/settings"
-                  class="menu-item d-flex align-items-center p-3"
-                >
+                <a onclick="appRouter()" href="/settings" class="menu-item d-flex align-items-center p-3">
                   <i class="fas fa-cog fa-2x me-3"></i>
                   <span>Settings</span>
                 </a>
