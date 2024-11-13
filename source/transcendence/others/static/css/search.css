@@ -1,0 +1,161 @@
+/* .search-results {
+    min-height: 100%;
+    background-image: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), url('/static/images/background2.jpg');
+    background-size: cover;
+    background-position: center;
+    color: white;
+} */
+
+.results-header h3 {
+    color: #84ddfc;
+    font-size: 1.8rem;
+}
+
+.found-count {
+    color: #b02c98;
+    font-weight: bold;
+}
+
+.player-card {
+    background: linear-gradient(140deg,
+        rgba(255, 255, 255, 0.12) -1.82%,
+        rgba(255, 255, 255, 0.04) 68.19%,
+        rgba(255, 255, 255, 0.03) 80.14%);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 15px;
+    transition: all 0.3s ease;
+}
+
+.player-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(132, 221, 252, 0.3);
+    border-color: rgba(132, 221, 252, 0.3);
+}
+
+.player-avatar img {
+    width: 60px;
+    height: 60px;
+    border: 2px solid #84ddfc;
+    padding: 2px;
+    transition: all 0.3s ease;
+}
+
+.player-card:hover .player-avatar img {
+    border-color: #b02c98;
+}
+
+.player-info h5 {
+    color: #84ddfc;
+    font-size: 1.1rem;
+}
+
+.player-info p {
+    color: white;
+    font-size: 0.9rem;
+}
+
+/* Button Styles */
+.btn-primary {
+    background: linear-gradient(45deg, #84ddfc, #b02c98);
+    border: none;
+    transition: all 0.3s ease;
+}
+
+.btn-primary:hover {
+    transform: translateY(-2px);
+    background: linear-gradient(45deg, #b02c98, #84ddfc);
+    box-shadow: 0 4px 15px rgba(132, 221, 252, 0.3);
+}
+
+.btn-outline-light {
+    border: 2px solid #84ddfc;
+    color: #84ddfc;
+}
+
+.btn-outline-light:hover {
+    background: #84ddfc;
+    color: #000;
+    transform: translateY(-2px);
+}
+
+.btn-success {
+    background: linear-gradient(45deg, #28a745, #20c997);
+    border: none;
+}
+
+.btn-success:hover {
+    transform: translateY(-2px);
+    background: linear-gradient(45deg, #20c997, #28a745);
+    box-shadow: 0 4px 15px rgba(40, 167, 69, 0.3);
+}
+
+.btn-danger {
+    background: linear-gradient(45deg, #dc3545, #c82333);
+    border: none;
+}
+
+.btn-danger:hover {
+    transform: translateY(-2px);
+    background: linear-gradient(45deg, #c82333, #dc3545);
+    box-shadow: 0 4px 15px rgba(220, 53, 69, 0.3);
+}
+
+/* No Results Styles */
+.no-results {
+    color: #84ddfc;
+}
+
+.no-results i {
+    opacity: 0.5;
+}
+
+.no-results p {
+    font-size: 1.1rem;
+}
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+    .player-card {
+        margin: 0.5rem;
+    }
+
+    .player-avatar img {
+        width: 50px;
+        height: 50px;
+    }
+
+    .player-info h5 {
+        font-size: 1rem;
+    }
+
+    .player-info p {
+        font-size: 0.85rem;
+    }
+
+    .player-actions {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+
+    .btn-sm {
+        padding: 0.25rem 0.5rem;
+        font-size: 0.875rem;
+    }
+}
+
+@media (max-width: 576px) {
+    .results-header h3 {
+        font-size: 1.5rem;
+    }
+
+    .player-card {
+        padding: 0.75rem;
+    }
+
+    .player-avatar img {
+        width: 40px;
+        height: 40px;
+    }
+}

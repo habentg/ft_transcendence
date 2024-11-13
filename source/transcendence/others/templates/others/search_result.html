@@ -1,44 +1,68 @@
 {% load static %}
-<div class="container border">
-  <div class="container">
+
+<div class="search-results">
+  <div class="container py-4">
     {% if players %}
-      <h3>{{ players|length }} Results Found</h3>
-      {% for player in players %}
-        <div class="container border my-2">
-          <div class="container d-flex">
-            <div class="container border d-flex user_id_container">
-              <div class="container">
-                {% if player.profile_picture %}
-                  <img src="{{ player.profile_picture.url }}" alt="Profile Picture" class="rounded-circle profile-pic" style="height: 70px; width: 70px;" />
-                {% else %}
-                  <img src="{% static 'images/default_profile_pic.jpeg' %}" width="70" height="70" alt="IMG" class="rounded-circle" />
-                {% endif %}
-              </div>
-              <div class="container">
-                <a onclick="appRouter()" href="/profile/{{ player.username }}">{{ player.username }}</a>
-                <p>{{ player.full_name }}</p>
+      <div class="results-header mb-4">
+        <h3 class="text-center">
+          <i class="fas fa-search me-2"></i>
+          <span class="found-count">{{ players|length }}</span> Results Found
+        </h3>
+      </div>
+      
+      <div class="row justify-content-center">
+        <div class="col-lg-8">
+          {% for player in players %}
+            <div class="player-card content mb-3">
+              <div class="d-flex align-items-center p-3">
+                <!-- Profile Picture -->
+                <div class="player-avatar">
+                  {% if player.profile_picture %}
+                    <img src="{{ player.profile_picture.url }}" alt="Profile Picture" class="rounded-circle" style="width: 60px; height: 60px;"/>
+                  {% else %}
+                    <img src="{% static 'images/default_profile_pic.jpeg' %}" alt="Default Profile Picture" class="rounded-circle" style="width: 60px; height: 60px;" />
+                  {% endif %}
+                </div>
+
+                <!-- Player Info -->
+                <div class="player-info ms-3 flex-grow-1">
+                  <h5 class="mb-1" style="color: #84ddfc;">{{ player.username }}</h5>
+                  <p class="mb-0">{{ player.full_name }}</p>
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="player-actions">
+                  {% if search_type == 'friends' %}
+                    <button id="chat_btn" class="btn btn-primary btn-sm me-2">
+                      <i class="fas fa-comments me-2"></i>Chat
+                    </button>
+                    <a onclick="appRouter()" href="/profile/{{ player.username }}" class="btn btn-outline-light btn-sm">
+                      <i class="fas fa-user me-2"></i>Visit
+                    </a>
+                  {% elif search_type == 'friend_requests' %}
+                    <button type="button" class="btn btn-success btn-sm me-2 acc_req_btn" data-username="{{player.username}}">
+                      <i class="fas fa-check me-2"></i>Accept
+                    </button>
+                    <button type="button" class="btn btn-danger btn-sm rej_req_btn" data-username="{{player.username}}">
+                      <i class="fas fa-times me-2"></i>Reject
+                    </button>
+                  {% else %}
+                    <a onclick="appRouter()" href="/profile/{{ player.username }}" class="btn btn-primary btn-sm">
+                      <i class="fas fa-user me-2"></i>Visit Profile
+                    </a>
+                  {% endif %}
+                </div>
               </div>
             </div>
-            {% if search_type == 'friends' %}
-              <div class="container border ">
-                <button id="chat_btn" type="button" class="btn btn-dark">Chat</button>
-                <a onclick="appRouter()" href="/profile/{{ player.username }}" class="btn">Visit</a>
-              </div>
-              {% elif search_type == 'friend_requests' %}
-              <div class="container border friend_requests_response_btns">
-                <button type="button" class="btn btn-success acc_req_btn" data-username="{{player.username}}">Acc</button>
-                <button type="button" class="btn btn-danger rej_req_btn" data-username="{{player.username}}">Rej</button>
-              </div>
-              {% else%}
-              <div class="container border ">
-                <a onclick="appRouter()" href="/profile/{{ player.username }}" class="btn btn-primary">Visit</a>
-              </div>
-            {% endif %}
-          </div>
+          {% endfor %}
         </div>
-      {% endfor %}
+      </div>
     {% else %}
-      <h3>No Results Found</h3>
+      <div class="no-results text-center py-5">
+        <i class="fas fa-search fa-3x mb-3"></i>
+        <h3>No Results Found</h3>
+        <p class="text-muted">Try different search terms</p>
+      </div>
     {% endif %}
   </div>
 </div>

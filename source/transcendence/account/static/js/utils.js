@@ -140,31 +140,58 @@ function updateNavBar(isAuthenticated) {
   const navbar = document.getElementById("navbarNavDropdown");
   if (isAuthenticated) {
     navbar.innerHTML = `
-    <ul class="navbar-nav ms-auto">
-    <li class="nav-item">
-    <a onclick="appRouter()" class="nav-link mx-2 active" href="/home">Home</a>
-    </li>
-    <li class="nav-item">
-    <a onclick="appRouter()" class="nav-link mx-2" href="/profile">Profile</a>
-    </li>
-    <li class="nav-item">
-    <a onclick="appRouter()" class="nav-link mx-2" href="/signout">Sign out</a>
-    </li>
+    <ul class="navbar-nav ms-auto align-items-center">
+      <li class="nav-item">
+        <a href="#" class="nav-link"><i class="fas fa-trophy me-2"></i>Leaderboard</a>
+      </li>
+      <li class="nav-item">
+        <a href="#" class="nav-link"><i class="fas fa-users me-2"></i>Friends</a>
+      </li>
+      <li class="nav-item">
+        <a href="#" class="nav-link"><i class="fas fa-comments me-2"></i>Chat</a>
+      </li>
+      <li class="nav-item">
+        <a href="#" class="nav-link position-relative notification-badge"><i class="fas fa-bell"></i></a>
+      </li>
+      <li class="nav-item ms-lg-2 dropdown">
+        <a class="nav-link profile-link" href="#" role="button" id="profileDropdown" 
+           data-bs-toggle="dropdown" aria-expanded="false">
+           <i class="fas fa-user"></i>
+        </a>
+        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="profileDropdown">
+          <li>
+            <a onclick="appRouter()" class="dropdown-item" href="/profile">
+              <i class="fas fa-user-circle me-2"></i>Profile
+            </a>
+          </li>
+          <li>
+            <a onclick="appRouter()" class="dropdown-item" href="/settings">
+              <i class="fas fa-cog me-2"></i>Settings
+            </a>
+          </li>
+          <li><hr class="dropdown-divider"></li>
+          <li>
+            <a class="dropdown-item" href="#" onclick="showSignOutModal()">
+              <i class="fas fa-sign-out-alt me-2"></i>Sign Out
+            </a>
+          </li>
+        </ul>
+      </li>
     </ul>
     `;
-  }
-  else {
+  } else {
     navbar.innerHTML = `
-    <ul class="navbar-nav ms-auto">
-    <li class="nav-item">
-    <a onclick="appRouter()" class="nav-link mx-2 active" href="/home">Home</a>
-    </li>
-    <li class="nav-item">
-    <a onclick="appRouter()" class="nav-link mx-2" href="/signin">Sign in</a>
-    </li>
-    <li class="nav-item">
-    <a onclick="appRouter()" class="nav-link mx-2" href="/signup">Sign up</a>
-    </li>
+    <ul class="navbar-nav ms-auto align-items-center">
+
+      <li class="nav-item">
+        <a href="#" class="nav-link"><i class="fas fa-gamepad me-2"></i>Quick game</a>
+      </li>
+      <li class="nav-item">
+        <a onclick="appRouter()" class="nav-link btn btn-outline-primary ms-lg-2" href="/signin">Sign in</a>
+      </li>
+      <li class="nav-item">
+        <a onclick="appRouter()" class="nav-link btn btn-primary ms-lg-2" href="/signup">Sign up</a>
+      </li>
     </ul>
     `;
   }

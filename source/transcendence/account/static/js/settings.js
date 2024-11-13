@@ -66,11 +66,11 @@ async function handleEnableDisable2FA() {
     if (response.ok) {
       console.log("2FA status updated");
       if (this.textContent.trim() === "Enable 2FA") {
-        this.className = "btn btn-danger";
+        this.className = "btn btn-warning w-100";
         this.textContent = "Disable 2FA";
       } else {
         this.textContent = "Enable 2FA";
-        this.className = "btn btn-success";
+        this.className = "btn btn-success w-100";
       }
     } else {
       throw new Error("Failed to update 2FA status");
@@ -308,20 +308,19 @@ async function deleteAccount() {
     if (response.status === 200) {
       closeDeleteAccountModal();
       // Update navbar to show non-authenticated state
-      const navbar = document.getElementById("navbarNavDropdown");
-      navbar.innerHTML = `
-        <ul class="navbar-nav ms-auto">
-          <li class="nav-item">
-            <a onclick="appRouter()" class="nav-link mx-2" href="/home">Home</a>
-          </li>
-          <li class="nav-item">
-            <a onclick="appRouter()" class="nav-link mx-2" href="/signin">Sign in</a>
-          </li>
-          <li class="nav-item">
-            <a onclick="appRouter()" class="nav-link mx-2" href="/signup">Sign up</a>
-          </li>
-        </ul>
-      `;
+      // const navbar = document.getElementById("navbarNavDropdown");
+      // navbar.innerHTML = `
+      // <li class="nav-item">
+      //   <a href="#" class="nav-link"><i class="fas fa-gamepad me-2"></i>Quick game</a>
+      // </li>
+      // <li class="nav-item">
+      //   <a onclick="appRouter()" class="nav-link btn btn-outline-primary ms-lg-2" href="/signin">Sign in</a>
+      // </li>
+      // <li class="nav-item">
+      //   <a onclick="appRouter()" class="nav-link btn btn-primary ms-lg-2" href="/signup">Sign up</a>
+      // </li>
+      // `;
+      updateNavBar(false); // update navbar to show non-authenticated state
       updateUI("/", false);
     } else {
       throw new Error("Failed to delete account");

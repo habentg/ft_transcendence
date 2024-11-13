@@ -20,17 +20,15 @@ async function deleteAccount() {
       console.log("Account deleted successfully");
       const navbar = document.getElementById("navbarNavDropdown");
       navbar.innerHTML = `
-      <ul class="navbar-nav ms-auto">
       <li class="nav-item">
-      <a onclick="appRouter()" class="nav-link mx-2" href="/home">Home</a>
+        <a href="#" class="nav-link"><i class="fas fa-gamepad me-2"></i>Quick game</a>
       </li>
       <li class="nav-item">
-      <a onclick="appRouter()" class="nav-link mx-2" href="/signin">Sign in</a>
+        <a onclick="appRouter()" class="nav-link btn btn-outline-primary ms-lg-2" href="/signin">Sign in</a>
       </li>
       <li class="nav-item">
-      <a onclick="appRouter()" class="nav-link mx-2" href="/signup">Sign up</a>
+        <a onclick="appRouter()" class="nav-link btn btn-primary ms-lg-2" href="/signup">Sign up</a>
       </li>
-      </ul>
       `;
       updateUI('/', false);
       return;

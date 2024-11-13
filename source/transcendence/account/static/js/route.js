@@ -86,7 +86,7 @@ async function loadContent(route) {
       // Remove any CSS/JS if necessary
       removeResource();
       // Update the navbar
-      updateNavBar(false);
+      updateNavBar(true);
       // Update the history state
       console.log("Signing out");
       await updateUI("/", false);
