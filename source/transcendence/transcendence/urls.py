@@ -23,9 +23,9 @@ urlpatterns = [
     path('', include('others.urls')),
     path('', include('account.urls')),
     path('', include('friendship.urls')),
-    path('<path:resource>/', Catch_All.as_view(), name='404')
+    # re_path(r'^(?P<resource>.*)/$', Catch_All.as_view(), name='404'),
 ]
 
-# urlpatterns += [
-#     path('<path:path>', Catch_All.as_view()),  # This will catch any undefined route
-# ]
+urlpatterns += [
+    path('<path:path>', Catch_All.as_view()),  # This will catch any undefined route
+]
