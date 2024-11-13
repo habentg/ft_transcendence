@@ -52,6 +52,17 @@ class BaseView(View):
 	def get_context_data(self, request, **kwargs):
 		return {}
 
+# view for the 404 page1
+class Catch_All(BaseView):
+	template_name = 'others/404.html'
+	title = 'Error Page'
+	css = 'css/404.css'
+	js = 'js/404.js'
+
+	def get(self, request, path=None, *args, **kwargs):
+		print('404 page: ', request)
+		return super().get(request)
+
 # view for the home page
 class HomeView(APIView, BaseView):
 	authentication_classes = [JWTCookieAuthentication]
@@ -92,16 +103,6 @@ class LandingPageView(BaseView):
 			return HttpResponseRedirect(reverse('home_page'))
 		return super().get(request)
 
-# view for the 404 page1
-class Catch_All(BaseView):
-	template_name = 'others/404.html'
-	title = 'Error Page'
-	css = 'css/404.css'
-	js = 'js/404.js'
-
-	def get(self, request):
-		print('404 page: ', request)
-		return super().get(request)
 
 # Health check view
 class HealthCheck(View):

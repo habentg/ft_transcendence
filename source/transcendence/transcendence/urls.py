@@ -17,12 +17,15 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include, re_path
 from others.views import Catch_All
-from django.urls import path, include
 
 urlpatterns = [
     path('admin', admin.site.urls),
     path('', include('others.urls')),
     path('', include('account.urls')),
     path('', include('friendship.urls')),
-    path('', Catch_All.as_view, name='404')#404
+    path('<path:resource>/', Catch_All.as_view(), name='404')
 ]
+
+# urlpatterns += [
+#     path('<path:path>', Catch_All.as_view()),  # This will catch any undefined route
+# ]
