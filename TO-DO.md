@@ -4,3 +4,10 @@
 4. loading screen
 5. About Us, contact Us, Terms & conditions, and privacy policy pages ... gonna be static files.
 6. websocket and chat app.
+
+
+NEW
+1. Long in with intra is not working. It gives error below
+{
+  "error": "Failed to obtain access token"
+}
