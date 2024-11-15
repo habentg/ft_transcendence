@@ -64,6 +64,7 @@ class SignUpView(APIView, BaseView):
 				FriendList.objects.create(player=new_player)
 				return response
 			return Response({'error_msg': 'Couldn\'t create the player'}, status=status.HTTP_422_UNPROCESSABLE_ENTITY)
+		print(serializer.errors, flush=True)
 		return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 	def get_context_data(self, request):
@@ -88,48 +89,52 @@ class SignInView(APIView, BaseView):
 	def post(self, request):
 		serializer = PlayerSigninSerializer(data=request.data)
 		if serializer.is_valid():
-			username = serializer.validated_data['username']
-			password = serializer.validated_data['password']
-			player = authenticate(username=username, password=password)
-			if player is not None:
-				refresh = RefreshToken.for_user(player)
-				response = Response(status=status.HTTP_200_OK)
-				response.set_cookie('access_token', str(refresh.access_token), httponly=True)
-				response.set_cookie('refresh_token', str(refresh), httponly=True)
-				if player.tfa:
-					if send_2fa_code(player):
-						response.status_code = 302  # or 301 for a permanent redirect
-					else:
-						return Response({'error_msg': 'Couldn\'t send OTP to the given Email'}, 
-                                    status=status.HTTP_422_UNPROCESSABLE_ENTITY)
-				player.last_login = timezone.now() # IF EVERYTHING IS OK, UPDATE LAST LOGIN
-				player.save()
-				return response
-			return Response({'error_msg': 'Invalid username or password!'}, 
-                        status=status.HTTP_401_UNAUTHORIZED)
-		return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+			player = serializer.validated_data['player']
+			refresh = RefreshToken.for_user(player)
+			response = Response(status=status.HTTP_200_OK)
+			response.set_cookie('access_token', str(refresh.access_token), httponly=True)
+			response.set_cookie('refresh_token', str(refresh), httponly=True)
+			if player.tfa:
+				if send_2fa_code(player):
+					response.status_code = 302  # or 301 for a permanent redirect
+				else:
+					return Response({'error_msg': 'Couldn\'t send OTP to the given Email'}, 
+								status=status.HTTP_422_UNPROCESSABLE_ENTITY)
+			player.last_login = timezone.now() # IF EVERYTHING IS OK, UPDATE LAST LOGIN
+			player.save()
+			return response
+		error_message = serializer.errors.get('non_field_errors', ['No specific error'])[0]
+		return Response({'error_msg': error_message}, status=status.HTTP_400_BAD_REQUEST)
 
 	def get_context_data(self, request):
 		return {'csrf_token': get_token(request)}
 
 class SignOutView(BaseView, View):
+	authentication_classes = [JWTCookieAuthentication]
+	permission_classes = [IsAuthenticated]
+
 	def get(self, request):
 		token_string = request.COOKIES.get('access_token')
 		if token_string:
 			try:
 				add_token_to_blacklist(token_string)
 			except jwt.ExpiredSignatureError or jwt.InvalidTokenError or jwt.DecodeError as e:
-				print('Token has: ', e)
+				print(e, flush=True)
+				return HttpResponseRedirect(reverse('landing'))
 			response = HttpResponseRedirect(reverse('landing'))
 			response.delete_cookie('access_token')
 			response.delete_cookie('refresh_token')
 			response.delete_cookie('csrftoken')
 			response.singed_out = True
 			return response
+		return HttpResponseRedirect(reverse('landing'))
 
 # 42 Oauth2.0 callback
 # DOC: https://api.intra.42.fr/apidoc/guides/web_application_flow
 class Auth_42(View):
+	authentication_classes = []
+	permission_classes = []
+
 	def get(self, request):
 		redirect_uri = settings.DOMAIN_NAME + '/oauth/'
 		client_id =settings.FOURTYTWO_OAUTH_CLIENT_ID
@@ -144,6 +149,9 @@ class Auth_42(View):
 
 # 42 Oauth2.0 callback
 class OauthCallback(View):
+	authentication_classes = []
+	permission_classes = []
+
 	def get(self, request):
 		code = request.GET.get('code')
 		
@@ -211,6 +219,8 @@ class OauthCallback(View):
 
 	
 class PasswordReset(BaseView):
+	authentication_classes = []
+	permission_classes = []
 	template_name = 'account/password_reset.html'
 	title = 'Password Reset'
 	css = 'css/password_reset.css'
@@ -250,6 +260,8 @@ class PasswordReset(BaseView):
 		send_mail(subject, email_body, from_email, recipient_list, fail_silently=False)
 
 class PassResetNewPass(View):
+	authentication_classes = []
+	permission_classes = []
 	template_name = 'account/change_pass.html'
 	title = 'Password Reset'
 	js = 'js/password_reset.js'
@@ -296,6 +308,8 @@ class PassResetNewPass(View):
 			return JsonResponse({'error_msg': 'Invalid password reset request'}, status=status.HTTP_400_BAD_REQUEST)
 
 class PassResetConfirm(BaseView):
+	authentication_classes = []
+	permission_classes = []
 	template_name = 'account/password_reset_complete.html'
 	title = 'Password Reset'
 

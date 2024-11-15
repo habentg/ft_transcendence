@@ -31,6 +31,7 @@ async function handleSignInSubmit(e) {
             else
             {
                 const responseData = await response.json();
+                console.error('Error:', responseData);
                 displayError(responseData);
             }
             return;

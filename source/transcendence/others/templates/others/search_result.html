@@ -40,12 +40,13 @@
                       <i class="fas fa-user me-2"></i>Visit
                     </a>
                   {% elif search_type == 'friend_requests' %}
-                    <button type="button" class="btn btn-success btn-sm me-2 acc_req_btn" data-username="{{player.username}}">
+                    <button type="button" class="btn btn-success btn-sm me-2 acc_req_btn" data-username="{{player.username}}" style="display: inline;">
                       <i class="fas fa-check me-2"></i>Accept
                     </button>
-                    <button type="button" class="btn btn-danger btn-sm rej_req_btn" data-username="{{player.username}}">
+                    <button type="button" class="btn btn-danger btn-sm rej_req_btn" data-username="{{player.username}}" style="display: inline;">
                       <i class="fas fa-times me-2"></i>Reject
                     </button>
+                    <p class="fullfiled_para" style="display: none;">you fullfilled the request!</p>
                   {% else %}
                     <a onclick="appRouter()" href="/profile/{{ player.username }}" class="btn btn-primary btn-sm">
                       <i class="fas fa-user me-2"></i>Visit Profile

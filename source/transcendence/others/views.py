@@ -12,10 +12,7 @@ from django.db import connection
 from rest_framework.response import Response
 from django.middleware.csrf import get_token
 from rest_framework import status
-from django.shortcuts import get_object_or_404
 import urllib.parse
-from django.core.files import File
-from urllib.request import urlopen
 
 
 # base view for basic pages in our SPA
@@ -25,6 +22,8 @@ from urllib.request import urlopen
 	-> If the request is not an AJAX request (direct url visit), return the html content as a rendered page
 """
 class BaseView(View):
+	authentication_classes = []
+	permission_classes = []
 	template_name = None
 	title = None
 	css = None
@@ -137,6 +136,8 @@ class SearchUsers(APIView, BaseView):
 			response = HttpResponseRedirect(f'{signin_url}?{params}')
 			response.delete_cookie('access_token')
 			response.delete_cookie('refresh_token')
+			response.delete_cookie('csrftoken')
+			response.status_code = 302
 			return response
 		return super().handle_exception(exception)
 

@@ -21,7 +21,6 @@ class Player(AbstractUser):
     full_name = models.CharField(max_length=150, blank=True)
     email = models.EmailField()
     password = models.CharField(max_length=150)
-    password = models.CharField(max_length=150)
     tfa = models.BooleanField(default=False)
     secret = models.CharField(max_length=150, blank=True)
     verified = models.BooleanField(default=False)

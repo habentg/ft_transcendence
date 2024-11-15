@@ -71,13 +71,14 @@ class FriendRequestView(APIView):
 		data = request.data
 		data['sender'] = request.user.id  # Using sender's primary key
 
+	
 		receiver = self.get_player(kwargs.get('username'))
-		if not receiver:
-			print('Friend request reciever Player not found', flush=True)
-			return {'error_msg':'Player not found - cant send friend request'}
-		
-		data['receiver'] = receiver.id
+		sender_id = request.user.id  # Assuming the user is authenticated and you have access to their ID
+		if FriendRequest.objects.filter(sender_id=sender_id, receiver_id=receiver.id).exists():
+			print('Friend request already exists', flush=True)
+			return Response({'detail': 'Friend request already exists.'}, status=status.HTTP_400_BAD_REQUEST)
 
+		data['receiver'] = receiver.id
 		serializer = FriendRequestSerializer(data=data)
 		if serializer.is_valid():
 			serializer.save()

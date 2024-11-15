@@ -21,6 +21,12 @@ async function search(query_parameter) {
       loadCssandJS(responseData, false);
       attachSearchEventListners();
     }
+    else if (response.status === 302) {
+      updateUI("/signin", false);
+    }else {
+      console.error("Failed to load -- ", query_parameter, "-- search content");
+    }
+    
 
   } catch (error) {
     console.error(`Failed to load -- ${query_parameter} -- profile content:`, error);
@@ -72,6 +78,18 @@ function attachSearchEventListners() {
           .getAttribute("data-username");
           console.log("accepting friend request from: ", toBeFriend);
           acceptOrDeclineFriendRequest("accept", toBeFriend, false);
+        });
+      }
+    }
+    const declineFriendRequestBtn = document.getElementsByClassName("rej_req_btn"); // could be multiple
+    if (declineFriendRequestBtn) {
+      for (let i = 0; i < declineFriendRequestBtn.length; i++) {
+        declineFriendRequestBtn[i].addEventListener("click", () => {
+          const toBeFriend = document
+          .getElementsByClassName("rej_req_btn")[i]
+          .getAttribute("data-username");
+          console.log("declineing friend request from: ", toBeFriend);
+          acceptOrDeclineFriendRequest("decline", toBeFriend, false);
         });
       }
     }
