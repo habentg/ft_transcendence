@@ -136,9 +136,15 @@ const loadCssandJS = (data, remove_prev_resources) => {
 
 
 // update the Navbar for authenticated users && for signout and deleted users
-function updateNavBar(isAuthenticated) {
+async function updateNavBar(isAuthenticated) {
   const navbar = document.getElementById("navbarNavDropdown");
   if (isAuthenticated) {
+    let profilePic = "/static/images/default_profile_pic.jpeg";
+    const user_profile_pic = document.getElementById("nav_profile_pic");
+    if (user_profile_pic) {
+      profilePic = user_profile_pic.dataset.pfp;  // Same as user_profile_pic.getAttribute("data-pfp");
+    }
+
     navbar.innerHTML = `
     <ul class="navbar-nav ms-auto align-items-center">
       <li class="nav-item">
@@ -156,7 +162,7 @@ function updateNavBar(isAuthenticated) {
       <li class="nav-item ms-lg-2 dropdown">
         <a class="nav-link profile-link" href="#" role="button" id="profileDropdown" 
            data-bs-toggle="dropdown" aria-expanded="false">
-           <i class="fas fa-user"></i>
+            <img src="${profilePic}" class="rounded-circle" width="30" height="30" alt="profile-pic" id="profile_pic">
         </a>
         <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="profileDropdown">
           <li>

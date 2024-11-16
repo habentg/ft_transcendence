@@ -40,7 +40,11 @@
               <div class="col-md-6">
                 <a onclick="appRouter(event)" class="menu-item d-flex align-items-center p-3" href="/profile">
                   <i class="fas fa-user fa-2x me-3"></i>
-                  <span>Profile</span>
+                  {% if profile_pic %}
+                    <span id="nav_profile_pic" data-pfp="{{ profile_pic }}">Profile</span>
+                  {% else %}
+                    <span>Profile</span>
+                  {% endif %}
                 </a>
               </div>
               <div class="col-md-6">

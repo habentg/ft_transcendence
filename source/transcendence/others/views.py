@@ -87,6 +87,7 @@ class HomeView(APIView, BaseView):
 			'username': user.username,
 			'email': user.email,
 			'full_name': user.get_full_name(),
+			'profile_pic': user.profile_picture.url if user.profile_picture else None,
 		}
 		return data
 	

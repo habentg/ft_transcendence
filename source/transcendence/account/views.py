@@ -382,7 +382,6 @@ class ProfileView(APIView, BaseView):
 			return response
 		return super().handle_exception(exception)
 
-
 	def delete(self, request):
 		player = request.user
 		player.delete()

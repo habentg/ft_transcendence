@@ -41,10 +41,10 @@ async function handleSignupSubmit(e) {
             displayError(responseData);
             return;
         }
-        // update the navbar
-        updateNavBar(true);
         // redirect to the protected page
         await updateUI(`/home`, false);
+        // update the navbar
+        updateNavBar(true);
         // history.pushState(null, '', `/home`);
         // handleLocationChange();
     } catch (error) {
