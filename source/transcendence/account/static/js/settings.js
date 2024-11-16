@@ -307,20 +307,7 @@ async function deleteAccount() {
 
     if (response.status === 200) {
       closeDeleteAccountModal();
-      // Update navbar to show non-authenticated state
-      // const navbar = document.getElementById("navbarNavDropdown");
-      // navbar.innerHTML = `
-      // <li class="nav-item">
-      //   <a href="#" class="nav-link"><i class="fas fa-gamepad me-2"></i>Quick game</a>
-      // </li>
-      // <li class="nav-item">
-      //   <a onclick="appRouter()" class="nav-link btn btn-outline-primary ms-lg-2" href="/signin">Sign in</a>
-      // </li>
-      // <li class="nav-item">
-      //   <a onclick="appRouter()" class="nav-link btn btn-primary ms-lg-2" href="/signup">Sign up</a>
-      // </li>
-      // `;
-      updateNavBar(false); // update navbar to show non-authenticated state
+      updateNavBar(false);
       updateUI("/", false);
     } else {
       throw new Error("Failed to delete account");
@@ -376,7 +363,6 @@ function showSignOutModal() {
 
   document.body.appendChild(modal);
   document.body.classList.add("modal-open");
-
   // Event Listeners
   modal
     .querySelector("#close-signout-modal")
@@ -400,7 +386,25 @@ function closeSignOutModal() {
   }
 }
 
-function handleSignOut() {
-  closeSignOutModal();
-  window.location.href = "/signout";
+async function handleSignOut() {
+  try {
+    const response = await fetch("/signout/", {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        "X-CSRFToken": await getCSRFToken(),
+      },
+    });
+
+    if (response.status === 200) {
+      closeSignOutModal();
+      updateNavBar(false); 
+      await updateUI("/", false);
+    } else {
+      throw new Error("Failed to sign out");
+    }
+  } catch (error) {
+    console.error("Error:", error);
+    displayError({ error_msg: "Failed to sign out" });
+  }
 }
