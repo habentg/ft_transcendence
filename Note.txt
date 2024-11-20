@@ -37,3 +37,7 @@ TODO: ideas
 1. user redirect after delete not working
 2. image upload .. 
 3. implement next paramenter routing
+
+
+
+
