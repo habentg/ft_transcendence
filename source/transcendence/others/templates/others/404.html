@@ -1,0 +1,27 @@
+{% load static %}
+
+<div class="error-page">
+  <div class="background-image">
+    <div class="container">
+      <div class="error-content text-center">
+        <div class="note-container">
+          <h1 class="note" data-text="404">404</h1>
+          <h2 class="error-message ">Page Not Found</h2>
+        </div>
+        
+        <div class="game-element">
+            <div class="paddle left"></div>
+            <div class="ball"></div>
+            <div class="paddle right"></div>
+        </div>
+        <p class="error-description mb-4">
+          Oops! Looks like this page got lost in the game.
+        </p>
+
+        <a onclick="appRouter()" href="/home" class="btn btn-primary btn-lg">
+          <i class="fas fa-home me-2"></i>Return Home
+        </a>
+      </div>
+    </div>
+  </div>
+</div>

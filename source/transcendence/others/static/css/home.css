@@ -1,0 +1,122 @@
+.first-page {
+  min-height: 100%;
+  width: 100%;
+}
+
+.background-image {
+  background-image: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), url('/static/images/background2.jpg');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  min-height: 100%;
+  padding: 2rem 0;
+}
+
+.content {
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: linear-gradient(140deg,
+      rgba(255, 255, 255, 0.12) -1.82%,
+      rgba(255, 255, 255, 0.04) 68.19%,
+      rgba(255, 255, 255, 0.03) 80.14%);
+  backdrop-filter: blur(10px);
+  border-radius: 15px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+}
+
+.menu-item {
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 10px;
+  color: white;
+  text-decoration: none;
+  transition: all 0.3s ease;
+  height: 80px;
+}
+
+.menu-item:hover {
+  background: rgba(132, 221, 252, 0.2);
+  transform: translateY(-2px);
+  color: #84ddfc;
+  box-shadow: 0 4px 15px rgba(132, 221, 252, 0.3);
+}
+
+.menu-item i {
+  color: #84ddfc;
+}
+
+.menu-item span {
+  font-size: 1.1rem;
+}
+
+/* Button Styles */
+.btn {
+  padding: 0.5rem 1rem;
+  transition: all 0.3s ease;
+}
+
+.btn-primary {
+  background: linear-gradient(45deg, #84ddfc, #b02c98);
+  border: none;
+}
+
+.btn-primary:hover {
+  transform: translateY(-2px);
+  background: linear-gradient(45deg, #b02c98, #84ddfc);
+  box-shadow: 0 4px 15px rgba(132, 221, 252, 0.3);
+}
+
+.btn-outline-light {
+  border: 2px solid #84ddfc;
+  color: #84ddfc;
+}
+
+.btn-outline-light:hover {
+  background: #84ddfc;
+  color: #000;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 15px rgba(132, 221, 252, 0.3);
+}
+
+/* Form Controls */
+.form-control {
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid #84ddfc;
+  color: white;
+  padding: 0.5rem 1rem;
+}
+
+.form-control:focus {
+  background: rgba(255, 255, 255, 0.2);
+  border-color: #b02c98;
+  color: white;
+  box-shadow: 0 0 0 0.25rem rgba(132, 221, 252, 0.25);
+}
+
+.form-control::placeholder {
+  color: rgba(255, 255, 255, 0.7);
+}
+
+/* Search Results Area */
+#searchResults {
+  color: white;
+  min-height: 50px;
+}
+
+@media (max-width: 768px) {
+  .background-image {
+    padding: 1rem;
+  }
+  
+  .menu-item {
+    height: 70px;
+  }
+  
+  .menu-item span {
+    font-size: 1rem;
+  }
+  
+  .btn {
+    padding: 0.4rem 0.8rem;
+    font-size: 0.9rem;
+  }
+}

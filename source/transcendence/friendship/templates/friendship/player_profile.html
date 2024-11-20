@@ -1,0 +1,65 @@
+{% load static %}
+
+<div class="background-image">
+  <div class="container my-5 blur-layer">
+    <section class="w-100 px-4 py-5">
+      <h3 class="text-center"><span>{{ queried_player.full_name }}'s Profile</span></h3>
+      <hr />
+      <div class="row d-flex justify-content-center">
+        <div class="col col-lg-6 col-md-9 col-sm-2 col-xl-6">
+          <div class="card" style="border-radius: 15px;">
+            <div class="card-body p-4">
+              <div class="d-flex">
+                <!-- Profile Picture Section -->
+                <div class="flex-shrink-0">
+                  {% if queried_player.profile_picture %}
+                    <img src="{{ queried_player.profile_picture.url }}" alt="Profile Picture" class="rounded-circle img-fluid" style="width: 130px; height: 130px; border-radius: 10px;" />
+                  {% else %}
+                    <img src="{% static 'images/default_profile_pic.jpeg' %}" alt="Default Profile Picture" class="rounded-circle img-fluid" style="width: 130px; height: 130px; border-radius: 10px;" />
+                  {% endif %}
+                </div>
+
+                <!-- User Info and Actions -->
+                <div class="flex-grow-1 ms-4">
+                  <h5 id="full_name" class="mb-1" data-full-name="{{ queried_player.full_name }}">{{ queried_player.full_name }}</h5>
+                  <p id="username" class="mb-2 pb-1" data-username="{{ queried_player.username }}">@{{ queried_player.username }}</p>
+
+                  <!-- User Stats -->
+                  <div class="d-flex justify-content-start align-items-center">
+                    <div>
+                      <p class="small text-muted mb-1">Friends</p>
+                      <p class="mb-1">{{ queried_player.followers_count|default:0 }}</p>
+                    </div>
+                    <div class="ms-3">
+                      <p class="small text-muted mb-1">Points</p>
+                      <p class="mb-1">{{ queried_player.rating|default:0 }}</p>
+                    </div>
+                  </div>
+
+                  <!-- Actions Section -->
+                  <div class="d-flex pt-1">
+                    {% if is_friend %}
+                      <button id="unfriend_btn" type="button" class="btn btn-danger">Un-Friend</button>
+                      {% comment %} <button onclick="removeFriend()" id="unfriend_btn" type="button" class="btn btn-danger">Un-Friend</button> {% endcomment %}
+                    {% elif is_requested_by_me %}
+                      <button id="cancel_request_btn" type="button" class="btn btn-danger">Cancel Request</button>
+                      {% comment %} <button onclick="cancelFriendRequest()" id="cancel_request_btn" type="button" class="btn btn-danger">Cancel Request</button> {% endcomment %}
+                    {% elif am_i_requested %}
+                      <button id="accept_request_btn" type="button" class="btn btn-success me-1">Accept Request</button>
+                      <button id="decline_request_btn" type="button" class="btn btn-warning">Decline Request</button>
+                      {% comment %} <button onclick="acceptOrDeclineFriendRequest(`accept`, {{queried_player.username}})" id="accept_request_btn" type="button" class="btn btn-success me-1">Accept Request</button>
+                      <button onclick="acceptOrDeclineFriendRequest(`decline`, {{queried_player.username}})" id="decline_request_btn" type="button" class="btn btn-warning">Decline Request</button> {% endcomment %}
+                    {% elif not is_self %}
+                      <button id="add_friend_btn" type="button" class="btn btn-primary">Send Request</button>
+                      {% comment %} <button onclick="addFriendRequest()" id="add_friend_btn" type="button" class="btn btn-primary">Send Request</button> {% endcomment %}
+                    {% endif %}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+</div>

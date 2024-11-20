@@ -27,7 +27,6 @@ SECRET_KEY = os.environ.get('SECRET_KEY')
 DOMAIN_NAME = os.environ.get('DOMAIN_NAME')
 FOURTYTWO_OAUTH_CLIENT_ID = os.environ.get('CLIENT_ID')
 FOURTYTWO_OAUTH_CLIENT_SECRET = os.environ.get('CLIENT_SECRET')
-FT_USER_PASS = os.environ.get('FT_USER_PASS')
 REDIS_URL = os.environ.get('REDIS_URL')
 
 # SECURITY WARNING: don't run with debug turned on in production!
@@ -48,7 +47,9 @@ INSTALLED_APPS = [
     'corsheaders',
     'rest_framework',
     'rest_framework_simplejwt',
-    'app',
+    'account',
+    'friendship',
+    'others',
 ]
 
 MIDDLEWARE = [
@@ -77,7 +78,7 @@ ROOT_URLCONF = 'transcendence.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [BASE_DIR / 'templates'], # for html templates
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -219,7 +220,7 @@ REST_FRAMEWORK = {
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-AUTH_USER_MODEL = 'app.Player'
+AUTH_USER_MODEL = 'account.Player'
 
 # JWT settings
 SIMPLE_JWT = {
@@ -273,7 +274,12 @@ REDIS_DB = 0
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
 """ basically we will run 'collectstatic' and it will collect all the static files from all the apps and put them in the static folder in the root directory of the project """
 STATIC_URL = 'static/'
+# to be commented out when deploying
 STATIC_ROOT = BASE_DIR / 'static'
+STATICFILES_DIRS = [
+    BASE_DIR / "others" / "static",
+    BASE_DIR / "account" / "static",
+]
 # STATIC_ROOT = '/media_static/static'
 
 # Media settings (determines where images will be uploaded)

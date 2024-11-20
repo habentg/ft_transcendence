@@ -1,5 +1,5 @@
 # Ignore .env file in the source directory
-./source/.env
+source/.env
 
 # Ignore __pycache__ directories
 **/__pycache__/
@@ -8,10 +8,8 @@
 **/*.pyc
 
 # Ignore the build directory
-./.vscode/
-
-# Ignore .txt files
-*.txt
+.vscode/
 
 # Ignore .git files
 .git/
+

@@ -1,0 +1,69 @@
+{% load static %}
+
+<div class="search-results">
+  <div class="container py-4">
+    {% if players %}
+      <div class="results-header mb-4">
+        <h3 class="text-center">
+          <i class="fas fa-search me-2"></i>
+          <span class="found-count">{{ players|length }}</span> Results Found
+        </h3>
+      </div>
+      
+      <div class="row justify-content-center">
+        <div class="col-lg-8">
+          {% for player in players %}
+            <div class="player-card content mb-3">
+              <div class="d-flex align-items-center p-3">
+                <!-- Profile Picture -->
+                <div class="player-avatar">
+                  {% if player.profile_picture %}
+                    <img src="{{ player.profile_picture.url }}" alt="Profile Picture" class="rounded-circle" style="width: 60px; height: 60px;"/>
+                  {% else %}
+                    <img src="{% static 'images/default_profile_pic.jpeg' %}" alt="Default Profile Picture" class="rounded-circle" style="width: 60px; height: 60px;" />
+                  {% endif %}
+                </div>
+
+                <!-- Player Info -->
+                <div class="player-info ms-3 flex-grow-1">
+                  <h5 class="mb-1" style="color: #84ddfc;">{{ player.username }}</h5>
+                  <p class="mb-0">{{ player.full_name }}</p>
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="player-actions">
+                  {% if search_type == 'friends' %}
+                    <button id="chat_btn" class="btn btn-primary btn-sm me-2">
+                      <i class="fas fa-comments me-2"></i>Chat
+                    </button>
+                    <a onclick="appRouter()" href="/profile/{{ player.username }}" class="btn btn-outline-light btn-sm">
+                      <i class="fas fa-user me-2"></i>Visit
+                    </a>
+                  {% elif search_type == 'friend_requests' %}
+                    <button type="button" class="btn btn-success btn-sm me-2 acc_req_btn" data-username="{{player.username}}" style="display: inline;">
+                      <i class="fas fa-check me-2"></i>Accept
+                    </button>
+                    <button type="button" class="btn btn-danger btn-sm rej_req_btn" data-username="{{player.username}}" style="display: inline;">
+                      <i class="fas fa-times me-2"></i>Reject
+                    </button>
+                    <p class="fullfiled_para" style="display: none;">you fullfilled the request!</p>
+                  {% else %}
+                    <a onclick="appRouter()" href="/profile/{{ player.username }}" class="btn btn-primary btn-sm">
+                      <i class="fas fa-user me-2"></i>Visit Profile
+                    </a>
+                  {% endif %}
+                </div>
+              </div>
+            </div>
+          {% endfor %}
+        </div>
+      </div>
+    {% else %}
+      <div class="no-results text-center py-5">
+        <i class="fas fa-search fa-3x mb-3"></i>
+        <h3>No Results Found</h3>
+        <p class="text-muted">Try different search terms</p>
+      </div>
+    {% endif %}
+  </div>
+</div>

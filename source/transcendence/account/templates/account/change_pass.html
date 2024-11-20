@@ -1,0 +1,20 @@
+{% load static %}
+
+<div class="container my-5">
+  <form class="col-6 mx-auto card p-3 form-cont" onsubmit="handlePassChangeSubmit(event)">
+    {% csrf_token %}
+    <h1 style="text-align: center"><span style="color: rgb(34, 34, 34)">Reset Your Password</span></h1>
+    <hr />
+    <!-- Display error/success messages -->
+    <div class="alert alert-danger" role="alert" id="error-msg" style="display: none"></div>
+    <div class="mb-3">
+      <label for="new_password" class="form-label">New Password</label>
+      <input type="password" class="form-control" id="new_password" name="new_pass" />
+    </div>
+    <div class="mb-3">
+      <label for="confirm_pass" class="form-label">Confirm New Password</label>
+      <input type="password" class="form-control" id="confirm_pass" name="new_pass" />
+    </div>
+    <button type="submit" class="btn btn-dark">Change Password</button>
+  </form>
+</div>

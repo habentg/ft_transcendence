@@ -15,12 +15,17 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
-from django.urls import path, include
-
-
+from django.urls import path, include, re_path
+from others.views import Catch_All
 
 urlpatterns = [
     path('admin', admin.site.urls),
-    path('', include('app.urls')),
+    path('', include('others.urls')),
+    path('', include('account.urls')),
+    path('', include('friendship.urls')),
+    # re_path(r'^(?P<resource>.*)/$', Catch_All.as_view(), name='404'),
 ]
-# + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+
+urlpatterns += [
+    path('<path:path>', Catch_All.as_view()),  # This will catch any undefined route
+]

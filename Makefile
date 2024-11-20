@@ -3,10 +3,13 @@ COMPOSE 		= cd ./source && docker compose
 
 
 # ----------------------- creating services --------------------------
-all: build up collectstatic
+all: build up
 
 up:
 	$(COMPOSE) -f docker-compose.yaml up -d --remove-orphans
+
+create_users:
+	$(COMPOSE) -f docker-compose.yaml exec app sh create_alot_of_users_for_testing.sh
 
 build:
 	$(COMPOSE) -f docker-compose.yaml build
@@ -14,7 +17,16 @@ build:
 down:
 	$(COMPOSE) -f docker-compose.yaml down
 
-re: down up collectstatic# rebuilding the services without deleting the persistent storages
+re: down up # rebuilding the services without deleting the persistent storages
+
+# ---------------------------- django related Operattions -------------------------------
+
+collectstatic:
+	$(COMPOSE) -f docker-compose.yaml exec app python manage.py collectstatic --noinput
+
+migrate:
+	$(COMPOSE) -f docker-compose.yaml exec app python manage.py makemigrations
+	$(COMPOSE) -f docker-compose.yaml exec app python manage.py migrate
 
 
 # ----------------------- restarting services --------------------------
@@ -25,7 +37,7 @@ start:
 stop:
 	$(COMPOSE) -f docker-compose.yaml stop
 
-restart: stop start collectstatic # restarting the services (volumes, network, and images stay the same)
+restart: stop start # restarting the services (volumes, network, and images stay the same)
 
 
 # ----------------------- Deleting resources and rebuilding --------------------------
@@ -34,7 +46,7 @@ fclean: down
 	@yes | docker system prune --all
 	@docker volume ls -q | grep -q . && docker volume rm $$(docker volume ls -q) || true 
 
-rebuild: fclean all 
+rebuild: fclean all
 
 # ----------------------- Managing app service only --------------------------
 
@@ -89,7 +101,6 @@ help:
 	@echo "  up:           Start the services"
 	@echo "  build:        Build the services"
 	@echo "  down:         Stop the services"
-	@echo "  re:           Rebuild the services without deleting the persistent storages"
 	@echo "  start:        Start the services"
 	@echo "  stop:         Stop the services"
 	@echo "  restart:      Restart the services"
@@ -108,12 +119,3 @@ help:
 
 
 # ---------------------------- End of Makefile -------------------------------
-
-# ---------------------------- django related Operattions -------------------------------
-
-collectstatic:
-	$(COMPOSE) -f docker-compose.yaml exec app python manage.py collectstatic --noinput
-
-migrate:
-	$(COMPOSE) -f docker-compose.yaml exec app python manage.py makemigrations
-	$(COMPOSE) -f docker-compose.yaml exec app python manage.py migrate
