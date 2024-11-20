@@ -87,6 +87,7 @@ class HomeView(APIView, BaseView):
 			'username': user.username,
 			'email': user.email,
 			'full_name': user.get_full_name(),
+			'profile_pic': user.profile_picture.url if user.profile_picture else None,
 		}
 		return data
 	
@@ -181,3 +182,18 @@ class SearchUsers(APIView, BaseView):
 			'css' : self.css,
 			'js' : self.js
 		})
+
+class AboutView(BaseView):
+	template_name = 'others/about.html'
+	title = 'About Us'
+	css = 'css/static_pages.css'
+
+class PrivacyView(BaseView):
+	template_name = 'others/privacy.html'
+	title = 'Privacy Policy'
+	css = 'css/static_pages.css'
+
+class TermsView(BaseView):
+	template_name = 'others/terms.html'
+	title = 'Terms of Service'
+	css = 'css/static_pages.css'

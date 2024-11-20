@@ -34,31 +34,35 @@
               <div class="col-md-6">
                 <a href="#" class="menu-item d-flex align-items-center p-3">
                   <i class="fas fa-gamepad fa-2x me-3"></i>
-                  <span>Local Game</span>
-                </a>
+                  <h5 class="mb-0">Local Game</h5>
+                </a>                
               </div>
               <div class="col-md-6">
                 <a onclick="appRouter(event)" class="menu-item d-flex align-items-center p-3" href="/profile">
                   <i class="fas fa-user fa-2x me-3"></i>
-                  <span>Profile</span>
+                  {% if profile_pic %}
+                    <h5 id="nav_profile_pic" data-pfp="{{ profile_pic }}">Profile</h5>
+                  {% else %}
+                    <h5 class="mb-0">Profile</h5>
+                  {% endif %}
                 </a>
               </div>
               <div class="col-md-6">
                 <a href="#" class="menu-item d-flex align-items-center p-3">
                   <i class="fas fa-trophy fa-2x me-3"></i>
-                  <span>Create Tournament</span>
+                  <h5 class="mb-0">Create Tournament</h5>
                 </a>
               </div>
               <div class="col-md-6">
                 <a onclick="appRouter()" href="/settings" class="menu-item d-flex align-items-center p-3">
                   <i class="fas fa-cog fa-2x me-3"></i>
-                  <span>Settings</span>
+                  <h5 class="mb-0">Settings</h5>
                 </a>
               </div>
               <div class="col-md-6">
                 <a href="#" class="menu-item d-flex align-items-center p-3">
                   <i class="fas fa-dice fa-2x me-3"></i>
-                  <span>Other Game</span>
+                  <h5 class="mb-0">Other Game</h5>
                 </a>
               </div>
             </div>

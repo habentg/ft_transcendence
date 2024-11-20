@@ -14,6 +14,61 @@ body {
   flex-direction: column;
 }
 
+/* Font Variables */
+:root {
+    --font-heading: 'Orbitron', sans-serif;
+    --font-body: 'Exo 2', sans-serif;
+}
+
+/* Base Font Styles */
+body {
+    font-family: var(--font-body);
+}
+
+/* Headings */
+h1, h2, h3, h4, h5, h6,
+.navbar-brand,
+.btn,
+.modal-title {
+    font-family: var(--font-heading);
+    letter-spacing: 0.5px;
+}
+
+.note,
+.error-message,
+.settings-title,
+.results-header h3 {
+    font-family: var(--font-heading);
+    letter-spacing: 1px;
+}
+
+/* Navigation and Buttons */
+.nav-link,
+.dropdown-item {
+    font-family: var(--font-heading);
+    letter-spacing: 0.5px;
+}
+
+/* Form Labels and Inputs */
+.form-label {
+    font-family: var(--font-heading);
+    letter-spacing: 0.5px;
+}
+
+.form-control {
+    font-family: var(--font-body);
+}
+
+/* table headers */
+th {
+    font-family: var(--font-heading);
+}
+
+/* table data */
+td {
+    font-family: var(--font-body);
+}
+
 /* Navbar Styles */
 .custom-navbar {
   background: rgba(0, 0, 0, 0.8);
@@ -156,6 +211,7 @@ body {
     backdrop-filter: blur(10px);
     border-top: 1px solid rgba(132, 221, 252, 0.2);
     color: white;
+    font-family: var(--font-body);
 }
 
 .footer-brand {

@@ -23,6 +23,10 @@ async function handleOTPSubmit(event) {
       displayError(responseData);
       return;
     }
+
+    // Update navbar to show authenticated user
+    updateNavBar(true);
+    
     // redirect to the protected page
     await updateUI(`/${responseData.redirect}`, false);
   } catch (error) {

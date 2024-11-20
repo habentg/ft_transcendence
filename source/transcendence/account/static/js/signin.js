@@ -37,8 +37,8 @@ async function handleSignInSubmit(e) {
             return;
         }
         // redirect to the protected page
-        updateNavBar(true); // update the navbar for authenticated users
         await updateUI(`/home`, false);
+        updateNavBar(true); // update the navbar for authenticated users
         // history.pushState(null, '', `/home`);
         // handleLocationChange();
     } catch (error) {

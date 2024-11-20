@@ -1,16 +1,47 @@
-<div class="container my-5">
-  <form class="col-6 mx-auto card p-3 form-cont" onsubmit="handleOTPSubmit(event)">
-    {% csrf_token %}
-    <h1 style="text-align: center">
-      <span style="color: rgb(34, 34, 34)">Enter OTP</span>
-    </h1>
-    <hr />
-    <p>OTP is sent to {{ email }}. It will expire in 2 minutes</p>
-    <div class="alert alert-danger" role="alert" id="error-msg" style="display: none"></div>
-    <div class="mb-3">
-      <input type="text" name="otp" class="form-control" id="otp" required />
-      <div id="otp_desk" class="form-text">Dont share it with anyone else.</div>
+{% load static %}
+
+<div class="two-factor-page">
+  <div class="background-image w-100">
+    <div class="container py-5">
+      <form class="col-12 col-md-8 col-lg-6 mx-auto form-cont" onsubmit="handleOTPSubmit(event)">
+        {% csrf_token %}
+        <div class="text-center mb-3">
+          <h2>Two-Factor Authentication</h2>
+        </div>
+        <hr />
+
+        <div class="alert alert-danger" role="alert" id="error-msg" style="display: none"></div>
+
+        <div class="mb-4">
+          <p class="text-white-50 mb-4">
+            An OTP has been sent to {{ email }}. Please enter it below to verify your identity.
+            <br>
+            <small class="text-warning">Note: OTP will expire in 2 minutes</small>
+          </p>
+
+          <div class="form-group">
+            <label for="otp" class="form-label">Enter OTP</label>
+            <div class="input-group">
+              <span class="input-group-text bg-transparent border-end-0">
+                <i class="fas fa-key text-light"></i>
+              </span>
+              <input type="text" class="form-control border-start-0" 
+                     name="otp" id="otp" placeholder="Enter OTP code" required />
+            </div>
+          </div>
+        </div>
+
+        <button type="submit" class="btn btn-primary w-100 mb-3">
+          <i class="fas fa-shield-alt me-2"></i>Verify OTP
+        </button>
+
+        <div class="text-center mt-4">
+          <p class="mb-0">
+            Didn't receive the code? 
+            <a href="#" class="text-primary">Resend OTP</a>
+          </p>
+        </div>
+      </form>
     </div>
-    <button type="submit" class="btn btn-dark">Submit</button>
-  </form>
+  </div>
 </div>
