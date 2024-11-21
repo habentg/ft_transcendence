@@ -35,12 +35,22 @@
 
         <div class="mb-3">
           <label for="password" class="form-label">Password</label>
-          <input type="password" class="form-control" name="password" id="password" required />
+          <div class="input-group">
+            <input type="password" class="form-control" name="password" id="password" required />
+            <button class="btn btn-outline-light toggle-password" type="button" data-target="password">
+              <i class="fas fa-eye"></i>
+            </button>
+          </div>
         </div>
 
         <div class="mb-3">
           <label for="confirm-password" class="form-label">Confirm password</label>
-          <input type="password" class="form-control" name="confirm-password" id="confirm-password" required />
+          <div class="input-group">
+            <input type="password" class="form-control" name="confirm-password" id="confirm-password" required />
+            <button class="btn btn-outline-light toggle-confirm-password" type="button" data-target="confirm-password">
+              <i class="fas fa-eye"></i>
+            </button>
+          </div>
         </div>
 
         <button type="submit" class="btn btn-primary w-100 mb-3">Sign Up</button>

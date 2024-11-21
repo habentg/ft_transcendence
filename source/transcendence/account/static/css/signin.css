@@ -150,3 +150,23 @@
     font-size: 0.85rem;
   }
 }
+
+/* Styles for the password toggle button */
+.input-group .toggle-password {
+    border-color: rgba(255, 255, 255, 0.2);
+    color: rgba(255, 255, 255, 0.7);
+}
+
+.input-group .toggle-password:hover {
+    background: rgba(255, 255, 255, 0.1);
+    color: white;
+}
+
+.input-group .toggle-password:focus {
+    box-shadow: none;
+    border-color: #84ddfc;
+}
+
+.input-group .form-control:focus + .toggle-password {
+    border-color: #84ddfc;
+}
