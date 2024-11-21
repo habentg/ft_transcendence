@@ -9,37 +9,51 @@
           <div class="content profile-card p-4">
             <div class="text-center mb-4">
               <div class="profile-pic-container position-relative d-inline-block">
-                {% if profile_pic %}
-                  <img src="{{ profile_pic }}" alt="Profile Picture" class="profile-pic rounded-circle" />
+                {% if player.profile_picture %}
+                  <img src="{{ player.profile_picture }}" alt="Profile Picture" class="profile-pic rounded-circle" />
                 {% else %}
                   <img src="{% static 'images/default_profile_pic.jpeg' %}" alt="Default Profile Picture" class="profile-pic rounded-circle" />
                 {% endif %}
-                <button id="change-profile-pic" class="btn btn-light btn-sm position-absolute bottom-0 end-0"><i class="fa-solid fa-pen"></i></button>
+                {% if is_self %}
+                  <button id="change-profile-pic" class="btn btn-light btn-sm position-absolute bottom-0 end-0"><i class="fa-solid fa-pen"></i></button>
+                {% endif %}
               </div>
 
               <div class="profile-info mt-3">
-                <h3 class="mb-1">{{ full_name }}</h3>
-                <p class="text-muted mb-1">@{{ username }}</p>
+                <h3 id="full_name" class="mb-1">{{ player.full_name }}</h3>
+                <p id="username" class="text-muted mb-1" data-username="{{ player.username }}">@{{ player.username }}</p>
                 <p class="text-muted small mb-3">
-                  <i class="fas fa-envelope me-2"></i>{{ email }}
+                  <i class="fas fa-envelope me-2"></i>{{ player.email }}
                 </p>
               </div>
 
               <div class="d-flex justify-content-center gap-4 mb-3">
                 <div class="text-center">
-                  <h5 class="mb-1">{{ queried_player.followers_count|default:0 }}</h5>
+                  <h5 class="mb-1">{{ player.followers_count|default:0 }}</h5>
                   <small class="text-muted">Friends</small>
                 </div>
                 <div class="text-center">
-                  <h5 class="mb-1">{{ queried_player.rating|default:0 }}</h5>
+                  <h5 class="mb-1">{{ player.rating|default:0 }}</h5>
                   <small class="text-muted">Points</small>
                 </div>
               </div>
-
-              <button id="update-user-info" class="btn btn-primary mb-2"><i class="fas fa-edit me-2"></i>Update Profile</button>
-              <a onclick="appRouter()" href="/settings" id="profile-settings" class="btn btn-primary mb-2"><i class="fas fa-cog me-2"></i>Settings</a>
-              {% if not player.is_guest %}
+              {% if player.is_guest %}
+                <h6>temp account</h6>
+              {% elif is_self %}
+                <button id="update-user-info" class="btn btn-primary mb-2"><i class="fas fa-edit me-2"></i>Update Profile</button>
+                <a onclick="appRouter()" href="/settings" id="profile-settings" class="btn btn-primary mb-2"><i class="fas fa-cog me-2"></i>Settings</a>
                 <button id="player-anon" class="btn btn-primary mb-2"><i class="fas fa-edit me-2"></i>anon ya self</button>
+              {% else %}
+                {% if is_friend %}
+                  <button onclick="removeFriend()" id="unfriend_btn" type="button" class="btn btn-danger">Un-Friend</button>
+                {% elif is_requested_by_me %}
+                  <button onclick="cancelFriendRequest()" id="cancel_request_btn" type="button" class="btn btn-danger">Cancel Request</button>
+                {% elif am_i_requested %}
+                  <button onclick="acceptOrDeclineFriendRequest(`accept`, `{{ player.username }}`)" id="accept_request_btn" type="button" class="btn btn-success me-1">Accept Request</button>
+                  <button onclick="acceptOrDeclineFriendRequest(`decline`, `{{ player.username }}`)" id="decline_request_btn" type="button" class="btn btn-warning">Decline Request</button>
+                {% else %}
+                  <button onclick="addFriendRequest()" id="add_friend_btn" type="button" class="btn btn-primary">Send Request</button>
+                {% endif %}
               {% endif %}
             </div>
           </div>

@@ -32,6 +32,7 @@ class BaseView(View):
 	
 	def get(self, request, *args, **kwargs):
 		context = self.get_context_data(request, **kwargs)
+		# print('Context : ', context, flush=True)
 		if 'error_msg' in context:
 			self.template_name = 'others/404.html'
 			self.title = 'Error Page'
@@ -85,17 +86,15 @@ class HomeView(APIView, BaseView):
 		return super().handle_exception(exception)
 
 	def get_context_data(self, request) :
-		user = request.user
 		data = {
-			'username': user.username,
-			'email': user.email,
-			'full_name': user.get_full_name(),
-			'profile_pic': user.profile_picture.url if user.profile_picture else None,
+			'player': PlayerSerializer(request.user).data
 		}
 		return data
 	
 # view for the index page
 class LandingPageView(BaseView):
+	authentication_classes = []
+	permission_classes = []
 	template_name = 'others/landing.html'
 	css = 'css/landing.css'
 	# js = 'js/landing.js'
@@ -109,6 +108,8 @@ class LandingPageView(BaseView):
 
 # Health check view
 class HealthCheck(View):
+	authentication_classes = []
+	permission_classes = []
 	def get(self, request):
 		try:
 			with connection.cursor() as cursor:
@@ -119,6 +120,8 @@ class HealthCheck(View):
 
 # view for the csrf token request
 class CsrfRequest(APIView):
+	authentication_classes = []
+	permission_classes = []
 	def get(self, request):
 		response = Response(status=status.HTTP_200_OK)
 		response.set_cookie('csrftoken', get_token(request))
@@ -169,13 +172,13 @@ class SearchUsers(APIView, BaseView):
 			friend_requests = request.user.received_requests.all()
 			players = [fr.sender for fr in friend_requests]  # Extracting the users who sent requests
 		else: # if not it should be a username
-			players = Player.objects.filter(username__icontains=search_param)
+			players = Player.objects.filter(username__icontains=search_param).exclude(is_guest=True)
 			print("ALL Players : ", players, flush=True)
 			print('querying all players - containing {}'.format(search_param), flush=True)
 
 		context = {
 			'players': players, 
-			'current_user': request.user,
+			'current_user': PlayerSerializer(request.user).data,
 			'search_type': search_param
 		}
 		# becareful with direct broswer url visit

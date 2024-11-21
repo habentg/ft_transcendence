@@ -41,10 +41,10 @@
                 </a>                
               </div>
               <div class="col-md-6">
-                <a onclick="appRouter(event)" class="menu-item d-flex align-items-center p-3" href="/profile">
+                <a onclick="appRouter()" class="menu-item d-flex align-items-center p-3" href="/profile/{{player.username}}">
                   <i class="fas fa-user fa-2x me-3"></i>
-                  {% if profile_pic %}
-                    <h5 id="nav_profile_pic" data-pfp="{{ profile_pic }}">Profile</h5>
+                  {% if player.profile_picture %}
+                    <h5 id="nav_profile_pic" data-pfp="{{ player.profile_picture }}">Profile</h5>
                   {% else %}
                     <h5 class="mb-0">Profile</h5>
                   {% endif %}
