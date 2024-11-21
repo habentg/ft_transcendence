@@ -179,3 +179,5 @@ async function removeFriend() {
 
 // // instead of calling friend() directly, we wait for the DOM to load
 // document.addEventListener("DOMContentLoaded", attachFriendEventListners);
+
+/* for quiried user */

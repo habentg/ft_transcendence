@@ -7,7 +7,6 @@ class PlayerSignupSerializer(serializers.ModelSerializer):
 	class Meta:
 		model = Player
 		fields = ['full_name', 'username', 'email', 'password']
-		# fields = ['full_name', 'username', 'email', 'password']
 
 	def create(self, validated_data):
 		if (validated_data['password'] != self.initial_data['confirm_password']):
@@ -58,3 +57,8 @@ class ChangePasswordSerializer(serializers.Serializer):
 	current_password = serializers.CharField(max_length=150, min_length=3)
 	new_password = serializers.CharField(max_length=150, min_length=3)
 	confirm_password = serializers.CharField(max_length=150, min_length=3)
+
+class PlayerSerializer(serializers.ModelSerializer):
+	class Meta:
+		model = Player
+		fields = '__all__'

@@ -1,4 +1,4 @@
-from django.http import JsonResponse, HttpResponseRedirect, HttpResponse
+from django.http import JsonResponse, HttpResponseRedirect
 from django.template.loader import render_to_string
 from django.views import View
 from django.utils.decorators import method_decorator
@@ -21,6 +21,8 @@ from django.shortcuts import render
 from .utils import send_2fa_code
 import pyotp
 import jwt
+import random
+import string
 from django.urls import reverse
 from rest_framework.permissions import IsAuthenticated
 from .auth_middleware import JWTCookieAuthentication, add_token_to_blacklist
@@ -34,7 +36,6 @@ from urllib.request import urlopen
 from tempfile import NamedTemporaryFile
 from others.views import BaseView
 from friendship.models import FriendList
-from django.shortcuts import get_object_or_404
 
 # view for the sign up page
 @method_decorator(csrf_protect, name='dispatch')
@@ -385,7 +386,9 @@ class ProfileView(APIView, BaseView):
 			response.delete_cookie('access_token')
 			response.delete_cookie('refresh_token')
 			return response
-		return super().handle_exception(exception)
+		response = HttpResponseRedirect(reverse('player_profile', kwargs={'username': self.request.user.username}))
+		print('Redirecting to player profile', flush=True)
+		return response
 
 	def delete(self, request):
 		player = request.user
@@ -404,19 +407,34 @@ class ProfileView(APIView, BaseView):
 			serializer.save()  # Use the serializer to update the player object
 			return JsonResponse({'success': 'Account updated successfully!'}, status=status.HTTP_200_OK)
 		return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+	def get_player(self, username):
+		return Player.objects.filter(username=username).first()
 	
-	def get_context_data(self, request):
-		player = request.user
-		data = {
-			'username': player.username,
-			'email': player.email,
-			'full_name': player.full_name,
-			'2fa': player.tfa,
-			'profile_pic': player.profile_picture.url if player.profile_picture else None,
-			'player': player,
-		}
+	def get_context_data(self, request, **kwargs):
+		queried_user = request.user
+		if kwargs.get('username') and kwargs.get('username') != request.user.username:
+			queried_user = self.get_player(kwargs.get('username'))
+			if not queried_user:
+				print('Player not found', flush=True)
+				return {'error_msg':'Player not found'}
+		data = {}
+		if queried_user.is_guest:
+			data = {
+				'player': PlayerSerializer(queried_user).data,
+				'is_self': False,
+			}
+		else:
+			data = {
+				'player': PlayerSerializer(queried_user).data,
+				'is_friend': request.user.friend_list.friends.filter(username=queried_user.username).exists(),
+				'is_requested_by_me': request.user.sent_requests.filter(receiver=queried_user).exists(),
+				'am_i_requested': request.user.received_requests.filter(sender=queried_user).exists(),
+				'is_self': queried_user == request.user,
+			}
 		return data
-	
+
+
 # updating user password
 class UpdatePlayerPassword(APIView):
 	authentication_classes = [JWTCookieAuthentication]
@@ -464,19 +482,28 @@ class PlayerSettings(APIView, BaseView):
 	def get_context_data(self, request):
 		player = request.user
 		return {
-			'2fa': player.tfa,
+			'player': PlayerSerializer(player).data
 		}
 
 
 """ player anonymization view """
+def generate_username():
+	length = 7
+	characters = string.ascii_letters + string.digits
+	random_string = ''.join(random.choice(characters) for _ in range(length))
+	return random_string
+
 def createGuestPlayer(request):
 	anon = Player.objects.create(
-		username='guest_username',
-		email='guest_email@example.com',
-		full_name='Guest Player',
+		username = generate_username(),
+		full_name = 'Guest Player',
 	)
+	guest_email = f'{anon.username}@guest_email.com'
+	anon.email = guest_email
+	print(f"Anon player created: {anon.email}", flush=True)
 	anon.set_unusable_password()
 	anon.is_guest = True
+	# FriendList.objects.create(player=anon) #! we dont want to create a friend list for a guest player
 	anon.save()
 	return anon
 
@@ -501,6 +528,5 @@ class AnonymizePlayer(APIView):
 		response.set_cookie('access_token', str(new_jwts.access_token), httponly=True)
 		response.set_cookie('refresh_token', str(new_jwts), httponly=True)
 		anon.last_login = timezone.now()
-		print(f"Anonymized player: {anon.username}", flush=True)
 		anon.save()
 		return response
