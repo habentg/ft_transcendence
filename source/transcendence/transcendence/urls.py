@@ -27,5 +27,5 @@ urlpatterns = [
 ]
 
 urlpatterns += [
-    path('<path:path>', Catch_All.as_view()),  # This will catch any undefined route
+    path('<path:path>', Catch_All.as_view(), name="404_page"),  # This will catch any undefined route
 ]

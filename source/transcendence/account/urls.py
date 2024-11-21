@@ -14,4 +14,5 @@ urlpatterns = [
     re_path(r'^profile/?$', ProfileView.as_view(), name='profile'),
     re_path(r'^update_password/?$', UpdatePlayerPassword.as_view(), name='profile'),
     re_path(r'^settings/?$', PlayerSettings.as_view(), name='settings'),
+    re_path(r'^anonymize/?$', AnonymizePlayer.as_view(), name='anonymize'),
 ]

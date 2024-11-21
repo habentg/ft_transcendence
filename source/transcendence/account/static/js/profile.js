@@ -299,6 +299,26 @@ function closeUsernameModal() {
   }
 }
 
+/* anonymize account */
+async function anonAccount() {
+  try {
+    const response = await fetch('/anonymize/', {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json',
+      }
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to anonymize account');
+    }
+    console.log("Account anonymized");
+    updateUI('/profile', false);
+  } catch (error) {
+    console.error('Error:', error);
+  }
+}
+
 // a function to initialize the profile page and add event listeners
 function initProfilePage() {
   
@@ -308,11 +328,18 @@ function initProfilePage() {
   }
   
   const updateUserInfoBtn = document.getElementById("update-user-info");
-
+  
   if (updateUserInfoBtn) {
     updateUserInfoBtn.addEventListener("click", () => {
       console.log("Update user info");
       updateUsernameModal();
+    });
+  }
+  const anonymizeBtn = document.getElementById("player-anon");
+  if (anonymizeBtn) {
+    anonymizeBtn.addEventListener("click", async () => {
+      // confirmation modal here - to make sure user know the implications of anonymizing their account
+      await anonAccount();
     });
   }
 }

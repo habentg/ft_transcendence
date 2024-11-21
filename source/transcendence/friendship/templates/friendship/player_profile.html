@@ -39,19 +39,19 @@
                   <!-- Actions Section -->
                   <div class="d-flex pt-1">
                     {% if is_friend %}
-                      <button id="unfriend_btn" type="button" class="btn btn-danger">Un-Friend</button>
-                      {% comment %} <button onclick="removeFriend()" id="unfriend_btn" type="button" class="btn btn-danger">Un-Friend</button> {% endcomment %}
+                      {% comment %} <button id="unfriend_btn" type="button" class="btn btn-danger">Un-Friend</button> {% endcomment %}
+                      <button onclick="removeFriend()" id="unfriend_btn" type="button" class="btn btn-danger">Un-Friend</button>
                     {% elif is_requested_by_me %}
-                      <button id="cancel_request_btn" type="button" class="btn btn-danger">Cancel Request</button>
-                      {% comment %} <button onclick="cancelFriendRequest()" id="cancel_request_btn" type="button" class="btn btn-danger">Cancel Request</button> {% endcomment %}
+                      {% comment %} <button id="cancel_request_btn" type="button" class="btn btn-danger">Cancel Request</button> {% endcomment %}
+                      <button onclick="cancelFriendRequest()" id="cancel_request_btn" type="button" class="btn btn-danger">Cancel Request</button>
                     {% elif am_i_requested %}
-                      <button id="accept_request_btn" type="button" class="btn btn-success me-1">Accept Request</button>
-                      <button id="decline_request_btn" type="button" class="btn btn-warning">Decline Request</button>
-                      {% comment %} <button onclick="acceptOrDeclineFriendRequest(`accept`, {{queried_player.username}})" id="accept_request_btn" type="button" class="btn btn-success me-1">Accept Request</button>
-                      <button onclick="acceptOrDeclineFriendRequest(`decline`, {{queried_player.username}})" id="decline_request_btn" type="button" class="btn btn-warning">Decline Request</button> {% endcomment %}
+                      {% comment %} <button id="accept_request_btn" type="button" class="btn btn-success me-1">Accept Request</button>
+                      <button id="decline_request_btn" type="button" class="btn btn-warning">Decline Request</button> {% endcomment %}
+                      <button onclick="acceptOrDeclineFriendRequest(`accept`, `{{queried_player.username}}`)" id="accept_request_btn" type="button" class="btn btn-success me-1">Accept Request</button>
+                      <button onclick="acceptOrDeclineFriendRequest(`decline`, `{{queried_player.username}}`)" id="decline_request_btn" type="button" class="btn btn-warning">Decline Request</button>
                     {% elif not is_self %}
-                      <button id="add_friend_btn" type="button" class="btn btn-primary">Send Request</button>
-                      {% comment %} <button onclick="addFriendRequest()" id="add_friend_btn" type="button" class="btn btn-primary">Send Request</button> {% endcomment %}
+                      {% comment %} <button id="add_friend_btn" type="button" class="btn btn-primary">Send Request</button> {% endcomment %}
+                      <button onclick="addFriendRequest()" id="add_friend_btn" type="button" class="btn btn-primary">Send Request</button>
                     {% endif %}
                   </div>
                 </div>

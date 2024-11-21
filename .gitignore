@@ -13,3 +13,5 @@ source/.env
 # Ignore .git files
 .git/
 
+# Ignore migration files
+**/migration/

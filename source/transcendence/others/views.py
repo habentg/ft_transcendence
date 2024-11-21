@@ -13,6 +13,7 @@ from rest_framework.response import Response
 from django.middleware.csrf import get_token
 from rest_framework import status
 import urllib.parse
+from account.utils import *
 
 
 # base view for basic pages in our SPA
@@ -41,7 +42,8 @@ class BaseView(View):
 			'title': self.title,
 			'css': self.css,
 			'js': self.js,
-			'html': html_content
+			'html': html_content,
+			'is_authenticated': isUserisAuthenticated(request)
 		}
 		if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
 			return JsonResponse(resources)
@@ -53,13 +55,14 @@ class BaseView(View):
 
 # view for the 404 page1
 class Catch_All(BaseView):
+	authentication_classes = []
+	permission_classes = []
 	template_name = 'others/404.html'
 	title = 'Error Page'
 	css = 'css/404.css'
 	js = 'js/404.js'
 
 	def get(self, request, path=None, *args, **kwargs):
-		print('404 page: ', request)
 		return super().get(request)
 
 # view for the home page
@@ -146,7 +149,6 @@ class SearchUsers(APIView, BaseView):
 		if (request.headers.get('X-Requested-With') != 'XMLHttpRequest'):
 			return HttpResponseRedirect(reverse('home_page'))
 		# http://localhost/search?q=asdfsdaf
-		data = request.data
 		search_param = request.GET.get('q', '')
 		if not search_param:
 			return JsonResponse({
@@ -184,16 +186,22 @@ class SearchUsers(APIView, BaseView):
 		})
 
 class AboutView(BaseView):
+	authentication_classes = []
+	permission_classes = []
 	template_name = 'others/about.html'
 	title = 'About Us'
 	css = 'css/static_pages.css'
 
 class PrivacyView(BaseView):
+	authentication_classes = []
+	permission_classes = []
 	template_name = 'others/privacy.html'
 	title = 'Privacy Policy'
 	css = 'css/static_pages.css'
 
 class TermsView(BaseView):
+	authentication_classes = []
+	permission_classes = []
 	template_name = 'others/terms.html'
 	title = 'Terms of Service'
 	css = 'css/static_pages.css'
