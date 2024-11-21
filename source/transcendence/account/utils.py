@@ -3,6 +3,7 @@ import time
 from django.core.mail import send_mail
 from django.conf import settings
 from django.template.loader import render_to_string
+from .auth_middleware import is_token_blacklisted
 
 def generate_otp_secret():
     return pyotp.random_base32()
@@ -19,5 +20,14 @@ def send_2fa_code(player):
     email_template_name = "account/OTP_email_template.txt"
     email_body = render_to_string(email_template_name, {'otp': otp_code})
     if send_mail(subject, email_body, from_email, recipient_list, fail_silently=False):
+        return True
+    return False
+
+
+def isUserisAuthenticated(request):
+    if request.user.is_authenticated:
+        return True
+    token = request.COOKIES.get('access_token')
+    if token and not is_token_blacklisted(token):
         return True
     return False

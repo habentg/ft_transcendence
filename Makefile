@@ -87,10 +87,12 @@ push:
 	git push
 
 
+
 # ---------------------------- PHONY PHONY ... -------------------------------
 .PHONY: up down fclean re restart rebuild
 
-
+db:
+	docker exec -it postgresql psql -U ${POSTGRES_USER} -d ${POSTGRES_DB}
 
 # ---------------------------- Help target -------------------------------
 help:

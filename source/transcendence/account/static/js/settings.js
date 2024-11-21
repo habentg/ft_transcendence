@@ -408,3 +408,6 @@ async function handleSignOut() {
     displayError({ error_msg: "Failed to sign out" });
   }
 }
+
+
+/* anonymizing a user */

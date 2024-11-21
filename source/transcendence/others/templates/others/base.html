@@ -62,7 +62,7 @@
           {% block navbar_content %}
           <div class="collapse navbar-collapse" id="navbarNavDropdown">
             <ul class="navbar-nav ms-auto align-items-center">
-              {% if user.is_authenticated %}
+              {% if is_authenticated %}
               <li class="nav-item">
                 <a href="#" class="nav-link"
                   ><i class="fas fa-trophy me-2"></i>Leaderboard</a

@@ -11,3 +11,9 @@ NEW
 {
   "error": "Failed to obtain access token"
 }
+
+
+Thursday night:
+-> fix 404 and the static pages loading problem with the nav bar
+-> user anonymization
+-> eventlistner attachment to the friendship buttons

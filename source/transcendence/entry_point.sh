@@ -15,8 +15,6 @@ pip freeze > requirements.txt
 # Create superuser
 echo "CREATING SUPER-USER"
 python manage.py createsuperuser --noinput \
-    --first_name="$DJANGO_SUPERUSER_FIRSTNAME" \
-    --last_name="$DJANGO_SUPERUSER_LASTNAME" \
     --username="$DJANGO_SUPERUSER_USERNAME" \
     --email="$DJANGO_SUPERUSER_EMAIL"
 

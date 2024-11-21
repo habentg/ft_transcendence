@@ -93,7 +93,6 @@ async function loadContent(route) {
       return;
     }
 
-    console.log("Loading content for:", route, "Response:", response);
     if (!response.ok) {
       // may be we will handle other error codes later
       // if the response is a redirect, then redirect the user to the new location
@@ -115,6 +114,10 @@ async function loadContent(route) {
     loadCssandJS(data, true); // load the css and js of the page - remove the previous ones(true)
     document.title = data.title;
     document.getElementById("content").innerHTML = data.html;
+    // if (route === "profile") {
+    //   console.log("attachFriendEventListners for profile");
+    //   attachFriendEventListners();
+    // }
   } catch (error) {
     console.error(`Failed to load -- ${route} -- page content:`, error);
   }

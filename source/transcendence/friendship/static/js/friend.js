@@ -22,7 +22,7 @@ async function addFriendRequest() {
 
     if (response.status === 201) {
       await updateUI(`/profile/${toBeFriend}`, false);
-      attachFriendEventListners();
+      // attachFriendEventListners();
       return;
     }
 
@@ -51,7 +51,7 @@ async function cancelFriendRequest() {
 
     if (response.status === 200) {
       await updateUI(`/profile/${toBeFriend}`, false);
-      attachFriendEventListners();
+      // attachFriendEventListners();
       console.log("Cancelled friend request");
       return;
     }
@@ -83,7 +83,7 @@ async function acceptOrDeclineFriendRequest(action, toBeFriend, direct_from_prof
       console.log(" ---- Friend request fulfilled ---- ");
       if (direct_from_profile) {
         await updateUI(`/profile/${toBeFriend}`, false);
-        attachFriendEventListners(); // reattach event listeners after updating the UI
+        // attachFriendEventListners(); // reattach event listeners after updating the UI
       }
       else {
         console.log(" friend request " + action + "ed from the friend requests list");
@@ -127,7 +127,7 @@ async function removeFriend() {
     if (response.status === 200) {
       console.log(" ---- removed a friend  ---- ");
       await updateUI(`/profile/${toBeFriend}`, false);
-      attachFriendEventListners();
+      // attachFriendEventListners();
       return;
     }
 
@@ -139,43 +139,43 @@ async function removeFriend() {
 }
 
 
-function attachFriendEventListners() {
-  const addFriendBtn = document.getElementById("add_friend_btn");
-  if (addFriendBtn) {
-    console.log("addFriend - addEventListener");
-    addFriendBtn.addEventListener("click", addFriendRequest);
-  }
+// function attachFriendEventListners() {
+//   const addFriendBtn = document.getElementById("add_friend_btn");
+//   if (addFriendBtn) {
+//     console.log("addFriend - addEventListener");
+//     addFriendBtn.addEventListener("click", addFriendRequest);
+//   }
 
-  const cancelFriendRequestBtn = document.getElementById("cancel_request_btn");
-  if (cancelFriendRequestBtn) {
-    console.log("cancelFriendRequest - addEventListener");
-    cancelFriendRequestBtn.addEventListener("click", cancelFriendRequest);
-  }
-  const acceptFriendBtn = document.getElementById("accept_request_btn");
-  if (acceptFriendBtn) {
-    acceptFriendBtn.addEventListener("click", () => {
-      console.log("accept friend request");
-      const toBeFriend = document
-      .getElementById("username")
-      .getAttribute("data-username");
-      acceptOrDeclineFriendRequest("accept", toBeFriend, true);
-    });
-  }
-  const declineFriendBtn = document.getElementById("decline_request_btn");
-  if (declineFriendBtn) {
-    declineFriendBtn.addEventListener("click", () => {
-      console.log("decline friend request");
-      const toBeFriend = document
-      .getElementById("username")
-      .getAttribute("data-username");
-      acceptOrDeclineFriendRequest("decline", toBeFriend, true);
-    });
-  }
-  const removeFriendBtn = document.getElementById("unfriend_btn");
-  if (removeFriendBtn) {
-    removeFriendBtn.addEventListener("click", removeFriend);
-  }
-}
+//   const cancelFriendRequestBtn = document.getElementById("cancel_request_btn");
+//   if (cancelFriendRequestBtn) {
+//     console.log("cancelFriendRequest - addEventListener");
+//     cancelFriendRequestBtn.addEventListener("click", cancelFriendRequest);
+//   }
+//   const acceptFriendBtn = document.getElementById("accept_request_btn");
+//   if (acceptFriendBtn) {
+//     acceptFriendBtn.addEventListener("click", () => {
+//       console.log("accept friend request");
+//       const toBeFriend = document
+//       .getElementById("username")
+//       .getAttribute("data-username");
+//       acceptOrDeclineFriendRequest("accept", toBeFriend, true);
+//     });
+//   }
+//   const declineFriendBtn = document.getElementById("decline_request_btn");
+//   if (declineFriendBtn) {
+//     declineFriendBtn.addEventListener("click", () => {
+//       console.log("decline friend request");
+//       const toBeFriend = document
+//       .getElementById("username")
+//       .getAttribute("data-username");
+//       acceptOrDeclineFriendRequest("decline", toBeFriend, true);
+//     });
+//   }
+//   const removeFriendBtn = document.getElementById("unfriend_btn");
+//   if (removeFriendBtn) {
+//     removeFriendBtn.addEventListener("click", removeFriend);
+//   }
+// }
 
-// instead of calling friend() directly, we wait for the DOM to load
-document.addEventListener("DOMContentLoaded", attachFriendEventListners);
+// // instead of calling friend() directly, we wait for the DOM to load
+// document.addEventListener("DOMContentLoaded", attachFriendEventListners);

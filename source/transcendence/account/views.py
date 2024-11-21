@@ -109,12 +109,14 @@ class SignInView(APIView, BaseView):
 	def get_context_data(self, request):
 		return {'csrf_token': get_token(request)}
 
-class SignOutView(BaseView, View):
+class SignOutView(APIView, BaseView):
 	authentication_classes = [JWTCookieAuthentication]
 	permission_classes = [IsAuthenticated]
 
 	def get(self, request):
+		player = request.user
 		token_string = request.COOKIES.get('access_token')
+		print("our player: ", player, flush=True)
 		if token_string:
 			try:
 				add_token_to_blacklist(token_string)
@@ -125,7 +127,10 @@ class SignOutView(BaseView, View):
 			response.delete_cookie('access_token')
 			response.delete_cookie('refresh_token')
 			response.delete_cookie('csrftoken')
+			print(f"Player {player.username} signed out", flush=True)
 			response.singed_out = True
+			if (player.is_guest):
+				player.delete()
 			return response
 		return HttpResponseRedirect(reverse('landing'))
 
@@ -408,6 +413,7 @@ class ProfileView(APIView, BaseView):
 			'full_name': player.full_name,
 			'2fa': player.tfa,
 			'profile_pic': player.profile_picture.url if player.profile_picture else None,
+			'player': player,
 		}
 		return data
 	
@@ -443,8 +449,17 @@ class PlayerSettings(APIView, BaseView):
 	css = 'css/settings.css'
 	js = 'js/settings.js'
 
-	def get(self, request):
-		return super().get(request)
+	def handle_exception(self, exception):
+		if isinstance(exception, AuthenticationFailed):
+			signin_url = reverse('signin_page')
+			params = urllib.parse.urlencode({'next': self.request.path})
+			response = HttpResponseRedirect(f'{signin_url}?{params}')
+			response.delete_cookie('access_token')
+			response.delete_cookie('refresh_token')
+			response.delete_cookie('csrftoken')
+			response.status_code = 302
+			return response
+		return super().handle_exception(exception)
 	
 	def get_context_data(self, request):
 		player = request.user
@@ -452,3 +467,40 @@ class PlayerSettings(APIView, BaseView):
 			'2fa': player.tfa,
 		}
 
+
+""" player anonymization view """
+def createGuestPlayer(request):
+	anon = Player.objects.create(
+		username='guest_username',
+		email='guest_email@example.com',
+		full_name='Guest Player',
+	)
+	anon.set_unusable_password()
+	anon.is_guest = True
+	anon.save()
+	return anon
+
+class AnonymizePlayer(APIView):
+	authentication_classes = [JWTCookieAuthentication]
+	permission_classes = [IsAuthenticated]
+
+	def patch(self, request):
+		# sign out the player
+		token_string = request.COOKIES.get('access_token')
+		print("player b4 anon: ", request.user, flush=True)
+		if token_string:
+			try:
+				add_token_to_blacklist(token_string)
+			except jwt.ExpiredSignatureError or jwt.InvalidTokenError or jwt.DecodeError as e:
+				print(e, flush=True)
+				return HttpResponseRedirect(reverse('landing'))
+		# create a new anonymous player
+		anon = createGuestPlayer(request)
+		new_jwts = RefreshToken.for_user(anon)
+		response = Response(status=status.HTTP_200_OK)
+		response.set_cookie('access_token', str(new_jwts.access_token), httponly=True)
+		response.set_cookie('refresh_token', str(new_jwts), httponly=True)
+		anon.last_login = timezone.now()
+		print(f"Anonymized player: {anon.username}", flush=True)
+		anon.save()
+		return response
