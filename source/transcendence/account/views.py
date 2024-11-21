@@ -1,4 +1,4 @@
-from django.http import JsonResponse, HttpResponseRedirect, HttpResponse
+from django.http import JsonResponse, HttpResponseRedirect
 from django.template.loader import render_to_string
 from django.views import View
 from django.utils.decorators import method_decorator
@@ -21,6 +21,8 @@ from django.shortcuts import render
 from .utils import send_2fa_code
 import pyotp
 import jwt
+import random
+import string
 from django.urls import reverse
 from rest_framework.permissions import IsAuthenticated
 from .auth_middleware import JWTCookieAuthentication, add_token_to_blacklist
@@ -34,7 +36,6 @@ from urllib.request import urlopen
 from tempfile import NamedTemporaryFile
 from others.views import BaseView
 from friendship.models import FriendList
-from django.shortcuts import get_object_or_404
 
 # view for the sign up page
 @method_decorator(csrf_protect, name='dispatch')
@@ -469,12 +470,20 @@ class PlayerSettings(APIView, BaseView):
 
 
 """ player anonymization view """
+def generate_username():
+	length = 7
+	characters = string.ascii_letters + string.digits
+	random_string = ''.join(random.choice(characters) for _ in range(length))
+	return random_string
+
 def createGuestPlayer(request):
 	anon = Player.objects.create(
-		username='guest_username',
-		email='guest_email@example.com',
-		full_name='Guest Player',
+		username = generate_username(),
+		full_name = 'Guest Player',
 	)
+	guest_email = anon.username + '.guest_email@example.com'
+	anon.email = guest_email
+	print(f"Anon player created: {anon.email}", flush=True)
 	anon.set_unusable_password()
 	anon.is_guest = True
 	anon.save()
