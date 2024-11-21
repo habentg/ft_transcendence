@@ -36,10 +36,10 @@
                 </div>
               </div>
 
-              <button id="update-user-info" class="btn btn-primary"><i class="fas fa-edit me-2"></i>Update Profile</button>
-              <a onclick="appRouter()" href="/settings" id="profile-settings" class="btn btn-primary"><i class="fas fa-cog me-2"></i>Profile Settings</a>
+              <button id="update-user-info" class="btn btn-primary mb-2"><i class="fas fa-edit me-2"></i>Update Profile</button>
+              <a onclick="appRouter()" href="/settings" id="profile-settings" class="btn btn-primary mb-2"><i class="fas fa-cog me-2"></i>Settings</a>
               {% if not player.is_guest %}
-                <button id="player-anon" class="btn btn-primary"><i class="fas fa-edit me-2"></i>anon ya self</button>
+                <button id="player-anon" class="btn btn-primary mb-2"><i class="fas fa-edit me-2"></i>anon ya self</button>
               {% endif %}
             </div>
           </div>

@@ -1,5 +1,49 @@
 console.log("signup.js loaded");
 
+// Function to handle password visibility toggle
+function showPasswordToggle() {
+  const togglePassword = document.querySelector('.toggle-password');
+  const toggleConfirmPassword = document.querySelector('.toggle-confirm-password');
+  if (togglePassword) {
+      togglePassword.addEventListener('click', function() {
+          const targetId = this.getAttribute('data-target');
+          const passwordInput = document.getElementById(targetId);
+          const icon = this.querySelector('i');
+
+          // Toggle password visibility
+          if (passwordInput.type === 'password') {
+              passwordInput.type = 'text';
+              icon.classList.remove('fa-eye');
+              icon.classList.add('fa-eye-slash');
+          } else {
+              passwordInput.type = 'password';
+              icon.classList.remove('fa-eye-slash');
+              icon.classList.add('fa-eye');
+          }
+      });
+  }
+  if (toggleConfirmPassword) {
+    toggleConfirmPassword.addEventListener('click', function() {
+      const targetId = this.getAttribute('data-target');
+      const confirmPasswordInput = document.getElementById(targetId);
+      const icon = this.querySelector('i');
+
+      // Toggle confirm password visibility
+      if (confirmPasswordInput.type === 'password') {
+        confirmPasswordInput.type = 'text';
+        icon.classList.remove('fa-eye');
+        icon.classList.add('fa-eye-slash');
+      } else {
+        confirmPasswordInput.type = 'password';
+        icon.classList.remove('fa-eye-slash');
+        icon.classList.add('fa-eye');
+      }
+    });
+  }
+};
+
+showPasswordToggle();
+
 // Handle the signup form submission
 async function handleSignupSubmit(e) {
   e.preventDefault();

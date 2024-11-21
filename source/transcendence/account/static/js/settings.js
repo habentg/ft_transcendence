@@ -63,15 +63,21 @@ async function handleEnableDisable2FA() {
         "X-CSRFToken": await getCSRFToken(),
       },
     });
+
     if (response.ok) {
-      console.log("2FA status updated");
-      if (this.textContent.trim() === "Enable 2FA") {
-        this.className = "btn btn-warning w-100";
-        this.textContent = "Disable 2FA";
+      const button = document.getElementById('enable-2fa') || 
+                    document.getElementById('disable-2fa');
+      
+      if (button.id === 'enable-2fa') {
+        button.id = 'disable-2fa';
+        button.className = 'btn btn-warning w-100';
+        button.textContent = 'Disable 2FA';
       } else {
-        this.textContent = "Enable 2FA";
-        this.className = "btn btn-success w-100";
+        button.id = 'enable-2fa';
+        button.className = 'btn btn-success w-100';
+        button.textContent = 'Enable 2FA';
       }
+      close2FAModal();
     } else {
       throw new Error("Failed to update 2FA status");
     }
@@ -212,27 +218,31 @@ function displayError(errorData) {
   }
 }
 
-function showSuccessMessage(message) {
-  // You can implement a success message display here
-  // For example, using a toast notification or another modal
-  alert(message); // Temporary solution
-}
 
 // Initialize Settings
 function initSettings() {
   const changePassBtn = document.getElementById("change-password-btn");
   const deleteAccountBtn = document.getElementById("delete-acc-btn");
-  const enableDisable2FABtn = document.getElementById("enable-disable-2fa");
+  const enable2FABtn = document.getElementById("enable-2fa");
+  const disable2FABtn = document.getElementById("disable-2fa");
   const signOutBtn = document.getElementById("sign-out-btn");
 
+  console.log("#########################")
   if (changePassBtn) {
+    console.log("#########################1")
     changePassBtn.addEventListener("click", createAndShowPasswordModal);
   }
   if (deleteAccountBtn) {
+    console.log("#########################2")
     deleteAccountBtn.addEventListener("click", deleteAccountCheck);
   }
-  if (enableDisable2FABtn) {
-    enableDisable2FABtn.addEventListener("click", handleEnableDisable2FA);
+  if (enable2FABtn) {
+    console.log("#########################3")
+    enable2FABtn.addEventListener("click", show2FAModal);
+  }
+  if (disable2FABtn) {
+    console.log("#########################4")
+    disable2FABtn.addEventListener("click", show2FAModal);
   }
   if (signOutBtn) {
     signOutBtn.addEventListener("click", showSignOutModal);
@@ -409,5 +419,79 @@ async function handleSignOut() {
   }
 }
 
+// Function to create and show the 2FA modal
+function show2FAModal() {
+    const existingModal = document.getElementById('2fa-modal');
+    if (existingModal) existingModal.remove();
+
+    const button = document.getElementById('enable-2fa') || 
+                  document.getElementById('disable-2fa');
+    const is2FAEnabled = button.id === 'disable-2fa';
+    
+    const modalTitle = is2FAEnabled ? 'Disable 2FA' : 'Enable 2FA';
+    const modalIcon = 'fa-shield-alt';
+    const actionBtnClass = is2FAEnabled ? 'btn-warning' : 'btn-success';
+    const actionText = is2FAEnabled ? 'Disable' : 'Enable';
+    const modalMessage = is2FAEnabled 
+        ? 'Are you sure you want to disable Two-Factor Authentication? This will make your account less secure.'
+        : 'Enable Two-Factor Authentication to add an extra layer of security to your account. You\'ll need to enter a verification code each time you sign in.';
+
+    const modal = document.createElement('div');
+    modal.id = '2fa-modal';
+    modal.className = 'modal fade show';
+    modal.style.display = 'block';
+    modal.style.backgroundColor = 'rgba(0, 0, 0, 0.5)';
+
+    modal.innerHTML = `
+        <div class="modal-dialog modal-dialog-centered modal-sm">
+            <div class="content modal-content">
+                <div class="modal-header border-0 py-3">
+                    <h5 class="modal-title">
+                        <i class="fas ${modalIcon} me-2"></i>${modalTitle}
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-dismiss="modal"></button>
+                </div>
+                <div class="modal-body px-3 py-2">
+                    <div id="2fa-error-msg" class="alert alert-danger small py-2" style="display:none;"></div>
+                    <p class="text-white mb-0">${modalMessage}</p>
+                </div>
+                <div class="modal-footer border-0 py-3">
+                    <button type="button" class="btn ${actionBtnClass} btn-sm" id="confirm-2fa">
+                        <i class="fas ${modalIcon} me-2"></i>${actionText} 2FA
+                    </button>
+                    <button type="button" class="btn btn-outline-light btn-sm" data-dismiss="modal">
+                        Cancel
+                    </button>
+                </div>
+            </div>
+        </div>
+    `;
+
+    document.body.appendChild(modal);
+    document.body.classList.add('modal-open');
+
+    // Event Listeners
+    const closeButtons = modal.querySelectorAll('[data-dismiss="modal"]');
+    closeButtons.forEach(button => {
+        button.addEventListener('click', close2FAModal);
+    });
+
+    const confirmButton = modal.querySelector('#confirm-2fa');
+    if (confirmButton) {
+        confirmButton.addEventListener('click', handleEnableDisable2FA);
+    }
+
+    modal.addEventListener('click', (e) => {
+        if (e.target === modal) close2FAModal();
+    });
+}
+
+function close2FAModal() {
+    const modal = document.getElementById('2fa-modal');
+    if (modal) {
+        modal.remove();
+        document.body.classList.remove('modal-open');
+    }
+}
 
 /* anonymizing a user */

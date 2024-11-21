@@ -108,3 +108,27 @@
     font-size: 1.5rem;
   }
 }
+
+/* Styles for the password toggle button */
+.input-group .toggle-password,
+.input-group .toggle-confirm-password {
+  border-color: rgba(255, 255, 255, 0.2);
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.input-group .toggle-password:hover,
+.input-group .toggle-confirm-password:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: white;
+}
+
+.input-group .toggle-password:focus,
+.input-group .toggle-confirm-password:focus {
+  box-shadow: none;
+  border-color: #84ddfc;
+}
+
+.input-group .form-control:focus + .toggle-password,
+.input-group .form-control:focus + .toggle-confirm-password {
+  border-color: #84ddfc;
+}
