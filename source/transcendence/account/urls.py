@@ -12,7 +12,7 @@ urlpatterns = [
     re_path(r'^password_reset_confirm/?$', PassResetConfirm.as_view(), name='password_reset_newpass'),
     re_path(r'^2fa/?$', TwoFactorAuth.as_view(), name='password_reset_newpass'),
     re_path(r'^profile/?$', ProfileView.as_view(), name='profile'),
-    re_path(r'^update_password/?$', UpdatePlayerPassword.as_view(), name='profile'),
+    re_path(r'^update_password/?$', UpdatePlayerPassword.as_view(), name='update_password'),
     re_path(r'^settings/?$', PlayerSettings.as_view(), name='settings'),
     re_path(r'^anonymize/?$', AnonymizePlayer.as_view(), name='anonymize'),
 ]

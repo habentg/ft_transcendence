@@ -16,6 +16,7 @@ from django.http import HttpResponseRedirect
 from django.urls import reverse
 import urllib.parse
 import json
+from account.serializers import PlayerSerializer
 
 
 # template_name for viewing player profile
@@ -25,8 +26,8 @@ class PlayerProfileView(APIView, BaseView):
 
 	template_name = 'friendship/player_profile.html'
 	title = 'Player Profile'
-	css = 'css/player_profile.css'
-	js = 'js/friend.js'
+	css = 'css/profile.css'
+	js = 'js/profile.js'
 
 	def handle_exception(self, exception):
 		if isinstance(exception, AuthenticationFailed):
@@ -41,20 +42,28 @@ class PlayerProfileView(APIView, BaseView):
 	def get_player(self, username):
 		return Player.objects.filter(username=username).first()
 	
-	def get_context_data(self, request, **kwargs):  # Standardize to use kwargs
+	def get_context_data(self, request, **kwargs):
 		queried_user = request.user
 		if kwargs.get('username') and kwargs.get('username') != request.user.username:
 			queried_user = self.get_player(kwargs.get('username'))
 			if not queried_user:
 				print('Player not found', flush=True)
 				return {'error_msg':'Player not found'}
-		data = {
-			'queried_player': queried_user,
-			'is_friend': request.user.friend_list.friends.filter(username=queried_user.username).exists(),
-			'is_requested_by_me': request.user.sent_requests.filter(receiver=queried_user).exists(),
-			'am_i_requested': request.user.received_requests.filter(sender=queried_user).exists(),
-			'is_self': queried_user == request.user,
-		}
+		data = {}
+		if queried_user.is_guest:
+			data = {
+				'player': PlayerSerializer(queried_user).data,
+				'is_self': False,
+			}
+		else:
+			data = {
+				'player': PlayerSerializer(queried_user).data,
+				'is_friend': request.user.friend_list.friends.filter(username=queried_user.username).exists(),
+				'is_requested_by_me': request.user.sent_requests.filter(receiver=queried_user).exists(),
+				'am_i_requested': request.user.received_requests.filter(sender=queried_user).exists(),
+				'is_self': queried_user == request.user,
+			}
+		print(" is_self:", data['is_self'], flush=True)
 		return data
 
 # FRIEND REQUESTS - FROM SENDER PERSPECTIVE
