@@ -42,15 +42,15 @@
               {% elif is_self %}
                 <button id="update-user-info" class="btn btn-primary mb-2"><i class="fas fa-edit me-2"></i>Update Info</button>
                 <a onclick="appRouter()" href="/settings" id="profile-settings" class="btn btn-primary mb-2"><i class="fas fa-cog me-2"></i> Settings</a>
-                <button id="player-anon" class="btn btn-primary mb-2"><i class="fas fa-edit me-2"></i>anon ya self</button>
+                <button id="player-anon" class="btn btn-primary mb-2"><i class="fas fa-edit me-2"></i>Anonymize</button>
               {% else %}
                 {% if is_friend %}
-                  <button onclick="removeFriend()" id="unfriend_btn" type="button" class="btn btn-danger">Un-Friend</button>
+                  <button onclick="removeFriend()" id="unfriend_btn" type="button" class="btn btn-danger">Unfriend</button>
                 {% elif is_requested_by_me %}
                   <button onclick="cancelFriendRequest()" id="cancel_request_btn" type="button" class="btn btn-danger">Cancel Request</button>
                 {% elif am_i_requested %}
-                  <button onclick="acceptOrDeclineFriendRequest(`accept`, `{{ player.username }}`)" id="accept_request_btn" type="button" class="btn btn-success me-1">Accept Request</button>
-                  <button onclick="acceptOrDeclineFriendRequest(`decline`, `{{ player.username }}`)" id="decline_request_btn" type="button" class="btn btn-warning">Decline Request</button>
+                  <button onclick="acceptOrDeclineFriendRequest(`accept`, `{{ player.username }}`)" id="accept_request_btn" type="button" class="btn btn-success me-1 mb-2">Accept</button>
+                  <button onclick="acceptOrDeclineFriendRequest(`decline`, `{{ player.username }}`)" id="decline_request_btn" type="button" class="btn btn-danger mb-2">Decline</button>
                 {% else %}
                   <button onclick="addFriendRequest()" id="add_friend_btn" type="button" class="btn btn-primary">Send Request</button>
                 {% endif %}

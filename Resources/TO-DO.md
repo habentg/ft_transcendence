@@ -20,3 +20,11 @@ Thursday night:
 
 (ALL DONE)
 
+
+
+Saturday cases - NOT FIXED YET
+1, Home css & js files not removed from base html( header)
+2, Friend search issue ( not working when browser back btn is clicked )
+3, static pages (e.g about us) page when reloaded/refreshed profile picture on navbar is goind to default pic.
+  -> NOTE: request is not going through [JWTCookieAuthentication] ... so couldnt get the profile picture
+

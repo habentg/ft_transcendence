@@ -49,10 +49,10 @@
 }
 
 /* Button Styles */
-.btn {
+/* .home-btn .btn {
   padding: 0.5rem 1rem;
   transition: all 0.3s ease;
-}
+} */
 
 .btn-primary {
   background: linear-gradient(45deg, #84ddfc, #b02c98);

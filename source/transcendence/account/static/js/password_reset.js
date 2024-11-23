@@ -1,7 +1,9 @@
 // Initiate the password reset process
 async function handlePassResetSubmit(e) {
   e.preventDefault();
+  loadSpinner();
 
+  // make spinner show until the page is loaded
   const formData = {
     email: document.getElementById("email").value,
   };
@@ -187,3 +189,17 @@ document.querySelectorAll(".toggle-password").forEach((button) => {
     }
   });
 });
+
+function loadSpinner() {
+  const spinner = document.getElementById("load-spinner");
+
+  if (spinner) {
+    spinner.style.display = "block";
+  }
+  // Show spinner for 2 seconds
+  setTimeout(() => {
+    if (spinner) {
+      spinner.style.display = "none";
+    }
+  }, 2000);
+}

@@ -15,7 +15,7 @@
                   <img src="{% static 'images/default_profile_pic.jpeg' %}" alt="Default Profile Picture" class="profile-pic rounded-circle" />
                 {% endif %}
                 {% if is_self %}
-                  <button id="change-profile-pic" class="btn btn-light btn-sm position-absolute bottom-0 end-0"><i class="fa-solid fa-pen"></i></button>
+                  <button id="change-profile-pic" class="btn btn-light position-absolute bottom-0 end-0"><i class="fa-solid fa-pen"></i></button>
                 {% endif %}
               </div>
 
@@ -40,9 +40,9 @@
               {% if player.is_guest %}
                 <h6>temp account</h6>
               {% elif is_self %}
-                <button id="update-user-info" class="btn btn-primary mb-2"><i class="fas fa-edit me-2"></i>Update Profile</button>
+                <button id="update-user-info" class="btn btn-primary mb-2"><i class="fas fa-edit me-2"></i>Update Info</button>
                 <a onclick="appRouter()" href="/settings" id="profile-settings" class="btn btn-primary mb-2"><i class="fas fa-cog me-2"></i>Settings</a>
-                <button id="player-anon" class="btn btn-primary mb-2"><i class="fas fa-edit me-2"></i>anon ya self</button>
+                <button id="player-anon" class="btn btn-primary mb-2"><i class="fas fa-edit me-2"></i>Anonymize</button>
               {% else %}
                 {% if is_friend %}
                   <button onclick="removeFriend()" id="unfriend_btn" type="button" class="btn btn-danger">Un-Friend</button>

@@ -306,8 +306,8 @@ async function anonAccount() {
       throw new Error('Failed to anonymize account');
     }
     console.log("Account anonymized");
-    updateUI('/profile', false);
     updateNavBar(true); // updating navbar
+    updateUI('/profile', false);
   } catch (error) {
     console.error('Error:', error);
   }
