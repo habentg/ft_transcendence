@@ -8,6 +8,7 @@
     <div class="container py-5">
       <!-- Search and Friends Section -->
       <div class="row justify-content-center mb-4">
+        {% if not player.is_guest %}
         <div class="col-lg-8">
           <div class="content p-4">
             <div class="row g-3">
@@ -19,15 +20,16 @@
                 </div>
               </div>
               <!-- Friend Buttons -->
-              <div class="col-md-6 d-flex gap-2 justify-content-md-end">
-                <button id="friends_btn" class="btn btn-outline-light"><i class="fas fa-users me-2"></i>Friends</button>
-                <button id="friend_requests_btn" class="btn btn-outline-light"><i class="fas fa-user-plus me-2"></i>Requests</button>
+                <div class="col-md-6 d-flex gap-2 justify-content-md-end">
+                  <button id="friends_btn" class="btn btn-outline-light"><i class="fas fa-users me-2"></i>Friends</button>
+                  <button id="friend_requests_btn" class="btn btn-outline-light"><i class="fas fa-user-plus me-2"></i>Requests</button>
+                </div>
               </div>
+              <div id="searchResults" class="mt-3"></div>
             </div>
-            <div id="searchResults" class="mt-3"></div>
           </div>
         </div>
-      </div>
+        {% endif %}
 
       <!-- Menu Grid -->
       <div class="row justify-content-center">
@@ -38,10 +40,10 @@
                 <a href="#" class="menu-item d-flex align-items-center p-3">
                   <i class="fas fa-gamepad fa-2x me-3"></i>
                   <h5 class="mb-0">Local Game</h5>
-                </a>                
+                </a>
               </div>
               <div class="col-md-6">
-                <a onclick="appRouter()" class="menu-item d-flex align-items-center p-3" href="/profile/{{player.username}}">
+                <a onclick="appRouter()" class="menu-item d-flex align-items-center p-3" href="/profile/{{ player.username }}">
                   <i class="fas fa-user fa-2x me-3"></i>
                   {% if player.profile_picture %}
                     <h5 id="nav_profile_pic" data-pfp="{{ player.profile_picture }}">Profile</h5>

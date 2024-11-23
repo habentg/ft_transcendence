@@ -13,6 +13,8 @@ async function search(query_parameter) {
       },
       // body: JSON.stringify({'action': 'all_players'}),  // Browser said it wont send 'body' in GET request, so I put it in headers
     });
+    if (response.status === 205)
+      updateUI("/home", false);
     if (response.ok) {
       history.pushState({ query_parameter }, "", `/search?q=${query_parameter}`);
       const responseData = await response.json();

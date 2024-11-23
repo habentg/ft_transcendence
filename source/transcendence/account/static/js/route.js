@@ -35,7 +35,6 @@ async function appRouter(event) {
     event.preventDefault();
     
     // let href = event.target.href;
-    // Now you can use the href or other logic to route internally
     const href = event.target.closest('a').href;
     let urlObj = new URL(href);
     let path = urlObj.pathname;
@@ -43,33 +42,6 @@ async function appRouter(event) {
         return;
     await updateUI(path, false);
 };
-
-
-let account_routes = [
-  "signin",
-  "signup",
-  "signout",
-  "forgot-password",
-  "reset-password",
-  "setting",
-];
-let game_routes = ["game", "leaderboard", "game-history", "game-detail"];
-let user_routes = ["profile", "setting", "change-password", "delete-account"];
-let friend_routes = ["friends", "friend-request"];
-let other_routes = ["home", "about", "contact", "404", "tos", "privacy"];
-
-function determineRoute(route) {
-  if (route === "" || route === "/") route = "home";
-  if (account_routes.includes(route)) route = "account/" + route;
-  // accountRouter(route);
-  else if (game_routes.includes(route)) route = "game/" + route;
-  else if (user_routes.includes(route)) route = "user/" + route;
-  else if (friend_routes.includes(route)) route = "friend/" + route;
-  else if (other_routes.includes(route)) route = route;
-  //    othersRouter(route);
-  else route = "other/404";
-  return route;
-}
 
 // Load the content of the page
 async function loadContent(route) {
@@ -83,12 +55,8 @@ async function loadContent(route) {
 
     // signout is a special case
     if (route === `${window.baseUrl}/signout`) {
-      // Remove any CSS/JS if necessary
       removeResource();
-      // Update the navbar
       updateNavBar(true);
-      // Update the history state
-      console.log("Signing out");
       await updateUI("/", false);
       return;
     }
@@ -114,10 +82,6 @@ async function loadContent(route) {
     loadCssandJS(data, true); // load the css and js of the page - remove the previous ones(true)
     document.title = data.title;
     document.getElementById("content").innerHTML = data.html;
-    // if (route === "profile") {
-    //   console.log("attachFriendEventListners for profile");
-    //   attachFriendEventListners();
-    // }
   } catch (error) {
     console.error(`Failed to load -- ${route} -- page content:`, error);
   }

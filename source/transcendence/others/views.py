@@ -151,6 +151,8 @@ class SearchUsers(APIView, BaseView):
 	def get(self, request, *args, **kwargs):
 		if (request.headers.get('X-Requested-With') != 'XMLHttpRequest'):
 			return HttpResponseRedirect(reverse('home_page'))
+		if (request.user.is_guest):
+			return Response(status=status.HTTP_205_RESET_CONTENT)
 		# http://localhost/search?q=asdfsdaf
 		search_param = request.GET.get('q', '')
 		if not search_param:

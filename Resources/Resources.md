@@ -1,4 +1,8 @@
 
+# --------------------- Django -----------------
+* what is django and how it works .. simplified article
+https://radixweb.com/blog/what-is-django
+
 # --------------------- Cybersecurity Module resources -----------------
 
 ## JWT
