@@ -38,6 +38,7 @@
     <!-- Main css and js file - will have our general styling, routing -->
     <link rel="stylesheet" href="{% static 'css/base.css' %}" />
     <script src="{% static 'js/utils.js' %}" defer></script>
+    <script src="{% static 'js/ws.js' %}" defer></script>
     <script src="{% static 'js/route.js' %}" defer></script>
     <!-- will dynamically page specific css and js files -->
     {% if css %}
@@ -84,7 +85,7 @@
                     </a>
                     <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="profileDropdown">
                       <li>
-                        <a onclick="appRouter()" class="dropdown-item" href="/profile"><i class="fas fa-user-circle me-2"></i>Profile</a>
+                        <a onclick="appRouter()" class="dropdown-item" href="/profile/{{user.username}}"><i class="fas fa-user-circle me-2"></i>Profile</a>
                       </li>
                       <li>
                         <a onclick="appRouter()" class="dropdown-item" href="/settings"><i class="fas fa-cog me-2"></i>Settings</a>

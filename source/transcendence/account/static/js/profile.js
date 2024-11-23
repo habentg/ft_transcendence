@@ -125,13 +125,6 @@ async function UploadNewProfilePic() {
 }
 
 
-
-// function displayError(error) {
-//     const errorMsg = document.getElementById('password-error-msg');
-//     errorMsg.textContent = error;
-//     errorMsg.style.display = 'block';
-// }
-
 // update user password
 async function updatePlayerPassword () {
     try {
@@ -314,6 +307,7 @@ async function anonAccount() {
     }
     console.log("Account anonymized");
     updateUI('/profile', false);
+    updateNavBar(true); // updating navbar
   } catch (error) {
     console.error('Error:', error);
   }
@@ -345,18 +339,18 @@ function initProfilePage() {
 }
 
 // Display error message in modal
-function displayError(errorData) {
-    const errorMsg = document.getElementById('error-msg');
-    if (errorMsg) {
-        errorMsg.textContent = errorData.error_msg || "An error occurred";
-        errorMsg.style.display = 'block';
+// function displayError(errorData) {
+//     const errorMsg = document.getElementById('error-msg');
+//     if (errorMsg) {
+//         errorMsg.textContent = errorData.error_msg || "An error occurred";
+//         errorMsg.style.display = 'block';
         
-        // Hide error message after 3 seconds
-        setTimeout(() => {
-            errorMsg.style.display = 'none';
-        }, 3000);
-    }
-}
+//         // Hide error message after 3 seconds
+//         setTimeout(() => {
+//             errorMsg.style.display = 'none';
+//         }, 3000);
+//     }
+// }
 
 /* for queried user */
 /* reataching the eventListners for the buttons

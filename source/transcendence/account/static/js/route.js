@@ -96,7 +96,7 @@ async function loadContent(route) {
 async function handleLocationChange() {
   let path = window.location.pathname.slice(1);
 
-  if (isInitialLoad) {
+  if (isInitialLoad) { // if its initial load ... page will come already loaded from the server
     isInitialLoad = false;
     return;
   }
@@ -105,16 +105,20 @@ async function handleLocationChange() {
 }
 
 async function initApp() {
-  // Handle initial load and browser back/forward buttons
+  // browser back/forward buttons
   window.addEventListener("popstate", async () => {
     await handleLocationChange();
   });
 
-  // Handle initial load
+  // Handling initial load
   window.addEventListener("load", async () => {
     isInitialLoad = true;
     await handleLocationChange();
   });
+
+  /* websocket - for real-time updates and chat*/
+  initWebsocket();
+  
   window.baseUrl = "http://localhost";
 }
 

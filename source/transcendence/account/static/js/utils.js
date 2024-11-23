@@ -47,6 +47,7 @@ function displayError(response) {
   } else if (response.email && response.email[0]) {
     error_msg = response.email[0];
   }
+  console.log("error_msg:", error_msg);
   document.getElementById("error-msg").innerText = error_msg;
   document.getElementById("error-msg").style.display = "block";
 }
@@ -140,11 +141,16 @@ async function updateNavBar(isAuthenticated) {
   const navbar = document.getElementById("navbarNavDropdown");
   if (isAuthenticated) {
     let profilePic = "/static/images/default_profile_pic.jpeg";
+    let username = "";
     const user_profile_pic = document.getElementById("nav_profile_pic");
+    const profile_btn = document.getElementById("profile_btn");
+    username = profile_btn.dataset.username;
     if (user_profile_pic) {
       profilePic = user_profile_pic.dataset.pfp;  // Same as user_profile_pic.getAttribute("data-pfp");
     }
 
+    console.log("profilePic:", profilePic);
+    console.log("username:", username);
     navbar.innerHTML = `
     <ul class="navbar-nav ms-auto align-items-center">
       <li class="nav-item">
@@ -166,7 +172,7 @@ async function updateNavBar(isAuthenticated) {
         </a>
         <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="profileDropdown">
           <li>
-            <a onclick="appRouter()" class="dropdown-item" href="/profile">
+            <a onclick="appRouter()" class="dropdown-item" href="/profile/${username}">
               <i class="fas fa-user-circle me-2"></i>Profile
             </a>
           </li>
@@ -200,5 +206,94 @@ async function updateNavBar(isAuthenticated) {
       </li>
     </ul>
     `;
+  }
+}
+
+
+/* signout from navbar */
+
+// Sign Out Modal
+function showSignOutModal(event) {
+  event = event || window.event;
+  event.preventDefault();
+  const existingModal = document.getElementById("sign-out-modal");
+  if (existingModal) existingModal.remove();
+
+  const modal = document.createElement("div");
+  modal.id = "sign-out-modal";
+  modal.className = "modal fade show";
+  modal.style.display = "block";
+  modal.style.backgroundColor = "rgba(0, 0, 0, 0.5)";
+
+  modal.innerHTML = `
+    <div class="modal-dialog modal-dialog-centered modal-sm">
+      <div class="content modal-content">
+        <div class="modal-header border-0 py-3">
+          <h5 class="modal-title text-info">
+            <i class="fas fa-sign-out-alt me-2"></i>Sign Out
+          </h5>
+          <button type="button" class="btn-close btn-close-white" id="close-signout-modal"></button>
+        </div>
+        <div class="modal-body px-3 py-2">
+          <p class="text-white mb-0">Are you sure you want to sign out?</p>
+        </div>
+        <div class="modal-footer border-0 py-3">
+          <button id="signout-confirm" class="btn btn-info btn-sm">
+            <i class="fas fa-sign-out-alt me-2"></i>Sign Out
+          </button>
+          <button id="signout-cancel" class="btn btn-outline-light btn-sm">
+            Cancel
+          </button>
+        </div>
+      </div>
+    </div>
+  `;
+
+  document.body.appendChild(modal);
+  document.body.classList.add("modal-open");
+
+  // Event Listeners
+  modal
+    .querySelector("#close-signout-modal")
+    .addEventListener("click", closeSignOutModal);
+  modal
+    .querySelector("#signout-cancel")
+    .addEventListener("click", closeSignOutModal);
+  modal
+    .querySelector("#signout-confirm")
+    .addEventListener("click", handleSignOut);
+  modal.addEventListener("click", (e) => {
+    if (e.target === modal) closeSignOutModal();
+  });
+}
+
+function closeSignOutModal() {
+  const modal = document.getElementById("sign-out-modal");
+  if (modal) {
+    modal.remove();
+    document.body.classList.remove("modal-open");
+  }
+}
+
+async function handleSignOut() {
+  try {
+    const response = await fetch("/signout/", {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        "X-CSRFToken": await getCSRFToken(),
+      },
+    });
+
+    if (response.status === 200) {
+      closeSignOutModal();
+      updateNavBar(false);
+      await updateUI("/", false);
+    } else {
+      throw new Error("Failed to sign out");
+    }
+  } catch (error) {
+    console.error("Error:", error);
+    displayError({ error_msg: "Failed to sign out" });
   }
 }
