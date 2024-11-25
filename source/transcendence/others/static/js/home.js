@@ -52,14 +52,26 @@ function searchingSystem() {
   }
   );
   document.getElementById("searchIcon").addEventListener("click", (event) => {
-    const query = document.getElementById("searchInput").value;
-    console.log("uppp This: ", query);
-    if (query) {
-      console.log("searching for: ", query);
-      search(query);
-    } else console.log("your search is empty");
+    triggerSearch();
   });
 
+  document.getElementById("searchInput").addEventListener("keydown", (event) => {
+      if (event.key === "Enter") {
+          triggerSearch();
+      }
+  });
+
+}
+
+function triggerSearch() {
+  const query = document.getElementById("searchInput").value;
+  console.log("uppp This: ", query);
+  if (query) {
+      console.log("searching for: ", query);
+      search(query);
+  } else {
+      console.log("your search is empty");
+  }
 }
 
 function attachSearchEventListners() {
