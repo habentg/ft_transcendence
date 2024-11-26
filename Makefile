@@ -1,5 +1,5 @@
 
-COMPOSE 		= cd ./source && docker compose
+COMPOSE 		= cd ./source && docker-compose
 
 
 # ----------------------- creating services --------------------------
