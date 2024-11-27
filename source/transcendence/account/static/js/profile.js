@@ -92,38 +92,6 @@ async function UpdateUserInfo() {
     }
 }
 
-// upload profile picture
-async function UploadNewProfilePic() {
-    try {
-        // user input validation here maybe
-        const profilePicFile = document.getElementById('profile-pic').files[0];
-        console.log("Profile pic file:", profilePicFile);
-        if (profilePicFile === undefined) 
-            throw new Error('No file selected');
-        // using FormData to send the file - browser will set the correct headers
-        const formData = new FormData();
-        formData.append('profile_picture', profilePicFile);
-        const response = await fetch('/profile/', {
-            method: 'PATCH',
-            headers: {
-                'X-CSRFToken': await getCSRFToken()
-            },
-            // sending body directly as FormData - no need to stringify
-            body: formData
-        });
-
-        if (response.ok) {
-            console.log("Profile pic updated");
-            // update the user info in the DOM
-            await updateUI('/profile', false);
-        } else {
-            throw new Error('Failed to update profile pic');
-        }
-    } catch (error) {
-        console.error('Error:', error);
-    }
-}
-
 
 // update user password
 async function updatePlayerPassword () {
@@ -181,7 +149,8 @@ function createAndShowModal() {
         <div class="modal-body py-4">
           <div class="file-upload-wrapper">
             <input type="file" id="profile-pic" accept="image/*" class="form-control bg-transparent text-white">
-            <small class="text-muted mt-2 d-block">Supported formats: JPG, PNG, GIF (Max size: 5MB)</small>
+            <small class="text-muted mt-2 d-block">Supported formats: JPEG ,JPG, PNG, GIF (Max size: 10MB)</small>
+            <div id="error-msg" class="alert alert-danger mt-2" style="display:none;"></div>
           </div>
         </div>
         <div class="modal-footer border-0">
@@ -208,10 +177,63 @@ function createAndShowModal() {
   });
 }
 
-function handleUpload() {
-  UploadNewProfilePic();
-  closeModal();
-}
+async function handleUpload() {
+  try {
+    const profilePicFile = document.getElementById('profile-pic').files[0];
+    const errorMsg = document.getElementById('error-msg');
+
+    if (!profilePicFile) {
+      errorMsg.textContent = 'No file selected';
+      errorMsg.style.display = 'block';
+      return;
+    }
+
+    // Validate file size 
+    const maxSize = 10 * 1024 * 1024; // 10MB
+    if (profilePicFile.size > maxSize) {
+      errorMsg.textContent = 'File size exceeds 10MB';
+      errorMsg.style.display = 'block';
+      return;
+    }
+
+    // Validate file type (only JPEG, JPG, PNG, GIF)
+    const validTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif'];
+    if (!validTypes.includes(profilePicFile.type)) {
+      errorMsg.textContent = 'Unsupported file format. Only JPEG, JPG, PNG, and GIF are allowed';
+      errorMsg.style.display = 'block';
+      return;
+    }
+
+    // Hide error message if validation passes
+    errorMsg.style.display = 'none';
+
+    // using FormData to send the file - browser will set the correct headers
+    const formData = new FormData();
+    formData.append('profile_picture', profilePicFile);
+    const response = await fetch('/profile/', {
+      method: 'PATCH',
+      headers: {
+        'X-CSRFToken': await getCSRFToken()
+      },
+      // sending body directly as FormData - no need to stringify
+      body: formData
+    });
+
+    if (response.ok) {
+      console.log("Profile pic updated");
+      // update the user info in the DOM
+      await updateUI('/profile', false);
+      closeModal();
+    } else {
+      throw new Error('Failed to update profile pic');
+    }
+  } catch (error) {
+    console.error('Error:', error);
+    const errorMsg = document.getElementById('error-msg');
+    errorMsg.textContent = 'An error occurred while uploading the profile picture';
+    errorMsg.style.display = 'block';
+  }
+}1
 
 function closeModal() {
   const modal = document.getElementById("profile-pic-modal");
@@ -220,6 +242,39 @@ function closeModal() {
     document.body.classList.remove('modal-open');
   }
 }
+
+// upload profile picture
+// async function UploadNewProfilePic() {
+//     try {
+//         // user input validation here maybe
+//         const profilePicFile = document.getElementById('profile-pic').files[0];
+//         console.log("Profile pic file:", profilePicFile);
+//         if (profilePicFile === undefined) 
+//             throw new Error('No file selected');
+//         // using FormData to send the file - browser will set the correct headers
+//         const formData = new FormData();
+//         formData.append('profile_picture', profilePicFile);
+//         const response = await fetch('/profile/', {
+//             method: 'PATCH',
+//             headers: {
+//                 'X-CSRFToken': await getCSRFToken()
+//             },
+//             // sending body directly as FormData - no need to stringify
+//             body: formData
+//         });
+
+//         if (response.ok) {
+//             console.log("Profile pic updated");
+//             // update the user info in the DOM
+//             await updateUI('/profile', false);
+//         } else {
+//             throw new Error('Failed to update profile pic');
+//         }
+//     } catch (error) {
+//         console.error('Error:', error);
+//     }
+// }
+
 
 // Update User Info Modal
 function updateUsernameModal() {

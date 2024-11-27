@@ -227,21 +227,16 @@ function initSettings() {
   const disable2FABtn = document.getElementById("disable-2fa");
   const signOutBtn = document.getElementById("sign-out-btn");
 
-  console.log("#########################")
   if (changePassBtn) {
-    console.log("#########################1")
     changePassBtn.addEventListener("click", createAndShowPasswordModal);
   }
   if (deleteAccountBtn) {
-    console.log("#########################2")
     deleteAccountBtn.addEventListener("click", deleteAccountCheck);
   }
   if (enable2FABtn) {
-    console.log("#########################3")
     enable2FABtn.addEventListener("click", show2FAModal);
   }
   if (disable2FABtn) {
-    console.log("#########################4")
     disable2FABtn.addEventListener("click", show2FAModal);
   }
   if (signOutBtn) {

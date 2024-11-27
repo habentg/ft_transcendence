@@ -297,3 +297,29 @@ async function handleSignOut() {
     displayError({ error_msg: "Failed to sign out" });
   }
 }
+
+document.addEventListener('click', function(event) {
+  const navbarToggler = document.querySelector('.navbar-toggler');
+  const navbarCollapse = document.querySelector('.navbar-collapse');
+
+  if (navbarToggler && navbarCollapse) {
+    if (!navbarCollapse.contains(event.target) && !navbarToggler.contains(event.target)) {
+      if (navbarCollapse.classList.contains('show')) {
+        navbarToggler.click();
+      }
+    }
+  }
+});
+
+document.querySelectorAll('.navbar-nav .nav-link').forEach(function(navLink) {
+  navLink.addEventListener('click', function() {
+    const navbarToggler = document.querySelector('.navbar-toggler');
+    const navbarCollapse = document.querySelector('.navbar-collapse');
+  
+    // Don't collapse if Profile from navbar is clicked
+
+    if ((navbarToggler && navbarCollapse.classList.contains('show') && !navLink.classList.contains('profile-link'))) {
+      navbarToggler.click();
+    }
+  });
+});
