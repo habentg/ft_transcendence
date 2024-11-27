@@ -1,6 +1,7 @@
 asgiref==3.8.1
 bash==0.6
 certifi==2024.8.30
+channels==4.2.0
 charset-normalizer==3.3.2
 dj-database-url==2.2.0
 Django==5.1
