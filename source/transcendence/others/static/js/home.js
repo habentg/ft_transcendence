@@ -44,10 +44,17 @@ for searched profiles, we need to attach event listeners to the buttons
 function searchingSystem() {
 
   const localGameBtn = document.getElementById("localGameBtn");
+  const createTournamentBtn = document.getElementById("createTournamentBtn");
 
   if (localGameBtn) {
     localGameBtn.addEventListener("click", () => {
       createLocalGameModal();
+    });
+  }
+
+  if (createTournamentBtn) {
+    createTournamentBtn.addEventListener("click", () => {
+      createTournamentModal();
     });
   }
 
@@ -125,17 +132,11 @@ function createLocalGameModal() {
     existingModal.remove();
   }
 
-
-
   const modal = document.createElement("div");
   modal.classList.add("modal");
   modal.id = "localGameModal";
   modal.className = "modal fade show";
   modal.style.display = "block";
-  // modal.style.backgroundColor = "rgba(0, 0, 0, 0.5)";
-  
-
-  // center the modal on the middle of the page
   modal.innerHTML = `
   <div class="modal-dialog modal-dialog-centered modal-md">
     <div class="modal-content">
@@ -156,8 +157,7 @@ function createLocalGameModal() {
         <button type="button" class="btn btn-outline-light btn-sm" id="localGameBtn">
           Play with a friend
         </button>
-    </div>
-    
+      </div>
     </div>
   </div>
   `;
@@ -184,6 +184,65 @@ function createLocalGameModal() {
     }
   }); 
 
+}
+
+// Create a modal for creating a tournament
+function createTournamentModal() {
+  const existingModal = document.getElementById("tournamentModal");
+  if (existingModal) {
+    existingModal.remove();
+  }
+
+  const modal = document.createElement("div");
+  modal.classList.add("modal");
+  modal.id = "tournamentModal";
+  modal.className = "modal fade show";
+  modal.style.display = "block";
+  modal.innerHTML = `
+  <div class="modal-dialog modal-dialog-centered modal-md">
+    <div class="modal-content">
+      <div class="modal-header border-0 py-3">
+        <h5 class="modal-title">
+          <i class="fas fa-trophy me-2"></i> Create Tournament
+        </h5>
+        <button type="button" class="btn-close btn-close-white" data-dismiss="modal"></button>
+      </div>
+      <div class="modal-body px-3 py-2">
+        <div id="local-game-error-msg" class="alert alert-danger small py-2" style="display:none;"></div>
+        <p class="text-white mb-0">Enter number of player in tournament</p>
+        <input type="int" id="playersNumber" class="form-control my-2" placeholder="Enter number of players" />
+        <small class="notice mt-2 d-block">Minimum players: 4 | Max players: 8</small>
+      </div>
+      <div class="modal-footer border-0 py-3 d-flex justify-content-start">
+        <button type="button" class="btn btn-primary btn-sm" id="submitPlayerNumBtn">
+          <i class="fas fa-paper-plane me-2"></i> Submit
+      </button>
+    </div>
+    </div>
+  </div>
+  `;
+
+  document.body.appendChild(modal);
+
+  // Event Listeners
+  document.getElementById("submitPlayerNumBtn").addEventListener("click", () => {
+    const playersNumber = document.getElementById("playersNumber").value;
+    console.log("Creating tournament with ", playersNumber, " players");
+    // createTournament(playersNumber);
+    closeTournamentModal();
+  });
+
+  // close the modal when the close button is clicked
+  document.querySelector("#tournamentModal .btn-close").addEventListener("click", () => {
+    closeTournamentModal();
+  });
+
+  // close the modal when the modal is clicked outside
+  modal.addEventListener("click", (event) => {
+    if (event.target === modal) {
+      closeTournamentModal();
+    }
+  }); 
 
 }
 
@@ -196,5 +255,12 @@ function closeLocalGameModal() {
   }
 }
 
+function closeTournamentModal() {
+  const modal = document.getElementById("tournamentModal");
+  if (modal) {
+      modal.remove();
+      document.body.classList.remove("modal-open");
+  }
+}
 
 searchingSystem();
