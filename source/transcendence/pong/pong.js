@@ -30,8 +30,8 @@ let ballRadius = 7.5;
 let ball = {
     x: boardWidth / 2,
     y: boardHeight / 2,
-    velocityX: 1.5,
-    velocityY: 1.5 
+    velocityX: 4.5,
+    velocityY: 4.5 
 };  
 
 let player1Score = 0;
@@ -122,19 +122,19 @@ function draw() {
 
 function move(e) {
     if (e.code === "KeyW") {
-        player1.velocityY = -3;
+        player1.velocityY = -6;
         player1LastKey = "KeyW";
     }
     if (e.code === "KeyS") {
-        player1.velocityY = 3;
+        player1.velocityY = 6;
         player1LastKey = "KeyS";
     }
     if (e.code === "ArrowUp") {
-        player2.velocityY = -3;
+        player2.velocityY = -6;
         player2LastKey = "ArrowUp";
     }
     if (e.code === "ArrowDown") {
-        player2.velocityY = 3;
+        player2.velocityY = 6;
         player2LastKey = "ArrowDown";
     }
 }
@@ -190,7 +190,7 @@ function ballCollision(ball, player) {
 function resetGame(direction) {
     ball.x = boardWidth / 2;
     ball.y = boardHeight / 2;
-    ball.velocityX = 1.5;
+    ball.velocityX = 4.5;
     ball.velocityX = direction * Math.abs(ball.velocityX);
     ball.velocityY = 2 * (Math.random() > 0.5 ? 1 : -1); // Randomize initial direction
 
