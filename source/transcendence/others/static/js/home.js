@@ -43,6 +43,14 @@ for searched profiles, we need to attach event listeners to the buttons
 
 function searchingSystem() {
 
+  const localGameBtn = document.getElementById("localGameBtn");
+
+  if (localGameBtn) {
+    localGameBtn.addEventListener("click", () => {
+      createLocalGameModal();
+    });
+  }
+
   document.getElementById("friend_requests_btn").addEventListener("click", () => {
     search("friend_requests")
   }
@@ -109,6 +117,84 @@ function attachSearchEventListners() {
     }
 }
 
+
+// Create a modal for Local game either with AI or with another player
+function createLocalGameModal() {
+  const existingModal = document.getElementById("localGameModal");
+  if (existingModal) {
+    existingModal.remove();
+  }
+
+
+
+  const modal = document.createElement("div");
+  modal.classList.add("modal");
+  modal.id = "localGameModal";
+  modal.className = "modal fade show";
+  modal.style.display = "block";
+  // modal.style.backgroundColor = "rgba(0, 0, 0, 0.5)";
+  
+
+  // center the modal on the middle of the page
+  modal.innerHTML = `
+  <div class="modal-dialog modal-dialog-centered modal-md">
+    <div class="modal-content">
+      <div class="modal-header border-0 py-3">
+        <h5 class="modal-title">
+          <i class="fas fa-gamepad me-2"></i> Local Game
+        </h5>
+        <button type="button" class="btn-close btn-close-white" data-dismiss="modal"></button>
+      </div>
+      <div class="modal-body px-3 py-2">
+        <div id="local-game-error-msg" class="alert alert-danger small py-2" style="display:none;"></div>
+        <p class="text-white mb-0">Choose who you'd like to play:</p>
+      </div>
+      <div class="modal-footer border-0 py-3 d-flex justify-content-start">
+        <button type="button" class="btn btn-primary btn-sm me-2" id="aiGameBtn">
+          <i class="fas fa-robot me-2"></i> Play with AI
+        </button>
+        <button type="button" class="btn btn-outline-light btn-sm" id="localGameBtn">
+          Play with a friend
+        </button>
+    </div>
+    
+    </div>
+  </div>
+  `;
+
+  document.body.appendChild(modal);
+
+  // Event Listeners
+  document.getElementById("localGameBtn").addEventListener("click", () => {
+    // 
+  });
+  document.getElementById("aiGameBtn").addEventListener("click", () => {
+    //  
+  });
+
+  // close the modal when the close button is clicked
+  document.querySelector("#localGameModal .btn-close").addEventListener("click", () => {
+    closeLocalGameModal();
+  });
+
+  // close the modal when the modal is clicked outside
+  modal.addEventListener("click", (event) => {
+    if (event.target === modal) {
+      closeLocalGameModal();
+    }
+  }); 
+
+
+}
+
+// close the local game modal
+function closeLocalGameModal() {
+  const modal = document.getElementById("localGameModal");
+  if (modal) {
+      modal.remove();
+      document.body.classList.remove("modal-open");
+  }
+}
 
 
 searchingSystem();
