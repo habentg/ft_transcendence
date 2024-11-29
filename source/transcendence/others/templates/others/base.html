@@ -42,9 +42,9 @@
     <script src="{% static 'js/route.js' %}" defer></script>
     <!-- will dynamically page specific css and js files -->
     {% if css %}
-      <link rel="stylesheet" href="{% static css %}" />
+      <link rel="stylesheet" href="{% static css %}" id="{% static css %}-id"/>
     {% endif %} {% if js %}
-      <script src="{% static js %}" defer></script>
+      <script src="{% static js %}" id="{% static js %}-id" defer></script>
     {% endif %}
   </head>
 

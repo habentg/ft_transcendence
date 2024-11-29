@@ -78,27 +78,43 @@ async function handle42Login() {
 /* CSS and JavaScritp of each page - loading */
 // Load page-specific resources -- CSS and JS
 // Keep track of currently loaded resources
-let currentResourcesName = {
-  css: null,
-  js: null,
-};
+// let currentResourcesName = {
+//   css: null,
+//   js: null,
+// };
 
 /* removing the object form DOM */
 const removeResource = () => {
-  if (currentResourcesName.css !== null) {
-    const prev_css = document.getElementById(`${currentResourcesName.css}-id`);
-    if (prev_css) {
-      prev_css.remove();
+  // get all syles and scripts
+  let allStyles = document.getElementsByTagName("link");
+  let allScripts = document.getElementsByTagName("script");
+
+  
+  // remove existing
+  for (let i = 0; i < allStyles.length; i++) {
+    if (allStyles[i].id.includes("/static/")) {
+      allStyles[i].remove();
     }
-    currentResourcesName.css = null;
   }
-  if (currentResourcesName.js !== null) {
-    const prev_js = document.getElementById(`${currentResourcesName.js}-id`);
-    if (prev_js) {
-      prev_js.remove();
+  for (let i = 0; i < allScripts.length; i++) {
+    if (allScripts[i].id.includes("/static/")) {
+      allScripts[i].remove();
     }
-    currentResourcesName.js = null;
   }
+  // if (currentResourcesName.css !== null) {
+  //   const prev_css = document.getElementById(`/static/${currentResourcesName.css}-id`);
+  //   if (prev_css) {
+  //     prev_css.remove();
+  //   }
+  //   currentResourcesName.css = null;
+  // }
+  // if (currentResourcesName.js !== null) {
+  //   const prev_js = document.getElementById(`/static/${currentResourcesName.js}-id`);
+  //   if (prev_js) {
+  //     prev_js.remove();
+  //   }
+  //   currentResourcesName.js = null;
+  // }
 };
 
 const loadCssandJS = (data, remove_prev_resources) => {
@@ -120,18 +136,18 @@ const loadCssandJS = (data, remove_prev_resources) => {
     link.rel = "stylesheet";
     link.type = "text/css";
     link.href = `/static/${css_file_path}`;
-    link.id = `${css_file_path}-id`;
+    link.id = `/static/${css_file_path}-id`;
     document.head.appendChild(link);
-    currentResourcesName.css = css_file_path; // hold it for delete
+    // currentResourcesName.css = css_file_path; // hold it for delete
   }
   // loading new js
   if (js_file_path) {
     let script = document.createElement("script");
     script.src = `/static/${js_file_path}`;
-    script.id = `${js_file_path}-id`;
+    script.id = `/static/${js_file_path}-id`;
     script.defer = true;
     document.head.appendChild(script);
-    currentResourcesName.js = js_file_path;
+    // currentResourcesName.js = js_file_path;
   }
 };
 

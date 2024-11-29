@@ -28,3 +28,11 @@ Saturday cases - NOT FIXED YET
 3, static pages (e.g about us) page when reloaded/refreshed profile picture on navbar is goind to default pic.
   -> NOTE: request is not going through [JWTCookieAuthentication] ... so couldnt get the profile picture
 
+
+
+
+
+
+Friday cases - Unsolved Cases
+1, All css & js files are deleted, except the during signout from friend search (needs revision).
+
