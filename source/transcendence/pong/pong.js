@@ -176,6 +176,7 @@ function ballCollision(ball, player) {
         ball.velocityX *= 1.1; // Increase horizontal speed
 
         // Resolve collision by repositioning the ball outside the paddle
+        // Move the ball just outside the paddle to avoid it sticking or passing through
         if (ball.x < player.x) {
             ball.x = player.x - ballRadius; // Push ball to the left of the paddle
         } else {
@@ -185,6 +186,7 @@ function ballCollision(ball, player) {
 
     return isCollision;
 }
+
 
 
 function resetGame(direction) {
