@@ -1,3 +1,21 @@
+/*
+    Settings that could be adjusted by the player
+
+    Max Score for the game;
+    Paddle speed when adjusted should be the same as the other opponent except when playing with an AI;
+    An option for slow serves. (if toggled on it should slow down the ball, decreasing the default speed of the ball);
+    An option for designing the board, maybe gives a list of actual themes that we could create for paddle designs, board designs, etc.;
+    Ball radius (provide a minimum and maximum amount);
+    Overtime (happens whenever both players are 1 goal away from the score. players need to score 2 consecutive goals)
+
+*/
+
+//Game settings
+let paddleSpeed = 6;
+let ballSpeed = 4.5;
+let maxScore = 3;
+let slowServe = false;
+
 // Board setup
 let board;
 let boardWidth = 800;
@@ -27,20 +45,19 @@ let player2 = {
 
 // Ball setup
 let ballRadius = 7.5;
+let defballSpeed = 4.5;
 let ball = {
     x: boardWidth / 2,
     y: boardHeight / 2,
-    velocityX: 4.5,
-    velocityY: 4.5 
+    velocityX: defballSpeed,
+    velocityY: defballSpeed 
 };  
 
 let player1Score = 0;
 let player2Score = 0;
 let player1LastKey = null;
 let player2LastKey = null;
-let maxScore = 3;
-let drawFlag = true;
-
+let drawFlag = false;
 
 window.onload = function () {
     board = document.getElementById("board");
@@ -48,10 +65,92 @@ window.onload = function () {
     board.width = boardWidth;
     context = board.getContext("2d");
 
-    requestAnimationFrame(draw);
+    // requestAnimationFrame(draw);
+    document.getElementById("startButton").addEventListener("click", startGame);
+    document.getElementById("settingButton").addEventListener("click", openSettings);
+    document.getElementById("applyButton").addEventListener("click", changeSetting);
+    
+
+
     document.addEventListener("keydown", move);
     document.addEventListener("keyup", stopMovement);
+    displayStartMessage();
 };
+
+function openSettings() {
+    document.getElementById("settingsMenu").style.display = "block";
+}
+
+function changeSetting() {
+    // valid ranges for the settings
+    const MIN_PADDLE_SPEED = 1, MAX_PADDLE_SPEED = 10;
+    const MIN_BALL_SPEED = 1, MAX_BALL_SPEED = 10;
+    const MIN_MAX_SCORE = 1, MAX_MAX_SCORE = 20;
+
+    const paddleSpeedInput = parseInt(document.getElementById("paddleSpeed").value);
+    const ballSpeedInput = parseFloat(document.getElementById("ballSpeed").value);
+    const maxScoreInput = parseInt(document.getElementById("maxScore").value);
+    const slowServeInput = document.getElementById("slowServe").checked;
+
+    let errors = [];
+
+    if (paddleSpeedInput < MIN_PADDLE_SPEED || paddleSpeedInput > MAX_PADDLE_SPEED) {
+        errors.push(`Paddle Speed must be between ${MIN_PADDLE_SPEED} and ${MAX_PADDLE_SPEED}.`);
+    }
+
+    if (ballSpeedInput < MIN_BALL_SPEED || ballSpeedInput > MAX_BALL_SPEED) {
+        errors.push(`Ball Speed must be between ${MIN_BALL_SPEED} and ${MAX_BALL_SPEED}.`);
+    }
+
+    if (maxScoreInput < MIN_MAX_SCORE || maxScoreInput > MAX_MAX_SCORE) {
+        errors.push(`Winning Score must be between ${MIN_MAX_SCORE} and ${MAX_MAX_SCORE}.`);
+    }
+
+    const errorContainer = document.getElementById("errorMessages");
+    errorContainer.innerHTML = ""; // Clear existing messages
+    if (errors.length > 0) {
+        errors.forEach(error => {
+            const errorElement = document.createElement("p");
+            errorElement.textContent = error;
+            errorElement.style.color = "red";
+            errorContainer.appendChild(errorElement);
+        });
+        return; // Stop applying settings if there are errors
+    }
+
+    paddleSpeed = paddleSpeedInput;
+    defballSpeed = ballSpeedInput;
+    maxScore = maxScoreInput;
+    slowServe = slowServeInput;
+
+    document.getElementById("settingsMenu").style.display = "none";
+    console.log("Settings Applied: ", { paddleSpeed, defballSpeed, maxScore, slowServe });
+
+    ball.velocityX = ball.velocityX > 0 ? defballSpeed : -defballSpeed;
+    ball.velocityY = ball.velocityY > 0 ? defballSpeed : -defballSpeed;
+
+    document.getElementById("settingsMenu").style.display = "none";
+    console.log("Settings Applied: ", { paddleSpeed, defballSpeed, maxScore });
+}
+
+
+
+function displayStartMessage() {
+    context.clearRect(0, 0, board.width, board.height);
+    context.font = "30px sans-serif";
+    context.fillStyle = "white";
+    context.fillText("Press 'Start Game' to Play!", boardWidth / 5, boardHeight / 2);
+}
+
+function startGame() {
+    player1Score = 0;
+    player2Score = 0;
+    player1LastKey = null;
+    player2LastKey = null;
+    drawFlag = true;
+    requestAnimationFrame(draw);
+    document.getElementById("startButton").disabled = true; //disable start button when the game starts
+}
 
 function draw() {
     if (!drawFlag){
@@ -76,14 +175,7 @@ function draw() {
     if (!oob(player1.y + player1.velocityY)) player1.y += player1.velocityY;
     if (!oob(player2.y + player2.velocityY)) player2.y += player2.velocityY;
 
-    // Draw players
-    // context.fillStyle = '#ffffff';
-    // context.fillRect(player1.x - 1, player1.y - 1, player1.width + 2, player1.height + 2);
-    // context.fillRect(player2.x - 1, player2.y - 1, player2.width + 2, player2.height + 2);
-    // context.fillStyle = '#84ddfc';
-    // context.fillRect(player1.x, player1.y, player1.width, player1.height);
-    // context.fillRect(player2.x, player2.y, player2.width, player2.height);
-    drawCapsulePaddle(player1.x, player1.y, player1.width, player1.height, player1.width / 2, '#84ddfc', 'black');
+    drawCapsulePaddle(player1.x, player1.y, player1.width, player1.height, player1.width / 2, '#84ddfc', 'white');
     drawCapsulePaddle(player2.x, player2.y, player2.width, player2.height, player2.width / 2, '#84ddfc', 'black');
 
     // Update ball position
@@ -122,19 +214,19 @@ function draw() {
 
 function move(e) {
     if (e.code === "KeyW") {
-        player1.velocityY = -6;
+        player1.velocityY = -paddleSpeed;
         player1LastKey = "KeyW";
     }
     if (e.code === "KeyS") {
-        player1.velocityY = 6;
+        player1.velocityY = paddleSpeed;
         player1LastKey = "KeyS";
     }
     if (e.code === "ArrowUp") {
-        player2.velocityY = -6;
+        player2.velocityY = -paddleSpeed;
         player2LastKey = "ArrowUp";
     }
     if (e.code === "ArrowDown") {
-        player2.velocityY = 6;
+        player2.velocityY = paddleSpeed;
         player2LastKey = "ArrowDown";
     }
 }
@@ -150,6 +242,8 @@ function stopMovement(e) {
     }
 }
 
+
+// function to check if the paddle is inside the walls, by walls the top and bottom part of the board.
 function oob(yPosition) {
     return yPosition < 0 || yPosition + playerHeight > boardHeight;
 }
@@ -192,11 +286,22 @@ function ballCollision(ball, player) {
 function resetGame(direction) {
     ball.x = boardWidth / 2;
     ball.y = boardHeight / 2;
-    ball.velocityX = 4.5;
-    ball.velocityX = direction * Math.abs(ball.velocityX);
-    ball.velocityY = 2 * (Math.random() > 0.5 ? 1 : -1); // Randomize initial direction
 
-    drawFlag = !isGameOver();
+    if (slowServe) {
+        // Apply reduced speed if slow serve is enabled
+        ball.velocityX = direction * Math.abs(defballSpeed) * 0.5;
+        ball.velocityY = 2 * (Math.random() > 0.5 ? 1 : -1) * 0.5;
+    } else {
+        // Use normal initial speed
+        ball.velocityX = direction * Math.abs(defballSpeed);
+        ball.velocityY = 2 * (Math.random() > 0.5 ? 1 : -1);
+    }
+
+    // drawFlag = !isGameOver();
+    if (isGameOver()) {
+        drawFlag = false;
+        document.getElementById("startButton").disabled = false;
+    }
 }
 
 function isGameOver(){
@@ -207,6 +312,7 @@ function isGameOver(){
     return false;
 }
 
+// this display sucks need a better one 
 function displayGameOver() {
     context.clearRect(0, 0, board.width, board.height);
 
@@ -217,7 +323,6 @@ function displayGameOver() {
 
     context.font = "30px sans-serif";
     context.fillStyle = "white";
-    context.fillText("Refresh to Restart", boardWidth / 4, boardHeight / 2 + 50);
 }
 
 function drawCapsulePaddle(x, y, width, height, radius, fillColor, borderColor) {

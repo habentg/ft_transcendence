@@ -2,11 +2,35 @@
 <html>
     <head>
         <!-- <title>Pongers</title> -->
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <link rel="stylesheet" href="pong.css">
-        <script src="pong.js"></script>
     </head>
 
     <body>
+
+        <div id="settingsMenu" class="menu">
+            <h2>Game Settings</h2>
+            <label for="paddleSpeed">Paddle Speed:</label>
+            <input type="number" id="paddleSpeed" min="1" value="6"><br><br>
+
+            <label for="ballSpeed">Ball Speed:</label>
+            <input type="number" id="ballSpeed" min="1" value="4.5"><br><br>
+
+            <label for="maxScore">Score to win:</label>
+            <input type="number" id="maxScore" min="1" value="3"><br><br>
+
+            <label for="slowServe">Slow Serves:</label>
+            <input type="checkbox" id="slowServe"><br><br>
+
+            <button id="applyButton">Apply Settings</button>
+            <div id="errorMessages"></div>
+        </div>
+        <div id="controls">
+            <button id="startButton">Start Game</button>
+            <button id="settingButton">Settings</button>
+        </div>
         <canvas id="board"></canvas>
+        <script src="pong.js"></script>
     </body>
 </html>
