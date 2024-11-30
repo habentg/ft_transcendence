@@ -1,3 +1,4 @@
+createNotificationSocket();
 // delete account
 async function deleteAccount() {
   try {

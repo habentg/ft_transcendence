@@ -91,6 +91,8 @@ async function handleSignupSubmit(e) {
         updateNavBar(true);
         // history.pushState(null, '', `/home`);
         // handleLocationChange();
+        /* websocket - for real-time updates and chat*/
+        initWebsocket();
     } catch (error) {
         console.error('Error:', error);
     }

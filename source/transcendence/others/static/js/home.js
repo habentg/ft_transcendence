@@ -1,4 +1,4 @@
-
+createNotificationSocket();
 // load content of the player profile
 async function search(query_parameter) {
   if (!query_parameter) {

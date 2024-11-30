@@ -17,7 +17,7 @@ build:
 down:
 	$(COMPOSE) -f docker-compose.yaml down
 
-re: down up # rebuilding the services without deleting the persistent storages
+re: down up collectstatic# rebuilding the services without deleting the persistent storages
 
 # ---------------------------- django related Operattions -------------------------------
 
@@ -41,12 +41,11 @@ restart: stop start # restarting the services (volumes, network, and images stay
 
 
 # ----------------------- Deleting resources and rebuilding --------------------------
-
 fclean: down
 	@yes | docker system prune --all
 	@docker volume ls -q | grep -q . && docker volume rm $$(docker volume ls -q) || true 
 
-rebuild: fclean all
+rebuild: fclean all collectstatic
 
 # ----------------------- Managing app service only --------------------------
 

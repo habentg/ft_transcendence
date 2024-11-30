@@ -113,11 +113,11 @@ async function initApp() {
   // Handling initial load
   window.addEventListener("load", async () => {
     isInitialLoad = true;
+    // /* websocket - for real-time updates and chat*/
+    // initWebsocket();
     await handleLocationChange();
   });
 
-  /* websocket - for real-time updates and chat*/
-  initWebsocket();
   
   window.baseUrl = "http://localhost";
 }

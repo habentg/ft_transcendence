@@ -88,3 +88,10 @@ class FriendRequest(models.Model):
         """Decline the friend request"""
         self.status = 'CANCELLED'
         self.save()
+
+# """ Notification model """
+# class Notification(models.Model):
+#     player = models.ForeignKey('account.Player', on_delete=models.CASCADE, related_name='player_notification')
+#     notification_type = models.CharField(max_length=20)
+#     sender = models.ForeignKey('account.Player', on_delete=models.CASCADE, related_name='notification_sender', null=True)
+#     created_at = models.DateTimeField(auto_now_add=True)

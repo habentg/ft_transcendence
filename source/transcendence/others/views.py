@@ -22,6 +22,10 @@ from account.utils import *
 	-> If the request is an AJAX request (click route), return the html content as JSON
 	-> If the request is not an AJAX request (direct url visit), return the html content as a rendered page
 """
+import logging
+
+logger = logging.getLogger(__name__)
+
 class BaseView(View):
 	authentication_classes = []
 	permission_classes = []
@@ -32,12 +36,7 @@ class BaseView(View):
 	
 	def get(self, request, *args, **kwargs):
 		context = self.get_context_data(request, **kwargs)
-		# print('Context : ', context, flush=True)
-		if 'error_msg' in context:
-			self.template_name = 'others/404.html'
-			self.title = 'Error Page'
-			self.css = 'css/404.css'
-			self.js = 'js/404.js'
+		print('//////////////////////////////////// BASE GET ///////////////////////', flush=True)
 		html_content = render_to_string(self.template_name, context)
 		resources = {
 			'title': self.title,
