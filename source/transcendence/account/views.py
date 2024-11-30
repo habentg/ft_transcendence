@@ -293,7 +293,7 @@ class PassResetNewPass(View):
 			}
 			return render(request, 'others/base.html', resources)
 		else:
-			return render(request, 'account/invalid_token.html')
+			return HttpResponseRedirect(reverse('password_reset'))
 
 	def post(self, request, uidb64, token):
 		data = json.loads(request.body)
