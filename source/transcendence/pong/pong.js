@@ -15,6 +15,7 @@ let paddleSpeed = 6;
 let ballSpeed = 4.5;
 let maxScore = 3;
 let slowServe = false;
+let	aiFlag = false;
 
 // Board setup
 let board;
@@ -69,8 +70,7 @@ window.onload = function () {
     document.getElementById("startButton").addEventListener("click", startGame);
     document.getElementById("settingButton").addEventListener("click", openSettings);
     document.getElementById("applyButton").addEventListener("click", changeSetting);
-    
-
+	document.getElementById("aiButton").addEventListener("click", startaiGame);
 
     document.addEventListener("keydown", move);
     document.addEventListener("keyup", stopMovement);
@@ -97,15 +97,12 @@ function changeSetting() {
     if (paddleSpeedInput < MIN_PADDLE_SPEED || paddleSpeedInput > MAX_PADDLE_SPEED) {
         errors.push(`Paddle Speed must be between ${MIN_PADDLE_SPEED} and ${MAX_PADDLE_SPEED}.`);
     }
-
     if (ballSpeedInput < MIN_BALL_SPEED || ballSpeedInput > MAX_BALL_SPEED) {
         errors.push(`Ball Speed must be between ${MIN_BALL_SPEED} and ${MAX_BALL_SPEED}.`);
     }
-
     if (maxScoreInput < MIN_MAX_SCORE || maxScoreInput > MAX_MAX_SCORE) {
         errors.push(`Winning Score must be between ${MIN_MAX_SCORE} and ${MAX_MAX_SCORE}.`);
     }
-
     const errorContainer = document.getElementById("errorMessages");
     errorContainer.innerHTML = ""; // Clear existing messages
     if (errors.length > 0) {
@@ -133,8 +130,6 @@ function changeSetting() {
     console.log("Settings Applied: ", { paddleSpeed, defballSpeed, maxScore });
 }
 
-
-
 function displayStartMessage() {
     context.clearRect(0, 0, board.width, board.height);
     context.font = "30px sans-serif";
@@ -160,6 +155,8 @@ function draw() {
 
     // Clear board
     context.clearRect(0, 0, board.width, board.height);
+
+	if (aiFlag) aiLogic();
 
     // Draw dotted line in the middle
     context.setLineDash([10, 20]); // Pattern: 5px dash, 15px space
@@ -206,7 +203,7 @@ function draw() {
     }
 
     // Display scores
-    context.fillStyle = '#ffffff'
+    context.fillStyle = '#ffffff';
     context.font = "45px sans-serif";
     context.fillText(player1Score, boardWidth / 5, 45);
     context.fillText(player2Score, (boardWidth * 4) / 5, 45);
@@ -281,8 +278,6 @@ function ballCollision(ball, player) {
     return isCollision;
 }
 
-
-
 function resetGame(direction) {
     ball.x = boardWidth / 2;
     ball.y = boardHeight / 2;
@@ -300,7 +295,9 @@ function resetGame(direction) {
     // drawFlag = !isGameOver();
     if (isGameOver()) {
         drawFlag = false;
+		aiFlag = false;
         document.getElementById("startButton").disabled = false;
+		document.getElementById("aiButton").disabled = false;
     }
 }
 
