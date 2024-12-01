@@ -35,10 +35,10 @@ async function handlePassResetSubmit(e) {
     localStorage.setItem('uidb64', uidb64);
     localStorage.setItem('token', token);
 
-    // Show OTP verification modal
+    // Show the reset password confirmation modal
     const otpModal = document.createElement('div');
     otpModal.className = 'modal fade show';
-    otpModal.id = 'otpVerificationModal';
+    otpModal.id = 'resetPasswordConfirmModal';
     otpModal.style.display = 'block';
     otpModal.style.backgroundColor = 'rgba(0, 0, 0, 0.5)';
 
@@ -47,38 +47,18 @@ async function handlePassResetSubmit(e) {
         <div class="content modal-content">
           <div class="modal-header border-0 py-3">
             <h5 class="modal-title">
-              <i class="fas fa-key me-2"></i>OTP Verification
+              <i class="fas fa-key me-2"></i>Reset link sent
             </h5>
             <button type="button" class="btn-close btn-close-white" data-dismiss="modal"></button>
           </div>
           <div class="modal-body px-3 py-2">
-            <div id="otp-error-msg" class="alert alert-danger small py-2" style="display: none"></div>
-            
             <p class="text-white mb-3 small">
-              Please enter the verification code sent to your email
+             Reset link has been sent to your email. Rest your password by clicking the link sent to your email.
             </p>
-            
-            <div class="form-group">
-              <div class="input-group">
-                <input 
-                  type="text" 
-                  id="otpInput" 
-                  class="form-control bg-transparent text-white" 
-                  placeholder="Enter OTP code"
-                  maxlength="5"
-                />
-                <span class="input-group-text bg-transparent text-white border-start-0">
-                  <i class="fas fa-shield-alt"></i>
-                </span>
-              </div>
-            </div>
           </div>
           <div class="modal-footer border-0 py-3">
-            <button type="button" class="btn btn-primary btn-sm" id="verifyOtpBtn">
-              <i class="fas fa-check me-2"></i>Verify OTP
-            </button>
-            <button type="button" class="btn btn-outline-light btn-sm" data-dismiss="modal">
-              Cancel
+            <button type="button" class="btn btn-primary btn-sm" id="returnToSignIn">
+              <i class="fas fa-check me-2"></i>Return to Sign In
             </button>
           </div>
         </div>
@@ -90,37 +70,30 @@ async function handlePassResetSubmit(e) {
 
     // Add event listeners for closing modal
     const closeModal = () => {
-      const modal = document.getElementById('otpVerificationModal');
+      const modal = document.getElementById('resetPasswordConfirmModal');
       if (modal) {
         modal.remove();
         document.body.classList.remove('modal-open');
       }
     };
 
-    // Close modal when clicking close buttons
     otpModal.querySelectorAll('[data-dismiss="modal"]').forEach(button => {
-      button.addEventListener('click', closeModal);
+      button.addEventListener('click', async function() {
+        closeModal();
+        updateUI(`/signin`, false);
+      });
     });
 
-    // Close modal when clicking outside
     otpModal.addEventListener('click', (e) => {
       if (e.target === otpModal) {
         closeModal();
+        updateUI(`/signin`, false);
       }
     });
 
-    // Handle OTP verification
-    document.getElementById('verifyOtpBtn').addEventListener('click', async function() {
-      const otpInput = document.getElementById('otpInput').value;
-      const errorDiv = document.getElementById('otp-error-msg');
-      
-      if (otpInput === '12345') {
-        closeModal();
-        await updateUI(`/password_reset_confirm`, false);
-      } else {
-        errorDiv.textContent = 'Invalid OTP code. Please try again.';
-        errorDiv.style.display = 'block';
-      }
+    document.getElementById('returnToSignIn').addEventListener('click', async function() {
+      closeModal();
+      updateUI(`/signin`, false);
     });
 
   } catch (error) {
@@ -158,9 +131,49 @@ async function handlePassChangeSubmit(e) {
       alert("Password couldn't reset: " + responseData.error_msg);
       return;
     }
-    alert("Password reset successfully! Please sign in with your new password.");
-    // Redirect to the signin page
-    await updateUI(`/signin`, false);
+
+    // show the password reset success modal  
+    const otpModal = document.createElement('div');
+    otpModal.className = 'modal fade show';
+    otpModal.id = 'resetPasswordsuccessModal';
+    otpModal.style.display = 'block';
+    otpModal.style.backgroundColor = 'rgba(0, 0, 0, 0.5)';
+    otpModal.innerHTML = `
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="content modal-content">
+          <div class="modal-header border-0 py-3">
+            <h5 class="modal-title">
+              <i class="fas fa-key me-2"></i>Password Reset Successfully
+            </h5>
+            <button type="button" class="btn-close btn-close-white" data-dismiss="modal"></button>
+          </div>
+          <div class="modal-body px-3 py-2">
+            <p class="text-white mb-3 small">
+              Password reset successfully! Please sign in with your new password.
+            </p>
+          </div>
+          <div class="modal-footer border-0 py-3">
+            <button type="button" class="btn btn-primary btn-sm" id="returnToSignIn">
+              <i class="fas fa-check me-2"></i>Return to Sign In
+            </button>
+          </div>
+        </div>
+      </div>
+    `;
+
+    document.body.appendChild(otpModal);
+    document.body.classList.add('modal-open');
+
+    // close modal and redirect to signin page after 3 seconds
+    setTimeout(() => {
+      const modal = document.getElementById('resetPasswordsuccessModal');
+      if (modal) {
+        modal.remove();
+        document.body.classList.remove('modal-open');
+        updateUI(`/signin`, false);
+      }
+    }, 3000);
+
     // Clear the local storage
     localStorage.removeItem('uidb64');
     localStorage.removeItem('token');
