@@ -264,6 +264,21 @@ class PaginatedSearch(APIView, BaseView):
 		paginator = SearchPaginator()
 		paginated_players = paginator.paginate_queryset(players, request)
 		serialized_players = PlayerSerializer(paginated_players, many=True).data
-		render_to_string(self.template, {'players': players})
-		print('paginated response : ', paginator.get_paginated_response(serialized_players).data, flush=True)
-		return paginator.get_paginated_response(serialized_players)
+		# print("results : ", paginator.get_paginated_response(serialized_players).data['results'], flush=True)
+		# return paginator.get_paginated_response(serialized_players)
+		context = {
+			'players': paginator.get_paginated_response(serialized_players).data['results'],
+			'search_type': search_param,
+		}
+		#! becareful with direct broswer url visit
+		print("total items : ", paginator.page.paginator.count, flush=True)
+		return JsonResponse({
+			'html': render_to_string(self.template, context),
+			'css': self.css,
+			'js': self.js,
+			'current_page': paginator.page.number,
+			'total_pages': paginator.page.paginator.num_pages,
+			'total_items': paginator.page.paginator.count,
+			'next_page_link': paginator.get_next_link(),
+			'previous_page_link': paginator.get_previous_link(),
+		})

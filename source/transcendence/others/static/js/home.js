@@ -1,19 +1,54 @@
 createNotificationSocket();
 // load content of the player profile
-async function search(query_parameter, page = 1, url = None) {
+async function search(query_parameter, url) {
+  let route_url = `/paginated_search?q=${query_parameter}`;
+  // url = 'http://localhost/paginated_search?page=4&q=k';
+  if (url !== undefined) {
+    const fullUrl = new URL(url);
+    route_url = fullUrl.pathname + fullUrl.search; // Extract the relative path and query string
+  }
+  console.log("route_url: ", route_url);
   try {
-    let response;
-    if (url)
-      response = await fetch(url);
-    else
-      response = await fetch(`search?q=${query_parameter}&page=${page}`);
+    const response = await fetch(route_url.slice(1), {
+      method: "GET",
+      headers: {
+        "X-Requested-With": "XMLHttpRequest",
+      },
+    });
+
     if (response.status === 205)
       updateUI("/home", false);
     if (response.ok) {
-      history.pushState({ query_parameter }, "", `/search?q=${query_parameter}`);
+      // history.pushState({ query_parameter }, "", route_url);
       const responseData = await response.json();
-      const resultsDiv = document.getElementById("searchResults");
+      // console.log(responseData);
+      /* activating the div */
+      document.getElementById("searchResults").classList.remove("d-none");
+      /* filling up the result to the inner div */
+      const resultsDiv = document.getElementById("search_list");
       resultsDiv.innerHTML = responseData.html;
+      /* updating next and prev butons */
+
+      if (responseData.total_items === 0) {
+        document.getElementById("pagination_navigation").classList.add("d-none");
+        return;
+      }
+      document.getElementById("pagination_navigation").classList.remove("d-none");
+      const nextPageBtn = document.getElementById("nextPage");
+      nextPageBtn.classList.remove("disabled");
+      const prevPageBtn = document.getElementById("prevPage")
+      prevPageBtn.classList.remove("disabled");
+      nextPageBtn.setAttribute("data-url", responseData.next_page_link);
+      prevPageBtn.setAttribute("data-url", responseData.previous_page_link);
+      /* updating whats in bitween buttons lmao GIGGDY */
+      document.getElementById("current_page").textContent = responseData.current_page;
+      if (responseData.next_page_link === null) {
+        nextPageBtn.classList.add("disabled");
+      }
+      document.getElementById("total_pages").textContent = responseData.total_pages;
+      if (responseData.previous_page_link === null) {
+        prevPageBtn.classList.add("disabled");
+      }
       loadCssandJS(responseData, false);
       attachSearchEventListners();
     }
@@ -22,7 +57,6 @@ async function search(query_parameter, page = 1, url = None) {
     } else {
       console.error("Failed to load -- ", query_parameter, "-- search content");
     }
-
 
   } catch (error) {
     console.error(`Failed to load -- ${query_parameter} -- profile content:`, error);
@@ -45,7 +79,7 @@ function searchingSystem() {
     search("friends")
   }
   );
-  document.getElementById("searchIcon").addEventListener("click", (event) => {
+  document.getElementById("searchIcon").addEventListener("click", () => {
     triggerSearch();
   });
 
@@ -54,10 +88,14 @@ function searchingSystem() {
       triggerSearch();
     }
   });
-  /* pagination next and prev getter */
+  /* pagination next and prev fetchers */
   document.getElementById("nextPage").addEventListener("click", async () => {
     const nextPageUrl = document.getElementById("nextPage").getAttribute("data-url");
-    await paginated_search(nextPageUrl);
+    await search("", nextPageUrl);
+  });
+  document.getElementById("prevPage").addEventListener("click", async () => {
+    const prevPageUrl = document.getElementById("prevPage").getAttribute("data-url");
+    await search("", prevPageUrl);
   });
 
 }
@@ -69,6 +107,7 @@ function triggerSearch() {
     console.log("searching for: ", query);
     search(query);
   } else {
+    document.getElementById("searchResults").classList.add("d-none")
     console.log("your search is empty");
   }
 }
@@ -105,63 +144,6 @@ function attachSearchEventListners() {
         acceptOrDeclineFriendRequest("decline", toBeFriend, false);
       });
     }
-  }
-}
-
-
-async function paginated_search(url = None) {
-  const query_parameter = 'a'; // Example search query
-  try {
-    // if (url)
-    const response = await fetch(`paginated_search?q=${query_parameter}`, {
-      method: "GET",
-      headers: {
-        "X-Requested-With": "XMLHttpRequest",
-      },
-    });
-
-    // Handle the 205 Reset Content response
-    if (response.status === 205) {
-      updateUI("/home", false);
-      return; // Exit the function after handling this case
-    }
-
-    // Check if the response is OK (status 200-299)
-    if (response.ok) {
-      history.pushState({ query_parameter }, "", `/paginated_search?q=${query_parameter}`);
-      const responseData = await response.json();
-      console.log(responseData);
-
-      const resultsDiv = document.getElementById("search_list");
-      resultsDiv.innerHTML = ''; // Clear previous results
-
-      // Loop through the results and create player cards
-      responseData.results.forEach(player => {
-        const new_player = `
-          <div class="player-card content mb-3">
-            <a onclick="appRouter()" href="/profile/${player.username}" class="w-100 text-decoration-none">
-              <div class="d-flex align-items-center p-3">
-                <div class="player-avatar">
-                  <img src="${player.profile_picture ? player.profile_picture.url : '/static/images/default_profile_pic.jpeg'}" alt="Profile Picture" class="rounded-circle" style="width: 60px; height: 60px;" />
-                </div>
-                <div class="player-info ms-3 flex-grow-1">
-                  <h5 class="mb-1" style="color: #84ddfc;">${player.username}</h5>
-                  <p class="mb-0">${player.full_name}</p>
-                </div>
-              </div>
-            </a>
-          </div>`;
-        resultsDiv.insertAdjacentHTML('beforeend', new_player); // Use insertAdjacentHTML to append the new player card
-      });
-
-    } else if (response.status === 302) {
-      updateUI("/signin", false);
-    } else {
-      console.error("Failed to load -- ", query_parameter, "-- search content");
-    }
-
-  } catch (error) {
-    console.error(`Failed to load -- ${query_parameter} -- profile content:`, error);
   }
 }
 
