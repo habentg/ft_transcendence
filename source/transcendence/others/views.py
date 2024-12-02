@@ -22,9 +22,6 @@ from account.utils import *
 	-> If the request is an AJAX request (click route), return the html content as JSON
 	-> If the request is not an AJAX request (direct url visit), return the html content as a rendered page
 """
-import logging
-
-logger = logging.getLogger(__name__)
 
 class BaseView(View):
 	authentication_classes = []
@@ -127,8 +124,8 @@ class CsrfRequest(APIView):
 		return response
 
 
-""" Searching users """
-class SearchUsers(APIView, BaseView):
+""" Searching system for all players, friends, and friend requests """
+class SearchView(APIView, BaseView):
 	authentication_classes = [JWTCookieAuthentication]
 	permission_classes = [IsAuthenticated]
 	template = 'others/search_result.html'
@@ -209,3 +206,64 @@ class TermsView(BaseView):
 	template_name = 'others/terms.html'
 	title = 'Terms of Service'
 	css = 'css/static_pages.css'
+
+
+from django.core.paginator import Paginator
+from rest_framework.pagination import PageNumberPagination
+""" custom paginator class - for paginating search results """
+class SearchPaginator(PageNumberPagination):
+	page_size = 5
+	page_size_query_param = 'page_size'
+	max_page_size = 1000
+
+class PaginatedSearch(APIView, BaseView):
+	authentication_classes = [JWTCookieAuthentication]
+	permission_classes = [IsAuthenticated]
+	template = 'others/paginated_page.html'
+	css = 'css/search.css'
+	js = 'js/friend.js'
+
+	def handle_exception(self, exception):
+		if isinstance(exception, AuthenticationFailed):
+			signin_url = reverse('signin_page')
+			params = urllib.parse.urlencode({'next': self.request.path})
+			response = HttpResponseRedirect(f'{signin_url}?{params}')
+			response.delete_cookie('access_token')
+			response.delete_cookie('refresh_token')
+			response.delete_cookie('csrftoken')
+			response.status_code = 302
+			return response
+		return super().handle_exception(exception)
+
+	def get(self, request, *args, **kwargs):
+		if (request.headers.get('X-Requested-With') != 'XMLHttpRequest'):
+			return HttpResponseRedirect(reverse('home_page'))
+		if (request.user.is_guest):
+			return Response(status=status.HTTP_205_RESET_CONTENT)
+		# http://localhost/search?q=asdfsdaf
+		search_param = request.GET.get('q', '')
+		if not search_param:
+			return JsonResponse({
+				'html': render_to_string(self.template, {'players': []}),
+				'css' : self.css,
+				'js' : self.js
+			})
+		players = []
+		"""
+			friend requests are structured like this: <QuerySet [<FriendRequest: root → hatesfam : (PENDING)>]>
+			-> that's why we need to extract the sender from the request (we need friend requests sent to the user)
+		"""
+		if search_param == 'friends':
+			players = request.user.friend_list.friends.all()
+		elif search_param == 'friend_requests':
+			friend_requests = request.user.received_requests.all()
+			players = [fr.sender for fr in friend_requests]  # Extracting the users who sent requests
+		else: # if not it should be a username
+			players = Player.objects.filter(username__icontains=search_param).exclude(is_guest=True)
+
+		paginator = SearchPaginator()
+		paginated_players = paginator.paginate_queryset(players, request)
+		serialized_players = PlayerSerializer(paginated_players, many=True).data
+		render_to_string(self.template, {'players': players})
+		print('paginated response : ', paginator.get_paginated_response(serialized_players).data, flush=True)
+		return paginator.get_paginated_response(serialized_players)

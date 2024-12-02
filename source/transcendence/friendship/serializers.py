@@ -24,3 +24,9 @@ class FriendRequestSerializer(serializers.ModelSerializer):
 			raise serializers.ValidationError('Already friends ... this guy bruh!')
 		friend_request = FriendRequest.objects.create(**validated_data)
 		return friend_request
+	
+
+class NotificationSerializer(serializers.ModelSerializer):
+	class Meta:
+		model = Notification
+		fields = '__all__'

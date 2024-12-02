@@ -29,8 +29,6 @@ try:
                 password=password,
                 email=email,
                 full_name=full_name,
-                first_name=first_name,
-                last_name=last_name
             )
             FriendList.objects.create(player=player)
             print(f"Created user: {username}")

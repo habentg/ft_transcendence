@@ -161,82 +161,6 @@ USE_I18N = True
 
 USE_TZ = True
 
-
-LOGGING = {
-    'version': 1,
-    'disable_existing_loggers': False,
-    'filters': {
-        'suppress_health_checks': {
-            '()': 'django.utils.log.CallbackFilter',
-            'callback': lambda record: not (
-                '/health/' in record.getMessage() or 
-                'GET /health/' in record.getMessage()
-            )
-        }
-    },
-    'handlers': {
-        'console': {
-            'level': 'INFO',
-            'filters': ['suppress_health_checks'],
-            'class': 'logging.StreamHandler',
-        },
-    },
-    'loggers': {
-        '': {  # Root logger
-            'handlers': ['console'],
-            'level': 'INFO',
-        },
-        'daphne': {
-            'propagate': False,
-            'handlers': ['console'],
-            'level': 'INFO',
-        }
-    }
-}
-
-# LOGGING = {
-#     'version': 1,
-#     'disable_existing_loggers': False,
-#     'filters': {
-#         'skip_health_checks': {
-#             '()': 'django.utils.log.CallbackFilter',
-#             'callback': lambda record: 'GET /health/' not in record.getMessage(),
-#         }
-#     },
-#     'handlers': {
-#         'console': {
-#             'level': 'INFO',
-#             'filters': ['skip_health_checks'],
-#             'class': 'logging.StreamHandler',
-#         },
-#         'daphne_console': {
-#             'level': 'INFO',
-#             'filters': ['skip_health_checks'],
-#             'class': 'logging.StreamHandler',
-#         },
-#     },
-#     'loggers': {
-#         'django.request': {
-#             'handlers': ['console'],
-#             'level': 'INFO',
-#             'propagate': False,
-#         },
-#         'django.server': {
-#             'handlers': ['console'],
-#             'level': 'INFO',
-#             'filters': ['skip_health_checks'],
-#             'propagate': False,
-#         },
-#         'daphne': {
-#             'handlers': ['console'],
-#             'level': 'INFO',
-#             'filters': ['skip_health_checks'],
-#             'propagate': False,
-#         }
-#     }
-# }
-
-
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
         'rest_framework_simplejwt.authentication.JWTAuthentication',
@@ -244,6 +168,8 @@ REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES': [
         'rest_framework.permissions.IsAuthenticated',
     ],
+    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
+    'PAGE_SIZE': 100
 }
 
 # Default primary key field type
@@ -306,10 +232,10 @@ REDIS_DB = 1
 STATIC_URL = 'static/'
 # to be commented out when deploying
 # STATIC_ROOT = BASE_DIR / 'static'
-STATICFILES_DIRS = [
-    BASE_DIR / "others" / "static",
-    BASE_DIR / "account" / "static",
-]
+# STATICFILES_DIRS = [
+#     BASE_DIR / "others" / "static",
+#     BASE_DIR / "account" / "static",
+# ]
 STATIC_ROOT = '/media_static/static'
 
 # Media settings (determines where images will be uploaded)

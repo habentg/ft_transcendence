@@ -3,7 +3,7 @@ COMPOSE 		= cd ./source && docker-compose
 
 
 # ----------------------- creating services --------------------------
-all: build up
+all: build up collectstatic
 
 up:
 	$(COMPOSE) -f docker-compose.yaml up -d --remove-orphans
@@ -37,7 +37,7 @@ start:
 stop:
 	$(COMPOSE) -f docker-compose.yaml stop
 
-restart: stop start # restarting the services (volumes, network, and images stay the same)
+restart: stop start collectstatic # restarting the services (volumes, network, and images stay the same)
 
 
 # ----------------------- Deleting resources and rebuilding --------------------------

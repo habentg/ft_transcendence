@@ -3,7 +3,7 @@ from rest_framework.permissions import IsAuthenticated
 from account.auth_middleware import JWTCookieAuthentication
 from account.models import Player
 from .models import *
-from .serializers import FriendsSerializer
+from .serializers import *
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
@@ -19,6 +19,7 @@ import json
 from account.serializers import PlayerSerializer
 from channels.layers import get_channel_layer
 from asgiref.sync import async_to_sync
+from rest_framework import viewsets
 
 
 # template_name for viewing player profile
@@ -101,11 +102,22 @@ class FriendRequestView(APIView):
 				'receiver': receiver.username,
 				'message': f'{request.user.username} has sent you a friend request.'
 			}
-			print("notification_message: ", notification_message, flush=True)
 			async_to_sync(channel_layer.group_send)(
 				f"user_{receiver.username}",
 				notification_message
 			)
+			#! add notification to the receiver's notification list
+			notification_data = {
+				'player': receiver.id,
+				'notification_type': 'friend_request',
+				'sender': request.user.id,
+				'read_status': False
+			}
+			notification_serializer = NotificationSerializer(data=notification_data)
+			notification_serializer.is_valid(raise_exception=True)
+			notification_serializer.save()
+			receiver_notification = Notification.objects.filter(player=receiver)
+			print("receiver_notification: ", receiver_notification, flush=True)
 			print(f'{request.user.username} SENT FRIEND REQUEST to {receiver.username}!', flush=True)
 			return Response(serializer.data, status=status.HTTP_201_CREATED) # 
 		# Return detailed error information
@@ -233,3 +245,31 @@ class FriendRequestResponseView(APIView):
 		print('Friend list: ', friend_list, flush=True)
 		return Response({'success': 'Friend request fulfilled'}, status=status.HTTP_200_OK)
 	
+class NotificationViewSet(viewsets.ViewSet):
+	authentication_classes = [JWTCookieAuthentication]
+	permission_classes = [IsAuthenticated]
+
+	def list(self, request):
+		notifications = Notification.objects.filter(player=request.user)
+		serializer = NotificationSerializer(notifications, many=True)
+		print("$$$$$$$$$$$$$$ notifications: ", notifications, flush=True)
+		return Response(serializer.data)
+
+	# mark notification as read
+	def update(self, request, pk=None):
+		try:
+			notification = Notification.objects.get(pk=pk, player=request.user)
+		except Notification.DoesNotExist:
+			return Response({'detail': 'Notification not found.'}, status=status.HTTP_404_NOT_FOUND)
+		notification.read_status = True
+		notification.save()
+		return Response(status=status.HTTP_400_BAD_REQUEST)
+
+	# delete notification
+	def destroy(self, request, pk=None):
+		try:
+			notification = Notification.objects.get(pk=pk, player=request.user)
+			notification.delete()
+			return Response(status=status.HTTP_204_NO_CONTENT)
+		except Notification.DoesNotExist:
+			return Response({'detail': 'Notification not found.'}, status=status.HTTP_404_NOT_FOUND)
