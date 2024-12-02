@@ -1,4 +1,4 @@
-from django.http import JsonResponse, HttpResponseRedirect, HttpResponse
+from django.http import JsonResponse, HttpResponseRedirect
 from django.template.loader import render_to_string
 from django.views import View
 from django.utils.decorators import method_decorator
@@ -21,6 +21,8 @@ from django.shortcuts import render
 from .utils import send_2fa_code
 import pyotp
 import jwt
+import random
+import string
 from django.urls import reverse
 from rest_framework.permissions import IsAuthenticated
 from .auth_middleware import JWTCookieAuthentication, add_token_to_blacklist
@@ -34,7 +36,6 @@ from urllib.request import urlopen
 from tempfile import NamedTemporaryFile
 from others.views import BaseView
 from friendship.models import FriendList
-from django.shortcuts import get_object_or_404
 
 # view for the sign up page
 @method_decorator(csrf_protect, name='dispatch')
@@ -64,6 +65,7 @@ class SignUpView(APIView, BaseView):
 				FriendList.objects.create(player=new_player)
 				return response
 			return Response({'error_msg': 'Couldn\'t create the player'}, status=status.HTTP_422_UNPROCESSABLE_ENTITY)
+		print(serializer.errors, flush=True)
 		return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 	def get_context_data(self, request):
@@ -88,48 +90,57 @@ class SignInView(APIView, BaseView):
 	def post(self, request):
 		serializer = PlayerSigninSerializer(data=request.data)
 		if serializer.is_valid():
-			username = serializer.validated_data['username']
-			password = serializer.validated_data['password']
-			player = authenticate(username=username, password=password)
-			if player is not None:
-				refresh = RefreshToken.for_user(player)
-				response = Response(status=status.HTTP_200_OK)
-				response.set_cookie('access_token', str(refresh.access_token), httponly=True)
-				response.set_cookie('refresh_token', str(refresh), httponly=True)
-				if player.tfa:
-					if send_2fa_code(player):
-						response.status_code = 302  # or 301 for a permanent redirect
-					else:
-						return Response({'error_msg': 'Couldn\'t send OTP to the given Email'}, 
-                                    status=status.HTTP_422_UNPROCESSABLE_ENTITY)
-				player.last_login = timezone.now() # IF EVERYTHING IS OK, UPDATE LAST LOGIN
-				player.save()
-				return response
-			return Response({'error_msg': 'Invalid username or password!'}, 
-                        status=status.HTTP_401_UNAUTHORIZED)
-		return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+			player = serializer.validated_data['player']
+			refresh = RefreshToken.for_user(player)
+			response = Response(status=status.HTTP_200_OK)
+			response.set_cookie('access_token', str(refresh.access_token), httponly=True)
+			response.set_cookie('refresh_token', str(refresh), httponly=True)
+			if player.tfa:
+				if send_2fa_code(player):
+					response.status_code = 302  # or 301 for a permanent redirect
+				else:
+					return Response({'error_msg': 'Couldn\'t send OTP to the given Email'}, 
+								status=status.HTTP_422_UNPROCESSABLE_ENTITY)
+			player.last_login = timezone.now() # IF EVERYTHING IS OK, UPDATE LAST LOGIN
+			player.save()
+			return response
+		error_message = serializer.errors.get('non_field_errors', ['No specific error'])[0]
+		return Response({'error_msg': error_message}, status=status.HTTP_400_BAD_REQUEST)
 
 	def get_context_data(self, request):
 		return {'csrf_token': get_token(request)}
 
-class SignOutView(BaseView, View):
+class SignOutView(APIView, BaseView):
+	authentication_classes = [JWTCookieAuthentication]
+	permission_classes = [IsAuthenticated]
+
 	def get(self, request):
+		player = request.user
 		token_string = request.COOKIES.get('access_token')
+		print("our player: ", player, flush=True)
 		if token_string:
 			try:
 				add_token_to_blacklist(token_string)
 			except jwt.ExpiredSignatureError or jwt.InvalidTokenError or jwt.DecodeError as e:
-				print('Token has: ', e)
+				print(e, flush=True)
+				return HttpResponseRedirect(reverse('landing'))
 			response = HttpResponseRedirect(reverse('landing'))
 			response.delete_cookie('access_token')
 			response.delete_cookie('refresh_token')
 			response.delete_cookie('csrftoken')
+			print(f"Player {player.username} signed out", flush=True)
 			response.singed_out = True
+			if (player.is_guest):
+				player.delete()
 			return response
+		return HttpResponseRedirect(reverse('landing'))
 
 # 42 Oauth2.0 callback
 # DOC: https://api.intra.42.fr/apidoc/guides/web_application_flow
 class Auth_42(View):
+	authentication_classes = []
+	permission_classes = []
+
 	def get(self, request):
 		redirect_uri = settings.DOMAIN_NAME + '/oauth/'
 		client_id =settings.FOURTYTWO_OAUTH_CLIENT_ID
@@ -144,6 +155,9 @@ class Auth_42(View):
 
 # 42 Oauth2.0 callback
 class OauthCallback(View):
+	authentication_classes = []
+	permission_classes = []
+
 	def get(self, request):
 		code = request.GET.get('code')
 		
@@ -191,6 +205,7 @@ class OauthCallback(View):
 			img_temp.flush()
 			player.profile_picture.save(f"{player.username}_profile.jpg", File(img_temp))
 			player.set_unusable_password() # User can't login with password
+			FriendList.objects.create(player=player)
 			player.save()
 
 		# Update last login
@@ -210,6 +225,8 @@ class OauthCallback(View):
 
 	
 class PasswordReset(BaseView):
+	authentication_classes = []
+	permission_classes = []
 	template_name = 'account/password_reset.html'
 	title = 'Password Reset'
 	css = 'css/password_reset.css'
@@ -249,6 +266,8 @@ class PasswordReset(BaseView):
 		send_mail(subject, email_body, from_email, recipient_list, fail_silently=False)
 
 class PassResetNewPass(View):
+	authentication_classes = []
+	permission_classes = []
 	template_name = 'account/change_pass.html'
 	title = 'Password Reset'
 	js = 'js/password_reset.js'
@@ -274,7 +293,7 @@ class PassResetNewPass(View):
 			}
 			return render(request, 'others/base.html', resources)
 		else:
-			return render(request, 'account/invalid_token.html')
+			return HttpResponseRedirect(reverse('password_reset'))
 
 	def post(self, request, uidb64, token):
 		data = json.loads(request.body)
@@ -295,6 +314,8 @@ class PassResetNewPass(View):
 			return JsonResponse({'error_msg': 'Invalid password reset request'}, status=status.HTTP_400_BAD_REQUEST)
 
 class PassResetConfirm(BaseView):
+	authentication_classes = []
+	permission_classes = []
 	template_name = 'account/password_reset_complete.html'
 	title = 'Password Reset'
 
@@ -365,8 +386,9 @@ class ProfileView(APIView, BaseView):
 			response.delete_cookie('access_token')
 			response.delete_cookie('refresh_token')
 			return response
-		return super().handle_exception(exception)
-
+		response = HttpResponseRedirect(reverse('player_profile', kwargs={'username': self.request.user.username}))
+		print('Redirecting to player profile', flush=True)
+		return response
 
 	def delete(self, request):
 		player = request.user
@@ -385,18 +407,34 @@ class ProfileView(APIView, BaseView):
 			serializer.save()  # Use the serializer to update the player object
 			return JsonResponse({'success': 'Account updated successfully!'}, status=status.HTTP_200_OK)
 		return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+	def get_player(self, username):
+		return Player.objects.filter(username=username).first()
 	
-	def get_context_data(self, request):
-		player = request.user
-		data = {
-			'username': player.username,
-			'email': player.email,
-			'full_name': player.full_name,
-			'2fa': player.tfa,
-			'profile_pic': player.profile_picture.url if player.profile_picture else None,
-		}
+	def get_context_data(self, request, **kwargs):
+		queried_user = request.user
+		if kwargs.get('username') and kwargs.get('username') != request.user.username:
+			queried_user = self.get_player(kwargs.get('username'))
+			if not queried_user:
+				print('Player not found', flush=True)
+				return {'error_msg':'Player not found'}
+		data = {}
+		if queried_user.is_guest:
+			data = {
+				'player': PlayerSerializer(queried_user).data,
+				'is_self': False,
+			}
+		else:
+			data = {
+				'player': PlayerSerializer(queried_user).data,
+				'is_friend': request.user.friend_list.friends.filter(username=queried_user.username).exists(),
+				'is_requested_by_me': request.user.sent_requests.filter(receiver=queried_user).exists(),
+				'am_i_requested': request.user.received_requests.filter(sender=queried_user).exists(),
+				'is_self': queried_user == request.user,
+			}
 		return data
-	
+
+
 # updating user password
 class UpdatePlayerPassword(APIView):
 	authentication_classes = [JWTCookieAuthentication]
@@ -421,4 +459,74 @@ class UpdatePlayerPassword(APIView):
 		return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
+class PlayerSettings(APIView, BaseView):
+	authentication_classes = [JWTCookieAuthentication]
+	permission_classes = [IsAuthenticated]
+	template_name = 'account/settings.html'
+	title = 'settings'
+	css = 'css/settings.css'
+	js = 'js/settings.js'
 
+	def handle_exception(self, exception):
+		if isinstance(exception, AuthenticationFailed):
+			signin_url = reverse('signin_page')
+			params = urllib.parse.urlencode({'next': self.request.path})
+			response = HttpResponseRedirect(f'{signin_url}?{params}')
+			response.delete_cookie('access_token')
+			response.delete_cookie('refresh_token')
+			response.delete_cookie('csrftoken')
+			response.status_code = 302
+			return response
+		return super().handle_exception(exception)
+	
+	def get_context_data(self, request):
+		player = request.user
+		return {
+			'player': PlayerSerializer(player).data
+		}
+
+
+""" player anonymization view """
+def generate_username():
+	length = 7
+	characters = string.ascii_letters + string.digits
+	random_string = ''.join(random.choice(characters) for _ in range(length))
+	return random_string
+
+def createGuestPlayer(request):
+	anon = Player.objects.create(
+		username = generate_username(),
+		full_name = 'Guest Player',
+	)
+	guest_email = f'{anon.username}@guest_email.com'
+	anon.email = guest_email
+	print(f"Anon player created: {anon.email}", flush=True)
+	anon.set_unusable_password()
+	anon.is_guest = True
+	# FriendList.objects.create(player=anon) #! we dont want to create a friend list for a guest player
+	anon.save()
+	return anon
+
+class AnonymizePlayer(APIView):
+	authentication_classes = [JWTCookieAuthentication]
+	permission_classes = [IsAuthenticated]
+
+	def patch(self, request):
+		# sign out the player
+		token_string = request.COOKIES.get('access_token')
+		print("player b4 anon: ", request.user, flush=True)
+		if token_string:
+			try:
+				add_token_to_blacklist(token_string)
+			except jwt.ExpiredSignatureError or jwt.InvalidTokenError or jwt.DecodeError as e:
+				print(e, flush=True)
+				return HttpResponseRedirect(reverse('landing'))
+		# create a new anonymous player
+		anon = createGuestPlayer(request)
+		new_jwts = RefreshToken.for_user(anon)
+		response = Response(status=status.HTTP_200_OK)
+		response.set_cookie('access_token', str(new_jwts.access_token), httponly=True)
+		response.set_cookie('refresh_token', str(new_jwts), httponly=True)
+		anon.last_login = timezone.now()
+		anon.save()
+		return response

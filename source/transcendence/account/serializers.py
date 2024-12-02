@@ -7,7 +7,6 @@ class PlayerSignupSerializer(serializers.ModelSerializer):
 	class Meta:
 		model = Player
 		fields = ['full_name', 'username', 'email', 'password']
-		# fields = ['full_name', 'username', 'email', 'password']
 
 	def create(self, validated_data):
 		if (validated_data['password'] != self.initial_data['confirm_password']):
@@ -21,13 +20,24 @@ class PlayerSignupSerializer(serializers.ModelSerializer):
 	# validate username - we can add email uniqueness check here as well - if think is neccessary
 	def validate_username(self, username):
 		if self.Meta.model.objects.filter(username=username).exists():
-			raise serializers.ValidationError("A user with this username already exists.")
+			raise serializers.ValidationError("Username already taken.")
 		return username
 
 # user login serializer class
 class PlayerSigninSerializer(serializers.Serializer):
 	username = serializers.CharField(max_length=150)
 	password = serializers.CharField(max_length=150, min_length=3, style={'input_type': 'password'})
+
+	def validate(self, data):
+		username = data.get('username')
+		password = data.get('password')
+		if not Player.objects.filter(username=username).exists():
+			raise serializers.ValidationError("User does not exist.")
+		player = Player.objects.get(username=username)
+		if not player.check_password(password):
+			raise serializers.ValidationError("Incorrect password.")
+		data['player'] = player
+		return data
 
 # user profile serializer class
 class PlayerProfileSerializer(serializers.ModelSerializer):
@@ -47,3 +57,8 @@ class ChangePasswordSerializer(serializers.Serializer):
 	current_password = serializers.CharField(max_length=150, min_length=3)
 	new_password = serializers.CharField(max_length=150, min_length=3)
 	confirm_password = serializers.CharField(max_length=150, min_length=3)
+
+class PlayerSerializer(serializers.ModelSerializer):
+	class Meta:
+		model = Player
+		fields = '__all__'

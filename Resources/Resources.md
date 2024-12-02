@@ -1,4 +1,11 @@
 
+# --------------------- Django -----------------
+* what is django and how it works .. simplified article
+https://radixweb.com/blog/what-is-django
+
+* wtf are asgi and wsgi
+https://samagra.me/wtf/2024/09/27/gateway-interfaces.html
+
 # --------------------- Cybersecurity Module resources -----------------
 
 ## JWT

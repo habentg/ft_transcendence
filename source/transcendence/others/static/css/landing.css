@@ -1,46 +1,151 @@
 .first-page {
-	display: flex;
-	flex-direction: column;
-	flex: 1;
 	height: 100vh;
+	position: relative;
 }
-	
+
 .background-image {
-	background-image: url('/static/images/download.jpeg');
+	background-image: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.7)), url('/static/images/download.jpeg');
 	background-size: cover;
 	background-position: center;
 	background-repeat: no-repeat;
-	/* height: 85vh;  */
+	height: 100%;
 	display: flex;
 	justify-content: center;
 	align-items: center;
-	/* margin-top: -1.4rem;  */
-	flex: 1;
-}
-	
-.content {
-	flex-direction: column;
-	/* color: black; */
-	/* background-color: rgba(86, 37, 105, 0.5);
-	opacity: 10; */
-	border: var(--sds-size-stroke-border) solid rgba(255, 255, 255, 0.10);
-	background: linear-gradient(140deg, rgba(255, 255, 255, 0.12) -1.82%, rgba(255, 255, 255, 0.04) 68.19%, rgba(255, 255, 255, 0.03) 80.14%);
-	box-shadow: 0px 4px 24px -1px rgba(0, 0, 0, 0.20);
-	backdrop-filter: blur(30rem);
-	border-radius: 0.5rem; 
-	padding: 2rem;
-}
-	
-.content h3,
-.content p {
-	color: white;
-	font-size: 1.5rem;
-	padding: 1rem;
-}
-	
-.content p {
-	font-size: 1rem;
-	padding-top: 3rem;
 }
 
-  
+.content-wrapper {
+	max-width: 800px;
+}
+
+.content {
+	border: 1px solid rgba(255, 255, 255, 0.1);
+	background: linear-gradient(140deg,
+			rgba(255, 255, 255, 0.12) -1.82%,
+			rgba(255, 255, 255, 0.04) 68.19%,
+			rgba(255, 255, 255, 0.03) 80.14%);
+	box-shadow: 0px 4px 24px -1px rgba(0, 0, 0, 0.2);
+	backdrop-filter: blur(10px);
+	border-radius: 15px;
+}
+
+.title-gradient {
+	background: linear-gradient(45deg, #84ddfc, #b02c98);
+	-webkit-background-clip: text;
+	-webkit-text-fill-color: transparent;
+	font-size: calc(1.5rem + 1.5vw);
+	font-weight: 700;
+	line-height: 1.2;
+	margin: 0;
+	padding: 0 1rem;
+}
+
+.subtitle {
+	color: rgba(255, 255, 255, 0.9);
+	font-size: calc(1rem + 0.3vw);
+	line-height: 1.5;
+	margin: 0;
+	padding: 0 1rem;
+}
+
+.landing-btn .btn {
+	font-size: calc(0.9rem + 0.1vw);
+	padding: 0.75rem 1.5rem;
+	transition: all 0.3s ease;
+}
+
+.btn-primary {
+	background: linear-gradient(45deg, #84ddfc, #b02c98);
+	border: none;
+}
+
+.btn-primary:hover {
+	transform: translateY(-2px);
+	background: linear-gradient(45deg, #b02c98, #84ddfc);
+	box-shadow: 0 4px 15px rgba(132, 221, 252, 0.3);
+}
+
+.btn-outline-light {
+	border: 2px solid #84ddfc;
+	color: #84ddfc;
+}
+
+.btn-outline-light:hover {
+	background: #84ddfc;
+	color: #000;
+	transform: translateY(-2px);
+	box-shadow: 0 4px 15px rgba(132, 221, 252, 0.3);
+}
+
+/* Extra Small devices (phones, 576px and down) */
+@media (max-width: 576px) {
+	.content {
+		margin: 1rem;
+		padding: 1.5rem !important;
+	}
+
+	.title-gradient {
+		font-size: calc(1.2rem + 1vw);
+		padding: 0;
+	}
+
+	.subtitle {
+		font-size: 1rem;
+		padding: 0;
+	}
+
+	.btn {
+		font-size: 0.9rem;
+		padding: 0.6rem 1.2rem;
+	}
+}
+
+/* Small devices (landscape phones, 576px and up) */
+@media (min-width: 576px) {
+	.content {
+		padding: 2rem !important;
+	}
+}
+
+/* Medium devices (tablets, 768px and up) */
+@media (min-width: 768px) {
+	.content {
+		padding: 2.5rem !important;
+	}
+
+	.title-gradient {
+		font-size: calc(1.8rem + 1vw);
+	}
+
+	.subtitle {
+		font-size: calc(1.1rem + 0.2vw);
+	}
+}
+
+/* Large devices (desktops, 992px and up) */
+@media (min-width: 991px) {
+	.content-wrapper {
+		padding: 0 2rem;
+	}
+
+	.content {
+		padding: 3rem !important;
+	}
+}
+
+/* Animation */
+@keyframes fadeIn {
+	from {
+		opacity: 0;
+		transform: translateY(20px);
+	}
+
+	to {
+		opacity: 1;
+		transform: translateY(0);
+	}
+}
+
+.content {
+	animation: fadeIn 0.5s ease-out;
+}

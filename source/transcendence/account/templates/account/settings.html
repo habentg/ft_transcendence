@@ -1,0 +1,67 @@
+{% load static %}
+
+<div class="setting">
+  <div class="background-image">
+    <div class="container py-5">
+      <div class="row justify-content-center">
+        <div class="col-md-8 col-lg-6">
+          <div class="settings-container content p-4">
+            <h2 class="text-center mb-4">Settings</h2>
+
+            <div class="settings-menu">
+              <!-- Password Change Button -->
+              <div class="setting-item">
+                <button id="change-password-btn" class="btn btn-primary w-100">
+                  <i class="fas fa-key me-2"></i>
+                  Change Password
+                </button>
+              </div>
+              <!-- 2FA Toggle Button -->
+              <div class="setting-item">
+                {% if player.tfa %}
+                <button id="disable-2fa" class="btn btn-warning w-100">
+
+                  <i class="fas fa-shield-alt me-2"></i>
+                  Disable 2FA
+                </button>
+                {% else %}
+                <button id="enable-2fa" class="btn btn-success w-100">
+                  <i class="fas fa-shield-alt me-2"></i>
+                  Enable 2FA
+                </button>
+                {% endif %}
+                <!-- <button id="enable-2fa" class="btn btn-success w-100">
+                  <i class="fas fa-shield-alt me-2"></i>
+                  2FA
+                </button> -->
+              </div>
+
+              <!-- Anonymize button -->
+              <div class="setting-item">
+                <button id="player-anon" class="btn btn-warning w-100">
+                  <i class="fas fa-user-secret me-2"></i>
+                  Anonymize
+                </button>
+              </div>
+
+              <!-- Sign Out Button -->
+              <div class="setting-item">
+                <button id="sign-out-btn" class="btn btn-info w-100">
+                  <i class="fas fa-sign-out-alt me-2"></i>Sign Out
+                </button>
+              </div>
+
+              <!-- Delete Account Button -->
+              <div class="setting-item">
+                <button id="delete-acc-btn" class="btn btn-danger w-100">
+                  <i class="fas fa-trash-alt me-2"></i>
+                  Delete Account
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

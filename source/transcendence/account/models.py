@@ -1,8 +1,10 @@
 from django.db import models
-from django.contrib.auth.models import AbstractUser
 from django.core.exceptions import ValidationError
+from django.contrib.auth.models import BaseUserManager, AbstractUser
+from django.core.validators import MinLengthValidator
 from friendship.models import *
 
+""" image file size validation """
 def validate_image_size(image):
     if hasattr(image, 'size'):
         file_size = image.size # This is for ImageField
@@ -14,42 +16,67 @@ def validate_image_size(image):
     if file_size > limit_mb * 1024 * 1024:
         raise ValidationError(f"Max size of file is {limit_mb} MB")
 
-#Custom User Model
+""" Custom User Manager 
+    - overode create_user and create_superuser methods
+    mainly because i want the create super user to not expect first_name and last_name
+"""
+class PlayerManager(BaseUserManager):
+    def create_user(self, username, email, password=None, **extra_fields):
+        if not username:
+            raise ValueError("The Username field is required")
+        if not email:
+            raise ValueError("The Email field is required")
+        
+        email = self.normalize_email(email)
+        user = self.model(username=username, email=email, **extra_fields)
+        user.set_password(password)
+        user.save(using=self._db)
+        return user
+
+    def create_superuser(self, username, email, password=None, **extra_fields):
+        extra_fields.setdefault("is_superuser", True)
+        extra_fields.setdefault("is_staff", True)
+
+        if extra_fields.get("is_superuser") is not True:
+            raise ValueError("Superuser must have is_superuser=True.")
+        if extra_fields.get("is_staff") is not True:
+            raise ValueError("Superuser must have is_staff=True.")
+
+        return self.create_user(username, email, password, **extra_fields)
+
+
+#Custom player Model
 class Player(AbstractUser):
     id = models.BigAutoField(primary_key=True)
     username = models.CharField(max_length=150, unique=True)
     full_name = models.CharField(max_length=150, blank=True)
-    email = models.EmailField()
-    password = models.CharField(max_length=150)
-    password = models.CharField(max_length=150)
+    email = models.EmailField(unique=True)
+    password = models.CharField(max_length=150, validators=[MinLengthValidator(8)])
     tfa = models.BooleanField(default=False)
     secret = models.CharField(max_length=150, blank=True)
     verified = models.BooleanField(default=False)
     profile_picture = models.ImageField(
         upload_to='profile_pics/',
-        validators=[validate_image_size]
-        # default='profile_pics/default_profile_pic.jpeg',  # Set the default image
+        validators=[validate_image_size],
     )
+    is_guest = models.BooleanField(default=False)
+
+    # Fields removed
+    is_staff = models.BooleanField(default=False)  # Required by Django for admin access
+    first_name = None
+    last_name = None
+    date_joined = None
+
+    USERNAME_FIELD = 'username'
+    REQUIRED_FIELDS = ['email']
+
+    objects = PlayerManager()
 
     class Meta:
         db_table = 'player_table'
         unique_together = ['username', 'email']
 
-    USERNAME_FIELD = 'username'
-    REQUIRED_FIELDS = ['email', 'first_name', 'last_name']
-
     def __str__(self):
         return self.username
 
-    def get_friendship_status(self, other_player):
-        """Returns the friendship status with another player"""
-        try:
-            # Check for an existing friend request from either direction
-            friend_request = FriendRequest.objects.filter(sender=self, receiver=other_player).first() or FriendRequest.objects.filter(sender=other_player, receiver=self).first()
-
-            if friend_request:
-                return friend_request.status  # 'PENDING', 'ACCEPTED', or 'DECLINED'
-            return 'NO_REQUEST'
-        except FriendRequest.DoesNotExist:
-            return 'NO_REQUEST'
 

@@ -12,7 +12,8 @@ from django.db import connection
 from rest_framework.response import Response
 from django.middleware.csrf import get_token
 from rest_framework import status
-
+import urllib.parse
+from account.utils import *
 
 
 # base view for basic pages in our SPA
@@ -22,6 +23,8 @@ from rest_framework import status
 	-> If the request is not an AJAX request (direct url visit), return the html content as a rendered page
 """
 class BaseView(View):
+	authentication_classes = []
+	permission_classes = []
 	template_name = None
 	title = None
 	css = None
@@ -29,12 +32,19 @@ class BaseView(View):
 	
 	def get(self, request, *args, **kwargs):
 		context = self.get_context_data(request, **kwargs)
+		# print('Context : ', context, flush=True)
+		if 'error_msg' in context:
+			self.template_name = 'others/404.html'
+			self.title = 'Error Page'
+			self.css = 'css/404.css'
+			self.js = 'js/404.js'
 		html_content = render_to_string(self.template_name, context)
 		resources = {
 			'title': self.title,
 			'css': self.css,
 			'js': self.js,
-			'html': html_content
+			'html': html_content,
+			'is_authenticated': isUserisAuthenticated(request)
 		}
 		if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
 			return JsonResponse(resources)
@@ -44,33 +54,17 @@ class BaseView(View):
 	def get_context_data(self, request, **kwargs):
 		return {}
 
-class PlayerProfileView(APIView, BaseView):
-	authentication_classes = [JWTCookieAuthentication]
-	permission_classes = [IsAuthenticated]
+# view for the 404 page1
+class Catch_All(BaseView):
+	authentication_classes = []
+	permission_classes = []
+	template_name = 'others/404.html'
+	title = 'Error Page'
+	css = 'css/404.css'
+	js = 'js/404.js'
 
-	template_name = 'others/player_profile.html'
-	# title = 'Player Profile'
-	# css = 'css/player_profile.css'
-	js = 'js/friend.js'
-
-	def get(self, request, *args, **kwargs):  # Use standard args and kwargs
-		print('Player Profile queried player: ', kwargs.get('username'), flush=True)    
-		return super().get(request, *args, **kwargs)  # Pass both args and kwargs
-
-	def get_context_data(self, request, **kwargs):  # Standardize to use kwargs
-		print('Player Profile queried player: ', kwargs.get('username'), flush=True)    
-		queried_user = request.user
-		if kwargs.get('username') and kwargs.get('username') != request.user.username:
-			queried_user = Player.objects.get(username=kwargs.get('username'))
-
-		return {
-			'username': queried_user.username,
-			'email': queried_user.email,
-			'full_name': queried_user.full_name,
-			'2fa': queried_user.tfa,
-			'friendship_status': queried_user.get_friendship_status(request.user),
-			'profile_pic': queried_user.profile_picture.url if queried_user.profile_picture else None,
-		}	
+	def get(self, request, path=None, *args, **kwargs):
+		return super().get(request)
 
 # view for the home page
 class HomeView(APIView, BaseView):
@@ -92,16 +86,15 @@ class HomeView(APIView, BaseView):
 		return super().handle_exception(exception)
 
 	def get_context_data(self, request) :
-		user = request.user
 		data = {
-			'username': user.username,
-			'email': user.email,
-			'full_name': user.get_full_name(),
+			'player': PlayerSerializer(request.user).data
 		}
 		return data
 	
 # view for the index page
 class LandingPageView(BaseView):
+	authentication_classes = []
+	permission_classes = []
 	template_name = 'others/landing.html'
 	css = 'css/landing.css'
 	# js = 'js/landing.js'
@@ -112,19 +105,11 @@ class LandingPageView(BaseView):
 			return HttpResponseRedirect(reverse('home_page'))
 		return super().get(request)
 
-# view for the 404 page1
-class Catch_All(BaseView):
-	template_name = 'others/404.html'
-	title = 'Error Page'
-	css = 'css/404.css'
-	js = 'js/404.js'
-
-	def get(self, request):
-		print('404 page: ', request)
-		return super().get(request)
 
 # Health check view
 class HealthCheck(View):
+	authentication_classes = []
+	permission_classes = []
 	def get(self, request):
 		try:
 			with connection.cursor() as cursor:
@@ -135,8 +120,93 @@ class HealthCheck(View):
 
 # view for the csrf token request
 class CsrfRequest(APIView):
+	authentication_classes = []
+	permission_classes = []
 	def get(self, request):
 		response = Response(status=status.HTTP_200_OK)
 		response.set_cookie('csrftoken', get_token(request))
 		return response
 
+
+""" Searching users """
+class SearchUsers(APIView, BaseView):
+	authentication_classes = [JWTCookieAuthentication]
+	permission_classes = [IsAuthenticated]
+	template = 'others/search_result.html'
+	css = 'css/search.css'
+	js = 'js/friend.js'
+
+	def handle_exception(self, exception):
+		if isinstance(exception, AuthenticationFailed):
+			signin_url = reverse('signin_page')
+			params = urllib.parse.urlencode({'next': self.request.path})
+			response = HttpResponseRedirect(f'{signin_url}?{params}')
+			response.delete_cookie('access_token')
+			response.delete_cookie('refresh_token')
+			response.delete_cookie('csrftoken')
+			response.status_code = 302
+			return response
+		return super().handle_exception(exception)
+
+	def get(self, request, *args, **kwargs):
+		if (request.headers.get('X-Requested-With') != 'XMLHttpRequest'):
+			return HttpResponseRedirect(reverse('home_page'))
+		if (request.user.is_guest):
+			return Response(status=status.HTTP_205_RESET_CONTENT)
+		# http://localhost/search?q=asdfsdaf
+		search_param = request.GET.get('q', '')
+		if not search_param:
+			return JsonResponse({
+				'html': render_to_string(self.template, {'players': []}),
+				'css' : self.css,
+				'js' : self.js
+			})
+		players = []
+		"""
+			friend requests are structured like this: <QuerySet [<FriendRequest: root → hatesfam : (PENDING)>]>
+			-> that's why we need to extract the sender from the request (we need friend requests sent to the user)
+		"""
+		if search_param == 'friends':
+			players = request.user.friend_list.friends.all()
+			print("Friends : ", players, flush=True)
+			print('querying all Friends', flush=True)
+		elif search_param == 'friend_requests':
+			friend_requests = request.user.received_requests.all()
+			players = [fr.sender for fr in friend_requests]  # Extracting the users who sent requests
+		else: # if not it should be a username
+			players = Player.objects.filter(username__icontains=search_param).exclude(is_guest=True)
+			print("ALL Players : ", players, flush=True)
+			print('querying all players - containing {}'.format(search_param), flush=True)
+
+		context = {
+			'players': players, 
+			'current_user': PlayerSerializer(request.user).data,
+			'search_type': search_param
+		}
+		# becareful with direct broswer url visit
+		return JsonResponse({
+			'html': render_to_string(self.template, context),
+			'css' : self.css,
+			'js' : self.js
+		})
+
+class AboutView(BaseView):
+	authentication_classes = []
+	permission_classes = []
+	template_name = 'others/about.html'
+	title = 'About Us'
+	css = 'css/static_pages.css'
+
+class PrivacyView(BaseView):
+	authentication_classes = []
+	permission_classes = []
+	template_name = 'others/privacy.html'
+	title = 'Privacy Policy'
+	css = 'css/static_pages.css'
+
+class TermsView(BaseView):
+	authentication_classes = []
+	permission_classes = []
+	template_name = 'others/terms.html'
+	title = 'Terms of Service'
+	css = 'css/static_pages.css'

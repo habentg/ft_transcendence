@@ -1,5 +1,5 @@
 
-COMPOSE 		= cd ./source && docker compose
+COMPOSE 		= cd ./source && docker-compose
 
 
 # ----------------------- creating services --------------------------
@@ -7,6 +7,9 @@ all: build up
 
 up:
 	$(COMPOSE) -f docker-compose.yaml up -d --remove-orphans
+
+create_users:
+	$(COMPOSE) -f docker-compose.yaml exec app sh create_alot_of_users_for_testing.sh
 
 build:
 	$(COMPOSE) -f docker-compose.yaml build
@@ -84,10 +87,12 @@ push:
 	git push
 
 
+
 # ---------------------------- PHONY PHONY ... -------------------------------
 .PHONY: up down fclean re restart rebuild
 
-
+db:
+	docker exec -it postgresql psql -U ${POSTGRES_USER} -d ${POSTGRES_DB}
 
 # ---------------------------- Help target -------------------------------
 help:
@@ -98,7 +103,6 @@ help:
 	@echo "  up:           Start the services"
 	@echo "  build:        Build the services"
 	@echo "  down:         Stop the services"
-	@echo "  re:           Rebuild the services without deleting the persistent storages"
 	@echo "  start:        Start the services"
 	@echo "  stop:         Stop the services"
 	@echo "  restart:      Restart the services"

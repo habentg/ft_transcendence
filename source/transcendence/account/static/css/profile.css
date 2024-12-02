@@ -1,307 +1,229 @@
+.profile-page {
+    min-height: 100%;
+    width: 100%;
+}
+
 .background-image {
-    background-image: url('/static/images/background2.jpg');
-    height: 100vh;
+    background-image: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), url('/static/images/background2.jpg');
     background-size: cover;
     background-position: center;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    flex: 1;
+    min-height: 100%;
 }
 
-.blur-layer {
+.content {
+    background: linear-gradient(140deg,
+        rgba(255, 255, 255, 0.12) -1.82%,
+        rgba(255, 255, 255, 0.04) 68.19%,
+        rgba(255, 255, 255, 0.03) 80.14%);
+    backdrop-filter: blur(10px);
     border: 1px solid rgba(255, 255, 255, 0.1);
-    background: rgba(255, 255, 255, 0.1);
-    backdrop-filter: blur(20px);
-    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
-    width: 50rem;
-    padding-top: 0.5rem;
-    border-radius: 10px;
-}
-
-
-h3 {
+    border-radius: 15px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
     color: white;
 }
 
-.form-group {
-    margin-bottom: 0.6rem;
-    color: white;
+/* Profile Card Styles */
+.profile-pic-container {
+    margin-bottom: 1rem;
 }
 
-.form-container label {
-    padding-left: 1rem;
+.profile-pic {
+    width: 150px;
+    height: 150px;
+    object-fit: cover;
+    border: 3px solid #84ddfc;
+    padding: 3px;
 }
 
-#edit-username-icon, #edit-email-icon, #edit-name-icon {
-    background: rgba(255, 255, 255, 0.1);
-    border: none;
-}
-
-#edit-username-icon:hover, #edit-email-icon:hover, #edit-name-icon:hover {
-    background: #3399ff;
-}
-
-.profile-dom {
+.profile-details .detail-item {
     display: flex;
-    align-items: center; /* Ensures the profile picture is vertically aligned with the form */
-    position: relative; /* Establishes a positioning context for the icon */
-}
-
-.icon {
-    position: absolute; /* Allows positioning within the .profile-dom */
-
-}
-
-.user-details {
-    background-color: #b02c98;
-    display: flex;
-    flex-direction: column;
-    padding: 2rem;
-    border-radius: 5px;
-    /* justify-content: center;
-    align-items: center; */
-}
-
-.profile-info-container {
-    display: flex;
-    flex-direction: row;
-    justify-content: space-between;
     align-items: center;
+    margin-bottom: 0.5rem;
+    color: #ccc;
 }
 
-input {
-    border: 2px solid #74C0FC;
-    border-radius: 0.3rem;
+/* Game History Styles */
+.table {
+    color: white;
+    margin-bottom: 0;
 }
 
-button {
-    transition: all 0.2s ease-in-out;
+.table thead th {
+    border-bottom: 2px solid #84ddfc;
+    color: #84ddfc;
+    font-weight: 500;
 }
 
-button:hover {
-    /* transform: scale(1.05); */
-    color: #b02c98;
+.table td, .table th {
+    background-color: rgba(45, 73, 84, 0.8);
+    border-color: rgba(132, 221, 252, 0.2);
+    padding: 1rem;
+    vertical-align: middle;
+}
+
+.table tbody tr {
+    transition: all 0.3s ease;
+}
+
+.badge {
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+}
+
+/* Button Styles */
+.btn-primary {
+    background: linear-gradient(45deg, #84ddfc, #b02c98);
+    border: none;
+    transition: all 0.3s ease;
+}
+
+.btn-primary:hover {
+    transform: translateY(-2px);
+    background: linear-gradient(45deg, #b02c98, #84ddfc);
+    box-shadow: 0 4px 15px rgba(132, 221, 252, 0.3);
+}
+
+.btn-outline-light {
+    border: 2px solid #84ddfc;
+    color: #84ddfc;
+}
+
+.btn-outline-light:hover {
+    background: #84ddfc;
+    color: #000;
+    transform: translateY(-2px);
 }
 
 .btn-light {
-    border: 1px solid #ccc;
-    background-color: white;
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: white;
 }
 
-hr {
-    border-top: 1px solid #ccc;
+.btn-light:hover {
+    background: rgba(255, 255, 255, 0.2);
+    color: white;
 }
 
-#pass-change-div {
-    background: rgba(240, 240, 240, 0.9);
-    padding: 2rem;
-    border-radius: 5px;
+/* Text Colors */
+.text-muted {
+    color: #adb5bd !important;
 }
 
-
-.user-details {
-    /* background-color: #b02c98; */
-    display: flex;
-    flex-direction: row; /* Ensures items are aligned in a row */
-    padding: 2rem;
-    border-radius: 5px;
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+    .container {
+        padding: 1rem;
+    }
+    
+    .profile-pic {
+        width: 120px;
+        height: 120px;
+    }
+    
+    .table-responsive {
+        margin: 0 -1rem;
+    }
+    
+    .table td, .table th {
+        padding: 0.75rem;
+    }
 }
 
-.form-container {
-    flex-grow: 1; /* Ensures the form takes up available space next to the image */
+/* Animation */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
-.options {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    gap: 2rem;
+.content {
+    animation: fadeIn 0.5s ease-out;
 }
 
-
-/* Modal */
-.profile-pic-modal {
-    display: none;
-    position: fixed;
-    /* z-index: 1000; */
-    left: 0;
-    top: 0;
-    width: 100%;
-    height: 100%;
-    margin-top: 5rem;
-    overflow: auto;
-    background-color: rgba(0,0,0,0.4);
+/* Modal Styles */
+.modal {
+    backdrop-filter: blur(8px);
 }
 
 .modal-content {
-    background-color: #fefefe;
-    margin: 15% auto;
-    padding: 1rem;
-    border: 1px solid black;
-    width: 80%;
-    max-width: 500px;
-    border-radius: 5px;
-    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    background: linear-gradient(140deg,
+        rgba(255, 255, 255, 0.12) -1.82%,
+        rgba(255, 255, 255, 0.04) 68.19%,
+        rgba(255, 255, 255, 0.03) 80.14%);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+}
+
+.modal-header, .modal-footer {
+    border-color: rgba(255, 255, 255, 0.1);
 }
 
 .modal-title {
-    margin-top: 0;
-    color: #333;
+    color: #84ddfc;
 }
 
-.modal-input {
-    display: block;
-    width: 100%;
-    padding: 10px;
-    margin: 10px 0;
-    border: 1px solid #ddd;
-    border-radius: 4px;
-}
-
-.profile-pic-modal  .modal-button {
-    /* width: 80%; */
-    padding: 5px 10px;
-    margin: 10px 10px 0 0;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-}
-
-.modal-upload-btn {
-    background-color: #4CAF50;
+.form-control {
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
     color: white;
 }
 
-.modal-close-btn {
-    background-color: #f44336;
+.form-control:focus {
+    background: rgba(255, 255, 255, 0.15);
+    border-color: #84ddfc;
     color: white;
+    box-shadow: 0 0 0 0.25rem rgba(132, 221, 252, 0.25);
 }
 
-/* Modal for change password */
-.password-change-modal {
-    display: none;
-    position: fixed;
-    z-index: 1000;
-    left: 0;
-    top: 0;
-    width: 100%;
-    height: 100%;
-    overflow: auto;
-    background-color: rgba(0,0,0,0.4);
+.form-label {
+    color: #adb5bd;
+    font-size: 0.9rem;
 }
 
-.password-modal-content {
-    background-color: #fefefe;
-    margin: 15% auto;
-    padding: 20px;
-    border: 1px solid #888;
-    width: 80%;
-    max-width: 500px;
-    border-radius: 5px;
-    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+.file-upload-wrapper {
+    position: relative;
 }
 
-.password-form-group {
-    margin-bottom: 15px;
+.btn-close-white {
+    filter: invert(1) grayscale(100%) brightness(200%);
 }
 
-.password-form-group label {
-    display: block;
-    margin-bottom: 5px;
+.alert-danger {
+    background: rgba(220, 53, 69, 0.1);
+    border: 1px solid rgba(220, 53, 69, 0.2);
+    color: #dc3545;
 }
 
-.password-form-group input {
-    width: 100%;
-    padding: 8px;
-    border: 1px solid #ddd;
-    border-radius: 4px;
+@media (max-width: 576px) {
+    .modal-dialog {
+        margin: 1rem;
+    }
+    
+    .modal-body {
+        padding: 1rem;
+    }
+    
+    .btn {
+        padding: 0.5rem 1rem;
+        font-size: 0.9rem;
+    }
 }
 
-.password-error-msg {
-    color: #f44336;
-    margin-bottom: 10px;
-    display: none;
+/* Add to your modal styles section */
+.modal-content .form-control::placeholder {
+    color: rgba(255, 255, 255, 0.6) !important;
 }
 
-
-/* Modal container for changing username */
-.username-modal {
-    position: fixed;
-    z-index: 1000; /* Ensure the modal appears on top */
-    left: 0;
-    top: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.5); /* Background overlay */
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
-
-/* Modal content box */
-.modal-content {
-    background-color: white;
-    padding: 20px;
-    border-radius: 10px;
-    width: 90%;
-    max-width: 400px;
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
-    text-align: center;
-}
-
-/* Modal title */
-.modal-title {
-    font-size: 1.5em;
-    margin-bottom: 20px;
-}
-
-/* Modal input field */
-.modal-input {
-    width: 100%;
-    padding: 10px;
-    margin-bottom: 20px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    font-size: 1em;
-}
-
-/* Buttons */
-.modal-button {
-    padding: 10px 20px;
-    border: none;
-    border-radius: 5px;
-    font-size: 1em;
-    cursor: pointer;
-    margin: 5px;
-    transition: background-color 0.3s ease;
-}
-
-/* Update button */
-.modal-upload-btn {
-    background-color: #28a745;
-    color: white;
-}
-
-.modal-upload-btn:hover {
-    background-color: #218838;
-}
-
-/* Cancel button */
-.modal-close-btn {
-    background-color: #dc3545;
-    color: white;
-}
-
-.modal-close-btn:hover {
-    background-color: #c82333;
-}
-
-/* Error message styling */
-.username-error-msg {
-    color: red;
-    font-size: 0.9em;
-    margin-bottom: 10px;
-    display: none;
+.modal-content input:-webkit-autofill,
+.modal-content input:-webkit-autofill:hover,
+.modal-content input:-webkit-autofill:focus {
+    -webkit-text-fill-color: white;
+    -webkit-box-shadow: 0 0 0px 1000px rgba(255, 255, 255, 0.1) inset;
+    transition: background-color 5000s ease-in-out 0s;
 }

@@ -45,11 +45,12 @@ class FriendRequest(models.Model):
         ('PENDING', 'Pending'),
         ('ACCEPTED', 'Accepted'),
         ('DECLINED', 'Declined'),
+        ('CANCELLED', 'cancelled'),
     ]
     
     sender = models.ForeignKey('account.Player', on_delete=models.CASCADE, related_name='sent_requests')
     receiver = models.ForeignKey('account.Player', on_delete=models.CASCADE, related_name='received_requests')
-    status = models.CharField(max_length=8, choices=STATUS_CHOICES, default='PENDING')
+    status = models.CharField(max_length=10, choices=STATUS_CHOICES, default='PENDING')
     # created_at = models.DateTimeField(auto_now_add=True)
     # updated_at = models.DateTimeField(auto_now=True)
 
@@ -76,8 +77,14 @@ class FriendRequest(models.Model):
         
         sender_friends.friends.add(self.receiver)
         receiver_friends.friends.add(self.sender)
+        print(f"Friendship created between {self.sender.username} and {self.receiver.username}", flush=True)
 
     def decline(self):
         """Decline the friend request"""
         self.status = 'DECLINED'
+        self.save()
+
+    def cancel(self):
+        """Decline the friend request"""
+        self.status = 'CANCELLED'
         self.save()
