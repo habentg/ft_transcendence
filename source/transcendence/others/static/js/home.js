@@ -20,8 +20,8 @@ async function search(query_parameter) {
       const responseData = await response.json();
       const resultsDiv = document.getElementById("searchResults");
       resultsDiv.innerHTML = responseData.html;
-      loadCssandJS(responseData, false);
       attachSearchEventListners();
+      loadCssandJS(responseData, false);
     }
     else if (response.status === 302) {
       updateUI("/signin", false);

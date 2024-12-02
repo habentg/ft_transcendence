@@ -347,26 +347,26 @@ function closeUsernameModal() {
   }
 }
 
-/* anonymize account */
-async function anonAccount() {
-  try {
-    const response = await fetch('/anonymize/', {
-      method: 'PATCH',
-      headers: {
-        'Content-Type': 'application/json',
-      }
-    });
+// /* anonymize account */
+// async function anonAccount() {
+//   try {
+//     const response = await fetch('/anonymize/', {
+//       method: 'PATCH',
+//       headers: {
+//         'Content-Type': 'application/json',
+//       }
+//     });
 
-    if (!response.ok) {
-      throw new Error('Failed to anonymize account');
-    }
-    console.log("Account anonymized");
-    updateNavBar(true); // updating navbar
-    updateUI('/profile', false);
-  } catch (error) {
-    console.error('Error:', error);
-  }
-}
+//     if (!response.ok) {
+//       throw new Error('Failed to anonymize account');
+//     }
+//     console.log("Account anonymized");
+//     updateNavBar(true); // updating navbar
+//     updateUI('/profile', false);
+//   } catch (error) {
+//     console.error('Error:', error);
+//   }
+// }
 
 // a function to initialize the profile page and add event listeners
 function initProfilePage() {
@@ -384,13 +384,13 @@ function initProfilePage() {
       updateUsernameModal();
     });
   }
-  const anonymizeBtn = document.getElementById("player-anon");
-  if (anonymizeBtn) {
-    anonymizeBtn.addEventListener("click", async () => {
-      // confirmation modal here - to make sure user know the implications of anonymizing their account
-      await anonAccount();
-    });
-  }
+  // const anonymizeBtn = document.getElementById("player-anon");
+  // if (anonymizeBtn) {
+  //   anonymizeBtn.addEventListener("click", async () => {
+  //     // confirmation modal here - to make sure user know the implications of anonymizing their account
+  //     await anonAccount();
+  //   });
+  // }
 }
 
 // Display error message in modal

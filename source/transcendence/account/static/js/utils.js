@@ -160,7 +160,10 @@ async function updateNavBar(isAuthenticated) {
     let username = "";
     const user_profile_pic = document.getElementById("nav_profile_pic");
     const profile_btn = document.getElementById("profile_btn");
-    username = profile_btn.dataset.username;
+    // check if profile_btn has data-username
+    if (profile_btn) {
+      username = profile_btn.dataset.username;
+    }
     if (user_profile_pic) {
       profilePic = user_profile_pic.dataset.pfp;  // Same as user_profile_pic.getAttribute("data-pfp");
     }

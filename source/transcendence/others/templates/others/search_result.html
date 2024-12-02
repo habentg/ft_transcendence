@@ -16,7 +16,7 @@
             <div class="player-card content mb-2">
               <!-- make the whole card as button -->
               <a onclick="appRouter()" href="/profile/{{ player.username }}" class="w-100 text-decoration-none">
-                <div class="d-flex align-items-center p-3 listDisplay">
+                <div class="d-flex align-items-center listDisplay">
                   <!-- Profile Picture -->
                   <div class="player-avatar">
                     {% if player.profile_picture %}
@@ -51,7 +51,7 @@
                       <p class="fullfiled_para" style="display: none;">you fullfilled the request!</p>
                     {% else %}
                     <!-- <a onclick="appRouter()" href="/profile/{{ player.username }}" class="btn btn-primary btn-sm"> -->
-                      <i class="fas fa-user me-2"></i>
+                      <i id="profileIcon" class="fas fa-user me-2"></i>
                     <!-- </a> -->
                   {% endif %}
                   </div>

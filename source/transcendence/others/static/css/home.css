@@ -134,7 +134,7 @@
 
 @media (max-width: 768px) {
   .background-image {
-    padding: 1rem;
+    /* padding: 1rem; */
   }
   
   .menu-item {
