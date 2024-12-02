@@ -342,3 +342,90 @@ document.querySelectorAll('.navbar-nav .nav-link').forEach(function(navLink) {
     }
   });
 });
+
+// // create modal for notification when notification icon on navbar is clicked
+// function createNotificationModal() {
+//   const existingModal = document.getElementById("notification-modal");
+//   if (existingModal) {
+//     existingModal.remove();
+//     return;
+//   }
+
+//   const modal = document.createElement("div");
+//   modal.id = "notification-modal";
+//   modal.className = "modal fade show";
+//   modal.style.display = "block";
+//   modal.style.backgroundColor = "rgba(0, 0, 0, 0.5)";
+
+//   modal.innerHTML = `
+//     <div class="modal-dialog modal-dialog-right modal-md">
+//       <div class="modal-content">
+//         <div class="modal-header border-0 py-3">
+//           <h5 class="modal-title text-info">
+//             <i class="fas fa-bell me-2"></i>Notifications
+//           </h5>
+//           <button type="button" class="btn-close btn-close-white" id="close-notification-modal"></button>
+//         </div>
+//         <div class="modal-body px-3 py-2">
+//           <div class="notification-list">
+//             <div class="notification-item">
+//               <div class="notification-content">
+//                 <p class="text-white mb-0">You have a new friend request from <a href="#">@username</a></p>
+//               </div>
+//               <div class="notification-action">
+//                 <button class="btn btn-info btn-sm">Accept</button>
+//                 <button class="btn btn-outline-light btn-sm">Decline</button>
+//               </div>
+//             </div>
+//             <div class="notification-item">
+//               <div class="notification-content">
+//                 <p class="text-white mb-0">You have a new friend request from <a href="#">@username</a></p>
+//               </div>
+//               <div class="notification-action">
+//                 <button class="btn btn-info btn-sm">Accept</button>
+//                 <button class="btn btn-outline-light btn-sm">Decline</button>
+//               </div>
+//             </div>
+//             <div class="notification-item">
+//               <div class="notification-content">
+//                 <p class="text-white
+//                 mb-0">You have a new friend request from <a href="#">@username</a></p>
+//               </div>
+//               <div class="notification-action">
+//                 <button class="btn btn-info btn-sm">Accept</button>
+//                 <button class="btn btn-outline-light btn-sm">Decline</button>
+//               </div>
+//             </div>
+//           </div>
+//         </div>
+//         <div class="modal-footer border-0 py-3">
+//           <button id="mark-all-read" class="btn btn-info btn-sm">
+//             <i class="fas fa-check me-2"></i>Mark all as read
+//           </button>
+//         </div>
+//       </div>
+//     </div>
+//   `;
+//   document.body.appendChild(modal);
+//   document.body.classList.add("modal-open");
+
+//   // Event Listeners
+//   modal
+//     .querySelector("#close-notification-modal")
+//     .addEventListener("click", closeNotificationModal);
+//   modal
+//     .querySelector("#mark-all-read")
+//     .addEventListener("click", markAllAsRead);
+//   modal.addEventListener("click", (e) => {
+//     if (e.target === modal) closeNotificationModal();
+//   }
+//   );
+// }
+
+// function closeNotificationModal() {
+//   const modal = document.getElementById("notification-modal");
+//   if (modal) {
+//     modal.remove();
+//     document.body.classList.remove("modal-open");
+//   }
+// }

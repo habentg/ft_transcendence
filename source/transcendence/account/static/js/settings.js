@@ -436,7 +436,7 @@ async function anonAccountModal() {
         </div>
         <div class="modal-footer border-0 py-3">
           <button id="anon-acc-confirm" class="btn btn-danger btn-sm">
-            <i class="fas fa-user-slash me-2"></i>Anonymize
+            <i class="fas fa-user-secret me-2"></i>Anonymize
           </button>
           <button id="anon-acc-cancel" class="btn btn-outline-light btn-sm">
             Cancel
