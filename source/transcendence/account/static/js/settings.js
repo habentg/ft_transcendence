@@ -130,9 +130,6 @@ function createAndShowPasswordModal() {
                 <i class="fas fa-eye"></i>
               </button>
             </div>
-            <small class="text-muted mt-1 d-block" style="font-size: 0.7rem;">
-              Min 8 characters with numbers and letters
-            </small>
           </div>
 
           <div class="mb-2">
@@ -225,6 +222,7 @@ function initSettings() {
   const deleteAccountBtn = document.getElementById("delete-acc-btn");
   const enable2FABtn = document.getElementById("enable-2fa");
   const disable2FABtn = document.getElementById("disable-2fa");
+  const anonymizeBtn = document.getElementById("player-anon");
   const signOutBtn = document.getElementById("sign-out-btn");
 
   if (changePassBtn) {
@@ -235,6 +233,12 @@ function initSettings() {
   }
   if (enable2FABtn) {
     enable2FABtn.addEventListener("click", show2FAModal);
+  }
+  if (anonymizeBtn) {
+    anonymizeBtn.addEventListener("click", async () => {
+      // confirmation modal here - to make sure user know the implications of anonymizing their account
+      await anonAccountModal();
+    });
   }
   if (disable2FABtn) {
     disable2FABtn.addEventListener("click", show2FAModal);
@@ -406,4 +410,89 @@ function close2FAModal() {
     }
 }
 
-/* anonymizing a user */
+// Anonymize Account Modal
+async function anonAccountModal() {
+  const existingModal = document.getElementById('anon-account-modal');
+  if (existingModal) existingModal.remove();
+
+  const modal = document.createElement('div');
+  modal.id = 'anon-account-modal';
+  modal.className = 'modal fade show';
+  modal.style.display = 'block';
+  modal.style.backgroundColor = 'rgba(0, 0, 0, 0.5)';
+
+  modal.innerHTML = `
+    <div class="modal-dialog modal-dialog-centered modal-sm">
+      <div class="content modal-content">
+        <div class="modal-header border-0 py-3">
+          <h5 class="modal-title text-danger">
+            <i class="fas fa-exclamation-triangle me-2"></i>Anonymize Account
+          </h5>
+          <button type="button" class="btn-close btn-close-white" id="close-anon-modal"></button>
+        </div>
+        <div class="modal-body
+        px-3 py-2">
+          <p class="text-white mb-0">This action will log you out and switch to a temporary account. Are you sure you want to proceed? </p>
+        </div>
+        <div class="modal-footer border-0 py-3">
+          <button id="anon-acc-confirm" class="btn btn-danger btn-sm">
+            <i class="fas fa-user-secret me-2"></i>Anonymize
+          </button>
+          <button id="anon-acc-cancel" class="btn btn-outline-light btn-sm">
+            Cancel
+          </button>
+        </div>
+      </div>
+    </div>
+  `;
+  document.body.appendChild(modal);
+  document.body.classList.add('modal-open');
+
+  // Event Listeners
+  modal.querySelector('#close-anon-modal').addEventListener('click', closeAnonAccountModal);
+  modal.querySelector('#anon-acc-cancel').addEventListener('click', closeAnonAccountModal);
+  modal.querySelector('#anon-acc-confirm').addEventListener('click', anonAccount);
+
+  // Close modal when clicking outside
+  modal.addEventListener('click', (e) => {
+    if (e.target === modal) closeAnonAccountModal();
+  });
+
+}
+
+function closeAnonAccountModal() {
+  const modal = document.getElementById('anon-account-modal');
+  if (modal) {
+    modal.remove();
+    document.body.classList.remove('modal-open');
+  }
+}
+
+
+/* anonymize account */
+async function anonAccount() {
+  // Close the modal
+  const modal = document.getElementById('anon-account-modal');
+  if (modal) {
+    modal.remove();
+    document.body.classList.remove('modal-open');
+  }
+
+  try {
+    const response = await fetch('/anonymize/', {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json',
+      }
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to anonymize account');
+    }
+    console.log("Account anonymized");
+    updateNavBar(true); // updating navbar
+    updateUI('/profile', false);
+  } catch (error) {
+    console.error('Error:', error);
+  }
+}

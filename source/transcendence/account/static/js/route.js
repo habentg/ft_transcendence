@@ -1,5 +1,5 @@
 /* Me is trying to prevent double request */
-let isInitialLoad = true;
+window.isInitialLoad = true;
 
 // function to update the UI
 /* 
@@ -34,7 +34,6 @@ async function appRouter(event) {
     event = event || window.event;
     event.preventDefault();
     
-    // let href = event.target.href;
     const href = event.target.closest('a').href;
     let urlObj = new URL(href);
     let path = urlObj.pathname;
@@ -53,15 +52,6 @@ async function loadContent(route) {
       },
     });
 
-    // signout is a special case
-    if (route === `${window.baseUrl}/signout`) {
-      removeResource();
-      updateNavBar(true);
-      await updateUI("/", false);
-      return;
-    }
-    console.log("loadContent() of:", route);
-    console.log("Response status:", response);
     if (!response.ok) {
       // may be we will handle other error codes later
       // if the response is a redirect, then redirect the user to the new location

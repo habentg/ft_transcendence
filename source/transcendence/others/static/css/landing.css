@@ -123,7 +123,7 @@
 }
 
 /* Large devices (desktops, 992px and up) */
-@media (min-width: 992px) {
+@media (min-width: 991px) {
 	.content-wrapper {
 		padding: 0 2rem;
 	}

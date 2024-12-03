@@ -2,7 +2,7 @@
 
 <div class="first-page">
   <div class="background-image home-btn">
-    <div class="container py-5">
+    <div class="friendBoard py-5">
       <!-- Search and Friends Section -->
       <div class="row justify-content-center mb-4">
         {% if not player.is_guest %}
@@ -41,7 +41,7 @@
           <div class="content p-4">
             <div class="row g-4">
               <div class="col-md-6">
-                <a href="#" class="menu-item d-flex align-items-center p-3">
+                <a id="localGameBtn" href="#" class="menu-item d-flex align-items-center p-3">
                   <i class="fas fa-gamepad fa-2x me-3"></i>
                   <h5 class="mb-0">Local Game</h5>
                 </a>
@@ -56,7 +56,7 @@
                   {% endif %}
                 </a>
               </div>
-              <div class="col-md-6">
+              <div id="createTournamentBtn" class="col-md-6">
                 <a href="#" class="menu-item d-flex align-items-center p-3">
                   <i class="fas fa-trophy fa-2x me-3"></i>
                   <h5 class="mb-0">Create Tournament</h5>

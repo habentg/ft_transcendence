@@ -46,4 +46,9 @@ fixing & testing needed:
 
 UI Improvement
 1. pushing the footer down
-2. 
+2. error displaying UI needed - for 401 aynet -- its console log so far
+
+
+
+Friday cases - Unsolved Cases
+1, All css & js files are deleted, except the during signout from friend search (needs revision).

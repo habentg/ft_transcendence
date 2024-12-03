@@ -102,9 +102,39 @@
   min-height: 50px;
 }
 
+/* Modal Styles */
+.modal {
+  backdrop-filter: blur(8px);
+}
+
+.modal-content {
+  background: linear-gradient(140deg,
+      rgba(255, 255, 255, 0.12) -1.82%,
+      rgba(255, 255, 255, 0.04) 68.19%,
+      rgba(255, 255, 255, 0.03) 80.14%);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+  color: white;
+
+}
+
+.modal-header, 
+.modal-footer {
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+.modal-title, .modal.small {
+  color: #84ddfc;
+  font-size: 1.25rem;
+}
+
+.modal .notice {
+  color: #b02c98;
+}
+
 @media (max-width: 768px) {
   .background-image {
-    padding: 1rem;
+    /* padding: 1rem; */
   }
   
   .menu-item {

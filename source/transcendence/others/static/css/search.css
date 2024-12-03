@@ -27,6 +27,7 @@
     transition: all 0.3s ease;
 }
 
+
 .player-card:hover {
     transform: translateY(-2px);
     box-shadow: 0 4px 15px rgba(132, 221, 252, 0.3);

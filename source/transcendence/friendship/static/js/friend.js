@@ -87,17 +87,7 @@ async function acceptOrDeclineFriendRequest(action, toBeFriend, direct_from_prof
       }
       else {
         console.log(" friend request " + action + "ed from the friend requests list");
-        let acc_req_btn = document.getElementsByClassName("acc_req_btn");
-        let rej_req_btn = document.getElementsByClassName("rej_req_btn");
-        acc_req_btn[0].style.display = "none";
-        rej_req_btn[0].style.display = "none";
-        // let fullfiled_para = document.getElementsByClassName("fullfiled_para");
-        // fullfiled_para.style.display = "block";
-        
-        // friend_requests_response_btns.removeChild(friend_requests_response_btns.childNodes[0]);
-        // friend_requests_response_btns.removeChild(friend_requests_response_btns.childNodes[1]);
-        // friend_requests_response_btns.appendChild(document.createTextNode("Friend request " + action + "ed"));
-
+        // await search("friend_requests");
       }
       return;
     }
