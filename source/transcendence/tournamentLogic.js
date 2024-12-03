@@ -1,85 +1,78 @@
-class PingPongTournament {
-    constructor(players) {
-        this.players = players;
-        this.matchHistory = [];
-        this.tournamentBracket = {
-            sideA: [],
-            sideB: [],
-            semiFinals: [],
-            final: null,
-            champion: null
-        };
+function createPingPongTournament(players) {
+    const matchHistory = [];
+    let tournamentStage = players.length === 16 ? 'sides' : 
+                           players.length === 8 ? 'quarterFinals' : 
+                           players.length === 4 ? 'semiFinals' : null;
+
+    function playMatch(player1, player2) {
+		//this is the function for starting a match
+		//here we announce the next match and who is supposed to play
+		//here we initiate the game and we need to return to this context
+		//Also great if we have a context thing to check
+        const match = { player1, player2, winner: player1 }; //need to add the score we get from the match
+        matchHistory.push(match); //then return the player history
+        return match.winner;
     }
 
-    setupBracket() {
-        // Split 8 players into two sides
-        this.tournamentBracket.sideA = [
-            { player1: this.players[0], player2: this.players[1], winner: null },
-            { player1: this.players[2], player2: this.players[3], winner: null }
-        ];
-        this.tournamentBracket.sideB = [
-            { player1: this.players[4], player2: this.players[5], winner: null },
-            { player1: this.players[6], player2: this.players[7], winner: null }
-        ];
-    }
+    function runTournament() {
+        let currentPlayers = [...players];
 
-    playMatches(matches) {
-        return matches.map(match => {
-            const winner = Math.random() > 0.5 ? match.player1 : match.player2;
-            match.winner = winner;
-            this.matchHistory.push(match);
-            return match;
-        });
-    }
-
-    runTournament() {
-        this.setupBracket();
-
-        // Quarter Finals (Side A)
-        const sideAWinners = this.playMatches(this.tournamentBracket.sideA);
-        
-        // Quarter Finals (Side B)
-        const sideBWinners = this.playMatches(this.tournamentBracket.sideB);
-
-        // Semi-Finals
-        this.tournamentBracket.semiFinals = [
-            { 
-                player1: sideAWinners[0].winner, 
-                player2: sideAWinners[1].winner, 
-                winner: null 
-            },
-            { 
-                player1: sideBWinners[0].winner, 
-                player2: sideBWinners[1].winner, 
-                winner: null 
+        // Sides stage for 16 players
+        if (tournamentStage === 'sides') {
+            const sideWinners = [];
+            for (let i = 0; i < currentPlayers.length; i += 2) {
+                sideWinners.push(playMatch(currentPlayers[i], currentPlayers[i + 1]));
             }
-        ];
+            currentPlayers = sideWinners;
+        }
 
-        // Semi-Finals Matches
-        const semiFinalWinners = this.playMatches(this.tournamentBracket.semiFinals);
+        // Quarter Finals stage
+        if (tournamentStage === 'sides' || tournamentStage === 'quarterFinals') {
+            const quarterFinalWinners = [];
+            for (let i = 0; i < currentPlayers.length; i += 2) {
+                quarterFinalWinners.push(playMatch(currentPlayers[i], currentPlayers[i + 1]));
+            }
+            currentPlayers = quarterFinalWinners;
+        }
+
+        // Semi Finals
+        const semiFinalWinners = [];
+        for (let i = 0; i < currentPlayers.length; i += 2) {
+            semiFinalWinners.push(playMatch(currentPlayers[i], currentPlayers[i + 1]));
+        }
 
         // Final
-        this.tournamentBracket.final = {
-            player1: semiFinalWinners[0].winner,
-            player2: semiFinalWinners[1].winner,
-            winner: null
-        };
+        const champion = playMatch(semiFinalWinners[0], semiFinalWinners[1]);
 
-        // Final Match
-        const finalMatch = this.playMatches([this.tournamentBracket.final])[0];
-        this.tournamentBracket.champion = finalMatch.winner;
-
-        return this.tournamentBracket.champion;
+        return champion;
     }
 
-    getMatchHistory() {
-        return this.matchHistory;
+    function getMatchHistory() {
+        return matchHistory;
     }
+
+    return {
+        runTournament,
+        getMatchHistory
+    };
 }
 
 // Example usage
-const players = ['Alice', 'Bob', 'Charlie', 'David', 'Eve', 'Frank', 'Grace', 'Henry'];
-const tournament = new PingPongKnockoutTournament(players);
-const champion = tournament.runTournament();
-console.log('Tournament Champion:', champion.name);
-console.log('Match History:', tournament.getMatchHistory());
+function main() {
+    const scenarios = [
+        { players: ['A1', 'A2', 'B1', 'B2', 'C1', 'C2', 'D1', 'D2', 'E1', 'E2', 'F1', 'F2', 'G1', 'G2', 'H1', 'H2'], name: '16 Players' },
+        { players: ['A1', 'A2', 'B1', 'B2', 'C1', 'C2', 'D1', 'D2'], name: '8 Players' },
+        { players: ['A1', 'A2', 'B1', 'B2'], name: '4 Players' }
+    ];
+
+    scenarios.forEach(scenario => {
+        console.log(`\n${scenario.name} Tournament:`);
+        const tournament = createPingPongTournament(scenario.players);
+        const champion = tournament.runTournament();
+        console.log('Champion:', champion);
+        console.log('Match History:', tournament.getMatchHistory());
+    });
+}
+
+// Uncomment to run
+// main();
