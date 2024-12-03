@@ -4,7 +4,7 @@ from rest_framework.routers import DefaultRouter
 from django.urls import include
 
 notification_router = DefaultRouter()
-notification_router.register(r'notifications', NotificationViewSet, basename='notifications')
+notification_router.register(r'^notifications/?$', NotificationViewSet, basename='notifications')
 
 urlpatterns = notification_router.urls
 """ Regex explanation:

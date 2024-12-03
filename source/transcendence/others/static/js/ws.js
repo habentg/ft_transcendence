@@ -20,7 +20,7 @@ function initWebsocket() {
     window.ws.onmessage = (e) => {
       const data = JSON.parse(e.data);
       if (data.type === "friend_request") {
-        alert(`${data.message}`);
+        // alert(`${data.message}`);
         console.log("friend request received", data.message);
       }
 

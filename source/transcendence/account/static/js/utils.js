@@ -93,11 +93,13 @@ const removeResource = () => {
   // remove existing
   for (let i = 0; i < allStyles.length; i++) {
     if (allStyles[i].id.includes("/static/")) {
+      console.log("removing:", allStyles[i].id);
       allStyles[i].remove();
     }
   }
   for (let i = 0; i < allScripts.length; i++) {
     if (allScripts[i].id.includes("/static/")) {
+      console.log("removing:", allScripts[i].id);
       allScripts[i].remove();
     }
   }
@@ -128,10 +130,13 @@ const loadCssandJS = (data, remove_prev_resources) => {
 
   // Remove previous CSS & js
   if (remove_prev_resources) {
+    console.log("removing previous resources");
     removeResource();
   }
   // loading new css
   if (css_file_path) {
+    if (document.getElementById(`/static/${css_file_path}-id`))
+      return;
     let link = document.createElement("link");
     link.rel = "stylesheet";
     link.type = "text/css";
@@ -142,6 +147,8 @@ const loadCssandJS = (data, remove_prev_resources) => {
   }
   // loading new js
   if (js_file_path) {
+    if (document.getElementById(`/static/${js_file_path}-id`))
+      return;
     let script = document.createElement("script");
     script.src = `/static/${js_file_path}`;
     script.id = `/static/${js_file_path}-id`;

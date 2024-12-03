@@ -49,7 +49,6 @@ async function search(query_parameter, url) {
       if (responseData.previous_page_link === null) {
         prevPageBtn.classList.add("disabled");
       }
-      loadCssandJS(responseData, false);
       attachSearchEventListners();
       loadCssandJS(responseData, false);
     }
