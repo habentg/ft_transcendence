@@ -3,7 +3,7 @@ import time
 from django.core.mail import send_mail
 from django.conf import settings
 from django.template.loader import render_to_string
-from .auth_middleware import is_token_blacklisted
+from .auth_middleware import is_valid_token
 
 def generate_otp_secret():
     return pyotp.random_base32()
@@ -28,6 +28,6 @@ def isUserisAuthenticated(request):
     if request.user.is_authenticated:
         return True
     token = request.COOKIES.get('access_token')
-    if token and not is_token_blacklisted(token):
+    if token and not is_valid_token(token):
         return True
     return False

@@ -112,6 +112,7 @@ const loadCssandJS = (data, remove_prev_resources) => {
 
   // Remove previous CSS & js
   if (remove_prev_resources) {
+    console.log("Removing previous resources ======= ");
     removeResource();
   }
   // loading new css

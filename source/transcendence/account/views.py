@@ -36,6 +36,7 @@ from urllib.request import urlopen
 from tempfile import NamedTemporaryFile
 from others.views import BaseView
 from friendship.models import *
+from account.utils import *
 
 # view for the sign up page
 @method_decorator(csrf_protect, name='dispatch')
@@ -48,6 +49,8 @@ class SignUpView(APIView, BaseView):
 	js = 'js/signup.js'
 
 	def get(self, request):
+		if isUserisAuthenticated(request):
+			return HttpResponseRedirect(reverse('home_page'))
 		return super().get(request)
 
 	def post(self, request):
@@ -55,7 +58,7 @@ class SignUpView(APIView, BaseView):
 		if serializer.is_valid():
 			new_player = serializer.save()
 			if new_player:
-				new_player.last_login = timezone.now()
+				new_player.is_logged_in = True
 				new_player.save()
 				refresh = RefreshToken.for_user(new_player)
 				response = Response(status=status.HTTP_201_CREATED)
@@ -63,7 +66,6 @@ class SignUpView(APIView, BaseView):
 				response.set_cookie('refresh_token', str(refresh), httponly=True)
 				# create a friend list for the new player
 				FriendList.objects.create(player=new_player)
-				Notification.objects.create(player=new_player)
 				return response
 			return Response({'error_msg': 'Couldn\'t create the player'}, status=status.HTTP_422_UNPROCESSABLE_ENTITY)
 		print(serializer.errors, flush=True)
@@ -83,6 +85,8 @@ class SignInView(APIView, BaseView):
 	js = 'js/signin.js'
 
 	def get(self, request):
+		if isUserisAuthenticated(request):
+			return HttpResponseRedirect(reverse('home_page'))
 		next_url = request.GET.get('next', '/')
 		context = self.get_context_data(request)
 		context['next'] = next_url
@@ -102,7 +106,7 @@ class SignInView(APIView, BaseView):
 				else:
 					return Response({'error_msg': 'Couldn\'t send OTP to the given Email'}, 
 								status=status.HTTP_422_UNPROCESSABLE_ENTITY)
-			player.last_login = timezone.now() # IF EVERYTHING IS OK, UPDATE LAST LOGIN
+			player.is_logged_in = True
 			player.save()
 			return response
 		error_message = serializer.errors.get('non_field_errors', ['No specific error'])[0]
@@ -185,18 +189,16 @@ class OauthCallback(View):
 		})
 
 		if user_info_response.status_code != 200:
-			return JsonResponse({'error': 'Failed to obtain user information.'}, status=user_info_response.status_code)
+			return JsonResponse({'error': 'Failed to obtain 42 user information.'}, status=user_info_response.status_code)
 		
 		user_info = user_info_response.json()
 		
 
 		# Find or create user
-		player, created = Player.objects.get_or_create(
+		ft_player, created = Player.objects.get_or_create(
 			username=user_info['login'],
-			defaults={
-				'email': user_info['email'],
-				'full_name': user_info['usual_full_name'],
-			}
+			email=user_info['email'],
+			full_name=user_info['usual_full_name'],
 		)
 
 		if created:
@@ -204,17 +206,17 @@ class OauthCallback(View):
 			img_temp = NamedTemporaryFile(delete=True)
 			img_temp.write(urlopen(image_url).read())
 			img_temp.flush()
-			player.profile_picture.save(f"{player.username}_profile.jpg", File(img_temp))
-			player.set_unusable_password() # User can't login with password
-			FriendList.objects.create(player=player)
-			player.save()
+			ft_player.profile_picture.save(f"{ft_player.username}_profile.jpg", File(img_temp))
+			ft_player.set_unusable_password() # User can't login with password
+			FriendList.objects.create(player=ft_player)
+			ft_player.save()
 
 		# Update last login
-		player.last_login = timezone.now()
-		player.save()
+		ft_player.is_logged_in = True
+		ft_player.save()
 
 		# Generate JWT tokens and Create a response with the JWT tokens
-		refresh = RefreshToken.for_user(player)
+		refresh = RefreshToken.for_user(ft_player)
 
 		# Set the tokens in cookies
 		response = HttpResponseRedirect(reverse('home_page'))
@@ -300,16 +302,16 @@ class PassResetNewPass(View):
 		data = json.loads(request.body)
 		new_password = data.get('new_password')
 
-		User = get_user_model()
+		Player = get_user_model()
 		try:
 			uid = force_str(urlsafe_base64_decode(uidb64))
-			user = User.objects.get(pk=uid)
-		except (TypeError, ValueError, OverflowError, User.DoesNotExist):
-			user = None
+			player = Player.objects.get(pk=uid)
+		except (TypeError, ValueError, OverflowError, Player.DoesNotExist):
+			player = None
 
-		if user is not None and default_token_generator.check_token(user, token):
-			user.set_password(new_password)
-			user.save()
+		if player is not None and default_token_generator.check_token(player, token):
+			player.set_password(new_password)
+			player.save()
 			return JsonResponse({'success': 'Password reset successful!'}, status=status.HTTP_200_OK)
 		else:
 			return JsonResponse({'error_msg': 'Invalid password reset request'}, status=status.HTTP_400_BAD_REQUEST)
@@ -528,6 +530,5 @@ class AnonymizePlayer(APIView):
 		response = Response(status=status.HTTP_200_OK)
 		response.set_cookie('access_token', str(new_jwts.access_token), httponly=True)
 		response.set_cookie('refresh_token', str(new_jwts), httponly=True)
-		anon.last_login = timezone.now()
 		anon.save()
 		return response

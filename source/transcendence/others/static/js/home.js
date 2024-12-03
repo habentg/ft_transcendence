@@ -102,13 +102,10 @@ function searchingSystem() {
 
 function triggerSearch() {
   const query = document.getElementById("searchInput").value;
-  console.log("uppp This: ", query);
   if (query) {
-    console.log("searching for: ", query);
-    search(query);
+    search(query.trim());
   } else {
     document.getElementById("searchResults").classList.add("d-none")
-    console.log("your search is empty");
   }
 }
 

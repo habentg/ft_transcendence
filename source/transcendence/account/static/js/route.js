@@ -60,7 +60,8 @@ async function loadContent(route) {
       await updateUI("/", false);
       return;
     }
-
+    console.log("loadContent() of:", route);
+    console.log("Response status:", response);
     if (!response.ok) {
       // may be we will handle other error codes later
       // if the response is a redirect, then redirect the user to the new location
@@ -78,6 +79,7 @@ async function loadContent(route) {
       }
       throw new Error("HTTP " + response.status);
     }
+    // history.replaceState(null, "", response.url);
     let data = await response.json();
     loadCssandJS(data, true); // load the css and js of the page - remove the previous ones(true)
     document.title = data.title;
@@ -106,14 +108,18 @@ async function handleLocationChange() {
 
 async function initApp() {
   // browser back/forward buttons
-  window.addEventListener("popstate", async () => {
+  window.addEventListener("popstate", async (event) => {
+    console.log("popstate event:", event);
     await handleLocationChange();
   });
-
+  
   // Handling initial load
-  window.addEventListener("load", async () => {
+  window.addEventListener("load", async (event) => {
     isInitialLoad = true;
     // /* websocket - for real-time updates and chat*/
+    console.log("Initial load event ---------------- shdafdsafasfasf");
+    console.log("initial load event:", event);
+    
     // initWebsocket();
     await handleLocationChange();
   });

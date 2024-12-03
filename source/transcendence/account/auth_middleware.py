@@ -11,7 +11,7 @@ redis_instance = redis.StrictRedis(host=settings.REDIS_HOST,
                                    db=settings.REDIS_DB)
 # just checks if token is in blacklist
 #EX: `GET mykey`
-def is_token_blacklisted(token_string):
+def is_valid_token(token_string):
     try:
         token = jwt.decode(token_string, algorithms=["HS256"], key=settings.SECRET_KEY, options={"verify_exp": True})
         jti = token['jti']
@@ -49,11 +49,11 @@ class JWTCookieAuthentication(JWTAuthentication):
         if raw_token is None:
             raise AuthenticationFailed('No token found in cookies')
         try:
-            if is_token_blacklisted(raw_token):
+            if is_valid_token(raw_token):
                 raise AuthenticationFailed('This token is blacklisted')
             validated_token = self.get_validated_token(raw_token)
-            user = self.get_user(validated_token)
-            return (user, validated_token)
+            authenticated_player = self.get_user(validated_token)
+            return (authenticated_player, validated_token)
         except InvalidToken as e:
             raise AuthenticationFailed(str(e))
         except AuthenticationFailed as e:

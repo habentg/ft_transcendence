@@ -28,3 +28,22 @@ Saturday cases - NOT FIXED YET
 3, static pages (e.g about us) page when reloaded/refreshed profile picture on navbar is goind to default pic.
   -> NOTE: request is not going through [JWTCookieAuthentication] ... so couldnt get the profile picture
 
+
+
+
+fixing & testing needed:
+1. uniqueness of an email - because for forget password, we will query with email and not its just finding the first one with that email
+2. after login/signup and redirected to homepage, if you click on the browser back button, it will take you to sign in page (eventhogh he is authenticated)!
+  -> partial fix: now he is bieng redirected back to the home page, but the url is still /signin
+  #? another issue - browser back/forward is resulting 404 for nested routes like /profile/haben
+3. when you logi
+
+
+
+
+
+
+
+UI Improvement
+1. pushing the footer down
+2. 

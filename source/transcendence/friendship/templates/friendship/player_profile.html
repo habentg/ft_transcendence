@@ -15,9 +15,13 @@
                   <img src="{% static 'images/default_profile_pic.jpeg' %}" alt="Default Profile Picture" class="profile-pic rounded-circle" />
                 {% endif %}
                 {% if is_self %}
-                  <button id="change-profile-pic" class="btn btn-light btn-sm position-absolute bottom-0 end-0"><i class="fa-solid fa-pen"></i></button>
+                <button id="change-profile-pic" class="btn btn-light btn-sm position-absolute bottom-0 end-0"><i class="fa-solid fa-pen"></i></button>
                 {% else %}
-                  <button id="change-profile-pic" class="btn btn-light position-absolute bottom-0 end-0"><i class="fa-solid fa-globe" style="color:green;"></i></button>
+                  {% if player.is_logged_in %}
+                    <button id="change-profile-pic" class="btn btn-light position-absolute bottom-0 end-0"><i class="fa-solid fa-globe" style="color:green;"></i></button>
+                  {% else %}
+                    <button id="change-profile-pic" class="btn btn-light position-absolute bottom-0 end-0"><i class="fa-solid fa-globe" style="color:red;"></i></button>
+                  {% endif %}
                 {% endif %}
               </div>
 
