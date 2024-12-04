@@ -1,3 +1,5 @@
+// look for last ball position every one second. >>trans rules.
+
 //ai view
 let lastballPosition = {x: ball.X, y: ball.Y};
 
