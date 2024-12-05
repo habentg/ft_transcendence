@@ -376,10 +376,10 @@ class TwoFactorAuth(APIView, BaseView):
 class ProfileView(APIView, BaseView):
 	authentication_classes = [JWTCookieAuthentication]
 	permission_classes = [IsAuthenticated]
-	template_name = 'account/profile.html'
-	title = 'Profile'
-	css = 'css/profile.css'
-	js = 'js/profile.js'
+	# template_name = 'account/profile.html'
+	# title = 'Profile'
+	# css = 'css/profile.css'
+	# js = 'js/profile.js'
 
 	def handle_exception(self, exception):
 		if isinstance(exception, AuthenticationFailed):

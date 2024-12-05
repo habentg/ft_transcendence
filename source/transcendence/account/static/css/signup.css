@@ -1,14 +1,14 @@
-.sign_up_page {
-  min-height: 100%;
-  width: 100%;
-}
 
-.background-image {
+.sign_up_page .background-image {
+  display: flex;
+  align-items: center;
+  justify-content: center;
   background-image: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.7)), url('/static/images/download.jpeg');
   background-size: cover;
   background-position: center;
-  background-repeat: no-repeat;
-  min-height: 100%;
+
+  height: fit-content;
+  min-height: 100vh;
 }
 
 .form-cont {

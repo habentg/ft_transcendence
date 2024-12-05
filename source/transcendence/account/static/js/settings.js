@@ -169,7 +169,13 @@ function createAndShowPasswordModal() {
   modal
     .querySelector("#update-pass-btn")
     .addEventListener("click", updatePlayerPassword);
-
+  
+  // on key press enter
+  modal.addEventListener("keypress", (e) => {
+    if (e.key === "Enter") {
+      updatePlayerPassword();
+    }
+  });
   // Add toggle password visibility functionality
   modal.querySelectorAll(".toggle-password").forEach((button) => {
     button.addEventListener("click", function () {
@@ -415,47 +421,18 @@ async function anonAccountModal() {
   const existingModal = document.getElementById('anon-account-modal');
   if (existingModal) existingModal.remove();
 
-  const modal = document.createElement('div');
-  modal.id = 'anon-account-modal';
-  modal.className = 'modal fade show';
-  modal.style.display = 'block';
-  modal.style.backgroundColor = 'rgba(0, 0, 0, 0.5)';
-
-  modal.innerHTML = `
-    <div class="modal-dialog modal-dialog-centered modal-sm">
-      <div class="content modal-content">
-        <div class="modal-header border-0 py-3">
-          <h5 class="modal-title text-danger">
-            <i class="fas fa-exclamation-triangle me-2"></i>Anonymize Account
-          </h5>
-          <button type="button" class="btn-close btn-close-white" id="close-anon-modal"></button>
-        </div>
-        <div class="modal-body
-        px-3 py-2">
-          <p class="text-white mb-0">This action will log you out and switch to a temporary account. Are you sure you want to proceed? </p>
-        </div>
-        <div class="modal-footer border-0 py-3">
-          <button id="anon-acc-confirm" class="btn btn-danger btn-sm">
-            <i class="fas fa-user-secret me-2"></i>Anonymize
-          </button>
-          <button id="anon-acc-cancel" class="btn btn-outline-light btn-sm">
-            Cancel
-          </button>
-        </div>
-      </div>
-    </div>
-  `;
-  document.body.appendChild(modal);
+  const anon_confirmaion_modal = create_anon_confirmaion_modal();
+  document.body.appendChild(anon_confirmaion_modal);
   document.body.classList.add('modal-open');
 
   // Event Listeners
-  modal.querySelector('#close-anon-modal').addEventListener('click', closeAnonAccountModal);
-  modal.querySelector('#anon-acc-cancel').addEventListener('click', closeAnonAccountModal);
-  modal.querySelector('#anon-acc-confirm').addEventListener('click', anonAccount);
+  anon_confirmaion_modal.querySelector('#close-anon-modal').addEventListener('click', closeAnonAccountModal);
+  anon_confirmaion_modal.querySelector('#anon-acc-cancel').addEventListener('click', closeAnonAccountModal);
+  anon_confirmaion_modal.querySelector('#anon-acc-confirm').addEventListener('click', anonAccount);
 
   // Close modal when clicking outside
-  modal.addEventListener('click', (e) => {
-    if (e.target === modal) closeAnonAccountModal();
+  anon_confirmaion_modal.addEventListener('click', (e) => {
+    if (e.target === anon_confirmaion_modal) closeAnonAccountModal();
   });
 
 }

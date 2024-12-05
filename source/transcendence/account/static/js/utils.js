@@ -158,7 +158,7 @@ async function updateNavBar(isAuthenticated) {
   if (isAuthenticated) {
     let profilePic = "/static/images/default_profile_pic.jpeg";
     let username = "";
-    const user_profile_pic = document.getElementById("nav_profile_pic");
+    const user_profile_pic = document.getElementById("nav_profile_pic") || document.getElementById("pfp_from_profile");
     const profile_btn = document.getElementById("profile_btn");
     // check if profile_btn has data-username
     if (profile_btn) {
@@ -169,7 +169,7 @@ async function updateNavBar(isAuthenticated) {
     }
 
     console.log("profilePic:", profilePic);
-    console.log("username:", username);
+    console.log("username:", username); 
     navbar.innerHTML = `
     <ul class="navbar-nav ms-auto align-items-center">
       <li class="nav-item">
@@ -181,8 +181,41 @@ async function updateNavBar(isAuthenticated) {
       <li class="nav-item">
         <a href="#" class="nav-link"><i class="fas fa-comments me-2"></i>Chat</a>
       </li>
-      <li class="nav-item">
-        <a href="#" class="nav-link position-relative notification-badge"><i class="fas fa-bell"></i></a>
+      <li class="nav-item ms-lg-2 dropdown">
+        <a
+          class="nav-link position-relative notification-badge"
+          href="#"
+          role="button"
+          id="notificationDropdown"
+          data-bs-toggle="dropdown"
+          aria-expanded="false"
+        >
+          <i class="fas fa-bell"></i>
+        </a>
+        <ul
+          class="dropdown-menu dropdown-menu-end"
+          aria-labelledby="notificationDropdown"
+          style="width: 300px;" 
+        >
+          <!-- Notifications -->
+          <li style="border-bottom: 1px solid #ffffff; padding-bottom: 0.3rem; margin-bottom: 0.3rem;">
+            <a class="dropdown-item" href="#"><i class="fas fa-user me-3"></i>Friend Request <i class="fas fa-user-plus ms-3"></i></a>
+            <div class="small test-mute ms-3" style="color: antiquewhite;"> John Doe has sent you a friend request</div>
+          </li>
+          <li style="border-bottom: 1px solid #ffffff; padding-bottom: 0.3rem; margin-bottom: 0.3rem;">
+            <a class="dropdown-item" href="#"><i class="fas fa-user me-3"></i>Friend Request <i class="fas fa-user-plus ms-3"></i></a>
+            <div class="small test-mute ms-3" style="color: antiquewhite;"> John Doe has sent you a friend request</div>
+          </li>
+          <li style="border-bottom: 1px solid #ffffff; padding-bottom: 0.3rem; margin-bottom: 0.3rem;">
+            <a class="dropdown-item" href="#"><i class="fas fa-user me-3"></i> New message <i class="fas fa-envelope ms-3"></i></a>
+            <div class="small test ms-3" style="color: antiquewhite;"> John Doe has sent you a message</div>
+          </li>
+          <!-- See more option that leads to the notification page -->
+          <li>
+            <a class="dropdown-item" href="#"><i class="fas fa-ellipsis-h me-3"></i>See More</a>
+          </li>
+
+        </ul>
       </li>
       <li class="nav-item ms-lg-2 dropdown">
         <a class="nav-link profile-link" href="#" role="button" id="profileDropdown" 
@@ -344,3 +377,62 @@ document.querySelectorAll('.navbar-nav .nav-link').forEach(function(navLink) {
     }
   });
 });
+
+
+// ShowSuccessMessage Function
+function showSuccessMessage(message, timeout = 3000) {
+  // create and show success modal
+  const existingModal = document.getElementById("success-modal");
+  if (existingModal) existingModal.remove();
+
+  const modal = document.createElement("div");
+  modal.id = "success-modal";
+  modal.className = "modal fade show";
+  modal.style.display = "block";
+  modal.style.backgroundColor = "rgba(0, 0, 0, 0.5)";
+
+  modal.innerHTML = `
+    <div class="modal-dialog modal-dialog-centered modal-sm">
+      <div class="content modal-content">
+        <div class="modal-header border-0 py-3">
+          <h5 class="modal-title text-success">
+            <i class="fas fa-check-circle me-2"></i>Success
+          </h5>
+          <button type="button" class="btn-close btn-close-white" id="close-success-modal"></button>
+        </div>
+        <div class="modal-body
+        px-3 py-2">
+          <p class="text-white mb-0">${message}</p>
+        </div>
+        <div class="modal-footer border-0 py-3">
+          <button id="success-modal-close" class="btn btn-success btn-sm">
+            Close
+          </button>
+        </div>
+      </div>
+    </div>
+  `;
+
+  document.body.appendChild(modal);
+  document.body.classList.add("modal-open");
+
+  // Event Listeners
+  modal.querySelector("#close-success-modal").addEventListener("click", closeSuccessModal);
+  modal.querySelector("#success-modal-close").addEventListener("click", closeSuccessModal);
+  modal.addEventListener("click", (e) => {
+    if (e.target === modal) closeSuccessModal();
+  });
+
+  // Close modal after 3 seconds
+  setTimeout(() => {
+    closeSuccessModal();
+  }, timeout);
+}
+
+function closeSuccessModal() {
+  const modal = document.getElementById("success-modal");
+  if (modal) {
+    modal.remove();
+    document.body.classList.remove("modal-open");
+  }
+}

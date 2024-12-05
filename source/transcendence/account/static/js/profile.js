@@ -88,6 +88,7 @@ async function UpdateUserInfo() {
         // Success - close modal and update UI
         closeUsernameModal();
         updateUI('/profile', false);
+        showSuccessMessage("Profile updated successfully", 2000);
     } catch (error) {
         console.error('Error:', error);
     }
@@ -173,6 +174,12 @@ function createAndShowModal() {
   modal.querySelector('#close-modal').addEventListener('click', closeModal);
   modal.querySelector('#close-modal-btn').addEventListener('click', closeModal);
   modal.querySelector('#update-profile-pic-btn').addEventListener('click', handleUpload);
+
+  // On click Enter key, upload profile picture
+  // modal.addEventListener('keydown', (e) => {
+  //   if (e.key === 'Enter') handleUpload();
+  // });
+
   modal.addEventListener('click', (e) => {
     if (e.target === modal) closeModal();
   });
@@ -222,9 +229,11 @@ async function handleUpload() {
 
     if (response.ok) {
       console.log("Profile pic updated");
+      closeModal();
       // update the user info in the DOM
       await updateUI('/profile', false);
-      closeModal();
+      updateNavBar(true); // updating navbar
+      showSuccessMessage("Profile picture updated successfully", 2000);
     } else {
       throw new Error('Failed to update profile pic');
     }
@@ -334,6 +343,12 @@ function updateUsernameModal() {
   modal.querySelector('#close-username-modal').addEventListener('click', closeUsernameModal);
   modal.querySelector('#close-username-modal-btn').addEventListener('click', closeUsernameModal);
   modal.querySelector('#update-username-btn').addEventListener('click', UpdateUserInfo);
+
+  // On click Enter key, update user info
+  modal.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') UpdateUserInfo();
+  });
+
   modal.addEventListener('click', (e) => {
     if (e.target === modal) closeUsernameModal();
   });
