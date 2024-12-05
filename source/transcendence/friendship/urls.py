@@ -4,7 +4,7 @@ from rest_framework.routers import DefaultRouter
 from django.urls import include
 
 notification_router = DefaultRouter()
-notification_router.register(r'^notifications/?$', NotificationViewSet, basename='notifications')
+notification_router.register(r'notifications', NotificationViewSet, basename='notifications')
 
 urlpatterns = notification_router.urls
 """ Regex explanation:
@@ -16,6 +16,5 @@ urlpatterns = notification_router.urls
 urlpatterns += [
     re_path(r'^friend_request/(?P<username>[\w-]+)/?$', FriendRequestView.as_view(), name='friend_request'),
     re_path(r'^friend_request_response/(?P<username>[\w-]+)/?$', FriendRequestResponseView.as_view(), name='response_friend_request'),
-    re_path(r'^profile/(?P<username>[\w-]+)/?$', PlayerProfileView.as_view(), name='player_profile'),
 ]
 

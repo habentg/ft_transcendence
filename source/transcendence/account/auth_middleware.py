@@ -15,16 +15,16 @@ def is_valid_token(token_string):
     try:
         token = jwt.decode(token_string, algorithms=["HS256"], key=settings.SECRET_KEY, options={"verify_exp": True})
         jti = token['jti']
-        return redis_instance.exists(jti) > 0  # Check if the key exists in Redis
+        return not redis_instance.exists(jti)  # Check if the key exists in Redis
     except jwt.ExpiredSignatureError:
         print("Token has expired", flush=True)
-        return True  # Treat expired tokens as blacklisted
+        return False  # Treat expired tokens as blacklisted
     except jwt.InvalidTokenError as e:
         print("Invalid token: ", e, flush=True)
-        return True  # Treat invalid tokens as blacklisted
+        return False  # Treat invalid tokens as blacklisted
     except Exception as e:
         print("Error decoding token: ", e, flush=True)
-        return True  # Treat unexpected errors as blacklisted
+        return False  # Treat unexpected errors as blacklisted
 
 # extracts JTI (JSON Token Identifier) from token and adds it to blacklist using SETEX command - sets key with expiry time (auto deletes)
 #EX: `SETEX mykey 3600 "hello"`
@@ -34,12 +34,8 @@ def add_token_to_blacklist(token_string):
         expires_in = token['exp'] - token['iat']
         jti = token['jti']
         redis_instance.setex(jti, expires_in, 'blacklisted')
-    except jwt.ExpiredSignatureError:
-        return True
-    except jwt.InvalidTokenError as e:
-        return True
     except Exception as e:
-        return True
+        raise Exception('Error adding token to blacklist: ' + str(e))
 
 
 # custom JWT authentication class that uses cookies instead of Authorization header
@@ -49,7 +45,7 @@ class JWTCookieAuthentication(JWTAuthentication):
         if raw_token is None:
             raise AuthenticationFailed('No token found in cookies')
         try:
-            if is_valid_token(raw_token):
+            if not is_valid_token(raw_token):
                 raise AuthenticationFailed('This token is blacklisted')
             validated_token = self.get_validated_token(raw_token)
             authenticated_player = self.get_user(validated_token)

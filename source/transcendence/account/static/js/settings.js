@@ -22,8 +22,8 @@ async function updatePlayerPassword() {
       return;
     }
 
-    const response = await fetch("/update_password/", {
-      method: "PATCH",
+    const response = await fetch("/update_profile/", {
+      method: "POST",
       headers: {
         "Content-Type": "application/json",
         "X-CSRFToken": await getCSRFToken(),
@@ -39,8 +39,9 @@ async function updatePlayerPassword() {
 
     // Success - close modal and show success message
     closePasswordModal();
-    showSuccessMessage("Password updated successfully!");
-    updateUI("/settings", false);
+    // showSuccessMessage("Password updated successfully!");
+    // alert("Password updated successfully!");
+    // updateUI("/settings", false);
   } catch (error) {
     console.error("Error:", error);
     displayError({ error_msg: "An error occurred while updating password" });
@@ -65,9 +66,9 @@ async function handleEnableDisable2FA() {
     });
 
     if (response.ok) {
-      const button = document.getElementById('enable-2fa') || 
-                    document.getElementById('disable-2fa');
-      
+      const button = document.getElementById('enable-2fa') ||
+        document.getElementById('disable-2fa');
+
       if (button.id === 'enable-2fa') {
         button.id = 'disable-2fa';
         button.className = 'btn btn-warning w-100';
@@ -317,7 +318,7 @@ async function deleteAccount() {
     if (response.status === 200) {
       closeDeleteAccountModal();
       updateNavBar(false);
-      updateUI("/", false);
+      updateUI("", false);
     } else {
       throw new Error("Failed to delete account");
     }
@@ -337,28 +338,28 @@ function closeDeleteAccountModal() {
 
 // Function to create and show the 2FA modal
 function show2FAModal() {
-    const existingModal = document.getElementById('2fa-modal');
-    if (existingModal) existingModal.remove();
+  const existingModal = document.getElementById('2fa-modal');
+  if (existingModal) existingModal.remove();
 
-    const button = document.getElementById('enable-2fa') || 
-                  document.getElementById('disable-2fa');
-    const is2FAEnabled = button.id === 'disable-2fa';
-    
-    const modalTitle = is2FAEnabled ? 'Disable 2FA' : 'Enable 2FA';
-    const modalIcon = 'fa-shield-alt';
-    const actionBtnClass = is2FAEnabled ? 'btn-warning' : 'btn-success';
-    const actionText = is2FAEnabled ? 'Disable' : 'Enable';
-    const modalMessage = is2FAEnabled 
-        ? 'Are you sure you want to disable Two-Factor Authentication? This will make your account less secure.'
-        : 'Enable Two-Factor Authentication to add an extra layer of security to your account. You\'ll need to enter a verification code each time you sign in.';
+  const button = document.getElementById('enable-2fa') ||
+    document.getElementById('disable-2fa');
+  const is2FAEnabled = button.id === 'disable-2fa';
 
-    const modal = document.createElement('div');
-    modal.id = '2fa-modal';
-    modal.className = 'modal fade show';
-    modal.style.display = 'block';
-    modal.style.backgroundColor = 'rgba(0, 0, 0, 0.5)';
+  const modalTitle = is2FAEnabled ? 'Disable 2FA' : 'Enable 2FA';
+  const modalIcon = 'fa-shield-alt';
+  const actionBtnClass = is2FAEnabled ? 'btn-warning' : 'btn-success';
+  const actionText = is2FAEnabled ? 'Disable' : 'Enable';
+  const modalMessage = is2FAEnabled
+    ? 'Are you sure you want to disable Two-Factor Authentication? This will make your account less secure.'
+    : 'Enable Two-Factor Authentication to add an extra layer of security to your account. You\'ll need to enter a verification code each time you sign in.';
 
-    modal.innerHTML = `
+  const modal = document.createElement('div');
+  modal.id = '2fa-modal';
+  modal.className = 'modal fade show';
+  modal.style.display = 'block';
+  modal.style.backgroundColor = 'rgba(0, 0, 0, 0.5)';
+
+  modal.innerHTML = `
         <div class="modal-dialog modal-dialog-centered modal-sm">
             <div class="content modal-content">
                 <div class="modal-header border-0 py-3">
@@ -383,31 +384,31 @@ function show2FAModal() {
         </div>
     `;
 
-    document.body.appendChild(modal);
-    document.body.classList.add('modal-open');
+  document.body.appendChild(modal);
+  document.body.classList.add('modal-open');
 
-    // Event Listeners
-    const closeButtons = modal.querySelectorAll('[data-dismiss="modal"]');
-    closeButtons.forEach(button => {
-        button.addEventListener('click', close2FAModal);
-    });
+  // Event Listeners
+  const closeButtons = modal.querySelectorAll('[data-dismiss="modal"]');
+  closeButtons.forEach(button => {
+    button.addEventListener('click', close2FAModal);
+  });
 
-    const confirmButton = modal.querySelector('#confirm-2fa');
-    if (confirmButton) {
-        confirmButton.addEventListener('click', handleEnableDisable2FA);
-    }
+  const confirmButton = modal.querySelector('#confirm-2fa');
+  if (confirmButton) {
+    confirmButton.addEventListener('click', handleEnableDisable2FA);
+  }
 
-    modal.addEventListener('click', (e) => {
-        if (e.target === modal) close2FAModal();
-    });
+  modal.addEventListener('click', (e) => {
+    if (e.target === modal) close2FAModal();
+  });
 }
 
 function close2FAModal() {
-    const modal = document.getElementById('2fa-modal');
-    if (modal) {
-        modal.remove();
-        document.body.classList.remove('modal-open');
-    }
+  const modal = document.getElementById('2fa-modal');
+  if (modal) {
+    modal.remove();
+    document.body.classList.remove('modal-open');
+  }
 }
 
 // Anonymize Account Modal
@@ -479,19 +480,14 @@ async function anonAccount() {
   }
 
   try {
-    const response = await fetch('/anonymize/', {
-      method: 'PATCH',
-      headers: {
-        'Content-Type': 'application/json',
-      }
-    });
+    const response = await fetch('/anonymize/');
 
     if (!response.ok) {
       throw new Error('Failed to anonymize account');
     }
-    console.log("Account anonymized");
-    updateNavBar(true); // updating navbar
-    updateUI('/profile', false);
+    console.log("Account anonymized response: ", response);
+    const responseData = await response.json();
+    updateUI(`${responseData.redirect}`, false);
   } catch (error) {
     console.error('Error:', error);
   }

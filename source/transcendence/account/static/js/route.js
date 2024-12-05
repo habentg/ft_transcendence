@@ -99,7 +99,6 @@ async function handleLocationChange() {
 async function initApp() {
   // browser back/forward buttons
   window.addEventListener("popstate", async (event) => {
-    console.log("popstate event:", event);
     await handleLocationChange();
   });
   
@@ -107,9 +106,6 @@ async function initApp() {
   window.addEventListener("load", async (event) => {
     isInitialLoad = true;
     // /* websocket - for real-time updates and chat*/
-    console.log("Initial load event ---------------- shdafdsafasfasf");
-    console.log("initial load event:", event);
-    
     // initWebsocket();
     await handleLocationChange();
   });

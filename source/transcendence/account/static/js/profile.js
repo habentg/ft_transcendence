@@ -31,7 +31,7 @@ async function deleteAccount() {
         <a onclick="appRouter()" class="nav-link btn btn-primary ms-lg-2" href="/signup">Sign up</a>
       </li>
       `;
-      updateUI('/', false);
+      await updateUI("", false);
       return;
     }
     throw new Error("Failed to delete account");
@@ -70,7 +70,7 @@ async function UpdateUserInfo() {
             return;
         }
 
-        const response = await fetch('/profile/', {
+        const response = await fetch('/update_profile/', {
             method: 'PATCH',
             headers: {
                 'Content-Type': 'application/json',
@@ -86,44 +86,9 @@ async function UpdateUserInfo() {
         }
 
         // Success - close modal and update UI
+        const responseData = await response.json();
         closeUsernameModal();
-        updateUI('/profile', false);
-    } catch (error) {
-        console.error('Error:', error);
-    }
-}
-
-
-// update user password
-async function updatePlayerPassword () {
-    try {
-        const formData = {
-            current_password: document.getElementById('curr-password').value,
-            new_password: document.getElementById('new-password').value,
-            confirm_password: document.getElementById('confirm-password').value
-        }
-        console.log("Update password form data: ", formData);
-        const response = await fetch('/update_password/', {
-            method: 'PATCH',
-            headers: {
-                'content-type': 'application/json',
-                'X-CSRFToken': await getCSRFToken()
-            },
-            body: JSON.stringify(formData)
-        });
-    
-        console.log("Password update response: ", response);
-        if (!response.ok) {
-            const responseData = await response.json();
-            console.log("Json response: ", responseData);
-            displayError(responseData);
-            return;
-        }
-        console.log("Password updated");
-        await updateUI('/profile', false);
-        // close the modal
-        closePasswordModal();
-        // after modal is closed, display password update success message / modal
+        await updateUI(`/profile/${responseData.username}`, false);
     } catch (error) {
         console.error('Error:', error);
     }
@@ -211,7 +176,7 @@ async function handleUpload() {
     // using FormData to send the file - browser will set the correct headers
     const formData = new FormData();
     formData.append('profile_picture', profilePicFile);
-    const response = await fetch('/profile/', {
+    const response = await fetch('/update_profile/', {
       method: 'PATCH',
       headers: {
         'X-CSRFToken': await getCSRFToken()
@@ -223,7 +188,8 @@ async function handleUpload() {
     if (response.ok) {
       console.log("Profile pic updated");
       // update the user info in the DOM
-      await updateUI('/profile', false);
+      const responseData = await response.json();
+      await updateUI(`/profile/${responseData.username}`, false);
       closeModal();
     } else {
       throw new Error('Failed to update profile pic');
@@ -231,7 +197,7 @@ async function handleUpload() {
   } catch (error) {
     console.error('Error:', error);
     const errorMsg = document.getElementById('error-msg');
-    errorMsg.textContent = 'An error occurred while uploading the profile picture';
+    errorMsg.textContent = 'Image is too large or invalid format';
     errorMsg.style.display = 'block';
   }
 }1
@@ -243,39 +209,6 @@ function closeModal() {
     document.body.classList.remove('modal-open');
   }
 }
-
-// upload profile picture
-// async function UploadNewProfilePic() {
-//     try {
-//         // user input validation here maybe
-//         const profilePicFile = document.getElementById('profile-pic').files[0];
-//         console.log("Profile pic file:", profilePicFile);
-//         if (profilePicFile === undefined) 
-//             throw new Error('No file selected');
-//         // using FormData to send the file - browser will set the correct headers
-//         const formData = new FormData();
-//         formData.append('profile_picture', profilePicFile);
-//         const response = await fetch('/profile/', {
-//             method: 'PATCH',
-//             headers: {
-//                 'X-CSRFToken': await getCSRFToken()
-//             },
-//             // sending body directly as FormData - no need to stringify
-//             body: formData
-//         });
-
-//         if (response.ok) {
-//             console.log("Profile pic updated");
-//             // update the user info in the DOM
-//             await updateUI('/profile', false);
-//         } else {
-//             throw new Error('Failed to update profile pic');
-//         }
-//     } catch (error) {
-//         console.error('Error:', error);
-//     }
-// }
-
 
 // Update User Info Modal
 function updateUsernameModal() {
@@ -348,27 +281,6 @@ function closeUsernameModal() {
   }
 }
 
-// /* anonymize account */
-// async function anonAccount() {
-//   try {
-//     const response = await fetch('/anonymize/', {
-//       method: 'PATCH',
-//       headers: {
-//         'Content-Type': 'application/json',
-//       }
-//     });
-
-//     if (!response.ok) {
-//       throw new Error('Failed to anonymize account');
-//     }
-//     console.log("Account anonymized");
-//     updateNavBar(true); // updating navbar
-//     updateUI('/profile', false);
-//   } catch (error) {
-//     console.error('Error:', error);
-//   }
-// }
-
 // a function to initialize the profile page and add event listeners
 function initProfilePage() {
   
@@ -385,28 +297,7 @@ function initProfilePage() {
       updateUsernameModal();
     });
   }
-  // const anonymizeBtn = document.getElementById("player-anon");
-  // if (anonymizeBtn) {
-  //   anonymizeBtn.addEventListener("click", async () => {
-  //     // confirmation modal here - to make sure user know the implications of anonymizing their account
-  //     await anonAccount();
-  //   });
-  // }
 }
-
-// Display error message in modal
-// function displayError(errorData) {
-//     const errorMsg = document.getElementById('error-msg');
-//     if (errorMsg) {
-//         errorMsg.textContent = errorData.error_msg || "An error occurred";
-//         errorMsg.style.display = 'block';
-        
-//         // Hide error message after 3 seconds
-//         setTimeout(() => {
-//             errorMsg.style.display = 'none';
-//         }, 3000);
-//     }
-// }
 
 /* for queried user */
 /* reataching the eventListners for the buttons

@@ -85,33 +85,49 @@ function searchingSystem() {
       createTournamentModal();
     });
   }
-
-  document.getElementById("friend_requests_btn").addEventListener("click", () => {
-    search("friend_requests")
+  /* search related eventlistners */
+  const home_friendrequest_search = document.getElementById("friend_requests_btn");
+  const home_friends_search = document.getElementById("friends_btn");
+  if (home_friendrequest_search) {
+    home_friendrequest_search.addEventListener("click", () => {
+      search("friend_requests")
+    });
   }
-  );
-  document.getElementById("friends_btn").addEventListener("click", () => {
-    search("friends")
+  if (home_friends_search) {
+    home_friends_search.addEventListener("click", () => {
+      search("friends")
+    });
   }
-  );
-  document.getElementById("searchIcon").addEventListener("click", () => {
-    triggerSearch();
-  });
-
-  document.getElementById("searchInput").addEventListener("keydown", (event) => {
-    if (event.key === "Enter") {
+  const home_searchIcon = document.getElementById("searchIcon");
+  if (home_searchIcon) {
+    home_searchIcon.addEventListener("click", () => {
       triggerSearch();
-    }
-  });
+    });
+  }
+  const home_searchInputField = document.getElementById("searchInput");
+  if (home_searchInputField) {
+
+    home_searchInputField.addEventListener("keydown", (event) => {
+      if (event.key === "Enter") {
+        triggerSearch();
+      }
+    });
+  }
   /* pagination next and prev fetchers */
-  document.getElementById("nextPage").addEventListener("click", async () => {
-    const nextPageUrl = document.getElementById("nextPage").getAttribute("data-url");
-    await search("", nextPageUrl);
-  });
-  document.getElementById("prevPage").addEventListener("click", async () => {
-    const prevPageUrl = document.getElementById("prevPage").getAttribute("data-url");
-    await search("", prevPageUrl);
-  });
+  const pagination_nextBtn = document.getElementById("nextPage");
+  if (pagination_nextBtn) {
+    pagination_nextBtn.addEventListener("click", async () => {
+      const nextPageUrl = document.getElementById("nextPage").getAttribute("data-url");
+      await search("", nextPageUrl);
+    });
+  }
+  const pagination_prevBtn = document.getElementById("prevPage");
+  if (pagination_prevBtn) {
+    pagination_prevBtn.addEventListener("click", async () => {
+      const prevPageUrl = document.getElementById("prevPage").getAttribute("data-url");
+      await search("", prevPageUrl);
+    });
+  }
 
 }
 
@@ -217,7 +233,7 @@ function createLocalGameModal() {
     if (event.target === modal) {
       closeLocalGameModal();
     }
-  }); 
+  });
 
 }
 
@@ -277,7 +293,7 @@ function createTournamentModal() {
     if (event.target === modal) {
       closeTournamentModal();
     }
-  }); 
+  });
 
 }
 
@@ -285,16 +301,16 @@ function createTournamentModal() {
 function closeLocalGameModal() {
   const modal = document.getElementById("localGameModal");
   if (modal) {
-      modal.remove();
-      document.body.classList.remove("modal-open");
+    modal.remove();
+    document.body.classList.remove("modal-open");
   }
 }
 
 function closeTournamentModal() {
   const modal = document.getElementById("tournamentModal");
   if (modal) {
-      modal.remove();
-      document.body.classList.remove("modal-open");
+    modal.remove();
+    document.body.classList.remove("modal-open");
   }
 }
 
