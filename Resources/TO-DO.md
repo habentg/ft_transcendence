@@ -36,7 +36,7 @@ fixing & testing needed:
 2. after login/signup and redirected to homepage, if you click on the browser back button, it will take you to sign in page (eventhogh he is authenticated)!
   -> partial fix: now he is bieng redirected back to the home page, but the url is still /signin
   #? another issue - browser back/forward is resulting 404 for nested routes like /profile/haben
-3. when you logi
+3. bunch of if conditions for the eventlistners in home.js for the search system so it doesnt raise error in anonymouse user.
 
 
 

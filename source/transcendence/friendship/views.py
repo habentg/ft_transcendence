@@ -9,65 +9,10 @@ from rest_framework.response import Response
 from rest_framework import status
 from .models import *
 from .serializers import *
-from django.shortcuts import get_object_or_404
-from others.views import BaseView
-from rest_framework.exceptions import AuthenticationFailed
-from django.http import HttpResponseRedirect
-from django.urls import reverse
-import urllib.parse
-import json
-from account.serializers import PlayerSerializer
 from channels.layers import get_channel_layer
 from asgiref.sync import async_to_sync
 from rest_framework import viewsets
-
-
-# template_name for viewing player profile
-class PlayerProfileView(APIView, BaseView):
-	authentication_classes = [JWTCookieAuthentication]
-	permission_classes = [IsAuthenticated]
-
-	template_name = 'friendship/player_profile.html'
-	title = 'Player Profile'
-	css = 'css/profile.css'
-	js = 'js/profile.js'
-
-	def handle_exception(self, exception):
-		if isinstance(exception, AuthenticationFailed):
-			signin_url = reverse('signin_page')
-			params = urllib.parse.urlencode({'next': self.request.path})
-			response = HttpResponseRedirect(f'{signin_url}?{params}')
-			response.delete_cookie('access_token')
-			response.delete_cookie('refresh_token')
-			return response
-		return super().handle_exception(exception)
-
-	def get_player(self, username):
-		return Player.objects.filter(username=username).first()
-	
-	def get_context_data(self, request, **kwargs):
-		queried_user = request.user
-		if kwargs.get('username') and kwargs.get('username') != request.user.username:
-			queried_user = self.get_player(kwargs.get('username'))
-			if not queried_user:
-				print('Player not found', flush=True)
-				return {'error_msg':'Player not found'}
-		data = {}
-		if queried_user.is_guest:
-			data = {
-				'player': PlayerSerializer(queried_user).data,
-				'is_self': False,
-			}
-		else:
-			data = {
-				'player': PlayerSerializer(queried_user).data,
-				'is_friend': request.user.friend_list.friends.filter(username=queried_user.username).exists(),
-				'is_requested_by_me': request.user.sent_requests.filter(receiver=queried_user).exists(),
-				'am_i_requested': request.user.received_requests.filter(sender=queried_user).exists(),
-				'is_self': queried_user == request.user,
-			}
-		print(" is_self:", data['is_self'], flush=True)
-		return data
+from django.template.loader import render_to_string 
 
 # FRIEND REQUESTS - FROM SENDER PERSPECTIVE
 class FriendRequestView(APIView):
@@ -111,6 +56,8 @@ class FriendRequestView(APIView):
 				'player': receiver.id,
 				'notification_type': 'friend_request',
 				'sender': request.user.id,
+				'sender_username': request.user.username,
+				'sender_pfp_url': request.user.profile_picture.url if request.user.profile_picture else None,
 				'read_status': False
 			}
 			notification_serializer = NotificationSerializer(data=notification_data)
@@ -248,12 +195,24 @@ class FriendRequestResponseView(APIView):
 class NotificationViewSet(viewsets.ViewSet):
 	authentication_classes = [JWTCookieAuthentication]
 	permission_classes = [IsAuthenticated]
+	template = 'friendship/notification.html'
 
 	def list(self, request):
 		notifications = Notification.objects.filter(player=request.user)
 		serializer = NotificationSerializer(notifications, many=True)
-		print("$$$$$$$$$$$$$$ notifications: ", notifications, flush=True)
-		return Response(serializer.data)
+		print("we in the notification viewset", flush=True)
+		if not notifications:
+			return Response({'detail': 'No notifications found.'}, status=status.HTTP_404_NOT_FOUND)
+		if request.query_params.get('action') == 'top_3_notifications':
+			serializer = NotificationSerializer(notifications[:3], many=True)
+			print('Top 3 notifications : ', serializer.data, flush=True)
+			return Response(serializer.data)
+		else:
+			serializer = NotificationSerializer(notifications, many=True)
+			html = render_to_string(self.template, {'notifications': serializer.data})
+			print("html: ", html, flush=True)
+			print('All notifications : ', serializer.data, flush=True)
+			return Response(serializer.data)
 
 	# mark notification as read
 	def update(self, request, pk=None):
@@ -263,7 +222,7 @@ class NotificationViewSet(viewsets.ViewSet):
 			return Response({'detail': 'Notification not found.'}, status=status.HTTP_404_NOT_FOUND)
 		notification.read_status = True
 		notification.save()
-		return Response(status=status.HTTP_400_BAD_REQUEST)
+		return Response(status=status.HTTP_200_OK)  # Change to 200 OK
 
 	# delete notification
 	def destroy(self, request, pk=None):

@@ -351,3 +351,37 @@ document.querySelectorAll('.navbar-nav .nav-link').forEach(function(navLink) {
     }
   });
 });
+
+
+/* notification dropdown */
+async function handleNotificationBellClick(e) {
+  // e.preventDefault(); // Uncomment if you want to prevent default action
+
+  console.log("notification bell clicked");
+  const response = await fetch("/notifications/", {
+      method: "GET",
+      headers: {
+          "X-Requested-With": "XMLHttpRequest",
+          "action": "top_3_notifications",
+      },
+  });
+
+  const nots_ul = document.getElementById("notificationDropdownMenu");
+  if (response.status === 404) {
+    nots_ul.innerHTML = `
+      <li>
+        <a class="dropdown-item" href="#">
+          <p class="text-center text-muted mb-0">No notifications</p>
+        </a>
+      </li>
+    `;
+    return console.log("No notifications");
+  }
+  if (response.ok) {
+      const data = await response.json();
+      nots_ul.innerHTML = data.html;
+      console.log("response:", data);
+  } else {
+      console.error("Failed to fetch notifications:", response.statusText);
+  }
+}

@@ -1,13 +1,19 @@
 {% load static %}
 
-<ul class="dropdown-menu dropdown-menu-end" aria-labelledby="notificationDropdown" style="width: 300px;">
-  <!-- Notifications -->
-  <li style="border-bottom: 1px solid #ffffff; padding-bottom: 0.3rem; margin-bottom: 0.3rem;">
-    <a class="dropdown-item" href="#"><i class="fas fa-user me-3"></i>Friend Request <i class="fas fa-user-plus ms-3"></i></a>
-    <div class="small test-mute ms-3" style="color: antiquewhite;">John Doe has sent you a friend request</div>
-  </li>
-  <!-- See more option that leads to the notification page -->
-  <li>
-    <a class="dropdown-item" href="#"><i class="fas fa-ellipsis-h me-3"></i>See More</a>
-  </li>
+<!-- Notifications -->
+<ul>
+  {% for nots in notifications %}
+    <li style="border-bottom: 1px solid #ffffff; padding-bottom: 0.3rem; margin-bottom: 0.3rem;">
+      <a class="dropdown-item" href="#">
+        {% if nots.sender_pfp_url %}
+          <img src="{{ nots.sender_pfp_url }}" alt="Profile Picture" class="profile-pic-nav rounded-circle" style="width: 32px; height: 32px" />
+        {% else %}
+          <img src="{% static 'images/default_profile_pic.jpeg' %}" alt="Default Profile Picture" class="profile-pic-nav rounded-circle" style="width: 32px; height: 32px" />
+        {% endif %}
+      </a>
+      <div class="small test-mute ms-3" style="color: antiquewhite;">{{ nots.sender_username }} has sent you a friend request</div>
+    </li>
+  {% empty %}
+    <li>No notifications found.</li>
+  {% endfor %}
 </ul>

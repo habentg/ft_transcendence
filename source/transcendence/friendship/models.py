@@ -98,6 +98,8 @@ class Notification(models.Model):
     player = models.ForeignKey('account.Player', on_delete=models.CASCADE, related_name='notifications')
     notification_type = models.CharField(max_length=20)
     sender = models.ForeignKey('account.Player', on_delete=models.CASCADE, related_name='sent_notifications', null=True)
+    sender_username = models.CharField(max_length=150, null=True)
+    sender_pfp_url = models.CharField(max_length=150, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
     read_status = models.BooleanField(default=False)
 
