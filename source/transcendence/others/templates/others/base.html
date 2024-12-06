@@ -79,33 +79,29 @@
                     >
                       <i class="fas fa-bell"></i>
                     </a>
-                    <ul
-                      class="dropdown-menu dropdown-menu-end"
-                      aria-labelledby="notificationDropdown"
-                      style="width: 300px;" 
-                    >
+                    <ul class="dropdown-menu dropdown-menu-end notifications" aria-labelledby="notificationDropdown">
                       <!-- Notifications -->
-                      <li style="border-bottom: 1px solid #ffffff; padding-bottom: 0.3rem; margin-bottom: 0.3rem;">
-                        <a class="dropdown-item" href="#"><i class="fas fa-user me-3"></i>Friend Request <i class="fas fa-user-plus ms-3"></i></a>
-                        <div class="small test-mute ms-3" style="color: antiquewhite;"> John Doe has sent you a friend request</div>
+                      <li class="notification-item">
+                        <a class="dropdown-item" href="#"><i class="fas fa-user me-3"></i>Friend Request <i class="fas fa-user-plus ms-3"></i>
+                          <div class="notification-text mt-2">John Doe has sent you a friend request</div>
+                        </a>
                       </li>
-                      <li style="border-bottom: 1px solid #ffffff; padding-bottom: 0.3rem; margin-bottom: 0.3rem;">
-                        <a class="dropdown-item" href="#"><i class="fas fa-user me-3"></i>Friend Request <i class="fas fa-user-plus ms-3"></i></a>
-                        <div class="small test-mute ms-3" style="color: antiquewhite;"> John Doe has sent you a friend request</div>
+                      <li class="notification-item">
+                        <a class="dropdown-item" href="#"><i class="fas fa-user me-3"></i>Friend Request <i class="fas fa-user-plus ms-3"></i>
+                          <div class="notification-text">John Doe has sent you a friend request</div>
+                        </a>
                       </li>
-                      <li style="border-bottom: 1px solid #ffffff; padding-bottom: 0.3rem; margin-bottom: 0.3rem;">
-                        <a class="dropdown-item" href="#"><i class="fas fa-user me-3"></i> New message <i class="fas fa-envelope ms-3"></i></a>
-                        <div class="small test ms-3" style="color: antiquewhite;"> John Doe has sent you a message</div>
+                      <li class="notification-item">
+                        <a class="dropdown-item" href="#"><i class="fas fa-user me-3"></i>New message <i class="fas fa-envelope ms-3"></i>
+                          <div class="notification-text">John Doe has sent you a message</div>
+                        </a>
                       </li>
-                      <!-- See more option that leads to the notification page -->
-                      <li>
+                      <!-- See more option -->
+                      <li class="see-more">
                         <a class="dropdown-item" href="#"><i class="fas fa-ellipsis-h me-3"></i>See More</a>
                       </li>
-
                     </ul>
                   </li>
-                  
-                  
                   <li class="nav-item ms-lg-2 dropdown">
                     <a class="nav-link profile-link" href="#" role="button" id="profileDropdown" data-bs-toggle="dropdown" aria-expanded="false">
                       {% if user.profile_picture %}

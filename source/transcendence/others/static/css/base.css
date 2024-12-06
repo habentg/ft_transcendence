@@ -187,6 +187,30 @@ td {
   border: 2px solid rgba(0, 0, 0, 0.8);
 }
 
+.notifications {
+  width: 300px;
+}
+
+.notification-item {
+  border-bottom: 1px solid #ffffff;
+  padding-bottom: 0.3rem;
+  margin-bottom: 0.3rem;
+}
+
+.notification-item:last-child {
+  border-bottom: none;
+  margin-bottom: 0;
+}
+
+.notification-text {
+  color: antiquewhite;
+  font-size: 11px; /* Small text */
+}
+
+.see-more {
+  text-align: center;
+}
+
 /* Navbar Toggler */
 .navbar-toggler {
   border: 1px solid rgba(132, 221, 252, 0.5);
