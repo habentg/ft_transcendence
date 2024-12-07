@@ -1,14 +1,16 @@
-.profile-page {
-    min-height: 100%;
-    width: 100%;
-}
-
-.background-image {
+.profile-page .background-image {
+    display: flex;
+    align-items: center;
+    justify-content: center;
     background-image: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), url('/static/images/background2.jpg');
     background-size: cover;
     background-position: center;
-    min-height: 100%;
+
+    height: fit-content;
+    min-height: 100vh;
+    /* min-height: 100vh; */
 }
+
 
 .content {
     background: linear-gradient(140deg,

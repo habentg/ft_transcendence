@@ -32,6 +32,7 @@
 .title-gradient {
 	background: linear-gradient(45deg, #84ddfc, #b02c98);
 	-webkit-background-clip: text;
+	background-clip: text;
 	-webkit-text-fill-color: transparent;
 	font-size: calc(1.5rem + 1.5vw);
 	font-weight: 700;

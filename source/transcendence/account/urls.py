@@ -15,4 +15,5 @@ urlpatterns = [
     re_path(r'^settings/?$', PlayerSettings.as_view(), name='settings'),
     re_path(r'^anonymize/?$', AnonymizePlayer.as_view(), name='anonymize'),
     re_path(r'^temp_player/?$', TempPlayer.as_view(), name='temp_player'),
+    re_path(r'^chat/?$', ChatView.as_view(), name='chat_page'),
 ]

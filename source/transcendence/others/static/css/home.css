@@ -1,15 +1,20 @@
-.first-page {
-  min-height: 100%;
-  width: 100%;
-}
-
-.background-image {
+.first-page .background-image {
+  display: flex;
+  justify-content: center;
+  align-items: center;
   background-image: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), url('/static/images/background2.jpg');
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
-  min-height: 100%;
   padding: 2rem 0;
+
+  height: fit-content;
+  min-height: 100vh;
+}
+
+.friendBoard {
+  width: 100%;
+  max-width: 1200px;
 }
 
 .content {
@@ -21,7 +26,9 @@
   backdrop-filter: blur(10px);
   border-radius: 15px;
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+  margin: 0 auto;
 }
+
 
 .menu-item {
   background: rgba(255, 255, 255, 0.1);
@@ -133,9 +140,6 @@
 }
 
 @media (max-width: 768px) {
-  .background-image {
-    /* padding: 1rem; */
-  }
   
   .menu-item {
     height: 70px;

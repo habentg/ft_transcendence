@@ -1,7 +1,7 @@
 {% load static %}
 
 <div class="first-page">
-  <div class="background-image home-btn">
+  <div class="background-image home-btn w-100">
     <div class="friendBoard py-5">
       <!-- Search and Friends Section -->
       <div class="row justify-content-center mb-4">
@@ -26,7 +26,7 @@
                 <div id="search_list"></div>
                 <div id="pagination_navigation" class="pagination d-flex align-items-center justify-content-center d-none">
                   <button type="button" id="prevPage" class="btn btn-secondary" data-url="">&lt;&lt;</button>
-                  <span id="pageNumbers"> <span id="current_page"></span> of <span id="total_pages"></span> pages </span>
+                  <span id="pageNumbers"><span id="current_page"></span> of <span id="total_pages"></span> pages</span>
                   <button type="button" id="nextPage" class="btn btn-primary" data-url="">&gt;&gt;</button>
                 </div>
               </div>
@@ -41,10 +41,10 @@
           <div class="content p-4">
             <div class="row g-4">
               <div class="col-md-6">
-                <a id="localGameBtn" href="#" class="menu-item d-flex align-items-center p-3">
+                <button type="button" id="localGameBtn" onclick="createLocalGameModal()" class="menu-item d-flex align-items-center p-3">
                   <i class="fas fa-gamepad fa-2x me-3"></i>
                   <h5 class="mb-0">Local Game</h5>
-                </a>
+                </button>
               </div>
               <div class="col-md-6">
                 <a id="profile_btn" onclick="appRouter()" class="menu-item d-flex align-items-center p-3" href="/profile/{{ player.username }}" data-username="{{ player.username }}">
@@ -57,21 +57,15 @@
                 </a>
               </div>
               <div id="createTournamentBtn" class="col-md-6">
-                <a href="#" class="menu-item d-flex align-items-center p-3">
+                <button type="button" class="menu-item d-flex align-items-center p-3">
                   <i class="fas fa-trophy fa-2x me-3"></i>
                   <h5 class="mb-0">Create Tournament</h5>
-                </a>
+                </button>
               </div>
               <div class="col-md-6">
                 <a onclick="appRouter()" href="/settings" class="menu-item d-flex align-items-center p-3">
                   <i class="fas fa-cog fa-2x me-3"></i>
                   <h5 class="mb-0">Settings</h5>
-                </a>
-              </div>
-              <div class="col-md-6">
-                <a href="#" class="menu-item d-flex align-items-center p-3">
-                  <i class="fas fa-dice fa-2x me-3"></i>
-                  <h5 class="mb-0">Other Game</h5>
                 </a>
               </div>
             </div>

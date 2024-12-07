@@ -44,9 +44,9 @@ fixing & testing needed:
 
 
 
-UI Improvement
+UI Improvement: Resolved
 1. pushing the footer down
-2. error displaying UI needed - for 401 aynet -- its console log so far
+2. error displaying UI needed - for 401 aynet -- its console log so far ==> call showErrorMessage("with Error message you want to display")
 
 
 

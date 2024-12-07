@@ -1,14 +1,15 @@
-.setting {
-    min-height: 100%;
-}
-
-.background-image {
+.setting .background-image {
+    display: flex;
+    justify-content: center;
+    align-items: center;
     background-image: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), url('/static/images/background2.jpg');
     background-size: cover;
     background-position: center;
-    min-height: 100%;
-    display: flex;
-    align-items: center;
+    background-repeat: no-repeat;
+    padding: 2rem 0;
+    
+    height: fit-content;
+    min-height: 100vh;
 }
 
 .settings-container {

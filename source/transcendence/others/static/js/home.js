@@ -71,14 +71,14 @@ for searched profiles, we need to attach event listeners to the buttons
 
 function searchingSystem() {
 
-  const localGameBtn = document.getElementById("localGameBtn");
+  // const localGameBtn = document.getElementById("localGameBtn");
   const createTournamentBtn = document.getElementById("createTournamentBtn");
 
-  if (localGameBtn) {
-    localGameBtn.addEventListener("click", () => {
-      createLocalGameModal();
-    });
-  }
+  // if (localGameBtn) {
+  //   localGameBtn.addEventListener("click", () => {
+  //     createLocalGameModal();
+  //   });
+  // }
 
   if (createTournamentBtn) {
     createTournamentBtn.addEventListener("click", () => {
@@ -178,60 +178,37 @@ function attachSearchEventListners() {
 
 // Create a modal for Local game either with AI or with another player
 function createLocalGameModal() {
+  // e.preventDefault();
   const existingModal = document.getElementById("localGameModal");
   if (existingModal) {
     existingModal.remove();
   }
 
-  const modal = document.createElement("div");
-  modal.classList.add("modal");
-  modal.id = "localGameModal";
-  modal.className = "modal fade show";
-  modal.style.display = "block";
-  modal.innerHTML = `
-  <div class="modal-dialog modal-dialog-centered modal-md">
-    <div class="modal-content">
-      <div class="modal-header border-0 py-3">
-        <h5 class="modal-title">
-          <i class="fas fa-gamepad me-2"></i> Local Game
-        </h5>
-        <button type="button" class="btn-close btn-close-white" data-dismiss="modal"></button>
-      </div>
-      <div class="modal-body px-3 py-2">
-        <div id="local-game-error-msg" class="alert alert-danger small py-2" style="display:none;"></div>
-        <p class="text-white mb-0">Choose who you'd like to play:</p>
-      </div>
-      <div class="modal-footer border-0 py-3 d-flex justify-content-start">
-        <button type="button" class="btn btn-primary btn-sm me-2" id="aiGameBtn">
-          <i class="fas fa-robot me-2"></i> Play with AI
-        </button>
-        <button type="button" class="btn btn-outline-light btn-sm" id="localGameBtn">
-          Play with a friend
-        </button>
-      </div>
-    </div>
-  </div>
-  `;
-
+  
+  const modal = optionLocalGameModal();
   document.body.appendChild(modal);
 
   // Event Listeners
-  document.getElementById("localGameBtn").addEventListener("click", () => {
-    // 
-  });
   document.getElementById("aiGameBtn").addEventListener("click", () => {
-    //  
+    //  Send to AI game page (1 vs AI)
+    console.log("Creating AI game");
+    closeModal("localGameModal");
+  });
+  document.getElementById("playFriends").addEventListener("click", () => {
+    // Send to localgame game page (1 vs 1)
+    console.log("Creating local game");
+    closeModal("localGameModal");
   });
 
   // close the modal when the close button is clicked
   document.querySelector("#localGameModal .btn-close").addEventListener("click", () => {
-    closeLocalGameModal();
+    closeModal("localGameModal");
   });
 
   // close the modal when the modal is clicked outside
   modal.addEventListener("click", (event) => {
     if (event.target === modal) {
-      closeLocalGameModal();
+      closeModal("localGameModal");
     }
   });
 
@@ -244,35 +221,8 @@ function createTournamentModal() {
     existingModal.remove();
   }
 
-  const modal = document.createElement("div");
-  modal.classList.add("modal");
-  modal.id = "tournamentModal";
-  modal.className = "modal fade show";
-  modal.style.display = "block";
-  modal.innerHTML = `
-  <div class="modal-dialog modal-dialog-centered modal-md">
-    <div class="modal-content">
-      <div class="modal-header border-0 py-3">
-        <h5 class="modal-title">
-          <i class="fas fa-trophy me-2"></i> Create Tournament
-        </h5>
-        <button type="button" class="btn-close btn-close-white" data-dismiss="modal"></button>
-      </div>
-      <div class="modal-body px-3 py-2">
-        <div id="local-game-error-msg" class="alert alert-danger small py-2" style="display:none;"></div>
-        <p class="text-white mb-0">Enter number of player in tournament</p>
-        <input type="int" id="playersNumber" class="form-control my-2" placeholder="Enter number of players" />
-        <small class="notice mt-2 d-block">Minimum players: 4 | Max players: 8</small>
-      </div>
-      <div class="modal-footer border-0 py-3 d-flex justify-content-start">
-        <button type="button" class="btn btn-primary btn-sm" id="submitPlayerNumBtn">
-          <i class="fas fa-paper-plane me-2"></i> Submit
-      </button>
-    </div>
-    </div>
-  </div>
-  `;
-
+  
+  const modal = getPlayerNumberModal();
   document.body.appendChild(modal);
 
   // Event Listeners
@@ -280,38 +230,21 @@ function createTournamentModal() {
     const playersNumber = document.getElementById("playersNumber").value;
     console.log("Creating tournament with ", playersNumber, " players");
     // createTournament(playersNumber);
-    closeTournamentModal();
+    closeModal("tournamentModal");
   });
 
   // close the modal when the close button is clicked
   document.querySelector("#tournamentModal .btn-close").addEventListener("click", () => {
-    closeTournamentModal();
+    closeModal("tournamentModal");
   });
 
   // close the modal when the modal is clicked outside
   modal.addEventListener("click", (event) => {
     if (event.target === modal) {
-      closeTournamentModal();
+      closeModal("tournamentModal");
     }
   });
 
-}
-
-// close the local game modal
-function closeLocalGameModal() {
-  const modal = document.getElementById("localGameModal");
-  if (modal) {
-    modal.remove();
-    document.body.classList.remove("modal-open");
-  }
-}
-
-function closeTournamentModal() {
-  const modal = document.getElementById("tournamentModal");
-  if (modal) {
-    modal.remove();
-    document.body.classList.remove("modal-open");
-  }
 }
 
 searchingSystem();
