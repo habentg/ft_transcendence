@@ -307,7 +307,7 @@ function deleteAccountCheck() {
 // Delete Account Function
 async function deleteAccount() {
   try {
-    const response = await fetch("/profile/", {
+    const response = await fetch("/update_profile/", {
       method: "DELETE",
       headers: {
         "Content-Type": "application/json",

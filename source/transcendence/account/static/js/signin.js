@@ -63,12 +63,10 @@ async function handleSignInSubmit(e) {
         }
         // redirect to the protected page
 
-        /* websocket - for real-time updates and chat*/
-        initWebsocket();
         await updateUI(`/home`, false);
         updateNavBar(true); // update the navbar for authenticated users
-        // history.pushState(null, '', `/home`);
-        // handleLocationChange();
+        /* websocket - for real-time updates and chat*/
+        createNotificationSocket();
     } catch (error) {
         console.error('Error:', error);
     }

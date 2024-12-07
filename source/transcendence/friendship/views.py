@@ -57,7 +57,7 @@ class FriendRequestView(APIView):
 				'notification_type': 'friend_request',
 				'sender': request.user.id,
 				'sender_username': request.user.username,
-				'sender_pfp_url': request.user.profile_picture.url if request.user.profile_picture else None,
+				'sender_pfp_url': request.user.profile_picture,
 				'read_status': False
 			}
 			notification_serializer = NotificationSerializer(data=notification_data)
@@ -212,7 +212,7 @@ class NotificationViewSet(viewsets.ViewSet):
 			html = render_to_string(self.template, {'notifications': serializer.data})
 			print("html: ", html, flush=True)
 			print('All notifications : ', serializer.data, flush=True)
-			return Response(serializer.data)
+			return Response({'html': html, 'data':serializer.data}, status=status.HTTP_200_OK)
 
 	# mark notification as read
 	def update(self, request, pk=None):

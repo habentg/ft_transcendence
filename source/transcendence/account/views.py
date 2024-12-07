@@ -495,7 +495,7 @@ class TempPlayer(APIView):
         temp_player = createGuestPlayer()
         temp_player.save()
         new_jwts = RefreshToken.for_user(temp_player)
-        response = HttpResponseRedirect(reverse('player_profile', kwargs={'username': temp_player.username}))
+        response = HttpResponseRedirect(reverse('home_page'))
         response.set_cookie('access_token', str(new_jwts.access_token), httponly=True)
         response.set_cookie('refresh_token', str(new_jwts), httponly=True)
         return response

@@ -29,6 +29,6 @@ function initWebsocket() {
   
 function createNotificationSocket() {
   if (window.ws === undefined) {
-    initWebsocket();
+     initWebsocket();
   }
 } 

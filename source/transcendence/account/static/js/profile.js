@@ -1,44 +1,4 @@
-createNotificationSocket();
-// delete account
-async function deleteAccount() {
-  try {
-    console.log("Delete account");
-    const m_csrf_token = await getCSRFToken();
-    const response = await fetch("/profile/", {
-      method: "DELETE",
-      headers: {
-        "Content-Type": "application/json",
-        "X-CSRFToken": m_csrf_token,
-      },
-    });
-    /* Reason for 200 status response:
-        when a browser receives a 302 redirect in response to a DELETE request,
-        it typically sends the subsequent request to the redirect location using 
-        the same HTTP method (will result an error - coz landing page endpoint expects get only)
-        */
-    if (response.status === 200) {
-      // const data = await response.json();
-      console.log("Account deleted successfully");
-      const navbar = document.getElementById("navbarNavDropdown");
-      navbar.innerHTML = `
-      <li class="nav-item">
-        <a href="#" class="nav-link"><i class="fas fa-gamepad me-2"></i>Quick game</a>
-      </li>
-      <li class="nav-item">
-        <a onclick="appRouter()" class="nav-link btn btn-outline-primary ms-lg-2" href="/signin">Sign in</a>
-      </li>
-      <li class="nav-item">
-        <a onclick="appRouter()" class="nav-link btn btn-primary ms-lg-2" href="/signup">Sign up</a>
-      </li>
-      `;
-      await updateUI("", false);
-      return;
-    }
-    throw new Error("Failed to delete account");
-  } catch (error) {
-    console.error("Error:", error);
-  }
-}
+// createNotificationSocket();
 
 // editing user info
 function makeFieldEditable(fieldId) {

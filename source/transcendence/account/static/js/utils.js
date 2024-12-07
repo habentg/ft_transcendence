@@ -366,21 +366,17 @@ async function handleNotificationBellClick(e) {
       },
   });
 
-  const nots_ul = document.getElementById("notificationDropdownMenu");
+  const notification_ul = document.getElementById("notification_ul");
   if (response.status === 404) {
-    nots_ul.innerHTML = `
-      <li>
-        <a class="dropdown-item" href="#">
-          <p class="text-center text-muted mb-0">No notifications</p>
-        </a>
-      </li>
+    notification_ul.innerHTML = `
+      <p class="text-center text-muted my-2">No notifications</p>
     `;
     return console.log("No notifications");
   }
   if (response.ok) {
       const data = await response.json();
-      nots_ul.innerHTML = data.html;
-      console.log("response:", data);
+      notification_ul.innerHTML = data.html;
+      console.log("data.html:", data.html);
   } else {
       console.error("Failed to fetch notifications:", response.statusText);
   }
