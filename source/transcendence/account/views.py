@@ -532,3 +532,18 @@ class AnonymizePlayer(APIView):
 		response.set_cookie('refresh_token', str(new_jwts), httponly=True)
 		anon.save()
 		return response
+
+# create a chat view
+class ChatView(APIView, BaseView):
+	authentication_classes = [JWTCookieAuthentication]
+	permission_classes = [IsAuthenticated]
+	template_name = 'account/chat.html'
+	title = 'Chat'
+	css = 'css/chat.css'
+	js = 'js/chat.js'
+
+	def get_context_data(self, request):
+		return {'player': PlayerSerializer(request.user).data}
+	
+	def get(self, request):
+		return super().get(request)

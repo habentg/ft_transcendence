@@ -140,9 +140,6 @@
 }
 
 @media (max-width: 768px) {
-  .background-image {
-    /* padding: 1rem; */
-  }
   
   .menu-item {
     height: 70px;

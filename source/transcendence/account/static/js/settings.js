@@ -32,6 +32,7 @@ async function updatePlayerPassword() {
     });
 
     if (!response.ok) {
+      console.error("400 Error - bad :", response);
       const responseData = await response.json();
       displayError(responseData);
       return;

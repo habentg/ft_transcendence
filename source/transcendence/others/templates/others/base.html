@@ -66,7 +66,8 @@
                     <a href="#" class="nav-link"><i class="fas fa-users me-2"></i>Friends</a>
                   </li>
                   <li class="nav-item">
-                    <a href="#" class="nav-link"><i class="fas fa-comments me-2"></i>Chat</a>
+                    <!-- onclick call chatMOdal function -->
+                    <a onclick="appRouter()" href="/chat" class="nav-link"><i class="fas fa-comments me-2"></i>Chat</a>
                   </li>
                   <li class="nav-item ms-lg-2 dropdown">
                     <a
@@ -88,18 +89,21 @@
                       </li>
                       <li class="notification-item">
                         <a class="dropdown-item" href="#"><i class="fas fa-user me-3"></i>Friend Request <i class="fas fa-user-plus ms-3"></i>
-                          <div class="notification-text">John Doe has sent you a friend request</div>
+                          <div class="notification-text mt-2">John Doe has sent you a friend request</div>
                         </a>
                       </li>
                       <li class="notification-item">
                         <a class="dropdown-item" href="#"><i class="fas fa-user me-3"></i>New message <i class="fas fa-envelope ms-3"></i>
-                          <div class="notification-text">John Doe has sent you a message</div>
+                          <div class="notification-text mt-2">John Doe has sent you a message</div>
                         </a>
                       </li>
-                      <!-- See more option -->
+                      <!-- See more option button -->
                       <li class="see-more">
-                        <a class="dropdown-item" href="#"><i class="fas fa-ellipsis-h me-3"></i>See More</a>
+                        <button class="dropdown-item btn btn-primary " ><i class="fas fa-ellipsis-h me-3"></i>See More</button>
                       </li>
+                      <!-- <li class="see-more">
+                        <a class="dropdown-item" href="#"><i class="fas fa-ellipsis-h me-3"></i>See More</a>
+                      </li> -->
                     </ul>
                   </li>
                   <li class="nav-item ms-lg-2 dropdown">
