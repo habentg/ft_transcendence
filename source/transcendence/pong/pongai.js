@@ -61,3 +61,13 @@ function aikeyEvents(moveDirection) {
     // Dispatch the event
     if (event) document.dispatchEvent(event);
 }
+
+// function to check/store balls last position every 1 second.
+function aiView() {
+    if (aiflag) {
+        setInterval(() => {
+            lastballPosition.x = ball.X;
+            lastballPosition.y = ball.Y;
+        }, 1000)
+    }
+}

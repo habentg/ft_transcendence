@@ -1,13 +1,31 @@
 /*
+    todos
     Settings that could be adjusted by the player
 
-    Max Score for the game;
-    Paddle speed when adjusted should be the same as the other opponent except when playing with an AI;
-    An option for slow serves. (if toggled on it should slow down the ball, decreasing the default speed of the ball);
-    An option for designing the board, maybe gives a list of actual themes that we could create for paddle designs, board designs, etc.;
-    Ball radius (provide a minimum and maximum amount);
-    Overtime (happens whenever both players are 1 goal away from the score. players need to score 2 consecutive goals)
+    Game customization module { 
+        Max Score for the game;
+        Paddle speed when adjusted should be the same as the other opponent except when playing with an AI;
+        An option for slow serves. (if toggled on it should slow down the ball, decreasing the default speed of the ball);
+        An option for designing the board, maybe gives a list of actual themes that we could create for paddle designs, board designs,  etc.;
+        Ball radius (provide a minimum and maximum amount);
+        Overtime (happens whenever both players are 1 goal away from the score. players need to score 2 consecutive goals)
+        
+        maps/modes
+        Portal Map = map that would have random portals that could teleport the ball;
+        Bounce Map = map that will make players have a skill that could make the ball bounce back when near the goal when timed correctly 
+    }
 
+    Game AI module {
+        Explore alternative algorithms and techniques for AI. (AVOID USING A* ALGORITHM)
+        
+        must simulate keyboard input for the AI. The ai can only refresh its view of the game once per second.
+        store ball location, and speed every one second, and depending on that values we will be moving the paddle.
+        ballX
+        ballY
+        ballVelocityX
+        ballVelocityY
+        
+    }
 */
 
 //Game settings
