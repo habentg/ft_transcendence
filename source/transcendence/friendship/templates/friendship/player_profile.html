@@ -15,12 +15,12 @@
                   <img src="{% static 'images/default_profile_pic.jpeg' %}" alt="Default Profile Picture" class="profile-pic rounded-circle" />
                 {% endif %}
                 {% if is_self %}
-                <button id="change-profile-pic" class="btn btn-light btn-sm position-absolute bottom-0 end-0"><i class="fa-solid fa-pen"></i></button>
+                  <button id="change-profile-pic" class="btn btn-light btn-sm position-absolute bottom-0 end-0"><i class="fa-solid fa-pen"></i></button>
                 {% else %}
                   {% if player.is_logged_in %}
-                    <button id="change-profile-pic" class="btn btn-light position-absolute bottom-0 end-0"><i class="fa-solid fa-globe" style="color:green;"></i></button>
+                    <i class="fa-solid fa-globe position-absolute globe-icon" style="color:green;"></i>
                   {% else %}
-                    <button id="change-profile-pic" class="btn btn-light position-absolute bottom-0 end-0"><i class="fa-solid fa-globe" style="color:red;"></i></button>
+                    <i class="fa-solid fa-globe position-absolute globe-icon" style="color:red;"></i>
                   {% endif %}
                 {% endif %}
               </div>
@@ -47,7 +47,7 @@
                 <h6>temp account</h6>
               {% elif is_self %}
                 <button id="update-user-info" class="btn btn-primary mb-2"><i class="fas fa-edit me-2"></i>Update Info</button>
-                <a onclick="appRouter()" href="/settings" id="profile-settings" class="btn btn-primary mb-2"><i class="fas fa-cog me-2"></i> Settings</a>
+                <a onclick="appRouter()" href="/settings" id="profile-settings" class="btn btn-secondary mb-2"><i class="fas fa-cog me-2"></i> Settings</a>
                 <!-- <button id="player-anon" class="btn btn-primary mb-2"><i class="fas fa-user-secret me-2"></i>Anonymize</button> -->
                 
               {% else %}

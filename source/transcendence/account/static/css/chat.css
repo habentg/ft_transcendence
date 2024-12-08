@@ -13,7 +13,7 @@
 }
 
 .chat-container {
-	margin: auto;
+	/* margin: auto; */
 	/* margin-top: 80px; */
 	background-color: rgba(0, 0, 0, 0.8);
 	border: 1px solid rgba(132, 221, 252, 0.2);
@@ -21,10 +21,11 @@
 	padding: 10px;
 	/* max-width: 600px; */
 	width: fit-content;
+	/* min-width: 500px; */
 	height: 500px;
 	display: flex;
 	flex-direction: column;
-	justify-content: space-between;
+	/* justify-content: space-between; */
 }
 
 .chat-header {
@@ -76,7 +77,8 @@
 
 .chat-input {
 	display: flex;
-	gap: 10px;
+	gap: 0.5rem;
+	/* gap: 10px; */
 	border-top: 1px solid rgba(132, 221, 252, 0.2);
 	padding-top: 10px;
 }
@@ -86,8 +88,10 @@
 /* sidebar */
 .chat-wrapper {
 	display: flex;
+	justify-content: center;
+	/* align-items: center; */
 	height: 100%;
-	background-color: rgba(0, 0, 0, 0.7);
+	/* background-color: rgba(0, 0, 0, 0.7); */
 	border-radius: 15px;
 	overflow: hidden;
 }
@@ -99,6 +103,7 @@
 	color: #84ddfc;
 	border-right: 1px solid rgba(132, 221, 252, 0.2);
 	overflow-y: auto;
+	border-radius: 15px;
 }
 
 .sidebar-header {
@@ -125,7 +130,9 @@
 }
 
 .friend-list li:hover {
-	background-color: rgba(132, 221, 252, 0.1);
+	transform: translateY(-2px);
+    background: linear-gradient(45deg, #b02c98, #84ddfc);
+    box-shadow: 0 4px 15px rgba(132, 221, 252, 0.3);
 }
 
 .friend-list li.active {
@@ -138,11 +145,11 @@
 	align-items: center;
 	padding: 10px 15px;
 	cursor: pointer;
-	border-bottom: 1px solid rgba(132, 221, 252, 0.1);
 	transition: background-color 0.3s ease;
 }
 
 .friend-item i {
+	/* border-bottom: 10px solid red; */
 	font-size: 1.5rem;
 	/* Adjust icon size */
 	color: #84ddfc;
@@ -153,7 +160,13 @@
 	flex-grow: 1;
 	font-size: 1rem;
 	color: #adb5bd;
+	/* border-bottom: 10px solid green; */
+
 	/* Match the text color */
+}
+
+.friend-list li {
+	border-bottom: 1px solid #84ddfc;
 }
 
 .friend-item:hover {
