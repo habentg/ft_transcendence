@@ -16,5 +16,6 @@ urlpatterns = notification_router.urls
 urlpatterns += [
     re_path(r'^friend_request/(?P<username>[\w-]+)/?$', FriendRequestView.as_view(), name='friend_request'),
     re_path(r'^friend_request_response/(?P<username>[\w-]+)/?$', FriendRequestResponseView.as_view(), name='response_friend_request'),
+    re_path(r'^chat/?$', ChatView.as_view(), name='chat_page'),
 ]
 

@@ -1,13 +1,13 @@
+/* establishing ws if its not already */
+createNotificationSocket();
+
 const chatMessages = document.getElementById("chatMessages");
 const friendList = document.getElementById("friendList");
 const chatTitle = document.getElementById("chatTitle");
 const messageInput = document.getElementById("messageInput");
 
 const friends = [
-  { id: 1, name: "John Doe", messages: [{ user: "user1", content: "Hey Miguel!, this is John"}, { user: "user2", content: "Hola John" }  ] },
-  { id: 2, name: "Jane Smith", messages: [{ user: "user1", content: "Hi, I am Jane" }, {user:"user2", content:"Hey Jane"}] },
-  { id: 3, name: "Alice", messages: [{ user: "user1", content: "Hi, I am Alice" }, {user:"user2", content:"Hey Alice"}] },
-  { id: 4, name: "Bob", messages: [{ user: "user1", content: "Hi, I am Bob" }, {user:"user2", content:"Hey Bob"}] },
+  { user: "root", name: "Admin User", messages: [{ user: "user1", content: "Hey Miguel!, this is John"}, { user: "user2", content: "Hola John" }  ] },
 ];
 
 let currentFriendId = null;
@@ -17,6 +17,7 @@ function loadFriendList() {
   friends.forEach((friend) => {
     const friendItem = document.createElement("li");
     friendItem.className = "friend-item d-flex align-items-center";
+    friendItem.id = `chat-${friend.username}`;
 
     // Add the profile icon. Later we will replace this with the actual profile picture
     const profileIcon = document.createElement("i");
@@ -28,7 +29,7 @@ function loadFriendList() {
     friendItem.appendChild(profileIcon);
     friendItem.appendChild(friendName);
 
-    friendItem.onclick = () => openChat(friend.id);
+    friendItem.onclick = () => openChat(friend.username);
     friendList.appendChild(friendItem);
   });
 
@@ -42,9 +43,9 @@ function loadFriendList() {
 
 
 // Open chat for a specific friend
-function openChat(friendId) {
-  currentFriendId = friendId;
-  const friend = friends.find((f) => f.id === friendId);
+function openChat(username) {
+  currentFriendUsername = username;
+  const friend = friends.find((f) => f.username === username);
 
   // Update chat header
   chatTitle.textContent = friend.name;
@@ -60,25 +61,34 @@ function openChat(friendId) {
 
   // Highlight selected friend
   document.querySelectorAll(".friend-item").forEach((item) => item.classList.remove("active"));
-  document.querySelectorAll(".friend-item")[friendId - 1].classList.add("active");
+  document.getElementById(`chat-${friend.username}`).classList.add("active");
 }
 
-// Send a new message
-function sendMessage() {
-  const newMessage = messageInput.value.trim();
-  if (newMessage && currentFriendId !== null) {
-    const friend = friends.find((f) => f.id === currentFriendId);
-    friend.messages.push({ user: "user2", content: newMessage });
 
-    // Add to chat messages
-    const messageElement = document.createElement("div");
-    messageElement.className = "chat-message user2";
-    messageElement.innerHTML = `<div class="message-content">${newMessage}</div>`;
-    chatMessages.appendChild(messageElement);
-    chatMessages.scrollTop = chatMessages.scrollHeight; // Scroll to the bottom
-    messageInput.value = ""; 
+
+function sendMessage() {
+  const message = messageInput.value.trim();
+  console.log("message:", message);
+
+  // Validate message
+  if (!message) {
+      console.error("Message cannot be empty.");
+      return;
+  }
+
+  if (window.ws && window.ws.readyState === WebSocket.OPEN) {
+      console.log("Sending message:", message);
+      const chatMessage = {
+          type: "chat_message",
+          message: message,
+          recipient: 'root', // Consider making this dynamic
+      };
+      window.ws.send(JSON.stringify(chatMessage));
+      messageInput.value = ''; // Clear input after sending
+  } else {
+      console.error("WebSocket is not open. Unable to send message.");
+      // Optionally, you could implement reconnection logic here
   }
 }
 
-// Initialize
 loadFriendList();

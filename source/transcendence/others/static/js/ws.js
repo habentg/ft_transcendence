@@ -20,13 +20,16 @@ function initWebsocket() {
     window.ws.onmessage = (e) => {
       const data = JSON.parse(e.data);
       if (data.type === "friend_request") {
-        // alert(`${data.message}`);
+        alert(`${data.message}`);
         console.log("friend request received", data.message);
       }
+      else if (data.type === "chat_message") {
+        alert(`${data.message}: from ${data.sender}`);
+        console.log("chat msg recived!!!", data.message);
+      };
+    }
+}
 
-    };
-  }
-  
 function createNotificationSocket() {
   if (window.ws === undefined) {
      initWebsocket();

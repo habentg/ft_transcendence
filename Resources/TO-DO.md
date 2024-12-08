@@ -52,3 +52,10 @@ UI Improvement: Resolved
 
 Friday cases - Unsolved Cases
 1, All css & js files are deleted, except the during signout from friend search (needs revision).
+
+
+
+
+
+saturday night - to do:
+1. duplication of notifications - ex:

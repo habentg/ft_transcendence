@@ -130,6 +130,7 @@ async function handleUpload() {
       const responseData = await response.json();
       await updateUI(`/profile/${responseData.username}`, false);
       closeModal();
+      updateNavBar(true);
     } else {
       throw new Error("Failed to update profile pic");
     }
@@ -354,3 +355,6 @@ function initProfilePage() {
 
 // initialize the profile page
 initProfilePage();
+
+
+/* after z */

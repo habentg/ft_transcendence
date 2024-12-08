@@ -5,7 +5,8 @@ from django.conf import settings
 from channels.db import database_sync_to_async
 import jwt
 from .models import *
-
+from .serializers import *
+from account.models import *
 class FriendshipNotificationConsumer(AsyncWebsocketConsumer):
     def extract_token_from_headers(self):
         # WebSocket headers are in bytes, so we need to decode
@@ -66,11 +67,47 @@ class FriendshipNotificationConsumer(AsyncWebsocketConsumer):
         )
 
     # Custom event Handler for friend request notifications
-    async def friend_request_notification(self, event):
+    async def friendship_notification(self, event):
         sender = event['sender']
-        message = event['message']
+        message = ""
+        notification_type = event['notification_type']
+        if message == 'request':
+            message = f"{sender} accepted your friend request!"
         await self.send(text_data=json.dumps({
-            'type': 'friend_request',
+            'type': notification_type,
             'sender': sender,
             'message': message
+        }))
+    
+    async def receive(self, text_data):
+        data = json.loads(text_data)
+        message = data['message']
+        recipient_username = data['recipient']  # Get the recipient's username
+
+        # Save the message to the database
+        sender = await self.validate_token(self.extract_token_from_headers())
+        recipient = await database_sync_to_async(Player.objects.get)(username=recipient_username)
+
+        chat_message = ChatMessage(sender=sender, recipient=recipient, content=message)
+        await database_sync_to_async(chat_message.save)()
+
+        # Send message to the recipient's group
+        recipient_group_name = f"user_{recipient.username}"
+        await self.channel_layer.group_send(
+            recipient_group_name,
+            {
+                'type': 'chat',
+                'message': message,
+                'sender': sender.username
+            }
+        )
+
+    async def chat(self, event):
+        message = event['message']
+        sender = event['sender']
+
+        await self.send(text_data=json.dumps({
+            'type': 'chat_message',
+            'message': message,
+            'sender': sender
         }))

@@ -333,15 +333,14 @@ document.querySelectorAll('.navbar-nav .nav-link').forEach(function(navLink) {
 
 
 /* notification dropdown */
-async function handleNotificationBellClick(e) {
-  // e.preventDefault(); // Uncomment if you want to prevent default action
-
-  console.log("notification bell clicked");
+async function handleNotificationBellClick(action) {
+  //check if its expanded - if its simply return
+  // Fetch notifications
   const response = await fetch("/notifications/", {
       method: "GET",
       headers: {
           "X-Requested-With": "XMLHttpRequest",
-          "action": "top_3_notifications",
+          "action": `${action}`,
       },
   });
 

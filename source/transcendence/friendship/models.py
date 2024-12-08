@@ -98,8 +98,6 @@ class Notification(models.Model):
     player = models.ForeignKey('account.Player', on_delete=models.CASCADE, related_name='notifications')
     notification_type = models.CharField(max_length=20)
     sender = models.ForeignKey('account.Player', on_delete=models.CASCADE, related_name='sent_notifications', null=True)
-    sender_username = models.CharField(max_length=150, null=True)
-    sender_pfp_url = models.CharField(max_length=150, default=None, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
     read_status = models.BooleanField(default=False)
 
@@ -109,3 +107,25 @@ class Notification(models.Model):
     
     def __str__(self):
         return f"{self.player.username} - {self.notification_type}"
+    
+    @property
+    def sender_profile_picture(self):
+        return self.sender.profile_picture
+
+    @property
+    def sender_username(self):
+        return self.sender.username
+    
+
+# """ ChatMessage model """
+class ChatMessage(models.Model):
+    sender = models.ForeignKey('account.Player', related_name='sent_messages', on_delete=models.CASCADE)
+    recipient = models.ForeignKey('account.Player', related_name='received_messages', on_delete=models.CASCADE)
+    content = models.TextField()
+    timestamp = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ['timestamp']  # Order messages by timestamp
+
+    def __str__(self):
+        return f"{self.sender.username} to {self.recipient.username}: {self.content[:10]}..."

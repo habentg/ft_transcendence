@@ -70,12 +70,6 @@
                   </li>
                   <li id="notification_dropdown_list" class="nav-item ms-lg-2 dropdown">
                     <a onclick="handleNotificationBellClick()" class="nav-link position-relative notification-badge" role="button" id="notificationDropdown" data-bs-toggle="dropdown" aria-expanded="false"><i class="fas fa-bell"></i></a>
-                    {% comment %} <div id="notfication_dropdown_div">
-                      <div id="notfication_list_div" class="dropdown-item"></div>
-                      <div id="notification_see_more" class="dropdown-item">
-                        <button type="button" class="btn btn-dark">See More...</button>
-                      </div>
-                    </div> {% endcomment %}
                     <ul id="notification_ul" class="dropdown-menu dropdown-menu-end" aria-labelledby="notificationDropdown" style="width: 300px;">
                     </ul>
                   </li>
@@ -90,7 +84,7 @@
                     </a>
                     <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="profileDropdown">
                       <li>
-                        <a onclick="appRouter()" class="dropdown-item" href="/profile/{{ user.username }}"><i class="fas fa-user-circle me-2"></i>Your Profile</a>
+                        <a onclick="appRouter()" class="dropdown-item" href="/profile/{{ user.username }}"><i class="fas fa-user-circle me-2"></i>Profile</a>
                       </li>
                       <li>
                         <a onclick="appRouter()" class="dropdown-item" href="/settings"><i class="fas fa-cog me-2"></i>Settings</a>
