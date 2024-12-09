@@ -13,7 +13,7 @@
 }
 
 .friendBoard {
-  width: 100%;
+  width: 80%;
   max-width: 1200px;
 }
 
@@ -38,6 +38,7 @@
   text-decoration: none;
   transition: all 0.3s ease;
   height: 80px;
+  width: 100%;
 }
 
 .menu-item:hover {
@@ -183,5 +184,11 @@
 
   #pagination_navigation span {
     font-size: 0.9rem;
+  }
+
+  .options {
+    display: flex;
+    justify-content: space-evenly;
+    align-items: center;
   }
 }
