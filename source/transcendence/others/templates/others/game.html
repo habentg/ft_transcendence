@@ -1,0 +1,71 @@
+
+<!-- load content -->
+{% load static %}
+
+<div class="gamePage">
+    <div class="background-image">
+        <div class="container d-flex flex-column align-items-center justify-content-center vh-100">
+            <div id="settingsMenu" class="menu shadow-lg">
+                <h2 class="text-center text-light mb-4">Game Settings</h2>
+                <form>
+                    <div class="mb-3">
+                        <label for="paddleSpeed" class="form-label text-light">Paddle Speed:</label>
+                        <input type="number" class="form-control" id="paddleSpeed" min="1" value="6">
+                    </div>
+                    <div class="mb-3">
+                        <label for="ballSpeed" class="form-label text-light">Ball Speed:</label>
+                        <input type="number" class="form-control" id="ballSpeed" min="1" value="4.5">
+                    </div>
+                    <div class="mb-3">
+                        <label for="maxScore" class="form-label text-light">Score to Win:</label>
+                        <input type="number" class="form-control" id="maxScore" min="1" value="3">
+                    </div>
+                    <div class="form-check mb-3">
+                        <input type="checkbox" class="form-check-input" id="slowServe">
+                        <label class="form-check-label text-light" for="slowServe">Slow Serves</label>
+                    </div>
+                    <div id="errorMessages" class="text-danger mb-3"></div>
+                    <button id="applyButton" type="button" class="btn btn-primary w-100">Apply Settings</button>
+                </form>
+            </div>
+            <div id="controls" class="text-center">
+                <button id="startButton" class="btn btn-success btn-lg me-3">Play Local game</button>
+                <button id="settingButton" class="btn btn-warning btn-lg me-3">Settings</button>
+                <button id="aiButton" class="btn btn-info btn-lg">Play VS AI</button>
+            </div>
+            <canvas id="board" class="mt-4 shadow"></canvas>
+        </div>
+    </div>
+</div>
+
+
+<!-- <div class="gamePage">
+	<div class="background-image">
+		<div class="container py-5 d-flex justify-content-center ">
+
+			<div id="settingsMenu" class="menu">
+				<h2>Game Settings</h2>
+				<label for="paddleSpeed">Paddle Speed:</label>
+				<input type="number" id="paddleSpeed" min="1" value="6"><br><br>
+
+				<label for="ballSpeed">Ball Speed:</label>
+				<input type="number" id="ballSpeed" min="1" value="4.5"><br><br>
+
+				<label for="maxScore">Score to win:</label>
+				<input type="number" id="maxScore" min="1" value="3"><br><br>
+
+				<label for="slowServe">Slow Serves:</label>
+				<input type="checkbox" id="slowServe"><br><br>
+
+				<button id="applyButton">Apply Settings</button>
+				<div id="errorMessages"></div>
+			</div>
+			<div id="controls">
+				<button id="startButton">Start Game</button>
+				<button id="settingButton">Settings</button>
+				<button id="aiButton">Play with AI</button>
+			</div>
+			<canvas id="board"></canvas>
+		</div>
+	</div>
+</div> -->

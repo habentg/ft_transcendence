@@ -285,3 +285,27 @@ class PaginatedSearch(APIView, BaseView):
 			'next_page_link': paginator.get_next_link(),
 			'previous_page_link': paginator.get_previous_link(),
 		})
+
+
+class GameView(BaseView):
+	authentication_classes = []
+	permission_classes = []
+	template_name = 'others/game.html'
+	title = 'Game Page'
+	css = 'css/game.css'
+	js = 'js/game.js'
+
+	def get(self, request):
+		return super().get(request)
+		
+
+# class GameAIView(BaseView):
+# 	authentication_classes = []
+# 	permission_classes = []
+# 	template_name = 'others/game.html'
+# 	title = 'Game AI Page'
+# 	css = 'css/game.css'
+# 	js = 'js/gameai.js'
+
+# 	def get(self, request):
+# 		return super().get(request)

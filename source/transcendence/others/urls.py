@@ -11,4 +11,6 @@ urlpatterns = [
     re_path(r'^privacy/?$', PrivacyView.as_view(), name='privacy'),
     re_path(r'^terms/?$', TermsView.as_view(), name='terms'),
     re_path(r'^paginated_search/?$', PaginatedSearch.as_view(), name='paginated_search'),
+    re_path(r'^game/?$', GameView.as_view(), name='game'),
+    # re_path(r'^gameai/?$', GameAIView.as_view(), name='gameai'),
 ]
