@@ -39,6 +39,10 @@ function addMessageToChat(data) {
   const activeChatRoom = document.getElementsByClassName("active")[0];
   message.className = "chat-message";
   if (activeChatRoom) {
+    const no_msg_found = document.getElementById("no_msg_found");
+    if (no_msg_found) {
+      no_msg_found.remove();
+    }
     const active_chat_user = activeChatRoom.getElementsByTagName("span")[0].textContent;
     if (data.sender === active_chat_user) {
       console.log("is reciever");

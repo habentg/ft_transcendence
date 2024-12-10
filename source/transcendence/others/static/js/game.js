@@ -88,8 +88,8 @@ window.onload = function () {
 
     // requestAnimationFrame(draw);
     document.getElementById("startButton").addEventListener("click", startGame);
-    document.getElementById("settingButton").addEventListener("click", openSettings);
-    document.getElementById("applyButton").addEventListener("click", changeSetting);
+    // document.getElementById("settingButton").addEventListener("click", openSettings);
+    // document.getElementById("applyButton").addEventListener("click", changeSetting);
 	document.getElementById("aiButton").addEventListener("click", startaiGame);
 
     document.addEventListener("keydown", move);
@@ -97,9 +97,9 @@ window.onload = function () {
     displayStartMessage();
 };
 
-function openSettings() {
-    document.getElementById("settingsMenu").style.display = "block";
-}
+// function openSettings() {
+//     document.getElementById("settingsMenu").style.display = "block";
+// }
 
 function changeSetting() {
     // valid ranges for the settings
@@ -140,14 +140,15 @@ function changeSetting() {
     maxScore = maxScoreInput;
     slowServe = slowServeInput;
 
-    document.getElementById("settingsMenu").style.display = "none";
+    // document.getElementById("settingsMenu").style.display = "none";
     console.log("Settings Applied: ", { paddleSpeed, defballSpeed, maxScore, slowServe });
 
     ball.velocityX = ball.velocityX > 0 ? defballSpeed : -defballSpeed;
     ball.velocityY = ball.velocityY > 0 ? defballSpeed : -defballSpeed;
 
-    document.getElementById("settingsMenu").style.display = "none";
+    // document.getElementById("settingsMenu").style.display = "none";
     console.log("Settings Applied: ", { paddleSpeed, defballSpeed, maxScore });
+    closeModal("gameSettingsModal");
 }
 
 function displayStartMessage() {
@@ -165,6 +166,10 @@ function startGame() {
     drawFlag = true;
     requestAnimationFrame(draw);
     document.getElementById("startButton").disabled = true; //disable start button when the game starts
+    document.getElementById("aiButton").disabled = true;
+
+    // hide settings menu
+    document.getElementById("settingButton").style.display = "none";
 }
 
 function draw() {
@@ -323,6 +328,8 @@ function resetGame(direction) {
 
 function isGameOver(){
     if (player1Score >= maxScore || player2Score >= maxScore){
+        // unhide settings menu
+        // document.getElementById("settingButton").style.display = "block";
         displayGameOver();
         return true;
     }
@@ -381,6 +388,10 @@ function startaiGame() {
     requestAnimationFrame(draw);
     document.getElementById("startButton").disabled = true;
     document.getElementById("aiButton").disabled = true;
+
+    // hide settings menu
+    document.getElementById("settingButton").style.display = "none";
+
 }
 
 function aiLogic() {

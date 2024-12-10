@@ -66,7 +66,10 @@ function sendMessage(chatroom_name) {
       room: chatroom_name,
     };
     window.ws_chat.send(JSON.stringify(chatMessage));
-    messageInput.value = '';
+    // Scroll to bottom
+    const chatMessages = document.getElementById("chatMessages");
+    chatMessages.scrollTop = chatMessages.scrollHeight;
+    messageInput.value = "";
     messageInput.focus();
   } else {
     console.error("WebSocket is not open. Unable to send message.");

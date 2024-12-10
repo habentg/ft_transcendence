@@ -5,8 +5,8 @@
 <div class="gamePage">
     <div class="background-image">
         <div class="container d-flex flex-column align-items-center justify-content-center vh-100">
-            <div id="settingsMenu" class="menu shadow-lg">
-                <h2 class="text-center text-light mb-4">Game Settings</h2>
+            <!-- <div id="settingsMenu" class="menu shadow-lg">
+                <h2 id="gameSettings" class="text-center text-light mb-4">Game Settings</h2>
                 <form>
                     <div class="mb-3">
                         <label for="paddleSpeed" class="form-label text-light">Paddle Speed:</label>
@@ -27,10 +27,10 @@
                     <div id="errorMessages" class="text-danger mb-3"></div>
                     <button id="applyButton" type="button" class="btn btn-primary w-100">Apply Settings</button>
                 </form>
-            </div>
+            </div> -->
             <div id="controls" class="text-center">
                 <button id="startButton" class="btn btn-success btn-lg me-3">Play Local game</button>
-                <button id="settingButton" class="btn btn-warning btn-lg me-3">Settings</button>
+                <button id="settingButton" onclick="gameSettingsModal()" class="btn btn-warning btn-lg me-3">Settings</button>
                 <button id="aiButton" class="btn btn-info btn-lg">Play VS AI</button>
             </div>
             <canvas id="board" class="mt-4 shadow"></canvas>

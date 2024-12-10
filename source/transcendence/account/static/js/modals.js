@@ -435,6 +435,68 @@ function optionLocalGameModal() {
   return modal;
 }
 
+// game settings modal for game settings
+function gameSettingsModal() {
+  console.log("##################1");
+  const modal = document.createElement("div");
+  modal.classList.add("modal");
+  modal.id = "gameSettingsModal";
+  modal.className = "modal fade show";
+  modal.style.display = "block";
+  modal.innerHTML = `
+    <div class="modal-dialog modal-dialog-centered modal-md">
+      <div class="modal-content">
+        <div class="modal-header border-0 py-3">
+          <h5 class="modal-title">
+            <i class="fas fa-cog me-2"></i> Game Settings
+          </h5>
+          <button type="button" class="btn-close btn-close-white" data-dismiss="modal"></button>
+        </div>
+        <div class="modal-body px-3 py-2">
+          <form>
+            <div class="mb-3">
+                <label for="paddleSpeed" class="form-label text-light">Paddle Speed:</label>
+                <input type="number" class="form-control" id="paddleSpeed" min="1" value="6">
+            </div>
+            <div class="mb-3">
+                <label for="ballSpeed" class="form-label text-light">Ball Speed:</label>
+                <input type="number" class="form-control" id="ballSpeed" min="1" value="4.5">
+            </div>
+            <div class="mb-3">
+                <label for="maxScore" class="form-label text-light">Score to Win:</label>
+                <input type="number" class="form-control" id="maxScore" min="1" value="3">
+            </div>
+            <div class="form-check mb-3">
+                <input type="checkbox" class="form-check-input" id="slowServe">
+                <label class="form-check-label text-light" for="slowServe">Slow Serves</label>
+            </div>
+  
+            <div id="errorMessages" class="text-danger mb-3"></div>
+            <button id="applyButton" type="button" class="btn btn-primary w-100">Apply Settings</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  `;
+
+  // show the modal
+  document.body.appendChild(modal);
+  document.body.classList.add("modal-open");
+  
+  // Event Listeners
+  modal
+    .querySelector("#applyButton")
+    .addEventListener("click", changeSetting);
+  
+  modal // close the modal
+    .querySelector(".btn-close")
+    .addEventListener("click", () => closeModal("gameSettingsModal"));
+  
+  modal.addEventListener("click", (e) => {
+    if (e.target === modal) closeModal("gameSettingsModal");
+  });
+}
+
 // ----------------- Modals for general purpose ----------------- //
 
 // A generic modal for closing modals passed as an arguments

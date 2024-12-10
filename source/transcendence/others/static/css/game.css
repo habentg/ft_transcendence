@@ -34,7 +34,8 @@
     z-index: 10;
 } */
 
-.body, html {
+.body,
+html {
     overflow: hidden;
 }
 
@@ -47,7 +48,7 @@
     background-position: center;
     background-repeat: no-repeat;
     /* padding: 2rem 0; */
-  
+
     /* height: fit-content; */
     height: 100vh;
 }
@@ -97,7 +98,35 @@
     border-radius: 8px;
 }
 
+.modal {
+    backdrop-filter: blur(8px);
+}
+
+.modal-content {
+    background: linear-gradient(140deg,
+            rgba(255, 255, 255, 0.12) -1.82%,
+            rgba(255, 255, 255, 0.04) 68.19%,
+            rgba(255, 255, 255, 0.03) 80.14%);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+}
+
+.modal-header,
+.modal-footer {
+    border-color: rgba(255, 255, 255, 0.1);
+}
+
+.modal-title {
+    color: #84ddfc;
+}
+
+
+.modal-content .form-control::placeholder {
+    color: rgba(255, 255, 255, 0.6) !important;
+}
+
 /* hide footer when in game to avoid scrolling */
 footer {
     display: none;
 }
+

@@ -33,21 +33,30 @@
         </div>
 
         <!-- Chat Container -->
-        <div class="chat-container">
+        <div class="chat-container position-relative">
           <div class="chat-header">
-            <div class="d-flex align-items-center">
-              <i class="fas fa-user-circle fa-2x me-2"></i>
-              <h6 class="mb-0" id="chatTitle">Select a friend to chat</h6>
-              <div id="three_dots" class="d-none">
-                <button id="blockBtn" type="button" class="btn btn-primary" data-roomname="">Blk</button>
-                <button id="unblockBtn" type="button" class="btn btn-secondary" data-roomname="">Un-Blk</button>
-                <button id="deleteChatRoomBtn" type="button" class="btn btn-danger" data-roomname="">Del</button>
+            <div class="d-flex align-items-center justify-content-between">
+              <div class="d-flex align-items-center">
+                <i class="fas fa-user-circle fa-2x me-2"></i>
+                <h6 class="mb-0" id="chatTitle">Select a friend to chat</h6>
               </div>
             </div>
           </div>
-          <div class="chat-messages" id="chatMessages">
-          
+          <div id="three_dots" class="position-absolute top-0 end-0 m-2 d-none">
+            <!-- Dropdown for option -->
+            <div class="dropdown">
+              <button class="btn btn-secondary" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
+                <i class="fas fa-ellipsis-v"></i>
+              </button>
+              <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="dropdownMenuButton">
+                <li><button id="viewProfileBtn" class="dropdown-item" type="button">View Profile</button></li>
+                <li><button id="blockBtn" class="dropdown-item" type="button">Block</button></li>
+                <li><button id="unblockBtn" class="dropdown-item" type="button">Unblock</button></li>
+                <li><button id="deleteChatRoomBtn" class="dropdown-item" type="button">Delete</button></li>
+              </ul>
+            </div>
           </div>
+          <div class="chat-messages" id="chatMessages"></div>
           <div class="chat-input d-flex">
             <input type="text" id="messageInput" class="form-control me-2 d-none" placeholder="Type a message..." />
             <button id="chat_send_btn" class="btn btn-primary d-none">Send</button>
