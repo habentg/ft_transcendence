@@ -50,11 +50,11 @@
 	display: flex;
 }
 
-.chat-message.user1 {
+.chat-message.reciever {
 	justify-content: flex-start;
 }
 
-.chat-message.user2 {
+.chat-message.sender {
 	justify-content: flex-end;
 }
 
@@ -65,12 +65,12 @@
 	font-family: var(--font-body);
 }
 
-.chat-message.user1 .message-content {
+.chat-message.reciever .message-content {
 	background-color: rgba(132, 221, 252, 0.1);
 	color: #84ddfc;
 }
 
-.chat-message.user2 .message-content {
+.chat-message.sender .message-content {
 	background-color: rgba(176, 44, 152, 0.8);
 	color: white;
 }

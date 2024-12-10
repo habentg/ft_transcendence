@@ -66,7 +66,7 @@ async function handleSignInSubmit(e) {
         await updateUI(`/home`, false);
         updateNavBar(true); // update the navbar for authenticated users
         /* websocket - for real-time updates and chat*/
-        createNotificationSocket();
+        createWebSockets();
     } catch (error) {
         console.error('Error:', error);
     }

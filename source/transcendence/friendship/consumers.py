@@ -7,6 +7,7 @@ import jwt
 from .models import *
 from .serializers import *
 from account.models import *
+
 class FriendshipNotificationConsumer(AsyncWebsocketConsumer):
     def extract_token_from_headers(self):
         # WebSocket headers are in bytes, so we need to decode
@@ -32,12 +33,9 @@ class FriendshipNotificationConsumer(AsyncWebsocketConsumer):
             # Retrieve user based on token payload
             return Player.objects.get(id=payload['user_id'])
         
-        except jwt.ExpiredSignatureError:
-            return None
-        except jwt.InvalidTokenError:
-            return None
-        except Player.DoesNotExist:
-            return None
+        except Exception as e:
+                print("Exeption in validating token in FriendshipNotificationConsumer: ", e, flush=True)
+                return None
 
     async def connect(self, **kwargs):
         token = self.extract_token_from_headers()
@@ -49,7 +47,7 @@ class FriendshipNotificationConsumer(AsyncWebsocketConsumer):
             return
         
         # Each user is in their own notification group based on their username
-        self.group_name = f"user_{player.username}"
+        self.group_name = f"notification_{player.username}"
         await self.channel_layer.group_add(
             self.group_name,
             self.channel_name
@@ -72,6 +70,8 @@ class FriendshipNotificationConsumer(AsyncWebsocketConsumer):
         message = ""
         notification_type = event['notification_type']
         if message == 'request':
+            message = f"{sender} sent you a friend request!"
+        elif message == 'request':
             message = f"{sender} accepted your friend request!"
         await self.send(text_data=json.dumps({
             'type': notification_type,
@@ -111,3 +111,4 @@ class FriendshipNotificationConsumer(AsyncWebsocketConsumer):
             'message': message,
             'sender': sender
         }))
+

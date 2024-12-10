@@ -89,7 +89,7 @@ async function handleSignupSubmit(e) {
         await updateUI(`/home`, false);
         // update the navbar
         updateNavBar(true);
-        createNotificationSocket();
+        createWebSockets();
     } catch (error) {
         console.error('Error:', error);
     }

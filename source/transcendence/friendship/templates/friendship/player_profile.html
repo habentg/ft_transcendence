@@ -53,6 +53,7 @@
               {% else %}
                 {% if is_friend %}
                   <button onclick="removeFriend()" id="unfriend_btn" type="button" class="btn btn-danger">Unfriend</button>
+                  <button onclick="create_chatroom()" type="button" class="btn btn-danger chat_btn" data-username="{{ player.username }}">chat</button>
                 {% elif is_requested_by_me %}
                   <button onclick="cancelFriendRequest()" id="cancel_request_btn" type="button" class="btn btn-danger">Cancel Request</button>
                 {% elif am_i_requested %}

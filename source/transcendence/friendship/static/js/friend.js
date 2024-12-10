@@ -80,7 +80,6 @@ async function acceptOrDeclineFriendRequest(action, toBeFriend, direct_from_prof
     console.log("Response status:", response.status); // Log the response status
 
     if (response.status === 200) {
-      console.log(" ---- Friend request fulfilled ---- ");
       if (direct_from_profile) {
         await updateUI(`/profile/${toBeFriend}`, false);
         // attachFriendEventListners(); // reattach event listeners after updating the UI

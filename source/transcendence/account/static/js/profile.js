@@ -1,4 +1,4 @@
-// createNotificationSocket();
+createWebSockets();
 
 // editing user info
 function makeFieldEditable(fieldId) {
@@ -353,8 +353,36 @@ function initProfilePage() {
   }
 }
 
+/* sending request to create chat room between current user and a friend */
+async function create_chatroom() {
+  const friend_username = document
+    .getElementsByClassName("chat_btn")[0]
+    .getAttribute("data-username");
+  console.log("Creating chatroom with ", friend_username);
+  try {
+    const response = await fetch(`/chat/`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "X-CSRFToken": await getCSRFToken(),
+      },
+      body: JSON.stringify({'recipient': friend_username}),
+    });
+
+    if (response.ok) {
+      console.log("Chatroom created successfully - redirecting to the chat page");
+      await updateUI(`/chat`, false);
+      return ;
+    } else {
+      console.error("Failed to create chatroom");
+      throw new Error("Chatroom creation failed");
+    }
+
+  } catch (error) {
+    console.error("Failed to create chatroom: ", error);
+  }
+}
+
 // initialize the profile page
 initProfilePage();
 
-
-/* after z */

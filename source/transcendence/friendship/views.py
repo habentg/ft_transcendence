@@ -14,11 +14,6 @@ from asgiref.sync import async_to_sync
 from rest_framework import viewsets
 from django.template.loader import render_to_string 
 from account.serializers import PlayerSerializer
-from others.views import BaseView
-from rest_framework.exceptions import AuthenticationFailed
-from django.http import HttpResponseRedirect, JsonResponse
-import urllib.parse
-from django.urls import reverse
 
 # FRIEND REQUESTS - FROM SENDER PERSPECTIVE
 class FriendRequestView(APIView):
@@ -27,7 +22,17 @@ class FriendRequestView(APIView):
 
 	def get_player(self, username):
 		return Player.objects.filter(username=username).first()
-	
+
+	def get(self, request, *args, **kwargs):
+		""" get all friends of the current user """
+		player = request.user
+		friend_list = FriendList.objects.get(player=player)
+		friends = friend_list.friends.all()
+		if not friends:
+			return Response({'detail': 'No friends found.'}, status=status.HTTP_404_NOT_FOUND)
+		serializer = PlayerSerializer(friends, many=True)
+		return Response(serializer.data, status=status.HTTP_200_OK)
+
 	# send friend request - PENDING
 	def post(self, request, *args, **kwargs):
 		print('FriendRequestView - post - to add friend request', flush=True)
@@ -209,7 +214,7 @@ class FriendRequestResponseView(APIView):
 class NotificationViewSet(viewsets.ViewSet):
 	authentication_classes = [JWTCookieAuthentication]
 	permission_classes = [IsAuthenticated]
-	template = 'friendship/notification.html'
+	template_name = 'friendship/notification.html'
 
 	def list(self, request):
 		notifications = Notification.objects.filter(player=request.user)
@@ -223,7 +228,7 @@ class NotificationViewSet(viewsets.ViewSet):
 			return Response(serializer.data)
 		else:
 			serializer = NotificationSerializer(notifications, many=True)
-			html = render_to_string(self.template, {'notifications': serializer.data})
+			html = render_to_string(self.template_name, {'notifications': serializer.data})
 			print("html: ", html, flush=True)
 			print('All notifications : ', serializer.data, flush=True)
 			return Response({'html': html, 'data':serializer.data}, status=status.HTTP_200_OK)
@@ -246,34 +251,3 @@ class NotificationViewSet(viewsets.ViewSet):
 			return Response(status=status.HTTP_204_NO_CONTENT)
 		except Notification.DoesNotExist:
 			return Response({'detail': 'Notification not found.'}, status=status.HTTP_404_NOT_FOUND)
-		
-
-""" chat related endpoints """
-# create a chat view
-class ChatView(APIView, BaseView):
-	authentication_classes = [JWTCookieAuthentication]
-	permission_classes = [IsAuthenticated]
-	template_name = 'account/chat.html'
-	title = 'Chat'
-	css = 'css/chat.css'
-	js = 'js/chat.js'
-
-	def handle_exception(self, exception):
-		if isinstance(exception, AuthenticationFailed):
-			signin_url = reverse('signin_page')
-			params = urllib.parse.urlencode({'next': self.request.path})
-			response = HttpResponseRedirect(f'{signin_url}?{params}')
-			response.delete_cookie('access_token')
-			response.delete_cookie('refresh_token')
-			if self.request.headers.get('X-Requested-With') == 'XMLHttpRequest':
-				return JsonResponse({
-					'redirect': f'{signin_url}?{params}'
-				}, status=302)
-			return response
-		return super().handle_exception(exception)
-
-	def get_context_data(self, request):
-		return {'player': PlayerSerializer(request.user).data}
-	
-	def get(self, request):
-		return super().get(request)

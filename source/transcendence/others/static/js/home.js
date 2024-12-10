@@ -1,4 +1,5 @@
-createNotificationSocket();
+createWebSockets();
+
 // load content of the player profile
 async function search(query_parameter, url) {
   let route_url = `/paginated_search?q=${query_parameter}`;
@@ -173,7 +174,20 @@ function attachSearchEventListners() {
       });
     }
   }
+  const chatFriendBtn = document.getElementsByClassName("chat_btn"); // could be multiple
+  if (chatFriendBtn) {
+    for (let i = 0; i < chatFriendBtn.length; i++) {
+      chatFriendBtn[i].addEventListener("click", async () => {
+        const toBeFriend = document
+          .getElementsByClassName("chat_btn")[i]
+          .getAttribute("data-username");
+          console.log("I will send create chatroom request directly from friendlist with: ", toBeFriend);
+        // await create_chatroom(toBeFriend);
+      });
+    }
+  }
 }
+
 
 
 // Create a modal for Local game either with AI or with another player

@@ -1,0 +1,54 @@
+{% load static %}
+
+<div class="chatPage">
+  <div class="background-image">
+    <div class="container py-5">
+      <div class="chat-wrapper">
+        <!-- Sidebar -->
+        <div class="chat-sidebar">
+          <div class="sidebar-header">
+            <h5 class="mb-0">Chats</h5>
+          </div>
+          {% if chatrooms %}
+            <ul class="friend-list mb-3" id="friendList">
+              <!-- Friends will be loaded dynamically -->
+              {% for chatroom in chatrooms %}
+                {% if chatroom.get_participant_one.username == user.username %}
+                  <li id="{{ chatroom.name }}" class="friend-item d-flex align-items-center" data-recipent="{{ chatroom.get_participant_two.full_name }}" onclick="openChat('{{ chatroom.name }}')">
+                    <i class="fas fa-user me-2 profile-icon"></i>
+                    <span class="mb-0 username_span">{{ chatroom.get_participant_two.username }}</span>
+                  </li>
+                {% else %}
+                  <li id="{{ chatroom.name }}" class="friend-item d-flex align-items-center" data-recipent="{{ chatroom.get_participant_one.full_name }}" onclick="openChat('{{ chatroom.name }}')">
+                    <i class="fas fa-user me-2 profile-icon"></i>
+                    <span class="mb-0">{{ chatroom.get_participant_one.username }}</span>
+                  </li>
+                {% endif %}
+              {% endfor %}
+            </ul>
+          {% else %}
+            <div class="alert alert-info">No chats found</div>
+          {% endif %}
+        </div>
+
+        <!-- Chat Container -->
+        <div class="chat-container">
+          <div class="chat-header">
+            <div class="d-flex align-items-center">
+              <i class="fas fa-user-circle fa-2x me-2"></i>
+              <h6 class="mb-0" id="chatTitle">Select a friend to chat</h6>
+              <button id="blockBtn" type="button" class="btn btn-primary d-none" data-roomname="">Blk</button>
+              <button id="unblockBtn" type="button" class="btn btn-secondary d-none" data-roomname="">Un-Blk</button>
+              <button id="deleteChatRoomBtn" type="button" class="btn btn-danger d-none" data-roomname="">Del</button>
+            </div>
+          </div>
+          <div class="chat-messages" id="chatMessages"></div>
+          <div class="chat-input d-flex">
+            <input type="text" id="messageInput" class="form-control me-2" placeholder="Type a message..." />
+            <button id="chat_send_btn" class="btn btn-primary disabled">Send</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

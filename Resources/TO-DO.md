@@ -58,4 +58,6 @@ Friday cases - Unsolved Cases
 
 
 saturday night - to do:
-1. duplication of notifications - ex:
+1. duplication of notifications - ex: sending friendship notification - cancel it - send request again. there will be two notifications,
+    -> will think about it if its okay like that or just remove the older one or update the date of friend request or some....
+2. checkout friendship eventlistners for accepting and declining friend request ... accept is not refreshing the page (if clicked from the friendship list from home)

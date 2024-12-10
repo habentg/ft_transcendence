@@ -130,7 +130,7 @@ class CsrfRequest(APIView):
 class SearchView(APIView, BaseView):
 	authentication_classes = [JWTCookieAuthentication]
 	permission_classes = [IsAuthenticated]
-	template = 'others/search_result.html'
+	template_name = 'others/search_result.html'
 	css = 'css/search.css'
 	js = 'js/friend.js'
 
@@ -155,7 +155,7 @@ class SearchView(APIView, BaseView):
 		search_param = request.GET.get('q', '')
 		if not search_param:
 			return JsonResponse({
-				'html': render_to_string(self.template, {'players': []}),
+				'html': render_to_string(self.template_name, {'players': []}),
 				'css' : self.css,
 				'js' : self.js
 			})
@@ -183,7 +183,7 @@ class SearchView(APIView, BaseView):
 		}
 		# becareful with direct broswer url visit
 		return JsonResponse({
-			'html': render_to_string(self.template, context),
+			'html': render_to_string(self.template_name, context),
 			'css' : self.css,
 			'js' : self.js
 		})
@@ -221,7 +221,7 @@ class SearchPaginator(PageNumberPagination):
 class PaginatedSearch(APIView, BaseView):
 	authentication_classes = [JWTCookieAuthentication]
 	permission_classes = [IsAuthenticated]
-	template = 'others/paginated_page.html'
+	template_name = 'others/paginated_page.html'
 	css = 'css/search.css'
 	js = 'js/friend.js'
 
@@ -246,7 +246,7 @@ class PaginatedSearch(APIView, BaseView):
 		search_param = request.GET.get('q', '')
 		if not search_param:
 			return JsonResponse({
-				'html': render_to_string(self.template, {'players': []}),
+				'html': render_to_string(self.template_name, {'players': []}),
 				'css' : self.css,
 				'js' : self.js
 			})
@@ -276,7 +276,7 @@ class PaginatedSearch(APIView, BaseView):
 		#! becareful with direct broswer url visit
 		print("search_type : ", search_param, flush=True)
 		return JsonResponse({
-			'html': render_to_string(self.template, context),
+			'html': render_to_string(self.template_name, context),
 			'css': self.css,
 			'js': self.js,
 			'current_page': paginator.page.number,

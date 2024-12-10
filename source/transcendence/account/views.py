@@ -11,7 +11,7 @@ import json
 from django.conf import settings
 import requests
 from .models import Player
-from django.contrib.auth import get_user_model, authenticate
+from django.contrib.auth import get_user_model
 from django.core.mail import send_mail
 from django.contrib.auth.tokens import default_token_generator
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
@@ -21,7 +21,7 @@ from .utils import send_2fa_code
 import pyotp
 from django.urls import reverse
 from rest_framework.permissions import IsAuthenticated
-from .auth_middleware import JWTCookieAuthentication, add_token_to_blacklist
+from .auth_middleware import *
 from django.middleware.csrf import get_token
 from rest_framework.response import Response
 from rest_framework.exceptions import AuthenticationFailed

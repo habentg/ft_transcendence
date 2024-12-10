@@ -1,0 +1,17 @@
+{% load static %}
+
+{% if messages %}
+  {% for message in messages %}
+    {% if message.get_sender == current_user.username %}
+      <div class="chat-message sender">
+        <div class="message-content">{{ message.content }}</div>
+      </div>
+    {% else %}
+      <div class="chat-message reciever">
+        <div class="message-content">{{ message.content }}</div>
+      </div>
+    {% endif %}
+  {% endfor %}
+{% else %}
+  <div class="alert alert-info">No messages found</div>
+{% endif %}

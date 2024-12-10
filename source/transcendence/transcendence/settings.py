@@ -53,6 +53,7 @@ INSTALLED_APPS = [
     'account',
     'friendship',
     'others',
+    'chat',
 ]
 
 MIDDLEWARE = [
