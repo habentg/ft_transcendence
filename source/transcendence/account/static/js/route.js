@@ -99,6 +99,7 @@ async function handleLocationChange() {
 async function initApp() {
   // browser back/forward buttons
   window.addEventListener("popstate", async (event) => {
+    console.log("popstate event:", event);
     await handleLocationChange();
   });
   

@@ -398,6 +398,7 @@ td {
 
   .listDisplay {
     padding: 0;
+    height: 30px;
   }
 
   #profileIcon {

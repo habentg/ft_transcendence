@@ -125,69 +125,6 @@ class CsrfRequest(APIView):
 		response.set_cookie('csrftoken', get_token(request))
 		return response
 
-
-""" Searching system for all players, friends, and friend requests """
-class SearchView(APIView, BaseView):
-	authentication_classes = [JWTCookieAuthentication]
-	permission_classes = [IsAuthenticated]
-	template_name = 'others/search_result.html'
-	css = 'css/search.css'
-	js = 'js/friend.js'
-
-	def handle_exception(self, exception):
-		if isinstance(exception, AuthenticationFailed):
-			signin_url = reverse('signin_page')
-			params = urllib.parse.urlencode({'next': self.request.path})
-			response = HttpResponseRedirect(f'{signin_url}?{params}')
-			response.delete_cookie('access_token')
-			response.delete_cookie('refresh_token')
-			response.delete_cookie('csrftoken')
-			response.status_code = 302
-			return response
-		return super().handle_exception(exception)
-
-	def get(self, request, *args, **kwargs):
-		if (request.headers.get('X-Requested-With') != 'XMLHttpRequest'):
-			return HttpResponseRedirect(reverse('home_page'))
-		if (request.user.is_guest):
-			return Response(status=status.HTTP_205_RESET_CONTENT)
-		# http://localhost/search?q=asdfsdaf
-		search_param = request.GET.get('q', '')
-		if not search_param:
-			return JsonResponse({
-				'html': render_to_string(self.template_name, {'players': []}),
-				'css' : self.css,
-				'js' : self.js
-			})
-		players = []
-		"""
-			friend requests are structured like this: <QuerySet [<FriendRequest: root → hatesfam : (PENDING)>]>
-			-> that's why we need to extract the sender from the request (we need friend requests sent to the user)
-		"""
-		if search_param == 'friends':
-			players = request.user.friend_list.friends.all()
-			print("Friends : ", players, flush=True)
-			print('querying all Friends', flush=True)
-		elif search_param == 'friend_requests':
-			friend_requests = request.user.received_requests.all()
-			players = [fr.sender for fr in friend_requests]  # Extracting the users who sent requests
-		else: # if not it should be a username
-			players = Player.objects.filter(username__icontains=search_param).exclude(is_guest=True)
-			print("ALL Players : ", players, flush=True)
-			print('querying all players - containing {}'.format(search_param), flush=True)
-
-		context = {
-			'players': players, 
-			'current_user': PlayerSerializer(request.user).data,
-			'search_type': search_param
-		}
-		# becareful with direct broswer url visit
-		return JsonResponse({
-			'html': render_to_string(self.template_name, context),
-			'css' : self.css,
-			'js' : self.js
-		})
-
 class AboutView(BaseView):
 	authentication_classes = []
 	permission_classes = []
@@ -285,3 +222,27 @@ class PaginatedSearch(APIView, BaseView):
 			'next_page_link': paginator.get_next_link(),
 			'previous_page_link': paginator.get_previous_link(),
 		})
+
+
+class GameView(BaseView):
+	authentication_classes = []
+	permission_classes = []
+	template_name = 'others/game.html'
+	title = 'Game Page'
+	css = 'css/game.css'
+	js = 'js/game.js'
+
+	def get(self, request):
+		return super().get(request)
+		
+
+# class GameAIView(BaseView):
+# 	authentication_classes = []
+# 	permission_classes = []
+# 	template_name = 'others/game.html'
+# 	title = 'Game AI Page'
+# 	css = 'css/game.css'
+# 	js = 'js/gameai.js'
+
+# 	def get(self, request):
+# 		return super().get(request)

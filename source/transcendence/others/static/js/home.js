@@ -207,11 +207,17 @@ function createLocalGameModal() {
     //  Send to AI game page (1 vs AI)
     console.log("Creating AI game");
     closeModal("localGameModal");
+    // For now, page is refreshing. Need to fix.
+    window.location.href = "/game";
+
   });
   document.getElementById("playFriends").addEventListener("click", () => {
     // Send to localgame game page (1 vs 1)
     console.log("Creating local game");
     closeModal("localGameModal");
+    // For now, page is refreshing. Need to fix.
+    window.location.href = "/game";
+
   });
 
   // close the modal when the close button is clicked
