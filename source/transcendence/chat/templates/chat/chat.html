@@ -3,6 +3,7 @@
 <div class="chatPage">
   <div class="background-image">
     <div class="container py-5">
+      <div></div>
       <div class="chat-wrapper">
         <!-- Sidebar -->
         <div class="chat-sidebar">
@@ -37,15 +38,19 @@
             <div class="d-flex align-items-center">
               <i class="fas fa-user-circle fa-2x me-2"></i>
               <h6 class="mb-0" id="chatTitle">Select a friend to chat</h6>
-              <button id="blockBtn" type="button" class="btn btn-primary d-none" data-roomname="">Blk</button>
-              <button id="unblockBtn" type="button" class="btn btn-secondary d-none" data-roomname="">Un-Blk</button>
-              <button id="deleteChatRoomBtn" type="button" class="btn btn-danger d-none" data-roomname="">Del</button>
+              <div id="three_dots" class="d-none">
+                <button id="blockBtn" type="button" class="btn btn-primary" data-roomname="">Blk</button>
+                <button id="unblockBtn" type="button" class="btn btn-secondary" data-roomname="">Un-Blk</button>
+                <button id="deleteChatRoomBtn" type="button" class="btn btn-danger" data-roomname="">Del</button>
+              </div>
             </div>
           </div>
-          <div class="chat-messages" id="chatMessages"></div>
+          <div class="chat-messages" id="chatMessages">
+          
+          </div>
           <div class="chat-input d-flex">
-            <input type="text" id="messageInput" class="form-control me-2" placeholder="Type a message..." />
-            <button id="chat_send_btn" class="btn btn-primary disabled">Send</button>
+            <input type="text" id="messageInput" class="form-control me-2 d-none" placeholder="Type a message..." />
+            <button id="chat_send_btn" class="btn btn-primary d-none">Send</button>
           </div>
         </div>
       </div>

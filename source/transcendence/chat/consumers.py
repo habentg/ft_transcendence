@@ -56,37 +56,79 @@ class chatConsumer(AsyncWebsocketConsumer):
     
     async def receive(self, text_data):
         data = json.loads(text_data)
-        message = data.get('message')
-        recipient_chatroom = data.get('recipient')
+        room_name = data.get('room')
+        room_group_name = f"chat_group_{room_name}"
+        if data['type'] == 'delete_chatroom':
+            success = await self.delete_chatroom(room_name)
+            if success:
+                await self.channel_layer.group_send(
+                    room_group_name,
+                    {
+                        'type': 'room_deleted_notification',
+                        'message': 'Chatroom has been deleted',
+                    }
+                )
+                await self.channel_layer.group_discard(
+                    room_group_name,
+                    self.channel_name
+                )
+            else:
+                await self.send(text_data=json.dumps({
+                    'type': 'room_deleted_notification_error',
+                    'message': 'Chatroom could not be deleted',
+                }))
+        elif data['type'] == 'private_message':
+            message = data.get('message')
+            try:
+                priv_room, _ = await database_sync_to_async(ChatRoom.objects.get_or_create)(name=room_name)
+                await self.channel_layer.group_add(
+                    room_group_name,
+                    self.channel_name
+                )
+                await database_sync_to_async(Message.objects.create)(
+                    room=priv_room,
+                    sender=self.sender,
+                    content=message
+                )
+                await self.channel_layer.group_send(
+                    room_group_name,
+                    {
+                        'type': 'chat_message_handler',
+                        'message': message,
+                        'sender': self.sender.username
+                    }
+                )
+                print("Sent message to group {room_group_name}: {message}", flush=True)
+            except Exception as e:
+                print("Exception in creating/getting chatroom ----- from CONSUMERS: ", e, flush=True)
+                await self.send(text_data=json.dumps({
+                    'type': 'private_message_error',
+                }))
 
-        room_group_name = f"chat_group_{recipient_chatroom}"
-
-        priv_room, _ = await database_sync_to_async(ChatRoom.objects.get_or_create)(name=recipient_chatroom)
-        print("priv_room: ", priv_room, flush=True)
-        await self.channel_layer.group_add(
-            room_group_name,
-            self.channel_name
-        )
-        
-        await database_sync_to_async(Message.objects.create)(
-            room=priv_room,
-            sender=self.sender,
-            content=message
-        )
-
-        print("message: [", message, "] saved!!!", flush=True)
-        await self.channel_layer.group_send(
-            room_group_name,
-            {
-                'type': 'chat_message',
-                'message': message,
-                'sender': self.sender.username
-            }
-        )
-
-    async def chat_message(self, event):
+    """ message sending handler """
+    async def chat_message_handler(self, event):
+        print("chat_message_handler invoked with event:", event, flush=True)
         await self.send(text_data=json.dumps({
             'type': 'private_message',
             'message': event['message'],
             'sender': event['sender']
         }))
+
+    """ room deleting notification handler """
+    async def room_deleted_notification(self, event):
+        await self.send(text_data=json.dumps({
+            'type': 'room_deleted_notification',
+            'message': event['message']
+        }))
+    
+    """ ------------------------- Helper functions -------------------------"""
+    @database_sync_to_async
+    def delete_chatroom(self, room_name):
+        try:
+            room = ChatRoom.objects.get(name=room_name)
+            room.participants.clear()
+            room.delete()
+            return True
+        except Exception as e:
+            print(f"Error during deletion of chatroom '{room_name}': {e}", flush=True)
+            return False

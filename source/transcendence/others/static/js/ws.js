@@ -77,7 +77,12 @@ function initChatWebsocket() {
   window.ws_chat.onmessage = (e) => {
     const data = JSON.parse(e.data);
     if (data.type === "private_message") {
+      console.log("private message received:", data.message, "from:", data.sender);
       addMessageToChat(data);
+    }
+    else if (data.type === "room_deleted_notification") {
+      // remove the chatroom from the list
+      
     }
   }
 }

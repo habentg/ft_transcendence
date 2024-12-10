@@ -81,11 +81,4 @@ class ChatRoomsView(APIView, BaseView):
 			priv_room.participants.add(sender, recipient)
 		return JsonResponse({'data': 'asdfadsf'}, status=200)
 	
-	""" delete method to delete a chatroom """
-	def delete(self, request):
-		room_name = request.data.get('room')
-		chatroom = ChatRoom.objects.get(name=room_name)
-		chatroom.delete()
-		return Response(status=200)
-
 	""" patch to block/unblock a user """

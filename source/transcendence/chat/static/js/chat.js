@@ -10,9 +10,15 @@ async function openChat(chatroom_name) {
 
   // Update chat header
   document.getElementById("chatTitle").textContent = getFUllName;
+  document.getElementById("three_dots").classList.remove("d-none");
+  document.getElementById("deleteChatRoomBtn").setAttribute("data-roomname", chatroom_name);
+  document.getElementById("blockBtn").setAttribute("data-roomname", chatroom_name);
+  document.getElementById("unblockBtn").setAttribute("data-roomname", chatroom_name);
+
 
   // Update messages - I will have fetch messages hopefully usig pagination
   await fetchMessages(chatroom_name);
+
   // Highlight selected friend
   const prevActiveChat = document.getElementsByClassName("active")[0];
   if (prevActiveChat) {
@@ -22,6 +28,7 @@ async function openChat(chatroom_name) {
 
   // Send message on Enter
   const messageInput = document.getElementById("messageInput");
+  messageInput.classList.remove("d-none");
   messageInput.addEventListener("keyup", (event) => {
     if (event.key === "Enter") {
       console.log("sending to user:", chatroom_name);
@@ -32,7 +39,7 @@ async function openChat(chatroom_name) {
   // send message on button click
   const send_btn = document.getElementById("chat_send_btn");
   if (send_btn) {
-    send_btn.classList.remove("disabled");
+    send_btn.classList.remove("d-none");
     send_btn.addEventListener("click", () => {
       sendMessage(chatroom_name);
     });
@@ -54,9 +61,9 @@ function sendMessage(chatroom_name) {
   if (window.ws_chat && window.ws_chat.readyState === WebSocket.OPEN) {
     console.log("Sending message:", message, "to:", chatroom_name);
     const chatMessage = {
-      type: "chat_message",
+      type: "private_message",
       message: message,
-      recipient: chatroom_name,
+      room: chatroom_name,
     };
     window.ws_chat.send(JSON.stringify(chatMessage));
     messageInput.value = '';
@@ -70,23 +77,30 @@ function sendMessage(chatroom_name) {
 /* block, unblock and delete chat features */
 async function deleteChatRoom(chatroom_name) {
   console.log("Deleting chatroom:", chatroom_name);
-  try {
-    const response = await fetch(`/chat`, {
-      method: "DELETE",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ room: chatroom_name }),
-    });
-
-    if (response.ok) {
-      console.log("Chatroom deleted!!!!!!!!!!!!!!!");
-      return;
-    }
-    throw new Error("Error deleting chatroom");
-  } catch (error) {
-    console.error(error);
+  if (window.ws_chat && window.ws_chat.readyState === WebSocket.OPEN) {
+    const chatMessage = {
+      type: "delete_chatroom",
+      room: chatroom_name,
+    };
+    window.ws_chat.send(JSON.stringify(chatMessage));
   }
+  // try {
+  //   const response = await fetch(`/chat`, {
+  //     method: "DELETE",
+  //     headers: {
+  //       "Content-Type": "application/json",
+  //     },
+  //     body: JSON.stringify({ room: chatroom_name }),
+  //   });
+
+  //   if (response.ok) {
+  //     await updateUI('/chat', false);
+  //     return;
+  //   }
+  //   throw new Error("Error deleting chatroom");
+  // } catch (error) {
+  //   console.error(error);
+  // }
 }
 /* fetching message of an active chat */
 async function fetchMessages(chatroom_name) {
@@ -114,7 +128,7 @@ function initChatEventListeners() {
   if (deleteChatRoomBtn) {
     deleteChatRoomBtn.addEventListener("click", () => {
       const chatroom_name = document.getElementById("chatTitle").textContent;
-      deleteChatRoom(chatroom_name);
+      deleteChatRoom(deleteChatRoomBtn.getAttribute("data-roomname"));
     });
   }
 }
