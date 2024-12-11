@@ -1,15 +1,20 @@
-.first-page {
-  min-height: 100%;
-  width: 100%;
-}
-
-.background-image {
+.first-page .background-image {
+  display: flex;
+  justify-content: center;
+  align-items: center;
   background-image: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), url('/static/images/background2.jpg');
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
-  min-height: 100%;
   padding: 2rem 0;
+
+  height: fit-content;
+  min-height: 100vh;
+}
+
+.friendBoard {
+  width: 80%;
+  max-width: 1200px;
 }
 
 .content {
@@ -21,7 +26,9 @@
   backdrop-filter: blur(10px);
   border-radius: 15px;
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+  margin: 0 auto;
 }
+
 
 .menu-item {
   background: rgba(255, 255, 255, 0.1);
@@ -31,6 +38,7 @@
   text-decoration: none;
   transition: all 0.3s ease;
   height: 80px;
+  width: 100%;
 }
 
 .menu-item:hover {
@@ -102,6 +110,28 @@
   min-height: 50px;
 }
 
+#pagination_navigation .btn {
+  margin: 0 0.5rem;
+  background: linear-gradient(45deg, #84ddfc, #b02c98);
+  border: none;
+  color: white;
+  padding: 0.5rem 1rem;
+  transition: all 0.3s ease;
+  border-radius: 10px;
+}
+
+#pagination_navigation .btn:hover {
+  transform: translateY(-2px);
+  background: linear-gradient(45deg, #b02c98, #84ddfc);
+  box-shadow: 0 4px 15px rgba(132, 221, 252, 0.3);
+}
+
+#pagination_navigation span {
+  font-size: 1rem;
+  font-weight: bold;
+  color: #84ddfc;
+}
+
 /* Modal Styles */
 .modal {
   backdrop-filter: blur(8px);
@@ -133,9 +163,6 @@
 }
 
 @media (max-width: 768px) {
-  .background-image {
-    /* padding: 1rem; */
-  }
   
   .menu-item {
     height: 70px;
@@ -148,5 +175,20 @@
   .btn {
     padding: 0.4rem 0.8rem;
     font-size: 0.9rem;
+  }
+
+  #pagination_navigation .btn {
+    padding: 0.4rem 0.8rem;
+    font-size: 0.9rem;
+  }
+
+  #pagination_navigation span {
+    font-size: 0.9rem;
+  }
+
+  .options {
+    display: flex;
+    justify-content: space-evenly;
+    align-items: center;
   }
 }

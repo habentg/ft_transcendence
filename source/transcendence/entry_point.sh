@@ -23,15 +23,16 @@ python manage.py shell <<EOF
 from account.models import Player
 from friendship.models import FriendList
 
-player = Player.objects.get(username='$DJANGO_SUPERUSER_USERNAME')
-player.full_name = '$DJANGO_SUPERUSER_FULLNAME'
-player.set_password('$DJANGO_SUPERUSER_PASSWORD')
-FriendList.objects.create(player=player)
-player.save()
+try:
+    player = Player.objects.get(username='$DJANGO_SUPERUSER_USERNAME')
+    player.full_name = '$DJANGO_SUPERUSER_FULLNAME'
+    player.set_password('$DJANGO_SUPERUSER_PASSWORD')
+    FriendList.objects.create(player=player)
+    player.save()
+except:
+    print('root already exists')
 EOF
 
 # Run server
 echo "RUNNING SERVER"
-# this will start the Django development server (built-in WSGI server)
-# This WSGI server is responsible for receiving requests from Nginx and passing them to the Django application.
-python manage.py runserver 0.0.0.0:8000 --verbosity 2
+daphne -b 0.0.0.0 -p 8000 transcendence.asgi:application

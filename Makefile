@@ -3,7 +3,7 @@ COMPOSE 		= cd ./source && docker-compose
 
 
 # ----------------------- creating services --------------------------
-all: build up
+all: build up collectstatic
 
 up:
 	$(COMPOSE) -f docker-compose.yaml up -d --remove-orphans
@@ -17,7 +17,7 @@ build:
 down:
 	$(COMPOSE) -f docker-compose.yaml down
 
-re: down up # rebuilding the services without deleting the persistent storages
+re: down up collectstatic# rebuilding the services without deleting the persistent storages
 
 # ---------------------------- django related Operattions -------------------------------
 
@@ -37,16 +37,15 @@ start:
 stop:
 	$(COMPOSE) -f docker-compose.yaml stop
 
-restart: stop start # restarting the services (volumes, network, and images stay the same)
+restart: stop start collectstatic # restarting the services (volumes, network, and images stay the same)
 
 
 # ----------------------- Deleting resources and rebuilding --------------------------
-
 fclean: down
 	@yes | docker system prune --all
 	@docker volume ls -q | grep -q . && docker volume rm $$(docker volume ls -q) || true 
 
-rebuild: fclean all
+rebuild: fclean all collectstatic
 
 # ----------------------- Managing app service only --------------------------
 

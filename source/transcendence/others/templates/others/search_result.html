@@ -9,11 +9,11 @@
           <span class="found-count">{{ players|length }}</span> Results Found
         </h3>
       </div>
-      
+
       <div class="row justify-content-center">
         <div class="col-lg-8 w-100">
           {% for player in players %}
-            <div class="player-card content mb-2">
+            <div class="player-card mb-2">
               <!-- make the whole card as button -->
               <a onclick="appRouter()" href="/profile/{{ player.username }}" class="w-100 text-decoration-none">
                 <div class="d-flex align-items-center listDisplay">
@@ -35,19 +35,13 @@
                   <!-- Action Buttons -->
                   <div class="player-actions">
                     {% if search_type == 'friends' %}
-                      <button id="chat_btn" class="btn btn-primary btn-sm me-2">
-                        <i class="fas fa-comments me-2"></i>Chat
-                      </button>
-                      <!-- <a onclick="appRouter()" href="/profile/{{ player.username }}" class="btn btn-outline-light btn-sm">
+                      <button id="chat_btn" class="btn btn-primary btn-sm me-2"><i class="fas fa-comments me-2"></i>Chat</button>
+                      <!--   <a onclick="appRouter()" href="/profile/{{ player.username }}" class="btn btn-outline-light btn-sm">
                         <i class="fas fa-user me-2"></i>Visit
-                      </a> -->
+                      </a>   -->
                     {% elif search_type == 'friend_requests' %}
-                      <button type="button" class="btn btn-success btn-sm me-2 acc_req_btn" data-username="{{player.username}}" style="display: inline;">
-                        <i class="fas fa-check me-2"></i>Accept
-                      </button>
-                      <button type="button" class="btn btn-danger btn-sm rej_req_btn" data-username="{{player.username}}" style="display: inline;">
-                        <i class="fas fa-times me-2"></i>Reject
-                      </button>
+                      <button type="button" class="btn btn-success btn-sm me-2 acc_req_btn" data-username="{{ player.username }}" style="display: inline;"><i class="fas fa-check me-2"></i>Accept</button>
+                      <button type="button" class="btn btn-danger btn-sm rej_req_btn" data-username="{{ player.username }}" style="display: inline;"><i class="fas fa-times me-2"></i>Reject</button>
                       <p class="fullfiled_para" style="display: none;">you fullfilled the request!</p>
                     {% else %}
                     <!-- <a onclick="appRouter()" href="/profile/{{ player.username }}" class="btn btn-primary btn-sm"> -->
@@ -64,8 +58,16 @@
     {% else %}
       <div class="no-results text-center py-5">
         <i class="fas fa-search fa-3x mb-3"></i>
-        <h3>No Results Found</h3>
-        <p class="text-muted">Try different search terms</p>
+        {% if search_param == 'friends' %}
+          <h3>No Friends Found</h3>
+          <p class="text-muted">Start connecting ...</p>
+        {% elif search_param == 'friend_requests' %}
+          <h3>No Friend Requests Found</h3>
+          <p class="text-muted">lmao... </p>
+        {% else %}
+          <h3>No Results Found for "{{ search_param }}"</h3>
+          <p class="text-muted">Try different search terms</p>
+        {% endif %}
       </div>
     {% endif %}
   </div>

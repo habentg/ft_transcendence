@@ -32,12 +32,13 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous" defer></script>
     <!-- Main css and js file - will have our general styling, routing -->
     <link rel="stylesheet" href="{% static 'css/base.css' %}" />
+    <script src="{% static 'js/modals.js' %}" defer></script>
     <script src="{% static 'js/utils.js' %}" defer></script>
     <script src="{% static 'js/ws.js' %}" defer></script>
     <script src="{% static 'js/route.js' %}" defer></script>
     <!-- will dynamically page specific css and js files -->
     {% if css %}
-      <link rel="stylesheet" href="{% static css %}" id="{% static css %}-id"/>
+      <link rel="stylesheet" href="{% static css %}" id="{% static css %}-id" />
     {% endif %} {% if js %}
       <script src="{% static js %}" id="{% static js %}-id" defer></script>
     {% endif %}
@@ -65,11 +66,20 @@
                     <a href="#" class="nav-link"><i class="fas fa-users me-2"></i>Friends</a>
                   </li>
                   <li class="nav-item">
-                    <a href="#" class="nav-link"><i class="fas fa-comments me-2"></i>Chat</a>
+                    <a href="/chat" class="nav-link" onclick="appRouter()"><i class="fas fa-comments me-2"></i>Chat</a>
                   </li>
-                  <li class="nav-item">
-                    <a href="#" class="nav-link position-relative notification-badge"><i class="fas fa-bell"></i></a>
+                  <li id="notification_dropdown_list" class="nav-item ms-lg-2 dropdown">
+                    <a onclick="handleNotificationBellClick()" class="nav-link position-relative notification-badge" role="button" id="notificationDropdown" data-bs-toggle="dropdown" aria-expanded="false"><i class="fas fa-bell"></i></a>
+                    {% comment %} <div id="notfication_dropdown_div">
+                      <div id="notfication_list_div" class="dropdown-item"></div>
+                      <div id="notification_see_more" class="dropdown-item">
+                        <button type="button" class="btn btn-dark">See More...</button>
+                      </div>
+                    </div> {% endcomment %}
+                    <ul id="notification_ul" class="dropdown-menu dropdown-menu-end" aria-labelledby="notificationDropdown" style="width: 300px;">
+                    </ul>
                   </li>
+
                   <li class="nav-item ms-lg-2 dropdown">
                     <a class="nav-link profile-link" href="#" role="button" id="profileDropdown" data-bs-toggle="dropdown" aria-expanded="false">
                       {% if user.profile_picture %}
@@ -80,7 +90,7 @@
                     </a>
                     <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="profileDropdown">
                       <li>
-                        <a onclick="appRouter()" class="dropdown-item" href="/profile/{{user.username}}"><i class="fas fa-user-circle me-2"></i>Profile</a>
+                        <a onclick="appRouter()" class="dropdown-item" href="/profile/{{ user.username }}"><i class="fas fa-user-circle me-2"></i>Your Profile</a>
                       </li>
                       <li>
                         <a onclick="appRouter()" class="dropdown-item" href="/settings"><i class="fas fa-cog me-2"></i>Settings</a>
@@ -95,7 +105,7 @@
                   </li>
                 {% else %}
                   <li class="nav-item">
-                    <a href="#" class="nav-link"><i class="fas fa-gamepad me-2"></i>Quick game</a>
+                    <a href="/temp_player" class="nav-link"><i class="fas fa-gamepad me-2"></i>Quick game</a>
                   </li>
                   <li class="nav-item">
                     <a onclick="appRouter()" class="nav-link btn btn-outline-primary ms-lg-2" href="/signin">Sign in</a>
@@ -117,7 +127,7 @@
           <!-- Brand Column -->
           <div class="col-lg-4 text-center text-lg-start">
             <div class="footer-brand mb-3 g-0">
-              <i class="fas fa-table-tennis-paddle-ball me-2 "> Beer Pong</i>
+              <i class="fas fa-table-tennis-paddle-ball me-2">Beer Pong</i>
               <!-- <h5>Beer Pong</h5> -->
             </div>
             <p class="footer-tagline mb-3">Play, Compete, & Have Fun!</p>

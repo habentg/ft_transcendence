@@ -1,7 +1,8 @@
 
 function initWebsocket() {
     let wsProtocol = window.location.protocol === "https:" ? "wss" : "ws";
-    window.ws = new WebSocket(`${wsProtocol}://${window.location.host}/ws/`);
+    wsUrl = `${wsProtocol}://${window.location.host}/ws/notify/`;
+    window.ws = new WebSocket(wsUrl);
   
     window.ws.onopen = () => {
       console.log("WebSocket connected");
@@ -12,11 +13,22 @@ function initWebsocket() {
     };
   
     window.ws.onerror = (error) => {
+      console.log("wsUrl:", wsUrl);
       console.error("WebSocket error:", error);
     };
   
-    window.ws.onmessage = (message) => {
-      console.log("WebSocket message:", message);
+    window.ws.onmessage = (e) => {
+      const data = JSON.parse(e.data);
+      if (data.type === "friend_request") {
+        // alert(`${data.message}`);
+        console.log("friend request received", data.message);
+      }
+
     };
   }
   
+function createNotificationSocket() {
+  if (window.ws === undefined) {
+     initWebsocket();
+  }
+} 

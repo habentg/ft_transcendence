@@ -32,7 +32,9 @@ REDIS_URL = os.environ.get('REDIS_URL')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [
+    'localhost',
+]
 
 
 # Application definition
@@ -115,6 +117,16 @@ CACHES = {
     }
 }
 
+CHANNEL_LAYERS = {
+    'default': {
+        'BACKEND': 'channels_redis.core.RedisChannelLayer',
+        'CONFIG': {
+            "hosts": [("redis", 6379, 0)],
+        },
+    },
+}
+
+
 # appending trailing slash to urls if not present
 APPEND_SLASH = False
 # TRAILING_SLASH = False
@@ -149,66 +161,6 @@ USE_I18N = True
 
 USE_TZ = True
 
-
-
-
-import logging
-
-class HealthCheckFilter(logging.Filter):
-    def filter(self, record):
-        if '/health/' in record.getMessage():
-            return False
-        return True
-
-LOGGING = {
-    'version': 1,
-    'disable_existing_loggers': False,
-    'formatters': {
-        'verbose': {
-            'format': '{levelname} {asctime} {module} {process:d} {thread:d} {message}',
-            'style': '{',
-        },
-        'simple': {
-            'format': '[{asctime}] {message}',
-            'style': '{',
-            'datefmt': '%d/%b/%Y %H:%M:%S'
-        },
-    },
-    'handlers': {
-        'console': {
-            'level': 'DEBUG',
-            'class': 'logging.StreamHandler',
-            'formatter': 'simple',
-            'filters': [HealthCheckFilter()],  # Use the imported class here
-        },
-    },
-    'loggers': {
-        'django': {
-            'handlers': ['console'],
-            'level': 'INFO',
-            'propagate': True,
-        },
-        'django.server': {
-            'handlers': ['console'],
-            'level': 'DEBUG',
-            'propagate': False,
-        },
-        'django.request': {
-            'handlers': ['console'],
-            'level': 'DEBUG',
-            'propagate': False,
-        },
-    },
-    'root': {
-        'handlers': ['console'],
-        'level': 'INFO',
-    },
-    'django.contrib.staticfiles': {
-        'handlers': ['console'],
-        'level': 'DEBUG',
-    },
-}
-
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
         'rest_framework_simplejwt.authentication.JWTAuthentication',
@@ -216,6 +168,8 @@ REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES': [
         'rest_framework.permissions.IsAuthenticated',
     ],
+    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
+    'PAGE_SIZE': 100
 }
 
 # Default primary key field type
@@ -269,7 +223,7 @@ DEFAULT_FROM_EMAIL = os.getenv('DEFAULT_FROM_EMAIL')  # Email address that appea
 # redis settings
 REDIS_HOST = 'redis'
 REDIS_PORT = 6379
-REDIS_DB = 0
+REDIS_DB = 1
 
 
 # Static files (CSS, JavaScript, Images)
@@ -277,12 +231,12 @@ REDIS_DB = 0
 """ basically we will run 'collectstatic' and it will collect all the static files from all the apps and put them in the static folder in the root directory of the project """
 STATIC_URL = 'static/'
 # to be commented out when deploying
-STATIC_ROOT = BASE_DIR / 'static'
-STATICFILES_DIRS = [
-    BASE_DIR / "others" / "static",
-    BASE_DIR / "account" / "static",
-]
-# STATIC_ROOT = '/media_static/static'
+# STATIC_ROOT = BASE_DIR / 'static'
+# STATICFILES_DIRS = [
+#     BASE_DIR / "others" / "static",
+#     BASE_DIR / "account" / "static",
+# ]
+STATIC_ROOT = '/media_static/static'
 
 # Media settings (determines where images will be uploaded)
 MEDIA_URL = 'media/'

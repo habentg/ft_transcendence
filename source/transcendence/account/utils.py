@@ -3,7 +3,10 @@ import time
 from django.core.mail import send_mail
 from django.conf import settings
 from django.template.loader import render_to_string
-from .auth_middleware import is_token_blacklisted
+from .auth_middleware import is_valid_token
+from .models import Player
+import string
+import random
 
 def generate_otp_secret():
     return pyotp.random_base32()
@@ -28,6 +31,27 @@ def isUserisAuthenticated(request):
     if request.user.is_authenticated:
         return True
     token = request.COOKIES.get('access_token')
-    if token and not is_token_blacklisted(token):
+    if token and is_valid_token(token):
         return True
     return False
+
+
+
+def generate_username():
+	length = 7
+	characters = string.ascii_letters + string.digits
+	random_string = ''.join(random.choice(characters) for _ in range(length))
+	return random_string
+
+def createGuestPlayer() -> Player:
+	anon = Player.objects.create(
+		username = generate_username(),
+		full_name = 'Guest Player',
+	)
+	guest_email = f'{anon.username}@guest_email.com'
+	anon.email = guest_email
+	print(f"Anon player created: {anon.email}", flush=True)
+	anon.set_unusable_password()
+	anon.is_guest = True
+	anon.save()
+	return anon

@@ -19,7 +19,6 @@ RUN apk update && apk add --no-cache \
 
 COPY requirements.txt .
 COPY entry_point.sh .
-COPY dummy_users.json .
 
 RUN pip install --upgrade pip && pip install --no-cache-dir -r requirements.txt
 

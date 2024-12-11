@@ -52,14 +52,6 @@ async function loadContent(route) {
       },
     });
 
-    // signout is a special case
-    if (route === `${window.baseUrl}/signout`) {
-      removeResource();
-      updateNavBar(true);
-      await updateUI("/", false);
-      return;
-    }
-
     if (!response.ok) {
       // may be we will handle other error codes later
       // if the response is a redirect, then redirect the user to the new location
@@ -77,6 +69,7 @@ async function loadContent(route) {
       }
       throw new Error("HTTP " + response.status);
     }
+    // history.replaceState(null, "", response.url);
     let data = await response.json();
     loadCssandJS(data, true); // load the css and js of the page - remove the previous ones(true)
     document.title = data.title;
@@ -105,18 +98,18 @@ async function handleLocationChange() {
 
 async function initApp() {
   // browser back/forward buttons
-  window.addEventListener("popstate", async () => {
+  window.addEventListener("popstate", async (event) => {
     await handleLocationChange();
   });
-
+  
   // Handling initial load
-  window.addEventListener("load", async () => {
+  window.addEventListener("load", async (event) => {
     isInitialLoad = true;
+    // /* websocket - for real-time updates and chat*/
+    // initWebsocket();
     await handleLocationChange();
   });
 
-  /* websocket - for real-time updates and chat*/
-  initWebsocket();
   
   window.baseUrl = "http://localhost";
 }

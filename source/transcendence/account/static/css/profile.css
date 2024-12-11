@@ -1,14 +1,16 @@
-.profile-page {
-    min-height: 100%;
-    width: 100%;
-}
-
-.background-image {
+.profile-page .background-image {
+    display: flex;
+    align-items: center;
+    justify-content: center;
     background-image: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), url('/static/images/background2.jpg');
     background-size: cover;
     background-position: center;
-    min-height: 100%;
+
+    height: fit-content;
+    min-height: 100vh;
+    /* min-height: 100vh; */
 }
+
 
 .content {
     background: linear-gradient(140deg,
@@ -75,6 +77,25 @@
     background: linear-gradient(45deg, #84ddfc, #b02c98);
     border: none;
     transition: all 0.3s ease;
+}
+
+.btn-secondary {
+    border: none;
+    transition: all 0.3s ease;
+}
+
+.btn-secondary:hover {
+    background: rgba(255, 255, 255, 0.1);
+    color: white;
+    transform: translateY(-2px);
+}
+
+.globe-icon {
+    position: absolute;
+    right: 8%;
+    bottom: 6%;
+    background-color: rgba(255, 255, 255, 0.8);
+    border-radius: 50%;
 }
 
 .btn-primary:hover {

@@ -10,17 +10,23 @@
             <div class="text-center mb-4">
               <div class="profile-pic-container position-relative d-inline-block">
                 {% if player.profile_picture %}
-                  <img src="{{ player.profile_picture  }}" alt="Profile Picture" class="profile-pic rounded-circle" />
-                  {% else %}
+                  <img src="{{ player.profile_picture }}" alt="Profile Picture" class="profile-pic rounded-circle"/>
+                {% else %}
                   <img src="{% static 'images/default_profile_pic.jpeg' %}" alt="Default Profile Picture" class="profile-pic rounded-circle" />
+                {% endif %}
+                {% if is_self %}
+                  <button id="change-profile-pic" class="btn btn-light btn-sm position-absolute bottom-0 end-0"><i class="fa-solid fa-pen"></i></button>
+                {% else %}
+                  {% if player.is_logged_in %}
+                    <i class="fa-solid fa-globe position-absolute globe-icon" style="color:green;"></i>
+                  {% else %}
+                    <i class="fa-solid fa-globe position-absolute globe-icon" style="color:red;"></i>
                   {% endif %}
-                  {% if is_self %}
-                    <button id="change-profile-pic" class="btn btn-light btn-sm position-absolute bottom-0 end-0"><i class="fa-solid fa-pen"></i></button>
-                  {% endif %}
+                {% endif %}
               </div>
 
-              <div class="profile-info mt-3">
-                <h3 id="full_name" class="mb-1">{{ player.full_name }}</h3>
+              <div id="pfp_from_profile" class="profile-info mt-3" data-pfp="{{ player.profile_picture }}">
+                <h3 id="full_name" class="mb-1 nav_profile_pic">{{ player.full_name }}</h3>
                 <p id="username" class="text-muted mb-1" data-username="{{ player.username }}">@{{ player.username }}</p>
                 <p class="text-muted small mb-3">
                   <i class="fas fa-envelope me-2"></i>{{ player.email }}
@@ -41,7 +47,7 @@
                 <h6>temp account</h6>
               {% elif is_self %}
                 <button id="update-user-info" class="btn btn-primary mb-2"><i class="fas fa-edit me-2"></i>Update Info</button>
-                <a onclick="appRouter()" href="/settings" id="profile-settings" class="btn btn-primary mb-2"><i class="fas fa-cog me-2"></i> Settings</a>
+                <a onclick="appRouter()" href="/settings" id="profile-settings" class="btn btn-secondary mb-2"><i class="fas fa-cog me-2"></i> Settings</a>
                 <!-- <button id="player-anon" class="btn btn-primary mb-2"><i class="fas fa-user-secret me-2"></i>Anonymize</button> -->
                 
               {% else %}

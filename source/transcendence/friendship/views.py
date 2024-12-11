@@ -3,68 +3,16 @@ from rest_framework.permissions import IsAuthenticated
 from account.auth_middleware import JWTCookieAuthentication
 from account.models import Player
 from .models import *
-from .serializers import FriendsSerializer
+from .serializers import *
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 from .models import *
 from .serializers import *
-from django.shortcuts import get_object_or_404
-from others.views import BaseView
-from rest_framework.exceptions import AuthenticationFailed
-from django.http import HttpResponseRedirect
-from django.urls import reverse
-import urllib.parse
-import json
-from account.serializers import PlayerSerializer
-
-
-# template_name for viewing player profile
-class PlayerProfileView(APIView, BaseView):
-	authentication_classes = [JWTCookieAuthentication]
-	permission_classes = [IsAuthenticated]
-
-	template_name = 'friendship/player_profile.html'
-	title = 'Player Profile'
-	css = 'css/profile.css'
-	js = 'js/profile.js'
-
-	def handle_exception(self, exception):
-		if isinstance(exception, AuthenticationFailed):
-			signin_url = reverse('signin_page')
-			params = urllib.parse.urlencode({'next': self.request.path})
-			response = HttpResponseRedirect(f'{signin_url}?{params}')
-			response.delete_cookie('access_token')
-			response.delete_cookie('refresh_token')
-			return response
-		return super().handle_exception(exception)
-
-	def get_player(self, username):
-		return Player.objects.filter(username=username).first()
-	
-	def get_context_data(self, request, **kwargs):
-		queried_user = request.user
-		if kwargs.get('username') and kwargs.get('username') != request.user.username:
-			queried_user = self.get_player(kwargs.get('username'))
-			if not queried_user:
-				print('Player not found', flush=True)
-				return {'error_msg':'Player not found'}
-		data = {}
-		if queried_user.is_guest:
-			data = {
-				'player': PlayerSerializer(queried_user).data,
-				'is_self': False,
-			}
-		else:
-			data = {
-				'player': PlayerSerializer(queried_user).data,
-				'is_friend': request.user.friend_list.friends.filter(username=queried_user.username).exists(),
-				'is_requested_by_me': request.user.sent_requests.filter(receiver=queried_user).exists(),
-				'am_i_requested': request.user.received_requests.filter(sender=queried_user).exists(),
-				'is_self': queried_user == request.user,
-			}
-		print(" is_self:", data['is_self'], flush=True)
-		return data
+from channels.layers import get_channel_layer
+from asgiref.sync import async_to_sync
+from rest_framework import viewsets
+from django.template.loader import render_to_string 
 
 # FRIEND REQUESTS - FROM SENDER PERSPECTIVE
 class FriendRequestView(APIView):
@@ -91,6 +39,32 @@ class FriendRequestView(APIView):
 		serializer = FriendRequestSerializer(data=data)
 		if serializer.is_valid():
 			serializer.save()
+			#! send notification to the receiver's channel group
+			channel_layer = get_channel_layer()
+			notification_message = {
+				'type': 'friend_request_notification',
+				'sender': request.user.username,
+				'receiver': receiver.username,
+				'message': f'{request.user.username} has sent you a friend request.'
+			}
+			async_to_sync(channel_layer.group_send)(
+				f"user_{receiver.username}",
+				notification_message
+			)
+			#! add notification to the receiver's notification list
+			notification_data = {
+				'player': receiver.id,
+				'notification_type': 'friend_request',
+				'sender': request.user.id,
+				'sender_username': request.user.username,
+				'sender_pfp_url': request.user.profile_picture,
+				'read_status': False
+			}
+			notification_serializer = NotificationSerializer(data=notification_data)
+			notification_serializer.is_valid(raise_exception=True)
+			notification_serializer.save()
+			receiver_notification = Notification.objects.filter(player=receiver)
+			print("receiver_notification: ", receiver_notification, flush=True)
 			print(f'{request.user.username} SENT FRIEND REQUEST to {receiver.username}!', flush=True)
 			return Response(serializer.data, status=status.HTTP_201_CREATED) # 
 		# Return detailed error information
@@ -106,6 +80,19 @@ class FriendRequestView(APIView):
 		friend_req = FriendRequest.objects.filter(sender=request.user.id, receiver=receiver.id).first()
 		if not friend_req:
 			return Response({'error_msg': 'No friend request found'}, status=status.HTTP_404_NOT_FOUND)
+		#! send notification to the receiver's channel group
+		channel_layer = get_channel_layer()
+		notification_message = {
+			'type': 'friend_request_notification',
+			'sender': request.user.username,
+			'receiver': receiver.username,
+			'message': f'{request.user.username} has cancelled your friend request.'
+		}
+		print("notification_message: ", notification_message, flush=True)
+		async_to_sync(channel_layer.group_send)(
+			f"user_{receiver.username}",
+			notification_message
+		)
 		friend_req.cancel()
 		friend_req.delete()
 		print(f'{request.user.username} CANCELLED {receiver.username}\'s request!', flush=True)
@@ -121,6 +108,19 @@ class FriendRequestView(APIView):
 		current_players_list = FriendList.objects.get(player=request.user)
 		try:
 			current_players_list.remove_friend(receiver)
+			#! send notification to the receiver's channel group
+			channel_layer = get_channel_layer()
+			notification_message = {
+				'type': 'friend_request_notification',
+				'sender': request.user.username,
+				'receiver': receiver.username,
+				'message': f'{request.user.username} has unfriended you.'
+			}
+			print("notification_message: ", notification_message, flush=True)
+			async_to_sync(channel_layer.group_send)(
+				f"user_{receiver.username}",
+				notification_message
+			)
 			print(f'{request.user.username} UN_FRIENDED {receiver.username}!', flush=True)
 		except Exception as e:
 			return Response({'error_msg': str(e)}, status=status.HTTP_400_BAD_REQUEST)
@@ -149,10 +149,36 @@ class FriendRequestResponseView(APIView):
 		if not friend_req:
 			return Response({'error_msg': 'No friend request found'}, status=status.HTTP_404_NOT_FOUND)
 		if data.get('action') == 'decline':
+			#! send notification to the receiver's channel group
+			channel_layer = get_channel_layer()
+			notification_message = {
+				'type': 'friend_request_notification',
+				'sender': request.user.username,
+				'receiver': receiver.username,
+				'message': f'{request.user.username} has DECLINED your friend request.'
+			}
+			print("notification_message: ", notification_message, flush=True)
+			async_to_sync(channel_layer.group_send)(
+				f"user_{receiver.username}",
+				notification_message
+			)
 			friend_req.decline()
 			friend_req.delete()
 			print(f'{request.user.username} DECLINED {receiver.username}\'s request!', flush=True)
 		elif data.get('action') == 'accept':
+			#! send notification to the receiver's channel group
+			channel_layer = get_channel_layer()
+			notification_message = {
+				'type': 'friend_request_notification',
+				'sender': request.user.username,
+				'receiver': receiver.username,
+				'message': f'{request.user.username} has sent ACCEPTED your friend request.'
+			}
+			print("notification_message: ", notification_message, flush=True)
+			async_to_sync(channel_layer.group_send)(
+				f"user_{receiver.username}",
+				notification_message
+			)
 			print(f'{request.user.username} ACCEPTED {receiver.username}\'s request!', flush=True)
 			# we will either update the satatus or delete it coz its fulfilled
 			friend_req.accept()
@@ -166,3 +192,43 @@ class FriendRequestResponseView(APIView):
 		print('Friend list: ', friend_list, flush=True)
 		return Response({'success': 'Friend request fulfilled'}, status=status.HTTP_200_OK)
 	
+class NotificationViewSet(viewsets.ViewSet):
+	authentication_classes = [JWTCookieAuthentication]
+	permission_classes = [IsAuthenticated]
+	template = 'friendship/notification.html'
+
+	def list(self, request):
+		notifications = Notification.objects.filter(player=request.user)
+		serializer = NotificationSerializer(notifications, many=True)
+		print("we in the notification viewset", flush=True)
+		if not notifications:
+			return Response({'detail': 'No notifications found.'}, status=status.HTTP_404_NOT_FOUND)
+		if request.query_params.get('action') == 'top_3_notifications':
+			serializer = NotificationSerializer(notifications[:3], many=True)
+			print('Top 3 notifications : ', serializer.data, flush=True)
+			return Response(serializer.data)
+		else:
+			serializer = NotificationSerializer(notifications, many=True)
+			html = render_to_string(self.template, {'notifications': serializer.data})
+			print("html: ", html, flush=True)
+			print('All notifications : ', serializer.data, flush=True)
+			return Response({'html': html, 'data':serializer.data}, status=status.HTTP_200_OK)
+
+	# mark notification as read
+	def update(self, request, pk=None):
+		try:
+			notification = Notification.objects.get(pk=pk, player=request.user)
+		except Notification.DoesNotExist:
+			return Response({'detail': 'Notification not found.'}, status=status.HTTP_404_NOT_FOUND)
+		notification.read_status = True
+		notification.save()
+		return Response(status=status.HTTP_200_OK)  # Change to 200 OK
+
+	# delete notification
+	def destroy(self, request, pk=None):
+		try:
+			notification = Notification.objects.get(pk=pk, player=request.user)
+			notification.delete()
+			return Response(status=status.HTTP_204_NO_CONTENT)
+		except Notification.DoesNotExist:
+			return Response({'detail': 'Notification not found.'}, status=status.HTTP_404_NOT_FOUND)

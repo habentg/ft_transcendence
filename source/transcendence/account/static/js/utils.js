@@ -93,11 +93,13 @@ const removeResource = () => {
   // remove existing
   for (let i = 0; i < allStyles.length; i++) {
     if (allStyles[i].id.includes("/static/")) {
+      console.log("removing:", allStyles[i].id);
       allStyles[i].remove();
     }
   }
   for (let i = 0; i < allScripts.length; i++) {
     if (allScripts[i].id.includes("/static/")) {
+      console.log("removing:", allScripts[i].id);
       allScripts[i].remove();
     }
   }
@@ -128,10 +130,13 @@ const loadCssandJS = (data, remove_prev_resources) => {
 
   // Remove previous CSS & js
   if (remove_prev_resources) {
+    console.log("removing previous resources");
     removeResource();
   }
   // loading new css
   if (css_file_path) {
+    if (document.getElementById(`/static/${css_file_path}-id`))
+      return;
     let link = document.createElement("link");
     link.rel = "stylesheet";
     link.type = "text/css";
@@ -142,6 +147,8 @@ const loadCssandJS = (data, remove_prev_resources) => {
   }
   // loading new js
   if (js_file_path) {
+    if (document.getElementById(`/static/${js_file_path}-id`))
+      return;
     let script = document.createElement("script");
     script.src = `/static/${js_file_path}`;
     script.id = `/static/${js_file_path}-id`;
@@ -158,7 +165,7 @@ async function updateNavBar(isAuthenticated) {
   if (isAuthenticated) {
     let profilePic = "/static/images/default_profile_pic.jpeg";
     let username = "";
-    const user_profile_pic = document.getElementById("nav_profile_pic");
+    const user_profile_pic = document.getElementById("nav_profile_pic") || document.getElementById("pfp_from_profile");
     const profile_btn = document.getElementById("profile_btn");
     // check if profile_btn has data-username
     if (profile_btn) {
@@ -169,7 +176,7 @@ async function updateNavBar(isAuthenticated) {
     }
 
     console.log("profilePic:", profilePic);
-    console.log("username:", username);
+    console.log("username:", username); 
     navbar.innerHTML = `
     <ul class="navbar-nav ms-auto align-items-center">
       <li class="nav-item">
@@ -181,8 +188,41 @@ async function updateNavBar(isAuthenticated) {
       <li class="nav-item">
         <a href="#" class="nav-link"><i class="fas fa-comments me-2"></i>Chat</a>
       </li>
-      <li class="nav-item">
-        <a href="#" class="nav-link position-relative notification-badge"><i class="fas fa-bell"></i></a>
+      <li class="nav-item ms-lg-2 dropdown">
+        <a
+          class="nav-link position-relative notification-badge"
+          href="#"
+          role="button"
+          id="notificationDropdown"
+          data-bs-toggle="dropdown"
+          aria-expanded="false"
+        >
+          <i class="fas fa-bell"></i>
+        </a>
+        <ul
+          class="dropdown-menu dropdown-menu-end"
+          aria-labelledby="notificationDropdown"
+          style="width: 300px;" 
+        >
+          <!-- Notifications -->
+          <li style="border-bottom: 1px solid #ffffff; padding-bottom: 0.3rem; margin-bottom: 0.3rem;">
+            <a class="dropdown-item" href="#"><i class="fas fa-user me-3"></i>Friend Request <i class="fas fa-user-plus ms-3"></i></a>
+            <div class="small test-mute ms-3" style="color: antiquewhite;"> John Doe has sent you a friend request</div>
+          </li>
+          <li style="border-bottom: 1px solid #ffffff; padding-bottom: 0.3rem; margin-bottom: 0.3rem;">
+            <a class="dropdown-item" href="#"><i class="fas fa-user me-3"></i>Friend Request <i class="fas fa-user-plus ms-3"></i></a>
+            <div class="small test-mute ms-3" style="color: antiquewhite;"> John Doe has sent you a friend request</div>
+          </li>
+          <li style="border-bottom: 1px solid #ffffff; padding-bottom: 0.3rem; margin-bottom: 0.3rem;">
+            <a class="dropdown-item" href="#"><i class="fas fa-user me-3"></i> New message <i class="fas fa-envelope ms-3"></i></a>
+            <div class="small test ms-3" style="color: antiquewhite;"> John Doe has sent you a message</div>
+          </li>
+          <!-- See more option that leads to the notification page -->
+          <li>
+            <a class="dropdown-item" href="#"><i class="fas fa-ellipsis-h me-3"></i>See More</a>
+          </li>
+
+        </ul>
       </li>
       <li class="nav-item ms-lg-2 dropdown">
         <a class="nav-link profile-link" href="#" role="button" id="profileDropdown" 
@@ -231,60 +271,6 @@ async function updateNavBar(isAuthenticated) {
 
 /* signout from navbar */
 
-// Sign Out Modal
-function showSignOutModal(event) {
-  event = event || window.event;
-  event.preventDefault();
-  const existingModal = document.getElementById("sign-out-modal");
-  if (existingModal) existingModal.remove();
-
-  const modal = document.createElement("div");
-  modal.id = "sign-out-modal";
-  modal.className = "modal fade show";
-  modal.style.display = "block";
-  modal.style.backgroundColor = "rgba(0, 0, 0, 0.5)";
-
-  modal.innerHTML = `
-    <div class="modal-dialog modal-dialog-centered modal-sm">
-      <div class="content modal-content">
-        <div class="modal-header border-0 py-3">
-          <h5 class="modal-title text-info">
-            <i class="fas fa-sign-out-alt me-2"></i>Sign Out
-          </h5>
-          <button type="button" class="btn-close btn-close-white" id="close-signout-modal"></button>
-        </div>
-        <div class="modal-body px-3 py-2">
-          <p class="text-white mb-0">Are you sure you want to sign out?</p>
-        </div>
-        <div class="modal-footer border-0 py-3">
-          <button id="signout-confirm" class="btn btn-info btn-sm">
-            <i class="fas fa-sign-out-alt me-2"></i>Sign Out
-          </button>
-          <button id="signout-cancel" class="btn btn-outline-light btn-sm">
-            Cancel
-          </button>
-        </div>
-      </div>
-    </div>
-  `;
-
-  document.body.appendChild(modal);
-  document.body.classList.add("modal-open");
-
-  // Event Listeners
-  modal
-    .querySelector("#close-signout-modal")
-    .addEventListener("click", closeSignOutModal);
-  modal
-    .querySelector("#signout-cancel")
-    .addEventListener("click", closeSignOutModal);
-  modal
-    .querySelector("#signout-confirm")
-    .addEventListener("click", handleSignOut);
-  modal.addEventListener("click", (e) => {
-    if (e.target === modal) closeSignOutModal();
-  });
-}
 
 function closeSignOutModal() {
   const modal = document.getElementById("sign-out-modal");
@@ -306,8 +292,10 @@ async function handleSignOut() {
 
     if (response.status === 200) {
       closeSignOutModal();
+      console.log("Signed out successfully ------ from utils");
+      removeResource();
       updateNavBar(false);
-      await updateUI("/", false);
+      await updateUI("", false);
     } else {
       throw new Error("Failed to sign out");
     }
@@ -337,8 +325,38 @@ document.querySelectorAll('.navbar-nav .nav-link').forEach(function(navLink) {
   
     // Don't collapse if Profile from navbar is clicked
 
-    if ((navbarToggler && navbarCollapse.classList.contains('show') && !navLink.classList.contains('profile-link'))) {
+    if ((navbarToggler && navbarCollapse.classList.contains('show') && (!navLink.classList.contains('profile-link') && !navLink.classList.contains('notification-badge')))) {
       navbarToggler.click();
     }
   });
 });
+
+
+/* notification dropdown */
+async function handleNotificationBellClick(e) {
+  // e.preventDefault(); // Uncomment if you want to prevent default action
+
+  console.log("notification bell clicked");
+  const response = await fetch("/notifications/", {
+      method: "GET",
+      headers: {
+          "X-Requested-With": "XMLHttpRequest",
+          "action": "top_3_notifications",
+      },
+  });
+
+  const notification_ul = document.getElementById("notification_ul");
+  if (response.status === 404) {
+    notification_ul.innerHTML = `
+      <p class="text-center text-muted my-2">No notifications</p>
+    `;
+    return console.log("No notifications");
+  }
+  if (response.ok) {
+      const data = await response.json();
+      notification_ul.innerHTML = data.html;
+      console.log("data.html:", data.html);
+  } else {
+      console.error("Failed to fetch notifications:", response.statusText);
+  }
+}

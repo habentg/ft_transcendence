@@ -1,0 +1,214 @@
+.page .background-image {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-image: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)),
+    url("/static/images/background2.jpg");
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  padding: 2rem 0;
+
+  height: fit-content;
+  min-height: 100vh;
+}
+
+.friendBoard {
+  width: 80%;
+  max-width: 1200px;
+}
+
+.content {
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: linear-gradient(
+    140deg,
+    rgba(255, 255, 255, 0.12) -1.82%,
+    rgba(255, 255, 255, 0.04) 68.19%,
+    rgba(255, 255, 255, 0.03) 80.14%
+  );
+  backdrop-filter: blur(10px);
+  border-radius: 15px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  justify-content: center;
+}
+
+/* .button-holder {
+  width: 100%;
+} */
+
+.menu-item {
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 10px;
+  color: white;
+  text-decoration: none;
+  transition: all 0.3s ease;
+  height: 100%;
+  width: 100%;
+}
+
+.menu-item:hover {
+  background: rgba(132, 221, 252, 0.2);
+  transform: translateY(-2px);
+  color: #84ddfc;
+  box-shadow: 0 4px 15px rgba(132, 221, 252, 0.3);
+}
+
+.menu-item i {
+  color: #84ddfc;
+}
+
+.menu-item span {
+  font-size: 1.1rem;
+}
+
+/* Button Styles */
+/* .home-btn .btn {
+	padding: 0.5rem 1rem;
+	transition: all 0.3s ease;
+  } */
+
+.btn-primary {
+  background: linear-gradient(45deg, #84ddfc, #b02c98);
+  border: none;
+}
+
+.btn-primary:hover {
+  transform: translateY(-2px);
+  background: linear-gradient(45deg, #b02c98, #84ddfc);
+  box-shadow: 0 4px 15px rgba(132, 221, 252, 0.3);
+}
+
+.btn-outline-light {
+  border: 2px solid #84ddfc;
+  color: #84ddfc;
+}
+
+.btn-outline-light:hover {
+  background: #84ddfc;
+  color: #000;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 15px rgba(132, 221, 252, 0.3);
+}
+
+/* Form Controls */
+.form-control {
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid #84ddfc;
+  color: white;
+  padding: 0.5rem 1rem;
+}
+
+.form-control:focus {
+  background: rgba(255, 255, 255, 0.2);
+  border-color: #b02c98;
+  color: white;
+  box-shadow: 0 0 0 0.25rem rgba(132, 221, 252, 0.25);
+}
+
+.form-control::placeholder {
+  color: rgba(255, 255, 255, 0.7);
+}
+
+/* Search Results Area */
+#searchResults {
+  color: white;
+  min-height: 50px;
+}
+
+#pagination_navigation .btn {
+  margin: 0 0.5rem;
+  background: linear-gradient(45deg, #84ddfc, #b02c98);
+  border: none;
+  color: white;
+  padding: 0.5rem 1rem;
+  transition: all 0.3s ease;
+  border-radius: 10px;
+}
+
+#pagination_navigation .btn:hover {
+  transform: translateY(-2px);
+  background: linear-gradient(45deg, #b02c98, #84ddfc);
+  box-shadow: 0 4px 15px rgba(132, 221, 252, 0.3);
+}
+
+#pagination_navigation span {
+  font-size: 1rem;
+  font-weight: bold;
+  color: #84ddfc;
+}
+
+/* Modal Styles */
+.modal {
+  backdrop-filter: blur(8px);
+}
+
+.modal-content {
+  background: linear-gradient(
+    140deg,
+    rgba(255, 255, 255, 0.12) -1.82%,
+    rgba(255, 255, 255, 0.04) 68.19%,
+    rgba(255, 255, 255, 0.03) 80.14%
+  );
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+  color: white;
+}
+
+.modal-header,
+.modal-footer {
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+.modal-title,
+.modal.small {
+  color: #84ddfc;
+  font-size: 1.25rem;
+}
+
+.modal .notice {
+  color: #b02c98;
+}
+
+@media (max-width: 768px) {
+  .player-item {
+    height: 20px;
+  }
+
+  .player-item span {
+    font-size: 1rem;
+  }
+
+  .btn {
+    padding: 0.4rem 0.8rem;
+    font-size: 0.9rem;
+  }
+
+  #pagination_navigation .btn {
+    padding: 0.4rem 0.8rem;
+    font-size: 0.9rem;
+  }
+
+  #pagination_navigation span {
+    font-size: 0.9rem;
+  }
+
+  .options {
+    display: flex;
+    justify-content: space-evenly;
+    align-items: center;
+  }
+}
+
+#board {
+	visibility: hidden;
+    background-color: black;
+    border: 3px solid skyblue;
+    border-radius: 15px;
+    display: block;
+    margin: 0 auto;
+}

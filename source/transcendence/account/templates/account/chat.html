@@ -1,0 +1,35 @@
+{% load static %}
+
+<div class="chatPage">
+	<div class="background-image">
+		<div class="container py-5">
+			<div class="chat-wrapper">
+				<!-- Sidebar -->
+				<div class="chat-sidebar">
+					<div class="sidebar-header">
+						<h5 class="mb-0">Chats</h5>
+					</div>
+					<ul class="friend-list mb-3 " id="friendList">
+						<!-- Friends will be loaded dynamically -->
+					</ul>
+				</div>
+
+				<!-- Chat Container -->
+				<div class="chat-container">
+					<div class="chat-header">
+						<div class="d-flex align-items-center">
+							<i class="fas fa-user-circle fa-2x me-2"></i>
+							<h6 class="mb-0" id="chatTitle">Select a friend to chat</h6>
+						</div>
+					</div>
+					<div class="chat-messages" id="chatMessages"></div>
+					<div class="chat-input d-flex">
+						<input type="text" id="messageInput" class="form-control me-2"
+							placeholder="Type a message..." />
+						<button class="btn btn-primary sendBtn" onclick="sendMessage()">Send</button>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>

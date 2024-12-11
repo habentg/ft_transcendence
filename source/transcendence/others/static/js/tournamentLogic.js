@@ -57,14 +57,6 @@ function createPingPongTournament(players) {
     };
 }
 
-// Example usage
-function main() {
-    const scenarios = [
-        { players: ['A1', 'A2', 'B1', 'B2', 'C1', 'C2', 'D1', 'D2', 'E1', 'E2', 'F1', 'F2', 'G1', 'G2', 'H1', 'H2'], name: '16 Players' },
-        { players: ['A1', 'A2', 'B1', 'B2', 'C1', 'C2', 'D1', 'D2'], name: '8 Players' },
-        { players: ['A1', 'A2', 'B1', 'B2'], name: '4 Players' }
-    ];
-
     scenarios.forEach(scenario => {
         console.log(`\n${scenario.name} Tournament:`);
         const tournament = createPingPongTournament(scenario.players);
@@ -72,7 +64,6 @@ function main() {
         console.log('Champion:', champion);
         console.log('Match History:', tournament.getMatchHistory());
     });
-}
 
 // Uncomment to run
 // main();

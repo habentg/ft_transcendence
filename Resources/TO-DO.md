@@ -31,8 +31,24 @@ Saturday cases - NOT FIXED YET
 
 
 
+fixing & testing needed:
+1. uniqueness of an email - because for forget password, we will query with email and not its just finding the first one with that email
+2. after login/signup and redirected to homepage, if you click on the browser back button, it will take you to sign in page (eventhogh he is authenticated)!
+  -> partial fix: now he is bieng redirected back to the home page, but the url is still /signin
+  #? another issue - browser back/forward is resulting 404 for nested routes like /profile/haben
+3. bunch of if conditions for the eventlistners in home.js for the search system so it doesnt raise error in anonymouse user.
+
+
+
+
+
+
+
+UI Improvement: Resolved
+1. pushing the footer down
+2. error displaying UI needed - for 401 aynet -- its console log so far ==> call showErrorMessage("with Error message you want to display")
+
 
 
 Friday cases - Unsolved Cases
 1, All css & js files are deleted, except the during signout from friend search (needs revision).
-
