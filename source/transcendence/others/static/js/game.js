@@ -169,6 +169,11 @@ function startGame() {
     player2LastKey = null;
     drawFlag = true;
     requestAnimationFrame(draw);
+
+    document.getElementById("player1").classList.remove("d-none");
+    document.getElementById("player2").classList.remove("d-none");
+			
+
     document.getElementById("startButton").disabled = true; //disable start button when the game starts
     document.getElementById("settingButton").disabled = true;
     // document.getElementById("aiButton").disabled = true;
@@ -398,6 +403,11 @@ function startaiGame() {
     drawFlag = true;
     requestAnimationFrame(draw);
     // document.getElementById("startButton").disabled = true;
+
+
+    document.getElementById("player1").classList.remove("d-none");
+    document.getElementById("player2").classList.remove("d-none");
+
     document.getElementById("aiButton").disabled = true;
     document.getElementById("settingButton").disabled = true;
 }
@@ -463,7 +473,7 @@ function aiView() {
 
 function checkScreenSize() {
     const MIN_WINDOW_WIDTH = 820;
-    const MIN_WINDOW_HEIGHT = 750;
+    const MIN_WINDOW_HEIGHT = 700;
 
     const warningMessage = document.getElementById("warningMessage");
     const gameContent = document.getElementById("gameContent");
