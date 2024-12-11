@@ -47,11 +47,12 @@ html {
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
-    /* padding: 2rem 0; */
+    padding: 1.5rem 0;
 
-    /* height: fit-content; */
-    height: 100vh;
+    height: fit-content;
+    /* height: 100vh; */
 }
+
 
 #board {
     background-color: black;
@@ -130,3 +131,10 @@ footer {
     display: none;
 }
 
+#warningMessage {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    z-index: 1000;
+}

@@ -452,3 +452,22 @@ function aiView() {
         }, 1000)
     }
 }
+
+function checkScreenSize() {
+    const warningMessage = document.getElementById("warningMessage");
+    const gameContent = document.getElementById("gameContent");
+
+    if (window.innerWidth < 1024 || window.innerHeight < 680) {
+      warningMessage.classList.remove("d-none");
+      gameContent.classList.add("d-none");
+    } else {
+      warningMessage.classList.add("d-none");
+      gameContent.classList.remove("d-none");
+    }
+  }
+
+// Run check on page load
+checkScreenSize();
+
+// Listen for screen resize
+window.addEventListener("resize", checkScreenSize);

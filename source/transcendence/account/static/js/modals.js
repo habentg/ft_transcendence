@@ -444,7 +444,7 @@ function gameSettingsModal() {
   modal.className = "modal fade show";
   modal.style.display = "block";
   modal.innerHTML = `
-    <div class="modal-dialog modal-dialog-centered modal-md">
+    <div class="modal-dialog modal-dialog-centered modal-sm">
       <div class="modal-content">
         <div class="modal-header border-0 py-3">
           <h5 class="modal-title">
