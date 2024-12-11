@@ -208,7 +208,7 @@ function createLocalGameModal() {
     console.log("Creating AI game");
     closeModal("localGameModal");
     // For now, page is refreshing. Need to fix.
-    window.location.href = "/game";
+    window.location.href = "/game/?isAI=true";  
 
   });
   document.getElementById("playFriends").addEventListener("click", () => {
@@ -216,8 +216,8 @@ function createLocalGameModal() {
     console.log("Creating local game");
     closeModal("localGameModal");
     // For now, page is refreshing. Need to fix.
-    window.location.href = "/game";
-
+    window.location.href = "/game/?isAI=false";  
+    
   });
 
   // close the modal when the close button is clicked

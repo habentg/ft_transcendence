@@ -49,9 +49,17 @@ html {
     background-repeat: no-repeat;
     padding: 1.5rem 0;
 
-    height: fit-content;
-    /* height: 100vh; */
+    min-height: fit-content;
+    height: 100vh;
 }
+/* 
+#aiButton, #startButton, #settingButton {
+    padding: 10px 20px;
+    font-size: 1.2rem;
+    border-radius: 8px;
+
+    background-color: linear;
+} */
 
 
 #board {
@@ -137,4 +145,51 @@ footer {
     left: 0;
     width: 100%;
     z-index: 1000;
+}
+
+
+.btn-primary {
+    background: linear-gradient(45deg, #84ddfc, #b02c98);
+    border: none;
+    transition: all 0.3s ease;
+}
+
+.btn-secondary {
+    border: none;
+    transition: all 0.3s ease;
+}
+
+.btn-secondary:hover {
+    background: rgba(255, 255, 255, 0.1);
+    color: white;
+    transform: translateY(-2px);
+}
+
+
+.btn-primary:hover {
+    transform: translateY(-2px);
+    background: linear-gradient(45deg, #b02c98, #84ddfc);
+    box-shadow: 0 4px 15px rgba(132, 221, 252, 0.3);
+}
+
+.btn-outline-light {
+    border: 2px solid #84ddfc;
+    color: #84ddfc;
+}
+
+.btn-outline-light:hover {
+    background: #84ddfc;
+    color: #000;
+    transform: translateY(-2px);
+}
+
+.btn-light {
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: white;
+}
+
+.btn-light:hover {
+    background: rgba(255, 255, 255, 0.2);
+    color: white;
 }

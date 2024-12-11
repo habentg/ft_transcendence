@@ -87,10 +87,14 @@ window.onload = function () {
     context = board.getContext("2d");
 
     // requestAnimationFrame(draw);
-    document.getElementById("startButton").addEventListener("click", startGame);
+    if (document.getElementById("startButton")) {
+        document.getElementById("startButton").addEventListener("click", startGame);
+    }
     // document.getElementById("settingButton").addEventListener("click", openSettings);
     // document.getElementById("applyButton").addEventListener("click", changeSetting);
-	document.getElementById("aiButton").addEventListener("click", startaiGame);
+    if (document.getElementById("aiButton")) {
+	    document.getElementById("aiButton").addEventListener("click", startaiGame);
+    }
 
     document.addEventListener("keydown", move);
     document.addEventListener("keyup", stopMovement);
@@ -155,7 +159,7 @@ function displayStartMessage() {
     context.clearRect(0, 0, board.width, board.height);
     context.font = "30px sans-serif";
     context.fillStyle = "white";
-    context.fillText("Select Local or AI game.", boardWidth / 5, boardHeight / 2);
+    context.fillText("Select Start game to start", boardWidth / 5, boardHeight / 2);
 }
 
 function startGame() {
@@ -166,10 +170,11 @@ function startGame() {
     drawFlag = true;
     requestAnimationFrame(draw);
     document.getElementById("startButton").disabled = true; //disable start button when the game starts
-    document.getElementById("aiButton").disabled = true;
+    document.getElementById("settingButton").disabled = true;
+    // document.getElementById("aiButton").disabled = true;
 
     // hide settings menu
-    document.getElementById("settingButton").style.display = "none";
+    // document.getElementById("settingButton").style.display = "none";
 }
 
 function draw() {
@@ -321,8 +326,14 @@ function resetGame(direction) {
     if (isGameOver()) {
         drawFlag = false;
 		aiFlag = false;
-        document.getElementById("startButton").disabled = false;
-		document.getElementById("aiButton").disabled = false;
+        console.log("Game Over: SHOULD RETURN SETTINGS MENU");
+        document.getElementById("settingButton").disabled = false;
+        if (document.getElementById("startButton")) {
+            document.getElementById("startButton").disabled = false;
+        }
+        if (document.getElementById("aiButton")) {
+            document.getElementById("aiButton").disabled = false;
+        }
     }
 }
 
@@ -386,12 +397,9 @@ function startaiGame() {
     player2Score = 0;
     drawFlag = true;
     requestAnimationFrame(draw);
-    document.getElementById("startButton").disabled = true;
+    // document.getElementById("startButton").disabled = true;
     document.getElementById("aiButton").disabled = true;
-
-    // hide settings menu
-    document.getElementById("settingButton").style.display = "none";
-
+    document.getElementById("settingButton").disabled = true;
 }
 
 function aiLogic() {
@@ -454,10 +462,13 @@ function aiView() {
 }
 
 function checkScreenSize() {
+    const MIN_WINDOW_WIDTH = 820;
+    const MIN_WINDOW_HEIGHT = 750;
+
     const warningMessage = document.getElementById("warningMessage");
     const gameContent = document.getElementById("gameContent");
 
-    if (window.innerWidth < 1024 || window.innerHeight < 680) {
+    if (window.innerWidth < MIN_WINDOW_WIDTH  || window.innerHeight < MIN_WINDOW_HEIGHT) {
       warningMessage.classList.remove("d-none");
       gameContent.classList.add("d-none");
     } else {

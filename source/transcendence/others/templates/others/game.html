@@ -9,12 +9,15 @@
             <p>Please switch to a laptop or desktop with a larger screen for the best experience.</p>
         </div>
         <div id="gameContent">
-            <div class="container d-flex align-items-center justify-content-center">
+            <div class="container d-flex align-items-center justify-content-center mb-4">
                 <div id="controls" class="text-center">
-                    <button id="startButton" class="btn btn-success btn-lg me-3">Play Local game</button>
-                    <button id="settingButton" onclick="gameSettingsModal()" class="btn btn-warning btn-lg me-3">Settings</button>
-                    <button id="aiButton" class="btn btn-info btn-lg">Play VS AI</button>
-                </div>
+					{% if isAI %}
+						<button id="aiButton" type="button" class="btn btn-primary me3">Start game</button>
+					{% else %}
+						<button id="startButton" type="button" class="btn btn-primary me-3">Start game</button>
+					{% endif %}
+						<button id="settingButton" onclick="gameSettingsModal()" type="button" class="btn btn-secondary">Settings</button>
+				</div>
             </div>
             <canvas id="board" class="mt-2 shadow"></canvas>
         </div>
