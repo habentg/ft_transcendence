@@ -52,6 +52,7 @@ html {
     min-height: fit-content;
     height: 100vh;
 }
+
 /* 
 #aiButton, #startButton, #settingButton {
     padding: 10px 20px;
@@ -72,6 +73,18 @@ html {
 
 .playerNames {
     color: #84ddfc;
+}
+
+.gamePlayers {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+#player1,
+#player2 {
+    flex: 1;
+    text-align: center;
 }
 
 .menu {

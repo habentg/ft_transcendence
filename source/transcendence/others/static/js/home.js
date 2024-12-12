@@ -73,7 +73,7 @@ for searched profiles, we need to attach event listeners to the buttons
 function searchingSystem() {
 
   // const localGameBtn = document.getElementById("localGameBtn");
-  const createTournamentBtn = document.getElementById("createTournamentBtn");
+  // const createTournamentBtn = document.getElementById("createTournamentBtn");
 
   // if (localGameBtn) {
   //   localGameBtn.addEventListener("click", () => {
@@ -81,11 +81,11 @@ function searchingSystem() {
   //   });
   // }
 
-  if (createTournamentBtn) {
-    createTournamentBtn.addEventListener("click", () => {
-      createTournamentModal();
-    });
-  }
+  // if (createTournamentBtn) {
+  //   createTournamentBtn.addEventListener("click", () => {
+  //     createTournamentModal();
+  //   });
+  // }
   /* search related eventlistners */
   const home_friendrequest_search = document.getElementById("friend_requests_btn");
   const home_friends_search = document.getElementById("friends_btn");
@@ -215,9 +215,10 @@ function createLocalGameModal() {
     // Send to localgame game page (1 vs 1)
     console.log("Creating local game");
     closeModal("localGameModal");
+
     // For now, page is refreshing. Need to fix.
-    window.location.href = "/game/?isAI=false";  
-    
+    // updateUI("/game?isAI=false", false);
+    window.location.href = "/game/?isAI=false";
   });
 
   // close the modal when the close button is clicked

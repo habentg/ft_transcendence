@@ -1,0 +1,137 @@
+.tournamentPage .background-image {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	background-image: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), url('/static/images/background2.jpg');
+	background-size: cover;
+	background-position: center;
+	background-repeat: no-repeat;
+	padding: 1.5rem 0;
+
+	min-height: fit-content;
+	height: 100vh;
+}
+
+h1, h2, h3, h4, h5, h6 {
+	color: #84ddfc;
+}
+
+.tournamentWrapper {
+	background: linear-gradient(140deg,
+		rgba(255, 255, 255, 0.12) -1.82%,
+		rgba(255, 255, 255, 0.04) 68.19%,
+		rgba(255, 255, 255, 0.03) 80.14%);
+	backdrop-filter: blur(10px);
+	border: 1px solid rgba(255, 255, 255, 0.1);
+	border-radius: 15px;
+	transition: all 0.3s ease;
+}
+
+
+.card {
+	background: linear-gradient(45deg, #84ddfc, #b02c98);
+	border: 1px solid black;
+	border-radius: 8px;
+	box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.card-title {
+	font-size: 1.25rem;
+	font-weight: bold;
+	/* color: #007bff; */
+}
+
+.team img {
+	margin-right: 8px;
+	width: 24px;
+	height: 24px;
+}
+
+.score {
+	font-size: 1.2rem;
+	font-weight: bold;
+	/* color: #212529; */
+}
+
+.vertical-line {
+	position: relative;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	margin-top: 20px;
+}
+
+.vertical-line::before {
+	content: '';
+	position: absolute;
+	width: 2px;
+	height: 100%;
+	/* background-color: #6c757d; */
+	z-index: 0;
+}
+
+.tournament {
+	display: flex;
+	justify-content: space-between;
+	align-items: flex-start;
+	position: relative;
+}
+
+.round {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	position: relative;
+}
+
+.games {
+	position: relative;
+	width: 200px;
+}
+
+.game {
+	margin-bottom: 40px;
+	position: relative;
+}
+
+.game::after {
+	content: '';
+	position: absolute;
+	width: 2px;
+	/* background-color: #6c757d; */
+	top: 50%;
+	left: 100%;
+	height: 60px;
+	transform: translateY(-50%);
+}
+
+.round:last-child .game::after {
+	display: none;
+}
+
+/* Connectors */
+#game1::after {
+	height: 80px;
+	/* Adjust as needed to align connectors */
+}
+
+#game2::after {
+	height: 60px;
+	/* Adjust as needed to align connectors */
+}
+
+span {
+	margin-right: 10px;
+	/* Add 10 pixels of space after the span */
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+	.tournament {
+		flex-direction: column;
+	}
+
+	.round {
+		margin-bottom: 50px;
+	}
+}

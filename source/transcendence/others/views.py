@@ -222,24 +222,38 @@ class PaginatedSearch(APIView, BaseView):
 			'next_page_link': paginator.get_next_link(),
 			'previous_page_link': paginator.get_previous_link(),
 		})
+""" game view """
+class GameView(APIView, BaseView):
+	authentication_classes = [JWTCookieAuthentication]
+	permission_classes = [IsAuthenticated]
+	template_name = 'others/game.html'
+	title = 'Game Page'
+	css = 'css/game.css'
+	js = 'js/game.js'
 
-from django.shortcuts import render
-from others.views import BaseView
+	# def get(self, request):
+	# 	return super().get(request)
+	def get_context_data(self, request, **kwargs):
+		is_ai = request.GET.get('isAI', 'false').lower() == 'true'
+		print(f"####### isAI : {is_ai}", flush=True)
+		return {
+			'isAI': is_ai,
+			'current_username': request.user.username
+		}
+	
+class TournamentView(BaseView):
+	authentication_classes = []
+	permission_classes = []
+	template_name = 'others/tournament.html'
+	title = 'Tournament Page'
+	css = 'css/tournament.css'
+	js = 'js/tournament.js'
 
-class GameView(BaseView):
-    authentication_classes = []
-    permission_classes = []
-    template_name = 'others/game.html'  # Path to your template
-    title = 'Game Page'
-    css = 'css/game.css'
-    js = 'js/game.js'
+	def get(self, request):
+		return super().get(request)
 
-    def get_context_data(self, request, **kwargs):
-        # Retrieve the 'isAI' query parameter from the URL (defaults to False if not provided)
-        is_ai = request.GET.get('isAI', 'false').lower() == 'true'
 
-        # Return a simple context with just the 'isAI' flag
-        return {'isAI': is_ai}
+
 
 
 

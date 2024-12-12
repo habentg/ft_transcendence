@@ -435,6 +435,38 @@ function optionLocalGameModal() {
   return modal;
 }
 
+// functin to ask for second player name before starting the game
+function secondPlayerNameModal() {
+  const modal = document.createElement("div");
+  modal.classList.add("modal");
+  modal.id = "secondPlayerNameModal";
+  modal.className = "modal fade show";
+  modal.style.display = "block";
+  modal.innerHTML = `
+    <div class="modal-dialog modal-dialog-centered modal-sm">
+      <div class="modal-content">
+        <div class="modal-header border-0 py-3">
+          <h5 class="modal-title">
+            <i class="fas fa-user-friends me-2"></i> Local Game
+          </h5>
+        </div>
+        <div class="modal-body px-3 py-2">
+          <div id="local-game-error-msg" class="alert alert-danger small py-2" style="display:none;"></div>
+          <p class="text-white mb-0">Enter the name of the second player:</p>
+          <input type="text" id="secondPlayerName" class="form-control my-2" placeholder="Enter player name" />
+        </div>
+        <div class="modal-footer border-0 py-3 d-flex justify-content-start">
+          <button type="button" class="btn btn-primary btn-sm" id="submitSecondPlayerNameBtn">
+            <i class="fas fa-paper-plane me-2"></i> Submit Name
+          </button>
+        </div>
+      </div>
+    </div>
+  `;
+
+  return modal;
+}
+
 // game settings modal for game settings
 function gameSettingsModal() {
   console.log("##################1");
