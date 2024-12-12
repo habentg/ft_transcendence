@@ -35,22 +35,19 @@ class FriendRequestView(APIView):
 
 	# send friend request - PENDING
 	def post(self, request, *args, **kwargs):
-		print('FriendRequestView - post - to add friend request', flush=True)
 		data = request.data
-		data['sender'] = request.user.id  # Using sender's primary key
-
-	
 		receiver = self.get_player(kwargs.get('username'))
-		sender_id = request.user.id  # Assuming the user is authenticated and you have access to their ID
-		if FriendRequest.objects.filter(sender_id=sender_id, receiver_id=receiver.id).exists():
-			print('Friend request already exists', flush=True)
+		if not receiver:
+			return Response({'error_msg':'Player not found - cant send friend request'}, status=status.HTTP_400_BAD_REQUEST)
+		if FriendRequest.objects.filter(sender_id=request.user.id, receiver_id=receiver.id).exists():
 			return Response({'detail': 'Friend request already exists.'}, status=status.HTTP_400_BAD_REQUEST)
 
+		data['sender'] = request.user.id	
 		data['receiver'] = receiver.id
 		serializer = FriendRequestSerializer(data=data)
+
 		if serializer.is_valid():
 			serializer.save()
-			#! send notification to the receiver's channel group
 			channel_layer = get_channel_layer()
 			notification_message = {
 				'type': 'friendship_notification',
@@ -58,8 +55,9 @@ class FriendRequestView(APIView):
 				'sender': request.user.username,
 				'receiver': receiver.username,
 			}
+			print(f"$$$$$$$$$$$ sending to user_{receiver.username} $$$$$$$$$", flush=True)
 			async_to_sync(channel_layer.group_send)(
-				f"user_{receiver.username}",
+				f"notification_{receiver.username}",
 				notification_message
 			)
 			#! add notification to the receiver's notification list
@@ -89,18 +87,18 @@ class FriendRequestView(APIView):
 		if not friend_req:
 			return Response({'error_msg': 'No friend request found'}, status=status.HTTP_404_NOT_FOUND)
 		# #! send notification to the receiver's channel group
-		# channel_layer = get_channel_layer()
-		# notification_message = {
-		# 	'type': 'friend_request_notification',
-		# 	'sender': request.user.username,
-		# 	'receiver': receiver.username,
-		# 	'message': f'{request.user.username} has cancelled your friend request.'
-		# }
-		# print("notification_message: ", notification_message, flush=True)
-		# async_to_sync(channel_layer.group_send)(
-		# 	f"user_{receiver.username}",
-		# 	notification_message
-		# )
+		channel_layer = get_channel_layer()
+		notification_message = {
+			'type': 'friendship_notification',
+			'sender': request.user.username,
+			'receiver': receiver.username,
+			'notification_type': 'canceled',
+		}
+		print("notification_message: ", notification_message, flush=True)
+		async_to_sync(channel_layer.group_send)(
+			f"notification_{receiver.username}",
+			notification_message
+		)
 		friend_req.cancel()
 		friend_req.delete()
 		print(f'{request.user.username} CANCELLED {receiver.username}\'s request!', flush=True)
@@ -116,19 +114,19 @@ class FriendRequestView(APIView):
 		current_players_list = FriendList.objects.get(player=request.user)
 		try:
 			current_players_list.remove_friend(receiver)
-			# #! send notification to the receiver's channel group
-			# channel_layer = get_channel_layer()
-			# notification_message = {
-			# 	'type': 'friend_request_notification',
-			# 	'sender': request.user.username,
-			# 	'receiver': receiver.username,
-			# 	'message': f'{request.user.username} has unfriended you.'
-			# }
-			# print("notification_message: ", notification_message, flush=True)
-			# async_to_sync(channel_layer.group_send)(
-			# 	f"user_{receiver.username}",
-			# 	notification_message
-			# )
+			#! send notification to the receiver's channel group
+			channel_layer = get_channel_layer()
+			notification_message = {
+				'type': 'friendship_notification',
+				'sender': request.user.username,
+				'receiver': receiver.username,
+				'notification_type': 'unfriended',
+			}
+			print("notification_message: ", notification_message, flush=True)
+			async_to_sync(channel_layer.group_send)(
+				f"notification_{receiver.username}",
+				notification_message
+			)
 			print(f'{request.user.username} UN_FRIENDED {receiver.username}!', flush=True)
 		except Exception as e:
 			return Response({'error_msg': str(e)}, status=status.HTTP_400_BAD_REQUEST)
@@ -157,19 +155,19 @@ class FriendRequestResponseView(APIView):
 		if not friend_req:
 			return Response({'error_msg': 'No friend request found'}, status=status.HTTP_404_NOT_FOUND)
 		if data.get('action') == 'decline':
-			# #! send notification to the receiver's channel group
-			# channel_layer = get_channel_layer()
-			# notification_message = {
-			# 	'type': 'friend_request_notification',
-			# 	'sender': request.user.username,
-			# 	'receiver': receiver.username,
-			# 	'notification_type': 'decline',
-			# }
-			# print("notification_message: ", notification_message, flush=True)
-			# async_to_sync(channel_layer.group_send)(
-			# 	f"user_{receiver.username}",
-			# 	notification_message
-			# )
+			#! send notification to the receiver's channel group
+			channel_layer = get_channel_layer()
+			notification_message = {
+				'type': 'friendship_notification',
+				'sender': request.user.username,
+				'receiver': receiver.username,
+				'notification_type': 'declined',
+			}
+			print("notification_message: ", notification_message, flush=True)
+			async_to_sync(channel_layer.group_send)(
+				f"notification_{receiver.username}",
+				notification_message
+			)
 			friend_req.decline()
 			friend_req.delete()
 			print(f'{request.user.username} DECLINED {receiver.username}\'s request!', flush=True)
@@ -184,7 +182,7 @@ class FriendRequestResponseView(APIView):
 			}
 			print("notification_message: ", notification_message, flush=True)
 			async_to_sync(channel_layer.group_send)(
-				f"user_{receiver.username}",
+				f"notification_{receiver.username}",
 				notification_message
 			)
 			print(f'{request.user.username} ACCEPTED {receiver.username}\'s request!', flush=True)

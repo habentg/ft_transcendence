@@ -186,7 +186,7 @@ async function updateNavBar(isAuthenticated) {
         <a href="#" class="nav-link"><i class="fas fa-users me-2"></i>Friends</a>
       </li>
       <li class="nav-item">
-        <a href="#" class="nav-link"><i class="fas fa-comments me-2"></i>Chat</a>
+        <a href="/chat" class="nav-link" onclick="appRouter()"><i class="fas fa-comments me-2"></i>Chat</a>
       </li>
       <li class="nav-item ms-lg-2 dropdown">
         <a

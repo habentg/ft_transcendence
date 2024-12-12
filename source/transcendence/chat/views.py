@@ -22,7 +22,6 @@ class chatMessagesView(APIView):
 
 	def get(self, request):
 		room_name = request.GET.get('room', '')
-		print("room_name: ", room_name, flush=True)
 		try:
 			chatroom = ChatRoom.objects.get(name=room_name, participants=request.user)
 		except ChatRoom.DoesNotExist:
@@ -32,7 +31,6 @@ class chatMessagesView(APIView):
 			'messages': messages,
 			'current_user': PlayerSerializer(request.user).data
 		}
-		print("messages: ", messages, flush=True)
 		return JsonResponse({'messages': render_to_string(self.template_name, context)}, status=200)
 
 # everything about chatrooms - get, post, delete, patch

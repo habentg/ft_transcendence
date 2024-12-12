@@ -66,7 +66,10 @@ function sendMessage(chatroom_name) {
       room: chatroom_name,
     };
     window.ws_chat.send(JSON.stringify(chatMessage));
-    messageInput.value = '';
+    // Scroll to bottom
+    const chatMessages = document.getElementById("chatMessages");
+    chatMessages.scrollTop = chatMessages.scrollHeight;
+    messageInput.value = "";
     messageInput.focus();
   } else {
     console.error("WebSocket is not open. Unable to send message.");
@@ -84,23 +87,6 @@ async function deleteChatRoom(chatroom_name) {
     };
     window.ws_chat.send(JSON.stringify(chatMessage));
   }
-  // try {
-  //   const response = await fetch(`/chat`, {
-  //     method: "DELETE",
-  //     headers: {
-  //       "Content-Type": "application/json",
-  //     },
-  //     body: JSON.stringify({ room: chatroom_name }),
-  //   });
-
-  //   if (response.ok) {
-  //     await updateUI('/chat', false);
-  //     return;
-  //   }
-  //   throw new Error("Error deleting chatroom");
-  // } catch (error) {
-  //   console.error(error);
-  // }
 }
 /* fetching message of an active chat */
 async function fetchMessages(chatroom_name) {

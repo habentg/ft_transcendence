@@ -37,7 +37,7 @@ fixing & testing needed:
   -> partial fix: now he is bieng redirected back to the home page, but the url is still /signin
   #? another issue - browser back/forward is resulting 404 for nested routes like /profile/haben
 3. bunch of if conditions for the eventlistners in home.js for the search system so it doesnt raise error in anonymouse user.
-
+4. when token expired, clicked on the profile (in dropdown)... singin loaded but the URL was still /profile/'player'.
 
 
 

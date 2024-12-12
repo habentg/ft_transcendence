@@ -223,18 +223,25 @@ class PaginatedSearch(APIView, BaseView):
 			'previous_page_link': paginator.get_previous_link(),
 		})
 
+from django.shortcuts import render
+from others.views import BaseView
 
 class GameView(BaseView):
-	authentication_classes = []
-	permission_classes = []
-	template_name = 'others/game.html'
-	title = 'Game Page'
-	css = 'css/game.css'
-	js = 'js/game.js'
+    authentication_classes = []
+    permission_classes = []
+    template_name = 'others/game.html'  # Path to your template
+    title = 'Game Page'
+    css = 'css/game.css'
+    js = 'js/game.js'
 
-	def get(self, request):
-		return super().get(request)
-		
+    def get_context_data(self, request, **kwargs):
+        # Retrieve the 'isAI' query parameter from the URL (defaults to False if not provided)
+        is_ai = request.GET.get('isAI', 'false').lower() == 'true'
+
+        # Return a simple context with just the 'isAI' flag
+        return {'isAI': is_ai}
+
+
 
 # class GameAIView(BaseView):
 # 	authentication_classes = []

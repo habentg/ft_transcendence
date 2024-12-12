@@ -17,7 +17,7 @@ build:
 down:
 	$(COMPOSE) -f docker-compose.yaml down
 
-re: down up collectstatic# rebuilding the services without deleting the persistent storages
+re: down up collectstatic # rebuilding the services without deleting the persistent storages
 
 # ---------------------------- django related Operattions -------------------------------
 

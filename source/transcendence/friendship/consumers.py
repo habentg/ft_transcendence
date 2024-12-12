@@ -9,33 +9,6 @@ from .serializers import *
 from account.models import *
 
 class FriendshipNotificationConsumer(AsyncWebsocketConsumer):
-    def extract_token_from_headers(self):
-        # WebSocket headers are in bytes, so we need to decode
-        headers = dict(self.scope['headers'])
-        cookie_header = headers.get(b'cookie', b'').decode('utf-8')
-        cookies = cookie_header.split('; ')
-        for cookie in cookies:
-            if cookie.startswith('access_token='):
-                return cookie.split('=')[1]
-        return None
-
-    @database_sync_to_async
-    def validate_token(self, token):
-        Player = get_user_model()
-        
-        try:
-            # Decode the JWT token
-            payload = jwt.decode(
-                token, 
-                settings.SECRET_KEY, 
-                algorithms=['HS256']
-            )
-            # Retrieve user based on token payload
-            return Player.objects.get(id=payload['user_id'])
-        
-        except Exception as e:
-                print("Exeption in validating token in FriendshipNotificationConsumer: ", e, flush=True)
-                return None
 
     async def connect(self, **kwargs):
         token = self.extract_token_from_headers()
@@ -67,18 +40,52 @@ class FriendshipNotificationConsumer(AsyncWebsocketConsumer):
     # Custom event Handler for friend request notifications
     async def friendship_notification(self, event):
         sender = event['sender']
+        notification_type = event['notification_type']
         message = ""
         notification_type = event['notification_type']
-        if message == 'request':
+        if notification_type == 'friend_request':
             message = f"{sender} sent you a friend request!"
-        elif message == 'request':
+        elif notification_type == 'canceled':
+            message = f"{sender} canceled the friend request!"
+        elif notification_type == 'accepted':
             message = f"{sender} accepted your friend request!"
+        elif notification_type == 'declined' or notification_type == 'unfriended':
+            message = f"{sender} declined/unfriended your friend request!"
+        print("############################## Friendship Notification: ", message, flush=True)
         await self.send(text_data=json.dumps({
             'type': notification_type,
             'sender': sender,
             'message': message
         }))
     
+    def extract_token_from_headers(self):
+        # WebSocket headers are in bytes, so we need to decode
+        headers = dict(self.scope['headers'])
+        cookie_header = headers.get(b'cookie', b'').decode('utf-8')
+        cookies = cookie_header.split('; ')
+        for cookie in cookies:
+            if cookie.startswith('access_token='):
+                return cookie.split('=')[1]
+        return None
+
+    @database_sync_to_async
+    def validate_token(self, token):
+        Player = get_user_model()
+        
+        try:
+            # Decode the JWT token
+            payload = jwt.decode(
+                token, 
+                settings.SECRET_KEY, 
+                algorithms=['HS256']
+            )
+            # Retrieve user based on token payload
+            return Player.objects.get(id=payload['user_id'])
+        
+        except Exception as e:
+                print("Exeption in validating token in FriendshipNotificationConsumer: ", e, flush=True)
+                return None
+        
     async def receive(self, text_data):
         data = json.loads(text_data)
         message = data['message']
