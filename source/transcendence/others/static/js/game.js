@@ -32,7 +32,7 @@
 
 //Game settings
 let paddleSpeed = 6;
-let ballSpeed = 4.5;
+let ballSpeed = 6;
 let maxScore = 3;
 let slowServe = false;
 let	aiFlag = false;
@@ -74,78 +74,23 @@ let ball = {
     velocityY: defballSpeed 
 };  
 
-let player1Score = 0;
-let player2Score = 0;
+export let player1Score = 0;
+export let player2Score = 0;
 let player1LastKey = null;
 let player2LastKey = null;
-let drawFlag = false;
+export let drawFlag = false;
 
-window.onload = function () {
+export function initializeGame() {
     board = document.getElementById("canvasBoard");
     board.height = boardHeight;
     board.width = boardWidth;
     context = board.getContext("2d");
 
-    // requestAnimationFrame(draw);
-    // document.getElementById("startButton").addEventListener("click", startGame);
-
     document.addEventListener("keydown", move);
     document.addEventListener("keyup", stopMovement);
     displayStartMessage();
-};
+}
 
-// function openSettings() {
-//     document.getElementById("settingsMenu").style.display = "block";
-// }
-
-// function changeSetting() {
-//     // valid ranges for the settings
-//     const MIN_PADDLE_SPEED = 1, MAX_PADDLE_SPEED = 10;
-//     const MIN_BALL_SPEED = 1, MAX_BALL_SPEED = 10;
-//     const MIN_MAX_SCORE = 1, MAX_MAX_SCORE = 20;
-
-//     const paddleSpeedInput = 10;
-//     const ballSpeedInput = 7;
-//     const maxScoreInput = 5;
-//     const slowServeInput = false;
-
-//     let errors = [];
-
-//     if (paddleSpeedInput < MIN_PADDLE_SPEED || paddleSpeedInput > MAX_PADDLE_SPEED) {
-//         errors.push(`Paddle Speed must be between ${MIN_PADDLE_SPEED} and ${MAX_PADDLE_SPEED}.`);
-//     }
-//     if (ballSpeedInput < MIN_BALL_SPEED || ballSpeedInput > MAX_BALL_SPEED) {
-//         errors.push(`Ball Speed must be between ${MIN_BALL_SPEED} and ${MAX_BALL_SPEED}.`);
-//     }
-//     if (maxScoreInput < MIN_MAX_SCORE || maxScoreInput > MAX_MAX_SCORE) {
-//         errors.push(`Winning Score must be between ${MIN_MAX_SCORE} and ${MAX_MAX_SCORE}.`);
-//     }
-//     const errorContainer = document.getElementById("errorMessages");
-//     errorContainer.innerHTML = ""; // Clear existing messages
-//     if (errors.length > 0) {
-//         errors.forEach(error => {
-//             const errorElement = document.createElement("p");
-//             errorElement.textContent = error;
-//             errorElement.style.color = "red";
-//             errorContainer.appendChild(errorElement);
-//         });
-//         return; // Stop applying settings if there are errors
-//     }
-
-//     paddleSpeed = paddleSpeedInput;
-//     defballSpeed = ballSpeedInput;
-//     maxScore = maxScoreInput;
-//     slowServe = slowServeInput;
-
-//     document.getElementById("settingsMenu").style.display = "none";
-//     console.log("Settings Applied: ", { paddleSpeed, defballSpeed, maxScore, slowServe });
-
-//     ball.velocityX = ball.velocityX > 0 ? defballSpeed : -defballSpeed;
-//     ball.velocityY = ball.velocityY > 0 ? defballSpeed : -defballSpeed;
-
-//     document.getElementById("settingsMenu").style.display = "none";
-//     console.log("Settings Applied: ", { paddleSpeed, defballSpeed, maxScore });
-// }
 
 function displayStartMessage() {
     context.clearRect(0, 0, board.width, board.height);
@@ -154,7 +99,7 @@ function displayStartMessage() {
     context.fillText("Select Local or AI game.", boardWidth / 5, boardHeight / 2);
 }
 
-function startGame() {
+export function startGame() {
     player1Score = 0;
     player2Score = 0;
     player1LastKey = null;

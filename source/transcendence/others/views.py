@@ -300,14 +300,13 @@ class GameView(BaseView):
 
 
 class TournamentView(BaseView):
-	js = ['js/tournament.js', 'js/game.js']
 
 	authentication_classes = []
 	permission_classes = []
 	template_name = 'others/tournament.html'
 	title = 'tournament Page'
 	css = 'css/tournament.css'
-	js = self.js
+	js = 'js/tournament.js'
 
 	def get(self, request):
 		return super().get(request)

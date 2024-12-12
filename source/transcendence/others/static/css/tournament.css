@@ -8,7 +8,7 @@
   background-position: center;
   background-repeat: no-repeat;
   padding: 2rem 0;
-
+  flex-direction: column;
   height: fit-content;
   min-height: 100vh;
 }
@@ -204,11 +204,11 @@
   }
 }
 
-#board {
-	visibility: hidden;
-    background-color: black;
-    border: 3px solid skyblue;
-    border-radius: 15px;
-    display: block;
-    margin: 0 auto;
+#canvasBoard {
+  visibility: hidden;
+  background-color: black;
+  border: 3px solid skyblue;
+  border-radius: 15px;
+  display: block;
+  margin: 0 auto;
 }
