@@ -1,39 +1,14 @@
-/*
-    todos
-    Settings that could be adjusted by the player
+// Added parry feature its on by default rn.
+// cooldownTime on 0 for testing purposes.
 
-    Game customization module { 
-        Max Score for the game;
-        Paddle speed when adjusted should be the same as the other opponent except when playing with an AI;
-        An option for slow serves. (if toggled on it should slow down the ball, decreasing the default speed of the ball);
-        An option for designing the board, maybe gives a list of actual themes that we could create for paddle designs, board designs,  etc.;
-        Ball radius (provide a minimum and maximum amount);
-        Overtime (happens whenever both players are 1 goal away from the score. players need to score 2 consecutive goals)
-        
-        maps/modes
-        Portal Map = map that would have random portals that could teleport the ball;
-        Bounce Map = map that will make players have a skill that could make the ball bounce back when near the goal when timed correctly 
-    }
-
-    Game AI module {
-        Explore alternative algorithms and techniques for AI. (AVOID USING A* ALGORITHM)
-        
-        must simulate keyboard input for the AI. The ai can only refresh its view of the game once per second.
-        store ball location, and speed every one second, and depending on that values we will be moving the paddle.
-        ballX
-        ballY
-        ballVelocityX
-        ballVelocityY
-        
-    }
-*/
 
 //Game settings
 let paddleSpeed = 6;
 let ballSpeed = 4.5;
-let maxScore = 3;
+let maxScore = 500;
 let slowServe = false;
 let	aiFlag = false;
+let parryFlag = false;
 
 // Board setup
 let board;
@@ -45,6 +20,8 @@ let context;
 let playerWidth = 15;
 let playerHeight = 80;
 let playerVelocityY = 0;
+let activeKeys = {};
+const cooldownTime = 0; // cooldown for parry power up
 
 let player1 = {
     x: 10,
@@ -52,6 +29,9 @@ let player1 = {
     width: playerWidth,
     height: playerHeight,
     velocityY: playerVelocityY,
+    cooldownFlag: false,
+    parryKey: "KeyA",
+    parryCooldown: 0,
 };
 
 let player2 = {
@@ -59,7 +39,10 @@ let player2 = {
     y: (boardHeight / 2) - (playerHeight / 2),
     width: playerWidth,
     height: playerHeight,
-    velocityY: playerVelocityY
+    velocityY: playerVelocityY,
+    cooldownFlag: false,
+    parryKey: "Numpad0",
+    parryCooldown: 0,
 };
 
 // Ball setup
@@ -79,12 +62,16 @@ let player2LastKey = null;
 let drawFlag = false;
 
 window.onload = function () {
+    // this is the part where we should get which type of game does the user wants to play.
+    // Should grab players info by grabbing its PK (primary key)
+    
+    
     board = document.getElementById("board");
     board.height = boardHeight;
     board.width = boardWidth;
     context = board.getContext("2d");
 
-    // requestAnimationFrame(draw);
+    requestAnimationFrame(draw);
     document.getElementById("startButton").addEventListener("click", startGame);
     document.getElementById("settingButton").addEventListener("click", openSettings);
     document.getElementById("applyButton").addEventListener("click", changeSetting);
@@ -161,21 +148,12 @@ function startGame() {
     player1LastKey = null;
     player2LastKey = null;
     drawFlag = true;
+    parryFlag = true;
     requestAnimationFrame(draw);
     document.getElementById("startButton").disabled = true; //disable start button when the game starts
 }
 
-function draw() {
-    if (!drawFlag){
-        return ;
-    }
-    requestAnimationFrame(draw);
-
-    // Clear board
-    context.clearRect(0, 0, board.width, board.height);
-
-	if (aiFlag) aiLogic();
-
+function drawLine() {
     // Draw dotted line in the middle
     context.setLineDash([10, 20]); // Pattern: 5px dash, 15px space
     context.strokeStyle = 'white'; // Line color
@@ -185,12 +163,26 @@ function draw() {
     context.lineTo(boardWidth / 2, boardHeight); // Draw to the bottom middle
     context.stroke();
     context.setLineDash([]); // Reset line dash to solid
+}
 
+function draw() {
+    if (!drawFlag){
+        return ;
+    }
+    requestAnimationFrame(draw);
+    updatePaddleVelocities();
+
+    // Clear board
+    context.clearRect(0, 0, board.width, board.height);
+
+	// if (aiFlag) aiLogic();
+
+    drawLine();
     // Update player positions
     if (!oob(player1.y + player1.velocityY)) player1.y += player1.velocityY;
     if (!oob(player2.y + player2.velocityY)) player2.y += player2.velocityY;
 
-    drawCapsulePaddle(player1.x, player1.y, player1.width, player1.height, player1.width / 2, '#84ddfc', 'white');
+    drawCapsulePaddle(player1.x, player1.y, player1.width, player1.height, player1.width / 2, '#84ddfc', 'black');
     drawCapsulePaddle(player2.x, player2.y, player2.width, player2.height, player2.width / 2, '#84ddfc', 'black');
 
     // Update ball position
@@ -227,36 +219,103 @@ function draw() {
     context.fillText(player2Score, (boardWidth * 4) / 5, 45);
 }
 
-function move(e) {
-    if (e.code === "KeyW") {
+// function move(e) {
+//     if (e.code === "KeyW") {
+//         player1.velocityY = -paddleSpeed;
+//         player1LastKey = "KeyW";
+//     }
+//     if (e.code === "KeyS") {
+//         player1.velocityY = paddleSpeed;
+//         player1LastKey = "KeyS";
+//     }
+//     if (e.code === "ArrowUp") {
+//         player2.velocityY = -paddleSpeed;
+//         player2LastKey = "ArrowUp";
+//     }
+//     if (e.code === "ArrowDown") {
+//         player2.velocityY = paddleSpeed;
+//         player2LastKey = "ArrowDown";
+//     }
+// }
+
+// function stopMovement(e) {
+//     if (e.code === "KeyW" || e.code === "KeyS"){
+//         player1.velocityY = 0;
+//         player1LastKey = e.code;
+//     }
+//     if (e.code === "ArrowUp" || e.code === "ArrowDown"){
+//         player2.velocityY = 0;
+//         player2LastKey = e.code;
+//     }
+// }
+
+function updatePaddleVelocities() {
+    // Player 1 movement
+    if (activeKeys["KeyW"]) {
         player1.velocityY = -paddleSpeed;
-        player1LastKey = "KeyW";
-    }
-    if (e.code === "KeyS") {
+    } else if (activeKeys["KeyS"]) {
         player1.velocityY = paddleSpeed;
-        player1LastKey = "KeyS";
+    } else {
+        player1.velocityY = 0;
     }
-    if (e.code === "ArrowUp") {
+
+    // Player 2 movement
+    if (activeKeys["ArrowUp"]) {
         player2.velocityY = -paddleSpeed;
-        player2LastKey = "ArrowUp";
-    }
-    if (e.code === "ArrowDown") {
+    } else if (activeKeys["ArrowDown"]) {
         player2.velocityY = paddleSpeed;
-        player2LastKey = "ArrowDown";
+    } else {
+        player2.velocityY = 0;
+    }
+    if (parryFlag) {
+        if (activeKeys["KeyA"] && !player1.cooldownFlag && isParry(player1)) {
+            ball.velocityX *= 2;
+            ball.velocityY = 0;
+            parryCoolDown(player1);
+        }
+
+        if (activeKeys["Numpad0"] && !player2.cooldownFlag && isParry(player2)) {
+            ball.velocityX *= -2;
+            ball.velocityY = 0;
+            parryCoolDown(player2);
+        }
+        parryRefresh(player1);
+        parryRefresh(player2);
     }
 }
+
+function isParry(player) {
+    const parryRange = 20; // Adjust as needed
+    const ballNearPlayer = 
+        player.x < boardWidth / 2 // Check which side the player is on
+        ? ball.x - ballRadius <= player.x + player.width + parryRange // Near Player 1
+        : ball.x + ballRadius >= player.x - parryRange; // Near Player 2
+    const withinVerticalRange = 
+        ball.y + ballRadius > player.y && ball.y - ballRadius < player.y + player.height;
+    return ballNearPlayer && withinVerticalRange;
+}
+
+function parryCoolDown(player) {
+    player.cooldownFlag = true
+    player.parryCooldown = Date.now() + cooldownTime;
+}
+
+function parryRefresh(player) {
+    if (player.cooldownFlag && Date.now() > player.parryCooldown) {
+        player.cooldownFlag = false
+    }
+}
+
+function move(e) {
+    activeKeys[e.code] = true;
+    console.log(`Key Down: ${e.code}`); // Debugging
+}
+
 
 function stopMovement(e) {
-    if (e.code === "KeyW" || e.code === "KeyS"){
-        player1.velocityY = 0;
-        player1LastKey = e.code;
-    }
-    if (e.code === "ArrowUp" || e.code === "ArrowDown"){
-        player2.velocityY = 0;
-        player2LastKey = e.code;
-    }
+    activeKeys[e.code] = false;
+    console.log(`Key Up: ${e.code}`);
 }
-
 
 // function to check if the paddle is inside the walls, by walls the top and bottom part of the board.
 function oob(yPosition) {
@@ -275,14 +334,14 @@ function ballCollision(ball, player) {
         ball.velocityX *= -1;
 
         // Calculate the relative hit position
-        let paddleCenter = player.y + player.height / 2;
-        let hitPosition = (ball.y - paddleCenter) / (player.height / 2); // Normalize between -1 and 1
+        // let paddleCenter = player.y + player.height / 2;
+        // let hitPosition = (ball.y - paddleCenter) / (player.height / 2); // Normalize between -1 and 1
 
         // Adjust vertical velocity based on hit position
-        ball.velocityY = hitPosition * 2.5; // Increase ball speed and angle
+        // ball.velocityY = hitPosition * 2.5; // Increase ball speed and angle
 
         // Optional: Slightly increase ball speed for more challenge
-        ball.velocityX *= 1.1; // Increase horizontal speed
+        // ball.velocityX *= 1.1; // Increase horizontal speed
 
         // Resolve collision by repositioning the ball outside the paddle
         // Move the ball just outside the paddle to avoid it sticking or passing through
@@ -297,8 +356,16 @@ function ballCollision(ball, player) {
 }
 
 function resetGame(direction) {
+    //bring back ball to the middle
     ball.x = boardWidth / 2;
     ball.y = boardHeight / 2;
+    //resets cooldown of the parry 
+    if (parryFlag) {
+        player1.cooldownFlag = false;
+        player2.cooldownFlag = false;
+        player1.parryCooldown = 0;
+        player2.parryCooldown = 0;
+    }
 
     if (slowServe) {
         // Apply reduced speed if slow serve is enabled
@@ -314,6 +381,7 @@ function resetGame(direction) {
     if (isGameOver()) {
         drawFlag = false;
 		aiFlag = false;
+        parryFlag = false;
         document.getElementById("startButton").disabled = false;
 		document.getElementById("aiButton").disabled = false;
     }
@@ -355,3 +423,4 @@ function drawCapsulePaddle(x, y, width, height, radius, fillColor, borderColor) 
         context.stroke();
     }
 }
+
