@@ -8,52 +8,84 @@
 	background-repeat: no-repeat;
 	padding: 1.5rem 0;
 
-	min-height: fit-content;
-	height: 100vh;
+	height: fit-content;
+	min-height: 100vh;
 }
 
-h1, h2, h3, h4, h5, h6 {
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
 	color: #84ddfc;
 }
 
 .tournamentWrapper {
 	background: linear-gradient(140deg,
-		rgba(255, 255, 255, 0.12) -1.82%,
-		rgba(255, 255, 255, 0.04) 68.19%,
-		rgba(255, 255, 255, 0.03) 80.14%);
+			rgba(255, 255, 255, 0.12) -1.82%,
+			rgba(255, 255, 255, 0.04) 68.19%,
+			rgba(255, 255, 255, 0.03) 80.14%);
 	backdrop-filter: blur(10px);
 	border: 1px solid rgba(255, 255, 255, 0.1);
 	border-radius: 15px;
 	transition: all 0.3s ease;
+	padding: 2rem 1rem;
 }
 
 
 .card {
-	background: linear-gradient(45deg, #84ddfc, #b02c98);
-	border: 1px solid black;
-	border-radius: 8px;
-	box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+	background: rgba(255, 255, 255, 0.05);
+	border: 1px solid rgba(255, 255, 255, 0.1);
+	border-radius: 10px;
+	color: white;
+	/* border: 1px solid #ddd; */
+	transition: all 0.3s ease;
+}
+
+.card:hover {
+	transform: translateY(-5px);
+	box-shadow: 0 4px 15px rgba(132, 221, 252, 0.3);
 }
 
 .card-title {
-	font-size: 1.25rem;
-	font-weight: bold;
-	/* color: #007bff; */
+	display: flex;
+	justify-content: center;
+	color: #b02c98;
 }
 
-.team img {
+.profileIcon {
+	font-size: 1.5rem;
 	margin-right: 8px;
-	width: 24px;
-	height: 24px;
+}
+
+.team {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	color: #84ddfc;
+	/* margin: 0 10px; */
+}
+
+.card-body-custom {
+	width: max-content;
+	height: 80px;
+}
+
+.team span {
+	margin: 0 5px 0 0;
+}
+
+span.score-value {
+	margin: 0 0;
 }
 
 .score {
-	font-size: 1.2rem;
-	font-weight: bold;
-	/* color: #212529; */
+	margin: 0 10px;
+	color: aqua;
 }
 
-.vertical-line {
+/* .vertical-line {
 	position: relative;
 	display: flex;
 	flex-direction: column;
@@ -66,16 +98,9 @@ h1, h2, h3, h4, h5, h6 {
 	position: absolute;
 	width: 2px;
 	height: 100%;
-	/* background-color: #6c757d; */
+	background-color: #b02c98;
 	z-index: 0;
-}
-
-.tournament {
-	display: flex;
-	justify-content: space-between;
-	align-items: flex-start;
-	position: relative;
-}
+} */
 
 .round {
 	display: flex;
@@ -84,51 +109,110 @@ h1, h2, h3, h4, h5, h6 {
 	position: relative;
 }
 
-.games {
-	position: relative;
-	width: 200px;
-}
-
 .game {
 	margin-bottom: 40px;
 	position: relative;
 }
 
-.game::after {
+.connection-line {
+	position: absolute;
+	background-color: #b02c98;
+	z-index: 0;
+}
+
+/* First Round to Second Round Connections */
+.connection-1-5 {
+	width: 10px;
+	height: 2px;
+	top: 50%;
+	left: 100%;
+}
+
+.connection-1-5::after {
 	content: '';
 	position: absolute;
 	width: 2px;
-	/* background-color: #6c757d; */
+	height: 130px;
 	top: 50%;
 	left: 100%;
-	height: 60px;
-	transform: translateY(-50%);
+	background-color: #b02c98;
+	z-index: 0;
 }
 
-.round:last-child .game::after {
-	display: none;
+.connection-2-5 {
+	width: 28px;
+	height: 2px;
+	top: 50%;
+	left: 100%;
 }
 
-/* Connectors */
-#game1::after {
-	height: 80px;
-	/* Adjust as needed to align connectors */
+.connection-4-6::after {
+	content: '';
+	position: absolute;
+	width: 2px;
+	height: 130px;
+	top: 50%;
+	left: 100%;
+	background-color: #b02c98;
+	transform: translateY(-100%);
+	z-index: 0;
 }
 
-#game2::after {
-	height: 60px;
-	/* Adjust as needed to align connectors */
+.connection-3-6 {
+	width: 28px;
+	height: 2px;
+	top: 50%;
+	left: 100%;
 }
 
-span {
-	margin-right: 10px;
-	/* Add 10 pixels of space after the span */
+.connection-4-6 {
+	width: 10px;
+	height: 2px;
+	top: 50%;
+	left: 100%;
 }
+
+/* Second Round to Final Connection */
+.connection-5-7 {
+	width: 10px;
+	height: 2px;
+	top: 50%;
+	left: 100%;
+}
+
+.connection-5-7::after {
+	content: '';
+	position: absolute;
+	width: 2px;
+	height: 105px;
+	top: 50%;
+	left: 100%;
+	background-color: #b02c98;
+	z-index: 0;
+}
+
+.connection-6-7 {
+	width: 20px;
+	height: 2px;
+	top: 20%;
+	left: 100%;
+}
+
 
 /* Responsive Design */
 @media (max-width: 768px) {
-	.tournament {
-		flex-direction: column;
+
+	.profileIcon {
+		display: none;
+	}
+
+	.card-title {
+		font-size: 18px;
+	}
+
+	.team,
+	.score {
+		font-size: 14px;
 	}
 
 	.round {
