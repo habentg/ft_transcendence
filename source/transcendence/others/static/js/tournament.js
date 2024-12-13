@@ -1,14 +1,19 @@
+//THIS IS THE GAME LOGIC
+
+//Game settings
 let paddleSpeed = 6;
-let ballSpeed = 6;
+let ballSpeed = 4.5;
 let maxScore = 3;
 let slowServe = false;
-let	aiFlag = false;
+// let	aiFlag = false;
 
 // Board setup
 let board;
 let boardWidth = 800;
 let boardHeight = 500;
 let context;
+let player1Name;
+let player2Name;
 
 // Player setup
 let playerWidth = 15;
@@ -47,8 +52,9 @@ let player1LastKey = null;
 let player2LastKey = null;
 let drawFlag = false;
 
+
 function initializeGame() {
-    board = document.getElementById("canvasBoard");
+    board = document.getElementById("board");
     board.height = boardHeight;
     board.width = boardWidth;
     context = board.getContext("2d");
@@ -58,17 +64,25 @@ function initializeGame() {
 }
 
 function startGame() {
-    player1Score = 0;
+
+	player1Score = 0;
     player2Score = 0;
     player1LastKey = null;
     player2LastKey = null;
     drawFlag = true;
+	document.getElementById("player1Name").textContent = "@ " + player1Name;
+	document.getElementById("player1Name").style.display = "block";
+	document.getElementById("player2Name").textContent = "@ " + player2Name;
+	document.getElementById("player2Name").style.display = "block";
+	document.getElementById("player1").classList.remove("d-none");
+	document.getElementById("player2").classList.remove("d-none");
+
     requestAnimationFrame(draw);
-    // document.getElementById("startButton").disabled = true; //disable start button when the game starts
 }
 
+
 function draw() {
-    if (!drawFlag){
+    if (!drawFlag) {
         return ;
     }
     requestAnimationFrame(draw);
@@ -98,10 +112,12 @@ function draw() {
     ball.y += ball.velocityY;
 
     // Check ball collision with walls
-    if (ball.y - ballRadius <= 0 || ball.y + ballRadius >= boardHeight) ball.velocityY *= -1;
+    if (ball.y - ballRadius <= 0 || ball.y + ballRadius >= boardHeight) 
+			ball.velocityY *= -1;
 
     // Check ball collision with players
-    if (ballCollision(ball, player1, player1LastKey)) player1LastKey = null;
+    if (ballCollision(ball, player1, player1LastKey))
+		player1LastKey = null;
     if (ballCollision(ball, player2, player2LastKey)) player2LastKey = null;
 
     // Draw ball as a circle
@@ -132,7 +148,7 @@ function move(e) {
         player1.velocityY = -paddleSpeed;
         player1LastKey = "KeyW";
     }
-    if (e.code === "KeyS") {
+    if (e.code === "KeyS") { 
         player1.velocityY = paddleSpeed;
         player1LastKey = "KeyS";
     }
@@ -179,10 +195,10 @@ function ballCollision(ball, player) {
         let hitPosition = (ball.y - paddleCenter) / (player.height / 2); // Normalize between -1 and 1
 
         // Adjust vertical velocity based on hit position
-        ball.velocityY = hitPosition * 2.5; // Increase ball speed and angle
+        // ball.velocityY = hitPosition * 2.5; // Increase ball speed and angle
 
         // Optional: Slightly increase ball speed for more challenge
-        ball.velocityX *= 1.1; // Increase horizontal speed
+        // ball.velocityX *= 1.1; // Increase horizontal speed
 
         // Resolve collision by repositioning the ball outside the paddle
         // Move the ball just outside the paddle to avoid it sticking or passing through
@@ -196,45 +212,53 @@ function ballCollision(ball, player) {
     return isCollision;
 }
 
+
 function resetGame(direction) {
     ball.x = boardWidth / 2;
     ball.y = boardHeight / 2;
 
-    // Reset velocities to default speed each game
-    ball.velocityX = direction * Math.abs(defballSpeed);
-    ball.velocityY = 2 * (Math.random() > 0.5 ? 1 : -1);
-
     if (slowServe) {
         // Apply reduced speed if slow serve is enabled
-        ball.velocityX *= 0.5;
-        ball.velocityY *= 0.5;
+        ball.velocityX = direction * Math.abs(defballSpeed) * 0.5;
+        ball.velocityY = 2 * (Math.random() > 0.5 ? 1 : -1) * 0.5;
+    } else {
+        // Use normal initial speed
+        ball.velocityX = direction * Math.abs(defballSpeed);
+        ball.velocityY = 2 * (Math.random() > 0.5 ? 1 : -1);
     }
 
+    // drawFlag = !isGameOver();
     if (isGameOver()) {
         drawFlag = false;
+        console.log("Game Over: SHOULD RETURN SETTINGS MENU");
+        if (document.getElementById("startButton")) {
+            document.getElementById("startButton").disabled = false;
+        }
     }
 }
 
 function isGameOver(){
     if (player1Score >= maxScore || player2Score >= maxScore){
-        displayGameOver();
+        // unhide settings menu
+        // document.getElementById("settingButton").style.display = "block";
+        // displayGameOver();
         return true;
     }
     return false;
 }
 
 // this display sucks need a better one 
-function displayGameOver() {
-    context.clearRect(0, 0, board.width, board.height);
+// function displayGameOver() {
+//     context.clearRect(0, 0, board.width, board.height);
 
-    context.font = "50px sans-serif";
-    context.fillStyle = "red";
-    let winner = player1Score >= maxScore ? "Player 1" : "Player 2";
-    context.fillText(`${winner} Wins!`, boardWidth / 4, boardHeight / 2);
+//     context.font = "50px sans-serif";
+//     context.fillStyle = "red";
+//     let winner = player1Score >= maxScore ? "Player 1" : "Player 2";
+//     context.fillText(`${winner} Wins!`, boardWidth / 4, boardHeight / 2);
 
-    context.font = "30px sans-serif";
-    context.fillStyle = "white";
-}
+//     context.font = "30px sans-serif";
+//     context.fillStyle = "white";
+// }
 
 function drawCapsulePaddle(x, y, width, height, radius, fillColor, borderColor) {
     context.beginPath();
@@ -252,6 +276,7 @@ function drawCapsulePaddle(x, y, width, height, radius, fillColor, borderColor) 
     }
 }
 
+//END OF GAME LOGIC
 //TOURNAMENT LOGIC
 
 //ADD THE This is to add players
@@ -331,22 +356,22 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // Start tournament button (currently just logs players)
-    startButton.addEventListener('click', () => {
-        if (players.length < 2) {
-            alert('Please add at least 2 players to start the tournament!');
-            return;
-        }
+	startButton.addEventListener('click', async () => {
+		if (players.length < 2) {
+			alert('Please add at least 2 players to start the tournament!');
+			return;
+		}
 		const friendBoard = document.querySelector('.friendBoard');
 		friendBoard.remove();       
-		// console.log(`\n${scenario.name} Tournament:`);
 		const tournament = createPingPongTournament(players);
-		const champion = tournament.runTournament();
-		console.log('Champion:', champion);
-		console.log('Match History:', tournament.getMatchHistory());
-
-        // Add your tournament start logic here
-    });
+		try {
+			const champion = await tournament.runTournament();
+			console.log('Champion:', champion);
+			console.log('Match History:', tournament.getMatchHistory());
+		} catch (error) {
+			console.error('Tournament error:', error);
+		}
+	});
 
     // Add initial Tofara Mususa button (if not already present)
     if (!document.querySelector('#createTournamentBtn .menu-item')) {
@@ -376,45 +401,51 @@ document.addEventListener('DOMContentLoaded', () => {
 function createPingPongTournament(players) {
     const matchHistory = [];
     
-	async function playMatch(player1, player2) {
-		return new Promise((resolve) => {
-			// Reset scores before match
-			player1Score = 0;
-			player2Score = 0;
-	
-			// Make game board visible
-			const gameboard = document.getElementById('canvasBoard');
-			gameboard.style.visibility = 'visible';
-	
-			// Start game with specific players
-			startGame();
-	
-			// Create a function to check game state
-			const checkGameStatus = () => {
-				if (!drawFlag) {
-					const match = { 
-						player1: player1,
-						player2: player2,
-						player1Score: player1Score, 
-						player2Score: player2Score, 
-						winner: player1Score >= maxScore ? player1 : player2
-					};
-	
-					gameboard.style.visibility = 'hidden';
-					resolve(match.winner);
-				} else {
-					// Continue checking if game is not finished
-					requestAnimationFrame(checkGameStatus);
-				}
-			};
-	
-			// Start checking game status
-			checkGameStatus();
-		});
-	}
+    async function playMatch(player1, player2) {
+        return new Promise((resolve, reject) => {
+            try {
+                // Reset game state completely
+                player1Score = 0;
+                player2Score = 0;
+                drawFlag = true;
+                player1Name = player1;
+                player2Name = player2;
+        
+                const gameboard = document.getElementById('tableBoard');
+				const canvas = document.getElementById('board');
+                gameboard.style.visibility = 'visible';
+                canvas.style.visibility = 'visible';
+        
+                initializeGame(); // Ensure clean game initialization
+                startGame();
+        
+                const checkGameStatus = () => {
+                    if (!drawFlag) {
+                        const match = { 
+                            player1: player1,
+                            player2: player2,
+                            player1Score: player1Score, 
+                            player2Score: player2Score, 
+                            winner: player1Score >= maxScore ? player1 : player2
+                        };
+        
+                        matchHistory.push(match);
+                        gameboard.style.visibility = 'hidden';
+                        canvas.style.visibility = 'hidden';
+                        resolve(match.winner);
+                    } else {
+                        requestAnimationFrame(checkGameStatus);
+                    }
+                };
+        
+                checkGameStatus();
+            } catch (error) {
+                reject(error);
+            }
+        });
+    }
 
 async function runTournament() {
-		initializeGame()
         let currentPlayers = [...players];
 
         // Validate initial number of players

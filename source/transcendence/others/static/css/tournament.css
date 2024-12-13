@@ -18,6 +18,9 @@
   max-width: 1200px;
 }
 
+.tableBoard {
+   visibility: hidden;
+}
 .content {
   border: 1px solid rgba(255, 255, 255, 0.1);
   background: linear-gradient(
@@ -204,11 +207,27 @@
   }
 }
 
-#canvasBoard {
+#board {
   visibility: hidden;
   background-color: black;
   border: 3px solid skyblue;
   border-radius: 15px;
   display: block;
   margin: 0 auto;
+}
+
+.playerNames {
+    color: #84ddfc;
+}
+
+.gamePlayers {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+#player1,
+#player2 {
+    flex: 1;
+    text-align: center;
 }
