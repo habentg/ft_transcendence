@@ -8,7 +8,7 @@ function startaiGame() {
     player1Score = 0;
     player2Score = 0;
     drawFlag = true;
-    setInterval(aiView, 1000);
+    setInterval(aiView, 50);
     setInterval(aiLogic, 50);
     requestAnimationFrame(draw);
     document.getElementById("startButton").disabled = true;

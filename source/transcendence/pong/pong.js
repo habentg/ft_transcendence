@@ -1,5 +1,5 @@
-// Added parry feature its on by default rn.
-// cooldownTime on 0 for testing purposes.
+// issues
+// paddle doesnt remove visuals when used but not properly. 
 
 
 //Game settings
@@ -21,7 +21,7 @@ let playerWidth = 15;
 let playerHeight = 80;
 let playerVelocityY = 0;
 let activeKeys = {};
-const cooldownTime = 0; // cooldown for parry power up
+const cooldownTime = 3000; // cooldown for parry power up
 
 let player1 = {
     x: 10,
@@ -65,6 +65,9 @@ window.onload = function () {
     // this is the part where we should get which type of game does the user wants to play.
     // Should grab players info by grabbing its PK (primary key)
     
+
+
+	
     
     board = document.getElementById("board");
     board.height = boardHeight;
@@ -182,8 +185,14 @@ function draw() {
     if (!oob(player1.y + player1.velocityY)) player1.y += player1.velocityY;
     if (!oob(player2.y + player2.velocityY)) player2.y += player2.velocityY;
 
-    drawCapsulePaddle(player1.x, player1.y, player1.width, player1.height, player1.width / 2, '#84ddfc', 'black');
-    drawCapsulePaddle(player2.x, player2.y, player2.width, player2.height, player2.width / 2, '#84ddfc', 'black');
+	if (!player1.cooldownFlag)
+    	drawCapsulePaddle(player1.x, player1.y, player1.width, player1.height, player1.width / 2, '#84ddfc', 'green');
+	else
+		drawCapsulePaddle(player1.x, player1.y, player1.width, player1.height, player1.width / 2, '#84ddfc', 'black');
+	if (!player2.cooldownFlag)
+    	drawCapsulePaddle(player2.x, player2.y, player2.width, player2.height, player2.width / 2, '#84ddfc', 'green');
+	else
+    	drawCapsulePaddle(player2.x, player2.y, player2.width, player2.height, player2.width / 2, '#84ddfc', 'black');
 
     // Update ball position
     ball.x += ball.velocityX;
@@ -193,9 +202,12 @@ function draw() {
     if (ball.y - ballRadius <= 0 || ball.y + ballRadius >= boardHeight) ball.velocityY *= -1;
 
     // Check ball collision with players
-    if (ballCollision(ball, player1, player1LastKey)) player1LastKey = null;
-    if (ballCollision(ball, player2, player2LastKey)) player2LastKey = null;
-
+    // if (ballCollision(ball, player1, player1LastKey)) player1LastKey = null;
+    // if (ballCollision(ball, player2, player2LastKey)) player2LastKey = null;
+	// if (ballCollision(ball, player1, "left"));
+	// if (ballCollision(ball, player2, "right"));
+	ballCollision(ball, player1, "left");
+	ballCollision(ball, player2, "right");
     // Draw ball as a circle
     context.beginPath();
     context.arc(ball.x, ball.y, ballRadius, 0, Math.PI * 2);
@@ -267,16 +279,20 @@ function updatePaddleVelocities() {
     } else {
         player2.velocityY = 0;
     }
+	// change this one so it works like if it uses it and failed it would still go cooldown instead of cannot be used if cannot be parried. // to work on
     if (parryFlag) {
-        if (activeKeys["KeyA"] && !player1.cooldownFlag && isParry(player1)) {
-            ball.velocityX *= 2;
-            ball.velocityY = 0;
+        if (activeKeys["KeyA"] && !player1.cooldownFlag) {
+            if (isParry(player1)) {
+				ball.velocityX *= 2;
+            	ball.velocityY = 0;
+			}
             parryCoolDown(player1);
         }
-
-        if (activeKeys["Numpad0"] && !player2.cooldownFlag && isParry(player2)) {
-            ball.velocityX *= -2;
-            ball.velocityY = 0;
+        if (activeKeys["Numpad0"] && !player2.cooldownFlag) {
+            if (isParry(player2)) {
+				ball.velocityX *= -2;
+            	ball.velocityY = 0;
+			}
             parryCoolDown(player2);
         }
         parryRefresh(player1);
@@ -285,7 +301,7 @@ function updatePaddleVelocities() {
 }
 
 function isParry(player) {
-    const parryRange = 20; // Adjust as needed
+    const parryRange = 10; // Adjust as needed
     const ballNearPlayer = 
         player.x < boardWidth / 2 // Check which side the player is on
         ? ball.x - ballRadius <= player.x + player.width + parryRange // Near Player 1
@@ -322,7 +338,11 @@ function oob(yPosition) {
     return yPosition < 0 || yPosition + playerHeight > boardHeight;
 }
 
-function ballCollision(ball, player) {
+function ballCollision(ball, player, position) {
+    // Define the maximum speed for the ball
+    const MAX_SPEED_X = 4; // Maximum horizontal speed (velocityX)
+    const MAX_SPEED_Y = 4; // Maximum vertical speed (velocityY)
+
     let isCollision =
         ball.x - ballRadius < player.x + player.width &&   // Right side of the ball is past the left side of the player
         ball.x + ballRadius > player.x &&                 // Left side of the ball is past the right side of the player
@@ -330,30 +350,134 @@ function ballCollision(ball, player) {
         ball.y - ballRadius < player.y + player.height;   // Top side of the ball is past the bottom of the player
 
     if (isCollision) {
-        // Reverse horizontal direction
-        ball.velocityX *= -1;
+        // Reverse the horizontal direction based on which side of the paddle the ball hits
+        let hitPosition = (ball.y - player.y) / player.height; // Normalize hit position between 0 and 1
+        let section = Math.floor(hitPosition * 4); // Section index (0, 1, 2, 3)
 
-        // Calculate the relative hit position
-        // let paddleCenter = player.y + player.height / 2;
-        // let hitPosition = (ball.y - paddleCenter) / (player.height / 2); // Normalize between -1 and 1
-
-        // Adjust vertical velocity based on hit position
-        // ball.velocityY = hitPosition * 2.5; // Increase ball speed and angle
-
-        // Optional: Slightly increase ball speed for more challenge
-        // ball.velocityX *= 1.1; // Increase horizontal speed
-
-        // Resolve collision by repositioning the ball outside the paddle
-        // Move the ball just outside the paddle to avoid it sticking or passing through
-        if (ball.x < player.x) {
-            ball.x = player.x - ballRadius; // Push ball to the left of the paddle
-        } else {
-            ball.x = player.x + player.width + ballRadius; // Push ball to the right of the paddle
+        if (position === "left") {
+            // Ball hit the left player's paddle, reverse the horizontal velocity
+            ball.velocityX = Math.abs(ball.velocityX);  // Ensure velocityX is positive (moving right)
+            
+            switch (section) {
+                case 0: // Top section (first 1/4th of the paddle)
+                    ball.velocityY = 2.5; // Strong upwards angle
+                    break;
+                case 1: // Upper middle section (second 1/4th of the paddle)
+                    ball.velocityY = -1.5; // Slightly upwards
+                    break;
+                case 2: // Lower middle section (third 1/4th of the paddle)
+                    ball.velocityY = 1.5; // Slightly downwards
+                    break;
+                case 3: // Bottom section (last 1/4th of the paddle)
+                    ball.velocityY = -2.5; // Strong downward angle
+                    break;
+            }
+        } else if (position === "right") {
+            // Ball hit the right player's paddle, reverse the horizontal velocity
+            ball.velocityX = -Math.abs(ball.velocityX); // Ensure velocityX is negative (moving left)
+            
+            switch (section) {
+                case 0: // Top section (first 1/4th of the paddle)
+                    ball.velocityY = -2.5; // Strong upwards angle
+                    break;
+                case 1: // Upper middle section (second 1/4th of the paddle)
+                    ball.velocityY = -1.5; // Slightly upwards
+                    break;
+                case 2: // Lower middle section (third 1/4th of the paddle)
+                    ball.velocityY = 1.5; // Slightly downwards
+                    break;
+                case 3: // Bottom section (last 1/4th of the paddle)
+                    ball.velocityY = 2.5; // Strong downward angle
+                    break;
+            }
         }
+
+        // Optional: Increase the ball's speed based on where it hits the paddle
+        if (section === 0 || section === 3) {
+            ball.velocityX *= 1.2; // Slightly increase the horizontal speed for top/bottom hits (more challenge)
+        }
+
+        // Resolve collision by moving the ball just outside the paddle (avoid sticking or going through the paddle)
+        if (position === "left") {
+            // Ball hit the left player's paddle, so move it just to the right of the paddle
+            ball.x = player.x + player.width + ballRadius;
+        } else if (position === "right") {
+            // Ball hit the right player's paddle, so move it just to the left of the paddle
+            ball.x = player.x - ballRadius;
+        }
+
+        // Clamp the velocities to ensure they do not exceed the maximum speed
+        ball.velocityX = Math.min(Math.max(ball.velocityX, -MAX_SPEED_X), MAX_SPEED_X);
+        ball.velocityY = Math.min(Math.max(ball.velocityY, -MAX_SPEED_Y), MAX_SPEED_Y);
     }
 
     return isCollision;
 }
+
+
+// function ballCollision(ball, player, position) {
+//     let isCollision =
+//         ball.x - ballRadius < player.x + player.width &&   // Right side of the ball is past the left side of the player
+//         ball.x + ballRadius > player.x &&                 // Left side of the ball is past the right side of the player
+//         ball.y + ballRadius > player.y &&                 // Bottom side of the ball is past the top of the player
+//         ball.y - ballRadius < player.y + player.height;   // Top side of the ball is past the bottom of the player
+
+//     if (isCollision) {
+//         // Reverse the horizontal direction based on which side of the paddle the ball hits
+        
+// 		let hitPosition = (ball.y - player.y) / player.height; // Normalize hit position between 0 and 1
+// 		let section = Math.floor(hitPosition * 4); // Section index (0, 1, 2, 3)
+	
+// 		if (position === "left") {
+//             // Ball hit the left player's paddle, reverse the horizontal velocity
+//             ball.velocityX = Math.abs(ball.velocityX);  // Ensure velocityX is positive (moving right)
+// 			switch (section) {
+// 				case 0: // Top section (first 1/4th of the paddle)
+// 					ball.velocityY = 2.5; // Strong upwards angle
+// 					break;
+// 				case 1: // Upper middle section (second 1/4th of the paddle)
+// 					ball.velocityY = -1.5; // Slightly upwards
+// 					break;
+// 				case 2: // Lower middle section (third 1/4th of the paddle)
+// 					ball.velocityY = 1.5; // Slightly downwards
+// 					break;
+// 				case 3: // Bottom section (last 1/4th of the paddle)
+// 					ball.velocityY = -2.5; // Strong downward angle
+// 					break;
+// 			}
+//         } else if (position === "right") {
+//             // Ball hit the right player's paddle, reverse the horizontal velocity
+//             ball.velocityX = -Math.abs(ball.velocityX); // Ensure velocityX is negative (moving left)
+// 			switch (section) {
+// 				case 0: // Top section (first 1/4th of the paddle)
+// 					ball.velocityY = -2.5; // Strong upwards angle
+// 					break;
+// 				case 1: // Upper middle section (second 1/4th of the paddle)
+// 					ball.velocityY = -1.5; // Slightly upwards
+// 					break;
+// 				case 2: // Lower middle section (third 1/4th of the paddle)
+// 					ball.velocityY = 1.5; // Slightly downwards
+// 					break;
+// 				case 3: // Bottom section (last 1/4th of the paddle)
+// 					ball.velocityY = 2.5; // Strong downward angle
+// 					break;
+// 			}
+//         }
+//         // Optional: Increase the ball's speed based on where it hits the paddle
+//         if (section === 0 || section === 3) {
+//             ball.velocityX *= 1.2; // Slightly increase the horizontal speed for top/bottom hits (more challenge)
+//         }
+//         // Resolve collision by moving the ball just outside the paddle (avoid sticking or going through the paddle)
+//         if (position === "left") {
+//             // Ball hit the left player's paddle, so move it just to the right of the paddle
+//             ball.x = player.x + player.width + ballRadius;
+//         } else if (position === "right") {
+//             // Ball hit the right player's paddle, so move it just to the left of the paddle
+//             ball.x = player.x - ballRadius;
+//         }
+//     }
+// }
+
 
 function resetGame(direction) {
     //bring back ball to the middle
@@ -418,7 +542,7 @@ function drawCapsulePaddle(x, y, width, height, radius, fillColor, borderColor) 
 
     context.fillStyle = fillColor; // Fill color
     context.fill();
-    if (borderColor) {
+    if (borderColor ) {
         context.strokeStyle = borderColor; // Border color
         context.stroke();
     }
