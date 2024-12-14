@@ -442,7 +442,7 @@ td {
 @media (max-width: 576px) {
   .custom-navbar {
     width: 98%;
-    margin: 5px auto;
+    /* margin: 5px auto; */
   }
 
   .navbar-brand {

@@ -163,15 +163,12 @@
 }
 
 @media (max-width: 768px) {
-  
   .menu-item {
     height: 70px;
   }
-  
   .menu-item span {
     font-size: 1rem;
   }
-  
   .btn {
     padding: 0.4rem 0.8rem;
     font-size: 0.9rem;

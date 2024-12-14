@@ -3,7 +3,10 @@
 
 <div class="gamePage">
   <div class="background-image">
-    <div id="warningMessage" class="d-none text-center text-light bg-danger p-2">
+    <div
+      id="warningMessage"
+      class="d-none text-center text-light bg-danger p-2"
+    >
       <h3>Screen too small to play</h3>
       <p>
         Please switch to a laptop or desktop with a larger screen for the best
@@ -14,20 +17,32 @@
       <div class="justify-content-center mb-3">
         <div id="controls" class="col-12 text-center">
           {% if isAI %}
-          	<button id="aiButton" type="button" class="btn btn-primary me-3"> Start game </button>
+          <button id="aiButton" type="button" class="btn btn-primary me-3">
+            Start game
           {% else %}
-         	 <button id="startButton" type="button" class="btn btn-primary me-3"> Start game </button>
+          <button id="startButton" type="button" class="btn btn-primary me-3">
+            Start game
+          </button>
+          </button>
           {% endif %}
-          <button id="settingButton" onclick="gameSettingsModal()" type="button" class="btn btn-secondary"> settings </button>
+          <button
+            id="settingButton"
+            onclick="gameSettingsModal()"
+            type="button"
+            class="btn btn-secondary"
+          >
+            settings
+          </button>
         </div>
       </div>
       <div class="justify-content-center">
-        <!-- Player names & score hidden until game starts-->
-        <div id="player1" class="col-12 col-md-6 text-center d-none">
-          <h3 id="player1Name" class="playerNames">Player 1</h3>
-        </div>
-        <div id="player2" class="col-12 col-md-6 text-center d-none">
-          <h3 id="player2Name" class="playerNames">Player 2</h3>
+        <div class="gamePlayers d-flex justify-content-between">
+          <div id="player1" class="col-12 col-md-6 text-center d-none">
+            <h3 id="player1Name" class="playerNames">@ {{ current_username }}</h3> 
+          </div>
+          <div id="player2" class="col-12 col-md-6 text-center d-none">
+            <h3 id="player2Name" class="playerNames"></h3>
+          </div>
         </div>
         <div class="text-center">
           <canvas id="board" class="mt-2 shadow"></canvas>

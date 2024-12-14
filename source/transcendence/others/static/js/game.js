@@ -88,7 +88,38 @@ window.onload = function () {
 
     // requestAnimationFrame(draw);
     if (document.getElementById("startButton")) {
-        document.getElementById("startButton").addEventListener("click", startGame);
+
+        // get Player 2 name and display it from secondPlayerNameModal modal
+        const modal = secondPlayerNameModal();
+        let secondPlayerName = "";
+
+        document.body.appendChild(modal);
+
+
+        // Event Listeners
+        modal
+            .querySelector("#submitSecondPlayerNameBtn")
+            .addEventListener("click", () => {
+
+            // get the submitted name 
+            secondPlayerName = modal.querySelector("#secondPlayerName").value;
+            if (secondPlayerName) {
+                // close the modal and return the second player name
+                console.log("Second Player Name: ", secondPlayerName);
+
+                // replace player 2 with second player name 
+                document.getElementById("player2Name").textContent = "@ " + secondPlayerName;
+                document.getElementById("player2Name").style.display = "block";
+
+                closeModal("secondPlayerNameModal");
+            } else {
+                // show error message if the input is empty and prevent the modal from closing
+                const errorMsg = document.getElementById("local-game-error-msg");
+                errorMsg.textContent = "Please enter the name of the second player.";
+                errorMsg.style.display = "block";
+            }});
+        
+            document.getElementById("startButton").addEventListener("click", startGame);
     }
     // document.getElementById("settingButton").addEventListener("click", openSettings);
     // document.getElementById("applyButton").addEventListener("click", changeSetting);
@@ -332,7 +363,9 @@ function resetGame(direction) {
         drawFlag = false;
 		aiFlag = false;
         console.log("Game Over: SHOULD RETURN SETTINGS MENU");
-        document.getElementById("settingButton").disabled = false;
+        if (document.getElementById("aiButton")) {
+            document.getElementById("aiButton").disabled = false;
+        }
         if (document.getElementById("startButton")) {
             document.getElementById("startButton").disabled = false;
         }
@@ -383,13 +416,6 @@ function drawCapsulePaddle(x, y, width, height, radius, fillColor, borderColor) 
 
 
 
-
-
-
-
-
-
-
 // ----------------- gameai.js ----------------- //
 // look for last ball position every one second. >>trans rules.
 
@@ -404,6 +430,9 @@ function startaiGame() {
     requestAnimationFrame(draw);
     // document.getElementById("startButton").disabled = true;
 
+    // make player 2 name as AI
+    document.getElementById("player2Name").textContent = "@ AI";
+    document.getElementById("player2Name").style.display = "block";
 
     document.getElementById("player1").classList.remove("d-none");
     document.getElementById("player2").classList.remove("d-none");
