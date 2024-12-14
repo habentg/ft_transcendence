@@ -33,7 +33,6 @@ class BaseView(View):
 	
 	def get(self, request, *args, **kwargs):
 		context = self.get_context_data(request, **kwargs)
-		print('//////////////////////////////////// BASE GET ///////////////////////', flush=True)
 		html_content = render_to_string(self.template_name, context)
 		resources = {
 			'title': self.title,
@@ -78,7 +77,6 @@ class HomeView(APIView, BaseView):
 			response.delete_cookie('refresh_token')
 			response.delete_cookie('csrftoken')
 			response.status_code = 302
-			print('Redirecting to landing page', flush=True)
 			return response
 		return super().handle_exception(exception)
 
@@ -100,7 +98,6 @@ class LandingPageView(BaseView):
 	def get(self, request):
 		if request.COOKIES.get('access_token') and request.COOKIES.get('refresh_token'):
 			return HttpResponseRedirect(reverse('home_page'))
-		print('//////////////////////////////////// LANDING GET ///////////////////////', flush=True)
 		return super().get(request)
 
 
@@ -203,7 +200,6 @@ class PaginatedSearch(APIView, BaseView):
 		paginator = SearchPaginator()
 		paginated_players = paginator.paginate_queryset(players, request)
 		serialized_players = PlayerSerializer(paginated_players, many=True).data
-		# print("results : ", paginator.get_paginated_response(serialized_players).data['results'], flush=True)
 		# return paginator.get_paginated_response(serialized_players)
 		context = {
 			'players': paginator.get_paginated_response(serialized_players).data['results'],
@@ -211,7 +207,6 @@ class PaginatedSearch(APIView, BaseView):
 			'total_items': paginator.page.paginator.count,
 		}
 		#! becareful with direct broswer url visit
-		print("search_type : ", search_param, flush=True)
 		return JsonResponse({
 			'html': render_to_string(self.template_name, context),
 			'css': self.css,

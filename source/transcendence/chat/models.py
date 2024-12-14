@@ -14,13 +14,18 @@ class ChatRoom(models.Model):
     
     @property
     def get_participant_one(self):
-        print("participant 1 username: ", self.participants.all()[0].username, flush=True)
-        return self.participants.all()[0]
+        participants = self.participants.all()
+        if len(participants) > 0:
+            return participants[0]
+        return None
 
     @property
     def get_participant_two(self):
-        print("participant 2 username: ", self.participants.all()[1].username, flush=True)
-        return self.participants.all()[1]
+        participants = self.participants.all()
+        if len(participants) > 1:
+            return participants[1]
+        return None
+
 
 """ each message is associated with a chatroom and a sender """
 class Message(models.Model):

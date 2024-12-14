@@ -403,7 +403,6 @@ class PlayerProfileView(APIView, BaseView):
 				'am_i_requested': request.user.received_requests.filter(sender=queried_user).exists(),
 				'is_self': queried_user == request.user,
 			}
-		print(" is_self:", data['is_self'], flush=True)
 		return data
 
 # profile view

@@ -150,30 +150,35 @@ function attachSearchEventListners() {
     - when clicked, it will send a request to the server to accept the friend request
     - the 'false' paramenter is just boolean to indicate that the request is not from the friend profile page
   */
-  const acceptFriendRequestBtn = document.getElementsByClassName("acc_req_btn"); // could be multiple
-  if (acceptFriendRequestBtn) {
-    for (let i = 0; i < acceptFriendRequestBtn.length; i++) {
-      acceptFriendRequestBtn[i].addEventListener("click", () => {
-        const toBeFriend = document
-          .getElementsByClassName("acc_req_btn")[i]
-          .getAttribute("data-username");
-        console.log("accepting friend request from: ", toBeFriend);
-        acceptOrDeclineFriendRequest("accept", toBeFriend, false);
-      });
-    }
-  }
-  const declineFriendRequestBtn = document.getElementsByClassName("rej_req_btn"); // could be multiple
-  if (declineFriendRequestBtn) {
-    for (let i = 0; i < declineFriendRequestBtn.length; i++) {
-      declineFriendRequestBtn[i].addEventListener("click", () => {
-        const toBeFriend = document
-          .getElementsByClassName("rej_req_btn")[i]
-          .getAttribute("data-username");
-        console.log("declineing friend request from: ", toBeFriend);
-        acceptOrDeclineFriendRequest("decline", toBeFriend, false);
-      });
-    }
-  }
+  // const acceptFriendRequestBtn = document.getElementsByClassName("acc_req_btn"); // could be multiple
+  // if (acceptFriendRequestBtn) {
+  //   for (let i = 0; i < acceptFriendRequestBtn.length; i++) {
+  //     acceptFriendRequestBtn[i].addEventListener("click", (event) => {
+  //       event.stopPropagation()
+  //       const toBeFriend = document
+  //         .getElementsByClassName("acc_req_btn")[i]
+  //         .getAttribute("data-username");
+  //       // console.log("accepting friend request from: ", toBeFriend);
+  //       searchedFriendRequestResponce(event, "accept", toBeFriend);
+  //       console.log("R: ", toBeFriend);
+  //     });
+  //   }
+  // }
+  // const declineFriendRequestBtn = document.getElementsByClassName("rej_req_btn"); // could be multiple
+  // if (declineFriendRequestBtn) {
+  //   for (let i = 0; i < declineFriendRequestBtn.length; i++) {
+  //     declineFriendRequestBtn[i].addEventListener("click", (event) => {
+  //       event.stopPropagation();
+  //       const toBeFriend = document
+  //       .getElementsByClassName("rej_req_btn")[i]
+  //       .getAttribute("data-username");
+  //       // console.log("declineing friend request from: ", toBeFriend);
+  //       searchedFriendRequestResponce(event, "decline", toBeFriend);
+  //       // alert(" --- sfa -- asdf -as ")
+  //       console.log("R: ", toBeFriend);
+  //     });
+  //   }
+  // }
   const chatFriendBtn = document.getElementsByClassName("chat_btn"); // could be multiple
   if (chatFriendBtn) {
     for (let i = 0; i < chatFriendBtn.length; i++) {

@@ -9,6 +9,58 @@ from .serializers import *
 from account.models import *
 
 class FriendshipNotificationConsumer(AsyncWebsocketConsumer):
+
+    async def connect(self, **kwargs):
+        token = self.extract_token_from_headers()
+        player = await self.validate_token(token)
+        print("friendship validated - player: ", player)
+        
+        if not player:
+            await self.close()
+            return
+        
+        # Each user is in their own notification group based on their username
+        self.group_name = f"notification_{player.username}"
+        await self.channel_layer.group_add(
+            self.group_name,
+            self.channel_name
+        )
+        await self.accept()
+        await self.send(text_data=json.dumps(
+            {"message": f"Hi, {player.username}! websocke channel is established for ya!!!!!"}
+        ))
+
+    async def disconnect(self, close_code):
+        # Leave the group
+        await self.channel_layer.group_discard(
+            self.group_name,
+            self.channel_name
+        )
+
+    # Custom event Handler for friend request notifications
+    async def friendship_notification(self, event):
+        sender = event['sender']
+        notification_type = event['notification_type']
+        message = ""
+        notification_type = event['notification_type']
+        if event.get('message') is not None:
+            message = event['message']
+        if notification_type == 'friend_request':
+            message = f"{sender} sent you a friend request!"
+        elif notification_type == 'canceled':
+            message = f"{sender} canceled the friend request!"
+        elif notification_type == 'accepted':
+            message = f"{sender} accepted your friend request!"
+        elif notification_type == 'declined' or notification_type == 'unfriended':
+            message = f"{sender} declined/unfriended your friend request!"
+        print("############################## Friendship Notification: ", message, flush=True)
+        await self.send(text_data=json.dumps({
+            'type': notification_type,
+            'sender': sender,
+            'receiver': event['receiver'],
+            'message': message
+        }))
+    
     def extract_token_from_headers(self):
         # WebSocket headers are in bytes, so we need to decode
         headers = dict(self.scope['headers'])
@@ -36,49 +88,7 @@ class FriendshipNotificationConsumer(AsyncWebsocketConsumer):
         except Exception as e:
                 print("Exeption in validating token in FriendshipNotificationConsumer: ", e, flush=True)
                 return None
-
-    async def connect(self, **kwargs):
-        token = self.extract_token_from_headers()
-        player = await self.validate_token(token)
-        print("User: ", player)
         
-        if not player:
-            await self.close()
-            return
-        
-        # Each user is in their own notification group based on their username
-        self.group_name = f"notification_{player.username}"
-        await self.channel_layer.group_add(
-            self.group_name,
-            self.channel_name
-        )
-        await self.accept()
-        await self.send(text_data=json.dumps(
-            {"message": f"Hi, {player.username}! websocke channel is established for ya!!!!!"}
-        ))
-
-    async def disconnect(self, close_code):
-        # Leave the group
-        await self.channel_layer.group_discard(
-            self.group_name,
-            self.channel_name
-        )
-
-    # Custom event Handler for friend request notifications
-    async def friendship_notification(self, event):
-        sender = event['sender']
-        message = ""
-        notification_type = event['notification_type']
-        if message == 'request':
-            message = f"{sender} sent you a friend request!"
-        elif message == 'request':
-            message = f"{sender} accepted your friend request!"
-        await self.send(text_data=json.dumps({
-            'type': notification_type,
-            'sender': sender,
-            'message': message
-        }))
-    
     async def receive(self, text_data):
         data = json.loads(text_data)
         message = data['message']

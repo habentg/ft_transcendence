@@ -10,49 +10,49 @@ function makeFieldEditable(fieldId) {
 
 // updating user info
 async function UpdateUserInfo() {
-    try {
-        const formData = {
-            full_name: document.getElementById('new-fullname').value.trim(),
-            username: document.getElementById('new-username').value.trim(),
-            email: document.getElementById('new-email').value.trim(),
-        };
+  try {
+    const formData = {
+      full_name: document.getElementById('new-fullname').value.trim(),
+      username: document.getElementById('new-username').value.trim(),
+      email: document.getElementById('new-email').value.trim(),
+    };
 
-        // Basic validation
-        if (!formData.full_name || !formData.username || !formData.email) {
-            displayError({ error_msg: "All fields are required" });
-            return;
-        }
-
-        // Email validation
-        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        if (!emailRegex.test(formData.email)) {
-            displayError({ error_msg: "Please enter a valid email address" });
-            return;
-        }
-
-        const response = await fetch('/update_profile/', {
-            method: 'PATCH',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-CSRFToken': await getCSRFToken()
-            },
-            body: JSON.stringify(formData)
-        });
-
-        if (!response.ok) {
-            const errorData = await response.json();
-            displayError(errorData);
-            return;
-        }
-
-        // Success - close modal and update UI
-        const responseData = await response.json();
-        // closeUsernameModal();
-        closeModal('username-modal');
-        await updateUI(`/profile/${responseData.username}`, false);
-    } catch (error) {
-        console.error('Error:', error);
+    // Basic validation
+    if (!formData.full_name || !formData.username || !formData.email) {
+      displayError({ error_msg: "All fields are required" });
+      return;
     }
+
+    // Email validation
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(formData.email)) {
+      displayError({ error_msg: "Please enter a valid email address" });
+      return;
+    }
+
+    const response = await fetch('/update_profile/', {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-CSRFToken': await getCSRFToken()
+      },
+      body: JSON.stringify(formData)
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      displayError(errorData);
+      return;
+    }
+
+    // Success - close modal and update UI
+    const responseData = await response.json();
+    // closeUsernameModal();
+    closeModal('username-modal');
+    await updateUI(`/profile/${responseData.username}`, false);
+  } catch (error) {
+    console.error('Error:', error);
+  }
 }
 
 // Profile Picture Modal
@@ -215,13 +215,18 @@ async function addFriendRequest() {
     console.log("Response status:", response.status); // Log the response status
 
     if (response.status === 201) {
-      await updateUI(`/profile/${toBeFriend}`, false);
+      // await updateUI(`/profile/${toBeFriend}`, false);
       // attachFriendEventListners();
+      const sendFriendRequestBtn = document.getElementById("add_friend_btn");
+      sendFriendRequestBtn.remove();
+
+      const cancelFRBtn = createButton('Cancel Request', ['btn', 'btn-danger', 'friendship_btn'], 'cancel_request_btn', 'cancelFriendRequest()')
+      const profile_info_container = document.getElementsByClassName("profile_info_container")[0];
+      profile_info_container.appendChild(cancelFRBtn);
       return;
     }
 
-    const data = await response.json();
-    console.log(data);
+    throw new Error("Failed to send friend request");
   } catch (error) {
     console.log("addFriendRequest Error: ", error);
   }
@@ -244,14 +249,19 @@ async function cancelFriendRequest() {
     console.log("Response status:", response.status); // Log the response status
 
     if (response.status === 200) {
-      await updateUI(`/profile/${toBeFriend}`, false);
+      // await updateUI(`/profile/${toBeFriend}`, false);
       // attachFriendEventListners();
-      console.log("Cancelled friend request");
+      // console.log("Cancelled friend request");
+      const cancelFRBtn = document.getElementById("cancel_request_btn");
+      cancelFRBtn.remove();
+
+      const sendFriendRequestBtn = createButton('Send Request', ['btn', 'btn-primary', 'friendship_btn'], 'add_friend_btn', 'addFriendRequest()');
+      const profile_info_container = document.getElementsByClassName("profile_info_container")[0];
+      profile_info_container.appendChild(sendFriendRequestBtn);
       return;
     }
 
-    const data = await response.json();
-    console.log("WHAT: ", data);
+    throw new Error("Failed to cancel friend request");
   } catch (error) {
     console.log("cancelFriendRequest Error: ", error);
   }
@@ -260,7 +270,6 @@ async function cancelFriendRequest() {
 async function acceptOrDeclineFriendRequest(
   action,
   toBeFriend,
-  direct_from_profile = true
 ) {
   console.log("acceptOrDeclineFriendRequest");
 
@@ -275,35 +284,31 @@ async function acceptOrDeclineFriendRequest(
       }),
     });
 
-    console.log("Response status:", response.status); // Log the response status
-
     if (response.status === 200) {
-      console.log(" ---- Friend request fulfilled ---- ");
-      if (direct_from_profile) {
-        await updateUI(`/profile/${toBeFriend}`, false);
-        // attachFriendEventListners(); // reattach event listeners after updating the UI
-      } else {
-        console.log(
-          " friend request " + action + "ed from the friend requests list"
-        );
-        let acc_req_btn = document.getElementsByClassName("acc_req_btn");
-        let rej_req_btn = document.getElementsByClassName("rej_req_btn");
-        acc_req_btn[0].style.display = "none";
-        rej_req_btn[0].style.display = "none";
-        let fullfiled_para = document.getElementsByClassName("fullfiled_para");
-        fullfiled_para.style.display = "block";
+      const accept_request_btn = document.getElementById("accept_request_btn");
+      const decline_request_btn = document.getElementById("decline_request_btn");
 
-        // friend_requests_response_btns.removeChild(friend_requests_response_btns.childNodes[0]);
-        // friend_requests_response_btns.removeChild(friend_requests_response_btns.childNodes[1]);
-        // friend_requests_response_btns.appendChild(document.createTextNode("Friend request " + action + "ed"));
+      accept_request_btn.remove();
+      decline_request_btn.remove();
+      if (action === 'accept') {
+        const unfriendBtn = createButton('Unfriend', ['btn', 'btn-danger', 'friendship_btn', 'me-1', 'mb-2'], 'unfriend_btn', 'removeFriend()');
+        const chatBtn = createButton('Chat', ['btn', 'btn-dark', 'friendship_btn', 'mb-2'], 'chat_btn', `create_chatroom('${toBeFriend}')`);
+
+        const profile_info_container = document.getElementsByClassName("profile_info_container")[0];
+        profile_info_container.appendChild(unfriendBtn);
+        profile_info_container.appendChild(chatBtn);
+      }
+      else {
+        const sendFriendRequestBtn = createButton('Send Request', ['btn', 'btn-primary', 'friendship_btn'], 'add_friend_btn', 'addFriendRequest()');
+        const profile_info_container = document.getElementsByClassName("profile_info_container")[0];
+        profile_info_container.appendChild(sendFriendRequestBtn);
       }
       return;
     }
-
-    const data = await response.json();
-    console.log(data);
+    throw new Error("Failed to accept/decline friend request");
   } catch (error) {
-    console.log("acceptFriendRequest Error: ", error);
+    console.log("Error: ", error);
+    // alert("Failed to accept/decline friend request");
   }
 }
 
@@ -323,16 +328,20 @@ async function removeFriend() {
     console.log("Response status:", response.status); // Log the response status
 
     if (response.status === 200) {
-      console.log(" ---- removed a friend  ---- ");
-      await updateUI(`/profile/${toBeFriend}`, false);
-      // attachFriendEventListners();
+      const unfriendBtn = document.getElementById("unfriend_btn");
+      const chatBtn = document.getElementById("chat_btn");
+      unfriendBtn.remove();
+      chatBtn.remove();
+
+      const sendFriendRequestBtn = createButton('Send Request', ['btn', 'btn-primary', 'friendship_btn'], 'add_friend_btn', 'addFriendRequest()');
+      const profile_info_container = document.getElementsByClassName("profile_info_container")[0];
+      profile_info_container.appendChild(sendFriendRequestBtn);
       return;
     }
 
-    const data = await response.json();
-    console.log(data);
+    throw new Error("Failed to remove friend");
   } catch (error) {
-    console.log("removeFriend Error: ", error);
+    console.log("Error: ", error);
   }
 }
 
@@ -354,11 +363,8 @@ function initProfilePage() {
 }
 
 /* sending request to create chat room between current user and a friend */
-async function create_chatroom() {
-  const friend_username = document
-    .getElementsByClassName("chat_btn")[0]
-    .getAttribute("data-username");
-  console.log("Creating chatroom with ", friend_username);
+async function create_chatroom(friend_username) {
+  console.log("Creating chatroom with {", friend_username, "}");
   try {
     const response = await fetch(`/chat/`, {
       method: "POST",
@@ -366,16 +372,16 @@ async function create_chatroom() {
         "Content-Type": "application/json",
         "X-CSRFToken": await getCSRFToken(),
       },
-      body: JSON.stringify({'recipient': friend_username}),
+      body: JSON.stringify({ 'recipient': friend_username }),
     });
 
     if (response.ok) {
-      console.log("Chatroom created successfully - redirecting to the chat page");
+      const responseData = await response.json();
+      console.log("Chatroom created: ", responseData);
       await updateUI(`/chat`, false);
-      return ;
     } else {
-      console.error("Failed to create chatroom");
-      throw new Error("Chatroom creation failed");
+      const error = await response.json();
+      throw new Error(error.error);
     }
 
   } catch (error) {
