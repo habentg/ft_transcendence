@@ -13,8 +13,6 @@ from rest_framework.exceptions import AuthenticationFailed
 from account.auth_middleware import JWTCookieAuthentication
 from django.template.loader import render_to_string
 from rest_framework.response import Response
-from channels.layers import get_channel_layer
-from asgiref.sync import async_to_sync
 
 """ chat message related enpoints """
 class chatMessagesView(APIView):
