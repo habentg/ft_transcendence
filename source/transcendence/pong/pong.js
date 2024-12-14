@@ -198,7 +198,7 @@ function draw() {
     ball.x += ball.velocityX;
     ball.y += ball.velocityY;
 
-    // Check ball collision with walls
+    // Check ball collision with walls(top and bottom wall)
     if (ball.y - ballRadius <= 0 || ball.y + ballRadius >= boardHeight) ball.velocityY *= -1;
 
     // Check ball collision with players
@@ -208,12 +208,7 @@ function draw() {
 	// if (ballCollision(ball, player2, "right"));
 	ballCollision(ball, player1, "left");
 	ballCollision(ball, player2, "right");
-    // Draw ball as a circle
-    context.beginPath();
-    context.arc(ball.x, ball.y, ballRadius, 0, Math.PI * 2);
-    context.fillStyle = '#b02c98';
-    context.fill();
-    context.closePath();
+    drawBall();    
 
     // Check for goals
     if (ball.x - ballRadius < 0) {
@@ -229,6 +224,14 @@ function draw() {
     context.font = "45px sans-serif";
     context.fillText(player1Score, boardWidth / 5, 45);
     context.fillText(player2Score, (boardWidth * 4) / 5, 45);
+}
+
+function drawBall() {
+    context.beginPath();
+    context.arc(ball.x, ball.y, ballRadius, 0, Math.PI * 2);
+    context.fillStyle = '#b02c98';
+    context.fill();
+    context.closePath();
 }
 
 // function move(e) {
