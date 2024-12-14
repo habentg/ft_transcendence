@@ -1,33 +1,8 @@
-//  ----------- game.js ----------- //
 
 /*
-    todos
-    Settings that could be adjusted by the player
-
-    Game customization module { 
-        Max Score for the game;
-        Paddle speed when adjusted should be the same as the other opponent except when playing with an AI;
-        An option for slow serves. (if toggled on it should slow down the ball, decreasing the default speed of the ball);
-        An option for designing the board, maybe gives a list of actual themes that we could create for paddle designs, board designs,  etc.;
-        Ball radius (provide a minimum and maximum amount);
-        Overtime (happens whenever both players are 1 goal away from the score. players need to score 2 consecutive goals)
-        
-        maps/modes
-        Portal Map = map that would have random portals that could teleport the ball;
-        Bounce Map = map that will make players have a skill that could make the ball bounce back when near the goal when timed correctly 
-    }
-
-    Game AI module {
-        Explore alternative algorithms and techniques for AI. (AVOID USING A* ALGORITHM)
-        
-        must simulate keyboard input for the AI. The ai can only refresh its view of the game once per second.
-        store ball location, and speed every one second, and depending on that values we will be moving the paddle.
-        ballX
-        ballY
-        ballVelocityX
-        ballVelocityY
-        
-    }
+   todos
+	grab 2 string name of player 1 and 2. store game results in a variable
+	game results should be who won and scores.
 */
 
 //Game settings
@@ -35,8 +10,11 @@ let paddleSpeed = 6;
 let ballSpeed = 4.5;
 let maxScore = 5;
 let slowServe = false;
+//this flags would determine which game mode we are playing
 let aiFlag = false;
 let parryFlag = false;
+let tournamentFlag = false;
+let versusFlag = false;
 
 // Board setup
 let board;
@@ -52,6 +30,7 @@ let activeKeys = {};
 const cooldownTime = 3000; // cooldown for parry power up
 
 let player1 = {
+	playerName: "",
   x: 10,
   y: boardHeight / 2 - playerHeight / 2,
   width: playerWidth,
@@ -60,9 +39,11 @@ let player1 = {
   cooldownFlag: false,
   parryKey: "KeyA",
   parryCooldown: 0,
+  score: 0,
 };
 
 let player2 = {
+	playerName: "",
   x: boardWidth - 10 - playerWidth,
   y: boardHeight / 2 - playerHeight / 2,
   width: playerWidth,
@@ -71,6 +52,7 @@ let player2 = {
   cooldownFlag: false,
   parryKey: "Numpad0",
   parryCooldown: 0,
+  score: 0,
 };
 
 // Ball setup
@@ -83,10 +65,6 @@ let ball = {
   velocityY: defballSpeed,
 };
 
-let player1Score = 0;
-let player2Score = 0;
-let player1LastKey = null;
-let player2LastKey = null;
 let drawFlag = false;
 
 window.onload = function () {
@@ -95,28 +73,26 @@ window.onload = function () {
   board.width = boardWidth;
   context = board.getContext("2d");
 
+  player1.playerName = document.getElementById("player1Name").textContent;
+
   // requestAnimationFrame(draw);
   if (document.getElementById("startButton")) {
         // get Player 2 name and display it from secondPlayerNameModal modal
         const modal = secondPlayerNameModal();
-        let secondPlayerName = "";
-
     document.body.appendChild(modal);
-
-
     // Event Listeners
     modal
       .querySelector("#submitSecondPlayerNameBtn")
       .addEventListener("click", () => {
         // get the submitted name
-        secondPlayerName = modal.querySelector("#secondPlayerName").value;
-        if (secondPlayerName) {
+        player2.playerName = modal.querySelector("#secondPlayerName").value;
+        if (player2.playerName) {
           // close the modal and return the second player name
-          console.log("Second Player Name: ", secondPlayerName);
+          console.log("Second Player Name: ", player2.playerName);
 
           // replace player 2 with second player name
           document.getElementById("player2Name").textContent =
-            "@ " + secondPlayerName;
+            "@ " + player2.playerName;
           document.getElementById("player2Name").style.display = "block";
 
           closeModal("secondPlayerNameModal");
@@ -215,8 +191,8 @@ function changeSetting() {
 }
 
 function startGame() {
-  player1Score = 0;
-  player2Score = 0;
+  player1.score = 0;
+  player2.score = 0;
   player1LastKey = null;
   player2LastKey = null;
   drawFlag = true;
@@ -331,18 +307,33 @@ function draw() {
 
   // Check for goals
   if (ball.x - ballRadius < 0) {
-    player2Score++;
+    player2.score++;
     resetGame(1);
   } else if (ball.x + ballRadius > boardWidth) {
-    player1Score++;
+    player1.score++;
     resetGame(-1);
   }
 
   // Display scores
   context.fillStyle = "#ffffff";
   context.font = "45px sans-serif";
-  context.fillText(player1Score, boardWidth / 5, 45);
-  context.fillText(player2Score, (boardWidth * 4) / 5, 45);
+  context.fillText(player1.score, boardWidth / 5, 45);
+  context.fillText(player2.score, (boardWidth * 4) / 5, 45);
+
+  if (isGameOver(player1, player2)) {
+    drawFlag = false;
+    aiFlag = false;
+        console.log("Game Over: SHOULD RETURN SETTINGS MENU");
+        if (document.getElementById("aiButton")) {
+            document.getElementById("aiButton").disabled = false;
+        }
+        if (document.getElementById("startButton")) {
+            document.getElementById("startButton").disabled = false;
+        }
+
+		//This is the part where we could collect everything for the match history
+		// players names, player scores aside from game mode. maybe add another function throw players and return it from there.
+    }
 }
 
 function drawBall() {
@@ -542,69 +533,6 @@ function ballCollision(ball, player, position) {
   return isCollision;
 }
 
-// function ballCollision(ball, player, position) {
-//     let isCollision =
-//         ball.x - ballRadius < player.x + player.width &&   // Right side of the ball is past the left side of the player
-//         ball.x + ballRadius > player.x &&                 // Left side of the ball is past the right side of the player
-//         ball.y + ballRadius > player.y &&                 // Bottom side of the ball is past the top of the player
-//         ball.y - ballRadius < player.y + player.height;   // Top side of the ball is past the bottom of the player
-
-//     if (isCollision) {
-//         // Reverse the horizontal direction based on which side of the paddle the ball hits
-
-// 		let hitPosition = (ball.y - player.y) / player.height; // Normalize hit position between 0 and 1
-// 		let section = Math.floor(hitPosition * 4); // Section index (0, 1, 2, 3)
-
-// 		if (position === "left") {
-//             // Ball hit the left player's paddle, reverse the horizontal velocity
-//             ball.velocityX = Math.abs(ball.velocityX);  // Ensure velocityX is positive (moving right)
-// 			switch (section) {
-// 				case 0: // Top section (first 1/4th of the paddle)
-// 					ball.velocityY = 2.5; // Strong upwards angle
-// 					break;
-// 				case 1: // Upper middle section (second 1/4th of the paddle)
-// 					ball.velocityY = -1.5; // Slightly upwards
-// 					break;
-// 				case 2: // Lower middle section (third 1/4th of the paddle)
-// 					ball.velocityY = 1.5; // Slightly downwards
-// 					break;
-// 				case 3: // Bottom section (last 1/4th of the paddle)
-// 					ball.velocityY = -2.5; // Strong downward angle
-// 					break;
-// 			}
-//         } else if (position === "right") {
-//             // Ball hit the right player's paddle, reverse the horizontal velocity
-//             ball.velocityX = -Math.abs(ball.velocityX); // Ensure velocityX is negative (moving left)
-// 			switch (section) {
-// 				case 0: // Top section (first 1/4th of the paddle)
-// 					ball.velocityY = -2.5; // Strong upwards angle
-// 					break;
-// 				case 1: // Upper middle section (second 1/4th of the paddle)
-// 					ball.velocityY = -1.5; // Slightly upwards
-// 					break;
-// 				case 2: // Lower middle section (third 1/4th of the paddle)
-// 					ball.velocityY = 1.5; // Slightly downwards
-// 					break;
-// 				case 3: // Bottom section (last 1/4th of the paddle)
-// 					ball.velocityY = 2.5; // Strong downward angle
-// 					break;
-// 			}
-//         }
-//         // Optional: Increase the ball's speed based on where it hits the paddle
-//         if (section === 0 || section === 3) {
-//             ball.velocityX *= 1.2; // Slightly increase the horizontal speed for top/bottom hits (more challenge)
-//         }
-//         // Resolve collision by moving the ball just outside the paddle (avoid sticking or going through the paddle)
-//         if (position === "left") {
-//             // Ball hit the left player's paddle, so move it just to the right of the paddle
-//             ball.x = player.x + player.width + ballRadius;
-//         } else if (position === "right") {
-//             // Ball hit the right player's paddle, so move it just to the left of the paddle
-//             ball.x = player.x - ballRadius;
-//         }
-//     }
-// }
-
 function resetGame(direction) {
   //bring back ball to the middle
   ball.x = boardWidth / 2;
@@ -627,25 +555,10 @@ function resetGame(direction) {
     ball.velocityY = 2 * (Math.random() > 0.5 ? 1 : -1);
   }
 
-  // drawFlag = !isGameOver();
-  if (isGameOver()) {
-    drawFlag = false;
-    aiFlag = false;
-        console.log("Game Over: SHOULD RETURN SETTINGS MENU");
-        if (document.getElementById("aiButton")) {
-            document.getElementById("aiButton").disabled = false;
-        }
-        if (document.getElementById("startButton")) {
-            document.getElementById("startButton").disabled = false;
-        }
-        if (document.getElementById("aiButton")) {
-            document.getElementById("aiButton").disabled = false;
-        }
-    }
 }
 
-function isGameOver() {
-  if (player1Score >= maxScore || player2Score >= maxScore) {
+function isGameOver(player1, player2) {
+  if (player1.score >= maxScore || player2.score >= maxScore) {
     displayGameOver();
     return true;
   }
@@ -653,12 +566,12 @@ function isGameOver() {
 }
 
 // this display sucks need a better one
-function displayGameOver() {
+function displayGameOver(player1, player2) {
   context.clearRect(0, 0, board.width, board.height);
 
   context.font = "50px sans-serif";
   context.fillStyle = "red";
-  let winner = player1Score >= maxScore ? "Player 1" : "Player 2";
+  let winner = player1.score >= maxScore ? player1.playerName : player2.playerName;
   context.fillText(`${winner} Wins!`, boardWidth / 4, boardHeight / 2);
 
   context.font = "30px sans-serif";
@@ -699,8 +612,8 @@ let lastballPosition = { x: 0, y: 0 };
 
 function startaiGame() {
   aiFlag = true; // Enable AI
-  player1Score = 0;
-  player2Score = 0;
+  player1.score = 0;
+  player2.score = 0;
   drawFlag = true;
   setInterval(aiView, 50);
   setInterval(aiLogic, 50);
