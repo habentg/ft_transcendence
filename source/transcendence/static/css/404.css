@@ -1,0 +1,219 @@
+.error-page {
+    min-height: 100vh;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    color: white;
+}
+
+.background-image {
+    background: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), url('/static/images/background2.jpg');
+    background-size: cover;
+    background-position: center;
+    width: 100%;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+}
+
+.error-content {
+    padding: 2rem;
+    background: linear-gradient(140deg,
+        rgba(255, 255, 255, 0.12) -1.82%,
+        rgba(255, 255, 255, 0.04) 68.19%,
+        rgba(255, 255, 255, 0.03) 80.14%);
+    backdrop-filter: blur(10px);
+    border-radius: 20px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    animation: fadeIn 0.5s ease-out;
+}
+
+/* note Effect */
+.note-container {
+    position: relative;
+    /* margin-bottom: 2rem; */
+}
+
+.note {
+    font-size: 7rem;
+    margin: 0rem;
+    font-weight: bold;
+    position: relative;
+    text-shadow: 0.05em 0 0 #00fffc, -0.03em -0.04em 0 #fc00ff;
+    color: #84ddfc;
+}
+
+.note span {
+    position: absolute;
+    top: 0;
+    left: 0;
+}
+
+/* Game Element */
+.game-element {
+    position: relative;
+    height: 100px;
+    margin: 2rem 0;
+    /* padding:2rem 2rem; */
+    /* overflow: hidden; */
+}
+
+.paddle {
+    position: absolute;
+    width: 10px;
+    height: 60px;
+    background: #84ddfc;
+    border-radius: 5px;
+}
+
+.paddle.left {
+    left: 23%;
+    animation: paddleMove 2s infinite;
+}
+
+.paddle.right {
+    right: 23%;
+    animation: paddleMove 2s infinite reverse;
+}
+
+.ball {
+    position: absolute;
+    width: 15px;
+    height: 15px;
+    background: #b02c98;
+    border-radius: 50%;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    animation: ballMove 3s infinite;
+}
+
+/* Error Message Styling */
+.error-message {
+    margin: 0rem;   
+    font-size: 2rem;
+    color: #84ddfc;
+    margin: 1rem 0px 0px 0px;
+}
+
+.error-description {
+    color: rgba(255, 255, 255, 0.8);
+    font-size: 1.2rem;
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+/* Button Styling */
+.btn-primary {
+    background: linear-gradient(45deg, #84ddfc, #b02c98);
+    border: none;
+    padding: 1rem 2rem;
+    font-size: 1.1rem;
+    transition: all 0.3s ease;
+}
+
+.btn-primary:hover {
+    transform: translateY(-2px);
+    background: linear-gradient(45deg, #b02c98, #84ddfc);
+    box-shadow: 0 4px 15px rgba(132, 221, 252, 0.3);
+}
+
+/* Animations */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes paddleMove {
+    0%, 100% { transform: translateY(-20px); }
+    50% { transform: translateY(20px); }
+}
+
+@keyframes ballMove {
+    0%, 100% { 
+        left: 25%;
+        transform: translate(-50%, -50%) scale(1);
+    }
+    50% { 
+        left: 75%;
+        transform: translate(-50%, -50%) scale(1);
+    }
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .note {
+        font-size: 6rem;
+    }
+
+    .error-message {
+        font-size: 1.5rem;
+    }
+
+    .error-description {
+        font-size: 1rem;
+    }
+
+    .game-element {
+        height: 80px;
+    }
+
+    .paddle {
+        height: 40px;
+    }
+
+    .paddle.left {
+        left: 20%;
+    }
+
+    .paddle.right {
+        right: 20%;
+    }
+
+    .ball {
+        width: 12px;
+        height: 12px;
+    }
+}
+
+@media (max-width: 576px) {
+    .note {
+        font-size: 4rem;
+    }
+
+    .error-message {
+        font-size: 1.2rem;
+    }
+
+    .game-element {
+        height: 60px;
+    }
+
+    .paddle {
+        height: 30px;
+    }
+
+    .paddle.left {
+        left: 20%;
+    }
+
+    .paddle.right {
+        right: 20%;
+    }
+
+    .ball {
+        width: 10px;
+        height: 10px;
+    }
+
+    .btn-primary {
+        padding: 0.75rem 1.5rem;
+        font-size: 1rem;
+    }
+}

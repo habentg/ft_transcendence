@@ -13,10 +13,8 @@ function createButton(text, class_list, id, onclick) {
 /* ---------------------------------------------- websocket for notifications ---------------------------------------------- */
 function handleFriendRequestUnfriend(data) {
   const unfriendBtn = document.getElementById("unfriend_btn");
-  if (!unfriendBtn) {
-    alert("unfriendBtn not found");
+  if (!unfriendBtn)
     return;
-  }
   const chatBtn = document.getElementById("chat_btn");
 
   unfriendBtn.remove();
@@ -29,10 +27,8 @@ function handleFriendRequestUnfriend(data) {
 
 function handleFriendRequestRecieved(data) {
   const sendFriendRequestBtn = document.getElementById("add_friend_btn");
-  if (!sendFriendRequestBtn) {
-    alert("sendFriendRequestBtn not found");
+  if (!sendFriendRequestBtn)
     return;
-  }
   sendFriendRequestBtn.remove();
   const acceptButton = createButton('Accept', ['btn', 'btn-success', 'friendship_btn', 'me-1', 'mb-2'], 'accept_request_btn', `acceptOrDeclineFriendRequest('accept', '${data.sender}')`);
   const declineButton = createButton('Decline', ['btn', 'btn-danger', 'friendship_btn', 'mb-2'], 'decline_request_btn', `acceptOrDeclineFriendRequest('decline', '${data.sender}')`);
@@ -43,10 +39,8 @@ function handleFriendRequestRecieved(data) {
 
 function handleFriendRequestAccept(data) {
   const cancelFriendRequestBtn = document.getElementById("cancel_request_btn");
-  if (!cancelFriendRequestBtn) {
-    alert("cancelFriendRequestBtn not found");
+  if (!cancelFriendRequestBtn)
     return;
-  }
   cancelFriendRequestBtn.remove();
 
   const unfriendBtn = createButton('Unfriend', ['btn', 'btn-danger', 'friendship_btn', 'me-1', 'mb-2'], 'unfriend_btn', 'removeFriend()');
@@ -59,10 +53,8 @@ function handleFriendRequestAccept(data) {
 
 function handleFriendRequestDecline(data) {
   const cancelFriendRequestBtn = document.getElementById("cancel_request_btn");
-  if (!cancelFriendRequestBtn) {
-    alert("cancelFriendRequestBtn not found");
+  if (!cancelFriendRequestBtn)
     return;
-  }
   cancelFriendRequestBtn.remove();
   const sendFriendRequestBtn = createButton('Send Request', ['btn', 'btn-primary', 'friendship_btn'], 'add_friend_btn', 'addFriendRequest()');
   const profile_info_container = document.getElementsByClassName("profile_info_container")[0];
@@ -71,10 +63,8 @@ function handleFriendRequestDecline(data) {
 
 function handleCancelFriendRequest(data) {
   const accept_request_btn = document.getElementById("accept_request_btn");
-  if (!accept_request_btn) {
-    alert("accept_request_btn not found");
+  if (!accept_request_btn)
     return;
-  }
   const decline_request_btn = document.getElementById("decline_request_btn");
 
   accept_request_btn.remove();
@@ -121,23 +111,24 @@ function initNotificationWebsocket() {
     else if (data.type === "unfriended") {
       handleFriendRequestUnfriend(data);
     }
+    else {
+      console.log("unknown notification type:", data.type);
+    }
   }
 }
 
 
 /* ---------------------------------------------- websocket stuff for chat ---------------------------------------------- */
 function addMessageToChat(data) {
-  const chatPage = document.getElementsByClassName("chatPage");
-  if (!chatPage) {
-    alert("chatMessages not found -- will notify the user");
+  const chatMessages = document.getElementById("chatMessages");
+  if (!chatMessages) {
+    console.log("chatMessages not found");
     return;
   }
-  console.log("chatPage found while I am at: ", window.location.href);
-  const chatMessages = document.getElementById("chatMessages");
   const message = document.createElement("div");
+  message.className = "chat-message";
   // if we have active chat going on ... just append the message
   const activeChatRoom = document.getElementsByClassName("active")[0];
-  message.className = "chat-message";
   if (activeChatRoom) {
     const no_msg_found = document.getElementById("no_msg_found");
     if (no_msg_found) {
@@ -157,6 +148,7 @@ function addMessageToChat(data) {
   // if not notify the user .... put a red dot or something on the respective chatroom
   // when he clicks on it, we will fetch the messages from the server ... and remove the red dot
   chatMessages.appendChild(message);
+  chatMessages.scrollTop = chatMessages.scrollHeight;
 }
 
 function deleteChatRoom(data) {
@@ -195,11 +187,10 @@ function initChatWebsocket() {
 
   window.ws_chat.onmessage = (e) => {
     const data = JSON.parse(e.data);
-    if (data.type === "private_message") {
-      console.log("private message received:", data.message, "from:", data.sender);
+    if (data.type === "chat_message") {
       addMessageToChat(data);
     }
-    else if (data.type === "private_message_error") {
+    else if (data.type === "chat_message_error") {
       console.log("private message ERROR", data);
       alert("could not send the message");
     }

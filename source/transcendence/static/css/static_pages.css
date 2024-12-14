@@ -1,0 +1,151 @@
+/* Common styles for static pages */
+.about-page,
+.privacy-page,
+.terms-page {
+    min-height: 100%;
+    width: 100%;
+}
+
+.background-image {
+    background-image: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), url('/static/images/background2.jpg');
+    background-size: cover;
+    background-position: center;
+    min-height: 100%;
+}
+
+.content {
+    background: linear-gradient(140deg,
+        rgba(255, 255, 255, 0.12) -1.82%,
+        rgba(255, 255, 255, 0.04) 68.19%,
+        rgba(255, 255, 255, 0.03) 80.14%);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 15px;
+    color: white;
+    animation: fadeIn 0.5s ease-out;
+}
+
+/* Headings */
+h1 {
+    color: #84ddfc;
+    font-size: 2.5rem;
+    margin-bottom: 1rem;
+}
+
+h2 {
+    color: #84ddfc;
+    font-size: 1.8rem;
+    margin-bottom: 1rem;
+}
+
+h3 {
+    color: #84ddfc;
+    font-size: 1.4rem;
+}
+
+h4 {
+    color: #84ddfc;
+    font-size: 1.2rem;
+}
+
+/* Team Member Cards */
+.team-member {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 10px;
+    transition: all 0.3s ease;
+}
+
+.text-role {
+    color: #b02c98;
+}
+
+.team-member:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 4px 15px rgba(132, 221, 252, 0.3);
+}
+
+/* Feature Cards */
+.feature-card {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 10px;
+    transition: all 0.3s ease;
+    text-align: center;
+}
+
+.feature-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 4px 15px rgba(132, 221, 252, 0.3);
+}
+
+.feature-card i {
+    font-size: 2rem;
+    color: #84ddfc;
+}
+
+/* List Styles */
+.list-items ul {
+    list-style: none;
+    padding-left: 0;
+}
+
+.list-items ul li {
+    margin-bottom: 0.8rem;
+    padding-left: 1.5rem;
+    position: relative;
+}
+
+.privacy-page ul li::before,
+.terms-page ul li::before {
+    content: "•";
+    color: #84ddfc;
+    position: absolute;
+    left: 0;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    h1 {
+        font-size: 2rem;
+    }
+
+    h2 {
+        font-size: 1.5rem;
+    }
+
+    h3 {
+        font-size: 1.2rem;
+    }
+
+    .content {
+        padding: 1.5rem !important;
+        margin: 1rem;
+    }
+}
+
+@media (max-width: 576px) {
+    h1 {
+        font-size: 1.8rem;
+    }
+
+    h2 {
+        font-size: 1.3rem;
+    }
+
+    .content {
+        padding: 1rem !important;
+    }
+}
+
+/* Animation */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+} 

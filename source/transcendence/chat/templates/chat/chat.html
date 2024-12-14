@@ -15,14 +15,12 @@
               <!-- Friends will be loaded dynamically -->
               {% for chatroom in chatrooms %}
                 {% if chatroom.get_participant_one.username == user.username %}
-                  <p>{{ chatroom.get_participant_one.username }} == {{ user.username }}. So, {{ chatroom.get_participant_two.username }} </p>
-                  <li id="{{ chatroom.name }}" class="friend-item d-flex align-items-center" data-recipent="{{ chatroom.get_participant_two.full_name }}" onclick="openChat('{{ chatroom.name }}')">
+                  <li id="{{ chatroom.get_participant_two.username }}" class="friend-item d-flex align-items-center" data-recipent="{{ chatroom.get_participant_two.full_name }}" onclick="openChat('{{ chatroom.get_participant_two.username }}')">
                     <i class="fas fa-user me-2 profile-icon"></i>
                     <span class="mb-0 username_span">{{ chatroom.get_participant_two.username }}</span>
                   </li>
                   {% else %}
-                  <p>{{ chatroom.get_participant_one.username }} !== {{ user.username }}</p>
-                  <li id="{{ chatroom.name }}" class="friend-item d-flex align-items-center" data-recipent="{{ chatroom.get_participant_one.full_name }}" onclick="openChat('{{ chatroom.name }}')">
+                  <li id="{{ chatroom.get_participant_one.username }}" class="friend-item d-flex align-items-center" data-recipent="{{ chatroom.get_participant_one.full_name }}" onclick="openChat('{{ chatroom.get_participant_one.username }}')">
                     <i class="fas fa-user me-2 profile-icon"></i>
                     <span class="mb-0">{{ chatroom.get_participant_one.username }}</span>
                   </li>

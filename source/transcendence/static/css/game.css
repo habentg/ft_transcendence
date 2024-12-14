@@ -1,0 +1,198 @@
+/* .gamePage .background-image  {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background-image: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), url('/static/images/background2.jpg');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    
+}
+
+
+#board {
+    background-color: black;
+    border-top: 3px solid skyblue;
+    border-bottom: 3px solid skyblue;
+    border-right: 3px solid skyblue;
+    border-left: 3px solid skyblue;
+    border-radius: 15px;
+}
+
+.menu {
+    display: none;
+    position: absolute;
+    top: 20%;
+    left: 30%;
+    width: 40%;
+    padding: 20px;
+    background-color: #222;
+    color: white;
+    border: 2px solid #555;
+    border-radius: 10px;
+    z-index: 10;
+} */
+
+.body,
+html {
+    overflow: hidden;
+}
+
+.gamePage .background-image {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-image: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), url('/static/images/background2.jpg');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    padding: 1.5rem 0;
+
+    min-height: fit-content;
+    height: 100vh;
+}
+/* 
+#aiButton, #startButton, #settingButton {
+    padding: 10px 20px;
+    font-size: 1.2rem;
+    border-radius: 8px;
+
+    background-color: linear;
+} */
+
+
+#board {
+    background-color: black;
+    border: 3px solid skyblue;
+    border-radius: 15px;
+    display: block;
+    margin: 0 auto;
+}
+
+.playerNames {
+    color: #84ddfc;
+}
+
+.menu {
+    display: none;
+    position: relative;
+    width: 100%;
+    max-width: 400px;
+    padding: 20px;
+    background-color: #222;
+    border-radius: 10px;
+    color: white;
+}
+
+.menu h2 {
+    font-size: 1.5rem;
+    color: #f8f9fa;
+}
+
+.menu label {
+    font-weight: bold;
+}
+
+.menu input {
+    background-color: #333;
+    color: #f8f9fa;
+    border: 1px solid #555;
+}
+
+.menu button {
+    margin-top: 10px;
+}
+
+#controls button {
+    padding: 10px 20px;
+    font-size: 1.2rem;
+    border-radius: 8px;
+}
+
+.modal {
+    backdrop-filter: blur(8px);
+}
+
+.modal-content {
+    background: linear-gradient(140deg,
+            rgba(255, 255, 255, 0.12) -1.82%,
+            rgba(255, 255, 255, 0.04) 68.19%,
+            rgba(255, 255, 255, 0.03) 80.14%);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+}
+
+.modal-header,
+.modal-footer {
+    border-color: rgba(255, 255, 255, 0.1);
+}
+
+.modal-title {
+    color: #84ddfc;
+}
+
+
+.modal-content .form-control::placeholder {
+    color: rgba(255, 255, 255, 0.6) !important;
+}
+
+/* hide footer when in game to avoid scrolling */
+footer {
+    display: none;
+}
+
+#warningMessage {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    z-index: 1000;
+}
+
+
+.btn-primary {
+    background: linear-gradient(45deg, #84ddfc, #b02c98);
+    border: none;
+    transition: all 0.3s ease;
+}
+
+.btn-secondary {
+    border: none;
+    transition: all 0.3s ease;
+}
+
+.btn-secondary:hover {
+    background: rgba(255, 255, 255, 0.1);
+    color: white;
+    transform: translateY(-2px);
+}
+
+
+.btn-primary:hover {
+    transform: translateY(-2px);
+    background: linear-gradient(45deg, #b02c98, #84ddfc);
+    box-shadow: 0 4px 15px rgba(132, 221, 252, 0.3);
+}
+
+.btn-outline-light {
+    border: 2px solid #84ddfc;
+    color: #84ddfc;
+}
+
+.btn-outline-light:hover {
+    background: #84ddfc;
+    color: #000;
+    transform: translateY(-2px);
+}
+
+.btn-light {
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: white;
+}
+
+.btn-light:hover {
+    background: rgba(255, 255, 255, 0.2);
+    color: white;
+}

@@ -30,88 +30,45 @@ class chatConsumer(AsyncWebsocketConsumer):
     
     async def receive(self, text_data):
         data = json.loads(text_data)
-        room_name = data.get('room')
-        room_group_name = f"chat_group_{room_name}"
-        if data['type'] == 'delete_chatroom':
-            success = await self.delete_chatroom(room_name)
-            if success:
-                await self.channel_layer.group_send(
-                    room_group_name,
-                    {
-                        'type': 'room_deleted_notification',
-                        'message': 'Chatroom has been deleted',
-                        'room': room_name
-                    }
-                )
-                await self.channel_layer.group_discard(
-                    room_group_name,
-                    self.channel_name
-                )
-            else:
-                await self.send(text_data=json.dumps({
-                    'type': 'room_deleted_notification_error',
-                    'message': 'Chatroom could not be deleted',
-                }))
-        elif data['type'] == 'private_message':
+        recipient_username = data['recipient']
+        # room_group_name = f"chat_group_{room_name}"
+
+        if data['type'] == 'private_message':
             message = data.get('message')
             try:
-                priv_room, created = await database_sync_to_async(ChatRoom.objects.get_or_create)(name=room_name)
-                print("Private room: ", priv_room, " no of participants", await database_sync_to_async(priv_room.participants.count)(), flush=True)
-                if created:
-                    print("Created new chatroom: ", priv_room, " no of participants", await database_sync_to_async(priv_room.participants.count)(), flush=True)
-                await self.channel_layer.group_add(
-                    room_group_name,
-                    self.channel_name
-                )
+                recipient = await database_sync_to_async(Player.objects.get)(username=recipient_username)
+                room_id = f"{min(self.sender.id, recipient.id)}_{max(self.sender.id, recipient.id)}"
+                priv_room = await database_sync_to_async(ChatRoom.objects.get)(name=room_id)
                 await database_sync_to_async(Message.objects.create)(
                     room=priv_room,
                     sender=self.sender,
                     content=message
                 )
-                user_one = priv_room.participants.all()[0]
-                user_two = priv_room.participants.all()[1]
-                print("User one: ", user_one, " User two: ", user_two, flush=True)
-                # send message to each participant
-                
+                # SEND DIRECTLY TO RECIPIENT'S CHAT GROUP
                 await self.channel_layer.group_send(
-                    f"chat_{user_one.username}",
+                    f"chat_{recipient.username}",
                     {
                         'type': 'chat_message_handler',
-                        'message': message,
-                        'sender': self.sender.username
+                        'sender': self.sender.username,
+                        'chat_id': room_id,
+                        'message': message
                     }
                 )
-            
-                await self.channel_layer.group_send(
-                    f"chat_{user_two.username}",
-                    {
-                        'type': 'chat_message_handler',
-                        'message': message,
-                        'sender': self.sender.username
-                    }
-                )
-                await self.channel_layer.group_send(
-                    room_group_name,
-                    {
-                        'type': 'chat_message_handler',
-                        'message': message,
-                        'sender': self.sender.username
-                    }
-                )
-                print(f"Sent message to group {room_group_name}: {message}, participants no: {await database_sync_to_async(priv_room.participants.count)()}", flush=True)
             except Exception as e:
                 print("Private MSG error: ", e, flush=True)
                 await self.send(text_data=json.dumps({
-                    'type': 'private_message_error',
+                    'type': 'chat_message_error',
+                    'message': f'Error sending message to {recipient_username}'
                 }))
 
     """ message sending handler """
     async def chat_message_handler(self, event):
         print("chat_message_handler invoked with event:", event, flush=True)
         await self.send(text_data=json.dumps({
-            'type': 'private_message',
+            'type': 'chat_message',
             'message': event['message'],
-            'sender': event['sender']
+            'sender': event['sender'],
+            'chat_id': event['chat_id']
         }))
 
     """ room deleting notification handler """
@@ -159,3 +116,25 @@ class chatConsumer(AsyncWebsocketConsumer):
         except Exception as e:
             print("Exeption in validating token in FriendshipNotificationConsumer: ", e, flush=True)
             return None
+        #     if data['type'] == 'delete_chatroom':
+        #     success = await self.delete_chatroom(room_name)
+        #     if success:
+        #         await self.channel_layer.group_send(
+        #             room_group_name,
+        #             {
+        #                 'type': 'room_deleted_notification',
+        #                 'message': 'Chatroom has been deleted',
+        #                 'room': room_name
+        #             }
+        #         )
+        #         await self.channel_layer.group_discard(
+        #             room_group_name,
+        #             self.channel_name
+        #         )
+        #     else:
+        #         await self.send(text_data=json.dumps({
+        #             'type': 'room_deleted_notification_error',
+        #             'message': 'Chatroom could not be deleted',
+        #         }))
+
+        # el

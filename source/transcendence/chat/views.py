@@ -13,6 +13,8 @@ from rest_framework.exceptions import AuthenticationFailed
 from account.auth_middleware import JWTCookieAuthentication
 from django.template.loader import render_to_string
 from rest_framework.response import Response
+from channels.layers import get_channel_layer
+from asgiref.sync import async_to_sync
 
 """ chat message related enpoints """
 class chatMessagesView(APIView):
@@ -21,17 +23,22 @@ class chatMessagesView(APIView):
 	template_name = 'chat/chat_messages.html'
 
 	def get(self, request):
-		room_name = request.GET.get('room', '')
+		recipeint_username = request.GET.get('recipeint', '')
+
 		try:
-			chatroom = ChatRoom.objects.get(name=room_name, participants=request.user)
-		except ChatRoom.DoesNotExist:
-			return JsonResponse({'error': 'Chatroom not found.'}, status=404)
-		messages = Message.objects.filter(room=chatroom).order_by('timestamp')
-		context = {
-			'messages': messages,
-			'current_user': PlayerSerializer(request.user).data
-		}
-		return JsonResponse({'messages': render_to_string(self.template_name, context)}, status=200)
+			
+			recipeint = Player.objects.get(username=recipeint_username)
+			room_name = f"{min(request.user.id, recipeint.id)}_{max(request.user.id, recipeint.id)}"
+			chatroom = ChatRoom.objects.get(name=room_name)
+			messages = Message.objects.filter(room=chatroom).order_by('timestamp')
+			context = {
+				'messages': messages,
+				'current_user': PlayerSerializer(request.user).data
+			}
+		except Exception as e:
+			print("Error: ", e)
+			return Response({'error': "some shit happend"}, status=400)
+		return Response({'messages': render_to_string(self.template_name, context)}, status=200)
 
 # everything about chatrooms - get, post, delete, patch
 class ChatRoomsView(APIView, BaseView):
@@ -68,15 +75,23 @@ class ChatRoomsView(APIView, BaseView):
 
 	""" post method to create a chatroom """
 	def post(self, request):
-		sender = request.user
 		recipient_username = request.data.get('recipient')
-		if not recipient_username:
-			return JsonResponse({'error': 'Recipient username is required.'}, status=400)
-		recipient = Player.objects.get(username=recipient_username)
-		room_name = f"{min(sender.id, recipient.id)}_{max(sender.id, recipient.id)}"        
-		priv_room, created = ChatRoom.objects.get_or_create(name=room_name)
-		if created:
-			priv_room.participants.add(sender, recipient)
-		return JsonResponse({'data': 'asdfadsf'}, status=200)
+		try:
+			sender = request.user
+			recipient = Player.objects.get(username=recipient_username)
+			room_name = f"{min(sender.id, recipient.id)}_{max(sender.id, recipient.id)}"        
+			priv_room = ChatRoom.objects.filter(participants=sender).filter(participants=recipient).first()
+			if not priv_room:
+				priv_room = ChatRoom.objects.create(name=room_name)
+				priv_room.participants.add(sender, recipient)
+			return Response(
+				{
+					'room_name': priv_room.name,
+					'participants_usernames': [sender.username, recipient.username]
+				}, status=201)
+		except Exception as e:
+			return Response({'error': e}, status=400)
+
+
 	
 	""" patch to block/unblock a user """

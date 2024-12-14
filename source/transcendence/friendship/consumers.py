@@ -43,6 +43,8 @@ class FriendshipNotificationConsumer(AsyncWebsocketConsumer):
         notification_type = event['notification_type']
         message = ""
         notification_type = event['notification_type']
+        if event.get('message') is not None:
+            message = event['message']
         if notification_type == 'friend_request':
             message = f"{sender} sent you a friend request!"
         elif notification_type == 'canceled':
@@ -55,6 +57,7 @@ class FriendshipNotificationConsumer(AsyncWebsocketConsumer):
         await self.send(text_data=json.dumps({
             'type': notification_type,
             'sender': sender,
+            'receiver': event['receiver'],
             'message': message
         }))
     
