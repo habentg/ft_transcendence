@@ -33,7 +33,7 @@
 //Game settings
 let paddleSpeed = 6;
 let ballSpeed = 4.5;
-let maxScore = 5;
+let maxScore = 2;
 let slowServe = false;
 let aiFlag = false;
 let parryFlag = false;
@@ -138,7 +138,7 @@ window.onload = function () {
 
   document.addEventListener("keydown", move);
   document.addEventListener("keyup", stopMovement);
-  displayStartMessage();
+//   displayStartMessage();
 };
 
 // function openSettings() {
@@ -227,7 +227,6 @@ function startGame() {
     document.getElementById("player2").classList.remove("d-none");
 			
 
-    document.getElementById("startButton").disabled = true; //disable start button when the game starts
     document.getElementById("startButton").disabled = true; //disable start button when the game starts
     document.getElementById("settingButton").disabled = true;
     // document.getElementById("aiButton").disabled = true;
@@ -629,17 +628,18 @@ function resetGame(direction) {
 
   // drawFlag = !isGameOver();
   if (isGameOver()) {
-    drawFlag = false;
-    aiFlag = false;
+        drawFlag = false;
+        aiFlag = false;
         console.log("Game Over: SHOULD RETURN SETTINGS MENU");
+
         if (document.getElementById("aiButton")) {
             document.getElementById("aiButton").disabled = false;
         }
         if (document.getElementById("startButton")) {
             document.getElementById("startButton").disabled = false;
         }
-        if (document.getElementById("aiButton")) {
-            document.getElementById("aiButton").disabled = false;
+        if (document.getElementById("settingButton")) {
+            document.getElementById("settingButton").disabled = false;
         }
     }
 }
@@ -705,7 +705,7 @@ function startaiGame() {
   setInterval(aiView, 50);
   setInterval(aiLogic, 50);
   requestAnimationFrame(draw);
-    // document.getElementById("startButton").disabled = true;
+    document.getElementById("startButton").disabled = true;
 
     // make player 2 name as AI
     document.getElementById("player2Name").textContent = "@ AI";

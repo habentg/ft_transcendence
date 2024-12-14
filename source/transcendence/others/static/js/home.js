@@ -87,6 +87,8 @@ function searchingSystem() {
   //   });
   // }
   /* search related eventlistners */
+  // createToast("error", "This is a test ", "This is an error toast message");
+  // createToast("chat", "This is a test ", "This is an chat toast message");
   const home_friendrequest_search = document.getElementById("friend_requests_btn");
   const home_friends_search = document.getElementById("friends_btn");
   if (home_friendrequest_search) {
