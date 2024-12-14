@@ -308,6 +308,7 @@ async function acceptOrDeclineFriendRequest(
     throw new Error("Failed to accept/decline friend request");
   } catch (error) {
     console.log("Error: ", error);
+    // alert("Failed to accept/decline friend request");
   }
 }
 

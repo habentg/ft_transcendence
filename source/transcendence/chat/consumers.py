@@ -50,6 +50,7 @@ class chatConsumer(AsyncWebsocketConsumer):
                     {
                         'type': 'chat_message_handler',
                         'sender': self.sender.username,
+                        'recipient': recipient.username,
                         'chat_id': room_id,
                         'message': message
                     }
@@ -68,6 +69,7 @@ class chatConsumer(AsyncWebsocketConsumer):
             'type': 'chat_message',
             'message': event['message'],
             'sender': event['sender'],
+            'recipient': event['recipient'],
             'chat_id': event['chat_id']
         }))
 
@@ -76,6 +78,7 @@ class chatConsumer(AsyncWebsocketConsumer):
         await self.send(text_data=json.dumps({
             'type': 'room_deleted_notification',
             'message': event['message'],
+            'recipient': event['recipient'],
             'room': event['room']
         }))
     

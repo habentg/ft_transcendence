@@ -80,6 +80,7 @@ class FriendRequest(models.Model):
             receiver_friends.add_friend(self.sender)
         except Exception as e:
             print("Error adding friends: ", e, flush=True)
+            raise e
         print(f"Friendship created between {self.sender.username} and {self.receiver.username}", flush=True)
 
     def decline(self):

@@ -13,7 +13,7 @@ class FriendshipNotificationConsumer(AsyncWebsocketConsumer):
     async def connect(self, **kwargs):
         token = self.extract_token_from_headers()
         player = await self.validate_token(token)
-        print("User: ", player)
+        print("friendship validated - player: ", player)
         
         if not player:
             await self.close()

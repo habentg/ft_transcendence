@@ -1,23 +1,58 @@
 /* establishing ws_chat if its not already */
 createWebSockets();
+// Global variable to track the current chat recipient
+let activeChatRecipient = null;
+let activeChatId = null;
+
+// Define a persistent named function for the event listener
+function messageInputHandler(event) {
+  if (event.key === "Enter") {
+    const messageInput = document.getElementById("messageInput");
+    const message = messageInput.value.trim();
+    if (!message) {
+      console.error("Message is empty.");
+      return;
+    }
+    if (!activeChatRecipient || !activeChatId) {
+      console.error("No active chat recipient.");
+      return;
+    }
+    sendMessage(message, activeChatRecipient, activeChatId);
+    messageInput.value = ''; // Clear input after sending
+  }
+}
+
+function handleMessageSend() {
+  const messageInput = document.getElementById("messageInput");
+  const message = messageInput.value.trim();
+  if (!message) {
+    console.error("Message is empty.");
+    return;
+  }
+  if (!activeChatRecipient || !activeChatId) {
+    console.error("No active chat recipient.");
+    return;
+  }
+  console.log(`Sending message to ${activeChatRecipient}`);
+  sendMessage(message, activeChatRecipient, activeChatId);
+  messageInput.value = ''; // Clear the input field
+}
 
 // Open chat for a specific friend
-async function openChat(recipeint) {
+async function openChat(recipeint, chat_id) {
 
-  console.log("Opening chat for:", recipeint);
-  const clickedChatList = document.getElementById(recipeint);
-  const getFUllName = clickedChatList.getAttribute("data-recipent");
+  const clickedChatList = document.getElementById(`${recipeint}`);
+  const getFullName = clickedChatList.getAttribute("data-recipent");
+  const chatMessages = document.getElementsByClassName("chat-messages")[0];
+  chatMessages.id = chat_id;
+
 
   // Update chat header
-  document.getElementById("chatTitle").textContent = getFUllName;
-  document.getElementById("three_dots").classList.remove("d-none");
-  document.getElementById("deleteChatRoomBtn").setAttribute("data-usernmae", recipeint);
-  document.getElementById("blockBtn").setAttribute("data-usernmae", recipeint);
-  document.getElementById("unblockBtn").setAttribute("data-usernmae", recipeint);
+  document.getElementById("chatTitle").textContent = getFullName;
 
 
   // Update messages - I will have fetch messages hopefully usig pagination
-  await fetchMessages(recipeint);
+  await fetchMessages(chat_id, chatMessages);
 
   // Highlight selected friend
   const prevActiveChat = document.getElementsByClassName("active")[0];
@@ -26,47 +61,46 @@ async function openChat(recipeint) {
   }
   clickedChatList.classList.add("active");
 
+  // if player is deleted we not give him the option to send message
   // Send message on Enter
   const messageInput = document.getElementById("messageInput");
-  messageInput.classList.remove("d-none");
-  messageInput.addEventListener("keyup", (event) => {
-    if (event.key === "Enter") {
-      console.log("sending to user:", recipeint);
-      sendMessage(recipeint);
-    }
-  });
-
-  // send message on button click
-  const send_btn = document.getElementById("chat_send_btn");
-  if (send_btn) {
-    send_btn.classList.remove("d-none");
-    send_btn.addEventListener("click", () => {
-      sendMessage(recipeint);
-    });
-  }
-}
-
-function sendMessage(recipient) {
-  const messageInput = document.getElementById("messageInput");
-  const message = messageInput.value.trim();
-  console.log("message:", message);
-
-  // Validate message
-  if (!message) {
-    console.error("Message cannot be empty.");
+  const sendButton = document.getElementById("chat_send_btn");
+  if (clickedChatList.id === 'deleted_player') {
+    messageInput.classList.add("d-none");
+    sendButton.classList.add("d-none");
     return;
   }
-  // check on how long the message is - too long dont send it
+  // Send message on Enter
+  messageInput.classList.remove("d-none");
+  sendButton.classList.remove("d-none");
 
+  document.getElementById("three_dots").classList.remove("d-none");
+  document.getElementById("deleteChatRoomBtn").setAttribute("data-usernmae", recipeint);
+  document.getElementById("blockBtn").setAttribute("data-usernmae", recipeint);
+  document.getElementById("unblockBtn").setAttribute("data-usernmae", recipeint);
+
+  // Remove existing event listeners
+  messageInput.removeEventListener("keyup", messageInputHandler);
+  sendButton.removeEventListener("click", handleMessageSend);
+
+  // Update the global recipient and chat_id
+  activeChatRecipient = recipeint;
+  activeChatId = chat_id;
+
+  // Add event listeners
+  messageInput.addEventListener("keyup", messageInputHandler);
+  sendButton.addEventListener("click", handleMessageSend);
+}
+
+function sendMessage(message, recipient, chat_id) {
   if (window.ws_chat && window.ws_chat.readyState === WebSocket.OPEN) {
     // const recipent = document.getElementsByClassName("active")[0].dataset.recipent;
-    console.log("recipent:", recipient);
-    const chatMessage = {
+    const msg_to_send = {
       type: "private_message",
-      message: message,
+      message: `${message}`,
       recipient: recipient,
     };
-    window.ws_chat.send(JSON.stringify(chatMessage));
+    window.ws_chat.send(JSON.stringify(msg_to_send));
     /* add the message to the dom */
     const messageDiv = document.createElement("div");
     messageDiv.className = "chat-message";
@@ -76,12 +110,12 @@ function sendMessage(recipient) {
     if (no_msg_found) {
       no_msg_found.remove();
     }
-    // Scroll to bottom
-    const chatMessages = document.getElementById("chatMessages");
-    messageDiv.innerHTML = `<div class="message-content">${message}</div>`;
+    const chatMessages = document.getElementById(chat_id);
+    messageDiv.appendChild(createMsgDiv(message));
     chatMessages.appendChild(messageDiv);
     messageInput.value = "";
     messageInput.focus();
+    // Scroll to bottom
     chatMessages.scrollTop = chatMessages.scrollHeight;
   } else {
     console.error("WebSocket is not open. Unable to send message.");
@@ -89,9 +123,9 @@ function sendMessage(recipient) {
   }
 }
 
+
 /* block, unblock and delete chat features */
 async function deleteChatRoom(chatroom_name) {
-  console.log("Deleting chatroom:", chatroom_name);
   if (window.ws_chat && window.ws_chat.readyState === WebSocket.OPEN) {
     const chatMessage = {
       type: "delete_chatroom",
@@ -101,21 +135,19 @@ async function deleteChatRoom(chatroom_name) {
   }
 }
 /* fetching message of an active chat */
-async function fetchMessages(recipeint) {
-  const chatMessages = document.getElementById("chatMessages");
-  console.log("Fetching messages for:", recipeint);
+async function fetchMessages(room, chatMessages) {
   try {
-    const response = await fetch(`/chat_messages?recipeint=${recipeint}`);
+    const response = await fetch(`/chat_messages?room=${room}`);
     if (response.ok) {
       const data = await response.json();
       chatMessages.innerHTML = "";
       chatMessages.innerHTML = data.messages;
-      console.log("Msgs fetched: ", data.messages);
+      chatMessages.scrollTop = chatMessages.scrollHeight;
       return;
     }
     throw new Error("Error fetching messages");
   } catch (error) {
-    console.error(error);
+    alert(`Error fetching messages: ${error}`);
 
   }
 }

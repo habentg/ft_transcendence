@@ -6,8 +6,16 @@ function createButton(text, class_list, id, onclick) {
   friendshipBtn.id = id;
   friendshipBtn.textContent = text;
   friendshipBtn.setAttribute('onclick', onclick);
-
+  
   return friendshipBtn;
+}
+
+function createMsgDiv(msg) {
+  const msgElement = document.createElement('div');
+  msgElement.classList.add('message-content');
+  msgElement.textContent = `${msg}`;
+
+  return msgElement;
 }
 
 /* ---------------------------------------------- websocket for notifications ---------------------------------------------- */
@@ -112,17 +120,26 @@ function initNotificationWebsocket() {
       handleFriendRequestUnfriend(data);
     }
     else {
-      console.log("unknown notification type:", data.type);
+      console.log("unknown notification data:", data);
     }
   }
 }
 
-
 /* ---------------------------------------------- websocket stuff for chat ---------------------------------------------- */
 function addMessageToChat(data) {
-  const chatMessages = document.getElementById("chatMessages");
+  const chatMessages = document.getElementById(`${data.chat_id}`);
   if (!chatMessages) {
     console.log("chatMessages not found");
+    recipient_chatroom = document.getElementById(`${data.sender}`);
+    if (recipient_chatroom) {
+      // bootstrap toast
+      // recipient_chatroom.classList.add("unread");
+      const msg_indicator = document.createElement("span");
+      msg_indicator.classList.add("text-danger");
+      msg_indicator.textContent = "33";
+      recipient_chatroom.appendChild(msg_indicator);
+      console.log(`${data.sender} chatroom found`);
+    }
     return;
   }
   const message = document.createElement("div");
@@ -134,17 +151,9 @@ function addMessageToChat(data) {
     if (no_msg_found) {
       no_msg_found.remove();
     }
-    const active_chat_user = activeChatRoom.getElementsByTagName("span")[0].textContent;
-    if (data.sender === active_chat_user) {
-      console.log("is reciever");
-      message.classList.add("reciever");
-    }
-    else {
-      console.log("is sender");
-      message.classList.add("sender");
-    }
   }
-  message.innerHTML = `<div class="message-content">${data.message}</div>`;
+  message.classList.add("reciever");
+  message.appendChild(createMsgDiv(data.message));
   // if not notify the user .... put a red dot or something on the respective chatroom
   // when he clicks on it, we will fetch the messages from the server ... and remove the red dot
   chatMessages.appendChild(message);
@@ -192,7 +201,7 @@ function initChatWebsocket() {
     }
     else if (data.type === "chat_message_error") {
       console.log("private message ERROR", data);
-      alert("could not send the message");
+      alert(`${data.message}`);
     }
     else if (data.type === "room_deleted_notification") {
       // remove the chatroom from the list

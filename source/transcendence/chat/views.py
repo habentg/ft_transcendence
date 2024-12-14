@@ -23,22 +23,24 @@ class chatMessagesView(APIView):
 	template_name = 'chat/chat_messages.html'
 
 	def get(self, request):
-		recipeint_username = request.GET.get('recipeint', '')
-
+		# recipeint_username = request.GET.get('room', '')
+		room_name = request.GET.get('room', '')
 		try:
-			
-			recipeint = Player.objects.get(username=recipeint_username)
-			room_name = f"{min(request.user.id, recipeint.id)}_{max(request.user.id, recipeint.id)}"
+			# recipeint = Player.objects.get(username=recipeint_username)
+			# room_name = f"{min(request.user.id, recipeint.id)}_{max(request.user.id, recipeint.id)}"
 			chatroom = ChatRoom.objects.get(name=room_name)
 			messages = Message.objects.filter(room=chatroom).order_by('timestamp')
 			context = {
 				'messages': messages,
 				'current_user': PlayerSerializer(request.user).data
 			}
+			return Response({'messages': render_to_string(self.template_name, context)}, status=200)
+		except ChatRoom.DoesNotExist:
+			print("Error: ", e)
+			return Response({'error': "No active chatroom for with this player!"}, status=404)
 		except Exception as e:
 			print("Error: ", e)
 			return Response({'error': "some shit happend"}, status=400)
-		return Response({'messages': render_to_string(self.template_name, context)}, status=200)
 
 # everything about chatrooms - get, post, delete, patch
 class ChatRoomsView(APIView, BaseView):

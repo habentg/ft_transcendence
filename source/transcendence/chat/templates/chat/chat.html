@@ -3,7 +3,9 @@
 <div class="chatPage">
   <div class="background-image">
     <div class="container py-5">
-      <div></div>
+      <div>
+        <h3 style="color: red;">Hi, {{ user.username }}! Enjoy....</h3>
+      </div>
       <div class="chat-wrapper">
         <!-- Sidebar -->
         <div class="chat-sidebar">
@@ -12,17 +14,22 @@
           </div>
           {% if chatrooms %}
             <ul class="friend-list mb-3" id="friendList">
-              <!-- Friends will be loaded dynamically -->
+              <!-- chatrooms will be loaded dynamically -->
               {% for chatroom in chatrooms %}
-                {% if chatroom.get_participant_one.username == user.username %}
-                  <li id="{{ chatroom.get_participant_two.username }}" class="friend-item d-flex align-items-center" data-recipent="{{ chatroom.get_participant_two.full_name }}" onclick="openChat('{{ chatroom.get_participant_two.username }}')">
-                    <i class="fas fa-user me-2 profile-icon"></i>
-                    <span class="mb-0 username_span">{{ chatroom.get_participant_two.username }}</span>
+                {% if not chatroom.get_participant_one or not chatroom.get_participant_two %}
+                  <li id="deleted_player" class="friend-item d-flex align-items-center disabled" data-recipent="Deleted Player" onclick="openChat('deleted_player', '{{ chatroom.name }}')">
+                    <i class="fas fa-user me-2 profile-icon" style="color:red;"></i>
+                    <span class="mb-0">deleted_player</span>
                   </li>
-                  {% else %}
-                  <li id="{{ chatroom.get_participant_one.username }}" class="friend-item d-flex align-items-center" data-recipent="{{ chatroom.get_participant_one.full_name }}" onclick="openChat('{{ chatroom.get_participant_one.username }}')">
+                {% elif chatroom.get_participant_one.username == user.username %}
+                  <li id="{{ chatroom.get_participant_two.username }}" class="friend-item d-flex align-items-center" data-recipent="{{ chatroom.get_participant_two.full_name }}" onclick="openChat('{{ chatroom.get_participant_two.username }}', '{{ chatroom.name }}')">
                     <i class="fas fa-user me-2 profile-icon"></i>
-                    <span class="mb-0">{{ chatroom.get_participant_one.username }}</span>
+                    <span class="mb-0 username_span">{{ chatroom.get_participant_two.username }} </span>
+                  </li>
+                {% elif chatroom.get_participant_two.username == user.username %}
+                  <li id="{{ chatroom.get_participant_one.username }}" class="friend-item d-flex align-items-center" data-recipent="{{ chatroom.get_participant_one.full_name }}" onclick="openChat('{{ chatroom.get_participant_one.username }}', '{{ chatroom.name }}')">
+                    <i class="fas fa-user me-2 profile-icon"></i>
+                    <span class="mb-0">{{ chatroom.get_participant_one.username }} </span>
                   </li>
                 {% endif %}
               {% endfor %}
@@ -45,14 +52,20 @@
           <div id="three_dots" class="position-absolute top-0 end-0 m-2 d-none">
             <!-- Dropdown for option -->
             <div class="dropdown">
-              <button class="btn btn-secondary" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
-                <i class="fas fa-ellipsis-v"></i>
-              </button>
+              <button class="btn btn-secondary" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false"><i class="fas fa-ellipsis-v"></i></button>
               <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="dropdownMenuButton">
-                <li><button id="viewProfileBtn" class="dropdown-item" type="button">View Profile</button></li>
-                <li><button id="blockBtn" class="dropdown-item" type="button">Block</button></li>
-                <li><button id="unblockBtn" class="dropdown-item" type="button">Unblock</button></li>
-                <li><button id="deleteChatRoomBtn" class="dropdown-item" type="button">Delete</button></li>
+                <li>
+                  <button id="viewProfileBtn" class="dropdown-item" type="button">View Profile</button>
+                </li>
+                <li>
+                  <button id="blockBtn" class="dropdown-item" type="button">Block</button>
+                </li>
+                <li>
+                  <button id="unblockBtn" class="dropdown-item" type="button">Unblock</button>
+                </li>
+                <li>
+                  <button id="deleteChatRoomBtn" class="dropdown-item" type="button">Delete</button>
+                </li>
               </ul>
             </div>
           </div>
