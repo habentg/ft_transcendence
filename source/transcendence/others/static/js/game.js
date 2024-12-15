@@ -29,34 +29,10 @@ let playerVelocityY = 0;
 let activeKeys = {};
 const cooldownTime = 3000; // cooldown for parry power up
 
-let player1 = {
-	playerName: "",
-	x: 10,
-	y: boardHeight / 2 - playerHeight / 2,
-	width: playerWidth,
-	height: playerHeight,
-	velocityY: playerVelocityY,
-	cooldownFlag: false,
-	parryKey: "KeyA",
-	parryCooldown: 0,
-	score: 0,
-};
-
-let player2 = {
-	playerName: "",
-	x: boardWidth - 10 - playerWidth,
-	y: boardHeight / 2 - playerHeight / 2,
-	width: playerWidth,
-	height: playerHeight,
-	velocityY: playerVelocityY,
-	cooldownFlag: false,
-	parryKey: "Numpad0",
-	parryCooldown: 0,
-	score: 0,
-};
+let players = [];
 
 // need to convert everything to a class so it we could easily handle multiple players when tryin to play tournament mode 
-/* class Player {
+class Player {
 	constructor (name, position) {
 		this.playerName = name;
 		this.width = playerWidth;
@@ -65,6 +41,7 @@ let player2 = {
 		this.parryCooldown = 0;
 		this.velocityY = playerVelocityY;
 		this.score = 0;
+		this.position = "";
 		if (position === "left") {
 			this.x = 10;
 			this.y = boardHeight / 2 - playerHeight / 2;
@@ -75,7 +52,7 @@ let player2 = {
 			this.parryKey = "Numpad0";
 		}
 	}
-} */
+}
 
 // Ball setup
 let ballRadius = 7.5;
@@ -88,14 +65,35 @@ let ball = {
 };
 
 let drawFlag = false;
-
+let defp1Name = "";
+let defp2Name = "";
 window.onload = function () {
 	board = document.getElementById("board");
 	board.height = boardHeight;
 	board.width = boardWidth;
 	context = board.getContext("2d");
 
-	player1.playerName = document.getElementById("player1Name").textContent;
+	/* 
+		this part should load all the players. First we have to determine which type of game they would play (ai, 1v1, tournament)
+		We create player objects and store them with names and which side they would be playing. 
+	*/
+
+	// let gameType = "";
+	// gameType = document.getElementById("gameType").textcontent;
+
+	// function setgameFlags(type) {
+	// 	if (type === "tournament"){
+	// 		tournamentFlag = true;
+	// 	} else if (type === "versus") {
+	// 		versusFlag = true;
+	// 	} else if (type === "ai") {
+	// 		aiFlag = true;
+	// 	} else if (type === "parry") {
+	// 		parryFlag = true;
+	// 	}
+	// }
+
+	defp1Name = document.getElementById("player1Name").textContent;
 
 	// requestAnimationFrame(draw);
 	if (document.getElementById("startButton")) {
@@ -107,14 +105,14 @@ window.onload = function () {
 			.querySelector("#submitSecondPlayerNameBtn")
 			.addEventListener("click", () => {
 				// get the submitted name
-				player2.playerName = modal.querySelector("#secondPlayerName").value;
-				if (player2.playerName) {
+				defp2Name = modal.querySelector("#secondPlayerName").value;
+				if (defp2Name) {
 					// close the modal and return the second player name
-					console.log("Second Player Name: ", player2.playerName);
+					console.log("Second Player Name: ", defp2Name);
 
 					// replace player 2 with second player name
 					document.getElementById("player2Name").textContent =
-						"@ " + player2.playerName;
+						"@ " + defp2Name;
 					document.getElementById("player2Name").style.display = "block";
 
 					closeModal("secondPlayerNameModal");
@@ -126,7 +124,9 @@ window.onload = function () {
 				}
 			});
 
-		document.getElementById("startButton").addEventListener("click", () => {
+			initGame(); //initializing the game flags and adding players etc.
+
+			document.getElementById("startButton").addEventListener("click", () => {
 			// send to backend to create the game -
 			/* 
 			
@@ -141,11 +141,10 @@ window.onload = function () {
 			
 			*/
 			/* return id */
-			startGame();
+			startGame(players[0],players[1]);
 		});
 	}
-	// document.getElementById("settingButton").addEventListener("click", openSettings);
-	// document.getElementById("applyButton").addEventListener("click", changeSetting);
+
 	if (document.getElementById("aiButton")) {
 		document.getElementById("aiButton").addEventListener("click", startaiGame);
 	}
@@ -155,9 +154,35 @@ window.onload = function () {
 	displayStartMessage();
 };
 
-// function openSettings() {
-//     document.getElementById("settingsMenu").style.display = "block";
-// }
+// function for getting game mode (ai , 1v1, tournament)
+function getgameMode() {
+	return document.getElementById("gameType").textContent;
+}
+
+function isparryFlag() {
+	return document.getElementById("slowServe").checked;
+}
+
+//function to initialize game based on the game mode
+function initGame() {
+	const gameMode = getgameMode();
+
+	if (gameMode === "versus") {
+		players = new Player(defp1Name, "left");
+		players = new Player(defp2Name, "right");
+		versusFlag = true;
+	} else if (gameMode === "ai") {
+		players = new Player(defp1Name, "left");
+		players = new Player(bot, "right");
+		aiFlag = true;
+	} else if (gameMode === "tournament") {
+		/* 
+			// run tournament logic, create players etc.
+			// tournamentFlag = true;
+			// tournamentLogic();
+ 		*/
+	}
+}
 
 function changeSetting() {
 	// valid ranges for the settings
@@ -174,6 +199,7 @@ function changeSetting() {
 	const ballSpeedInput = parseFloat(document.getElementById("ballSpeed").value);
 	const maxScoreInput = parseInt(document.getElementById("maxScore").value);
 	const slowServeInput = document.getElementById("slowServe").checked;
+	const parryInput = document.getElementById("parryMode").checked;
 
 	let errors = [];
 
@@ -211,6 +237,7 @@ function changeSetting() {
 	defballSpeed = ballSpeedInput;
 	maxScore = maxScoreInput;
 	slowServe = slowServeInput;
+	parryFlag = parryInput;
 
 	// document.getElementById("settingsMenu").style.display = "none";
 	console.log("Settings Applied: ", {
@@ -218,6 +245,7 @@ function changeSetting() {
 		defballSpeed,
 		maxScore,
 		slowServe,
+		parryFlag,
 	});
 
 	ball.velocityX = ball.velocityX > 0 ? defballSpeed : -defballSpeed;
@@ -228,14 +256,10 @@ function changeSetting() {
 	closeModal("gameSettingsModal");
 }
 
-function startGame() {
-	player1.score = 0;
-	player2.score = 0;
-	player1LastKey = null;
-	player2LastKey = null;
+function startGame(player1, player2) {
 	drawFlag = true;
-	parryFlag = true;
-	requestAnimationFrame(draw);
+
+	requestAnimationFrame(draw(player1, player2));
 
 	document.getElementById("player1").classList.remove("d-none");
 	document.getElementById("player2").classList.remove("d-none");
@@ -268,18 +292,17 @@ function drawLine() {
 	context.setLineDash([]); // Reset line dash to solid
 }
 
-function draw() {
+function draw(player1, player2) {
 	if (!drawFlag) {
 		return;
 	}
-	requestAnimationFrame(draw);
+	requestAnimationFrame(draw(player1, player2));
+	// til this part
 	updatePaddleVelocities();
-
 	// Clear board
 	context.clearRect(0, 0, board.width, board.height);
 
 	// if (aiFlag) aiLogic();
-
 	drawLine();
 	// Update player positions
 	if (!oob(player1.y + player1.velocityY)) player1.y += player1.velocityY;
@@ -346,10 +369,10 @@ function draw() {
 	// Check for goals
 	if (ball.x - ballRadius < 0) {
 		player2.score++;
-		resetGame(1);
+		resetGame(player1, player2, 1);
 	} else if (ball.x + ballRadius > boardWidth) {
 		player1.score++;
-		resetGame(-1);
+		resetGame(player1, player2, -1);
 	}
 
 	// Display scores
@@ -371,7 +394,7 @@ function draw() {
 
 		//This is the part where we could collect everything for the match history
 		// players names, player scores aside from game mode. maybe add another function throw players and return it from there.
-
+		
 	}
 }
 
@@ -413,7 +436,7 @@ function drawBall() {
 //     }
 // }
 
-function updatePaddleVelocities() {
+function updatePaddleVelocities(player1, player2) {
 	// Player 1 movement
 	if (activeKeys["KeyW"]) {
 		player1.velocityY = -paddleSpeed;
@@ -572,7 +595,7 @@ function ballCollision(ball, player, position) {
 	return isCollision;
 }
 
-function resetGame(direction) {
+function resetGame(player1, player2, direction) {
 	//bring back ball to the middle
 	ball.x = boardWidth / 2;
 	ball.y = boardHeight / 2;
@@ -649,7 +672,7 @@ function drawCapsulePaddle(
 //ai view
 let lastballPosition = { x: 0, y: 0 };
 
-function startaiGame() {
+function startaiGame(player1, player2) {
 	aiFlag = true; // Enable AI
 	player1.score = 0;
 	player2.score = 0;
@@ -670,7 +693,7 @@ function startaiGame() {
 	document.getElementById("settingButton").disabled = true;
 }
 
-function aiLogic() {
+function aiLogic(player2) {
 	const tolerance = 5; // Allow a small margin of error
 	const currentBallY = ball.y; // Current ball Y position
 	const previousBallY = lastballPosition.y; // Last recorded ball Y position
