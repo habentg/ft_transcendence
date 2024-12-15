@@ -168,12 +168,12 @@ function initGame() {
 	const gameMode = getgameMode();
 
 	if (gameMode === "versus") {
-		players.push(new Player(defp1Name, "left"))
-		players.push(new Player(defp2Name, "right"))
+		players.push(new Player(defp1Name, "left"));
+		players.push(new Player(defp2Name, "right"));
 		versusFlag = true;
 	} else if (gameMode === "ai") {
-		players.push(new Player(defp1Name, "left"))
-		players.push(new Player(bot, "right"))
+		players.push(new Player(defp1Name, "left"));
+		players.push(new Player(bot, "right"));
 		aiFlag = true;
 	} else if (gameMode === "tournament") {
 		/* 
