@@ -127,6 +127,27 @@ window.onload = function () {
           errorMsg.style.display = "block";
         }
       });
+	
+	// submit when Enter key is pressed
+	modal.querySelector("#secondPlayerName").addEventListener("keypress", (event) => {
+		if (event.key === "Enter") {
+			modal.querySelector("#submitSecondPlayerNameBtn").click();
+		}
+	});
+	  
+	// Close & submit the modal when the close button is clicked
+	modal.querySelector(".btn-close").addEventListener("click", () => {
+		modal.querySelector("#submitSecondPlayerNameBtn").click();
+		// closeModal("secondPlayerNameModal");
+	});
+
+	// Close & the modal when the modal is clicked outside
+	modal.addEventListener("click", (event) => {
+		if (event.target === modal) {
+			modal.querySelector("#submitSecondPlayerNameBtn").click();
+			// closeModal("secondPlayerNameModal");
+		}
+	});
 
     document.getElementById("startButton").addEventListener("click", startGame);
   }
