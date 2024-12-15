@@ -10,6 +10,7 @@ let paddleSpeed = 6;
 let ballSpeed = 4.5;
 let maxScore = 5;
 let slowServe = false;
+
 //this flags would determine which game mode we are playing
 let aiFlag = false;
 let parryFlag = false;
@@ -196,6 +197,7 @@ function changeSetting() {
 	const paddleSpeedInput = parseInt(
 		document.getElementById("paddleSpeed").value
 	);
+
 	const ballSpeedInput = parseFloat(document.getElementById("ballSpeed").value);
 	const maxScoreInput = parseInt(document.getElementById("maxScore").value);
 	const slowServeInput = document.getElementById("slowServe").checked;
@@ -303,51 +305,13 @@ function draw(player1, player2) {
 	context.clearRect(0, 0, board.width, board.height);
 
 	// if (aiFlag) aiLogic();
-	drawLine();
-	// Update player positions
+	drawLine(); //draw line in the middle 
+	drawPlayers(player1, player2); //draw players
+	drawBall();
+
+	// Checks if the position will be inside the map and adjusts its movement speed
 	if (!oob(player1.y + player1.velocityY)) player1.y += player1.velocityY;
 	if (!oob(player2.y + player2.velocityY)) player2.y += player2.velocityY;
-
-	if (!player1.cooldownFlag)
-		drawCapsulePaddle(
-			player1.x,
-			player1.y,
-			player1.width,
-			player1.height,
-			player1.width / 2,
-			"#84ddfc",
-			"green"
-		);
-	else
-		drawCapsulePaddle(
-			player1.x,
-			player1.y,
-			player1.width,
-			player1.height,
-			player1.width / 2,
-			"#84ddfc",
-			"black"
-		);
-	if (!player2.cooldownFlag)
-		drawCapsulePaddle(
-			player2.x,
-			player2.y,
-			player2.width,
-			player2.height,
-			player2.width / 2,
-			"#84ddfc",
-			"green"
-		);
-	else
-		drawCapsulePaddle(
-			player2.x,
-			player2.y,
-			player2.width,
-			player2.height,
-			player2.width / 2,
-			"#84ddfc",
-			"black"
-		);
 
 	// Update ball position
 	ball.x += ball.velocityX;
@@ -358,13 +322,8 @@ function draw(player1, player2) {
 		ball.velocityY *= -1;
 
 	// Check ball collision with players
-	// if (ballCollision(ball, player1, player1LastKey)) player1LastKey = null;
-	// if (ballCollision(ball, player2, player2LastKey)) player2LastKey = null;
-	// if (ballCollision(ball, player1, "left"));
-	// if (ballCollision(ball, player2, "right"));
 	ballCollision(ball, player1, "left");
 	ballCollision(ball, player2, "right");
-	drawBall();
 
 	// Check for goals
 	if (ball.x - ballRadius < 0) {
@@ -393,8 +352,7 @@ function draw(player1, player2) {
 		}
 
 		//This is the part where we could collect everything for the match history
-		// players names, player scores aside from game mode. maybe add another function throw players and return it from there.
-		
+		// players names, player scores aside from game mode. maybe add another function throw players and return it from there.	
 	}
 }
 
@@ -638,6 +596,50 @@ function displayGameOver(player1, player2) {
 
 	context.font = "30px sans-serif";
 	context.fillStyle = "white";
+}
+
+//Draw players
+function drawPlayers(player1, player2) {
+	if (!player1.cooldownFlag && parryFlag)
+		drawCapsulePaddle(
+			player1.x,
+			player1.y,
+			player1.width,
+			player1.height,
+			player1.width / 2,
+			"#84ddfc",
+			"green"
+		);
+	else
+		drawCapsulePaddle(
+			player1.x,
+			player1.y,
+			player1.width,
+			player1.height,
+			player1.width / 2,
+			"#84ddfc",
+			"black"
+		);
+	if (!player2.cooldownFlag && parryFlag)
+		drawCapsulePaddle(
+			player2.x,
+			player2.y,
+			player2.width,
+			player2.height,
+			player2.width / 2,
+			"#84ddfc",
+			"green"
+		);
+	else
+		drawCapsulePaddle(
+			player2.x,
+			player2.y,
+			player2.width,
+			player2.height,
+			player2.width / 2,
+			"#84ddfc",
+			"black"
+		);
 }
 
 function drawCapsulePaddle(
