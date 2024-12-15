@@ -374,9 +374,9 @@ async function GameApiTester() {
 
   // await gameApiGETFunction();
   
-  // await gameApiPOSTFunction(data);
+  await gameApiPOSTFunction(data);
   
-  await gameApiPATCHFunction(endgame_data, 5);
+  // await gameApiPATCHFunction(endgame_data, 5);
 
   // await gameApiDELETEFunction(1);
 }
