@@ -16,23 +16,27 @@ from rest_framework.response import Response
 from rest_framework import viewsets
 from rest_framework import status
 
-class GameViewSet(viewsets.ViewSet):
+class GameViewSet(viewsets.ModelViewSet):
     authentication_classes = [JWTCookieAuthentication]
     permission_classes = [IsAuthenticated]
+    serializer_class = GameSerializer
+    queryset = Game.objects.all()
     template_name = 'game/game.html'
 
     def list(self, request):
-        print("============== GameViewSet - LIST method ==============", flush=True)
-        return Response({'html': '<h3>issa game boi!</h3>'})
+        all_games = Game.objects.all().filter(player_one=request.user.id)
+        serializer = GameSerializer(all_games, many=True)
+        if not serializer.data:
+            return Response({'error': 'No games found'}, status=status.HTTP_404_NOT_FOUND)
+        return Response(serializer.data)
 
     def create(self, request):
         data = request.data
-        print("============== GameViewSet - CREATE method ==============", flush=True)
-        print(data, flush=True)
-        new_game = GameSerializer(data=data)
-        if new_game.is_valid():
-            new_game.save()
-            return Response({'html': f'<h3>issa game boi!</h3>'}, status=status.HTTP_201_CREATED)
+        data['player_one'] = request.user.id
+        serializer = GameSerializer(data=data)
+        if serializer.is_valid():
+            new_game = serializer.save()
+            return Response({'game_id': new_game.id}, status=status.HTTP_201_CREATED)
         return Response({'error': 'Invalid data'}, status=status.HTTP_400_BAD_REQUEST)  
 
     def retrieve(self, request, pk=None):
@@ -43,14 +47,28 @@ class GameViewSet(viewsets.ViewSet):
             return Response(game_data)
         return Response({'error': 'Game not found'}, status=status.HTTP_404_NOT_FOUND)
 
-    def update(self, request, pk=None):
-        print("============== GameViewSet - UPDATE method =============", flush=True)
-        
-        return Response({'html': f'<h3>issa game boi -- {pk}!</h3>'})
-
     def partial_update(self, request, pk=None):
-        print("============== GameViewSet - PARTIAL UPDATE method =============", flush=True)
-        return Response({'html': f'<h3>issa game boi -- {pk}!</h3>'})
+        try:
+            game = Game.objects.filter(id=pk).first()
+            serializer = GameSerializer(instance=game, data=request.data, partial=True)
+            if serializer.is_valid():
+                updated_game = serializer.save()
+                return Response({'game_id': updated_game.id}, status=status.HTTP_200_OK)
+            return Response({'error': 'Invalid data'}, status=status.HTTP_400_BAD_REQUEST)
+        except:
+            return Response({'error': 'Game not found'}, status=status.HTTP_404_NOT_FOUND)
+    
     def destroy(self, request, pk=None):
         print("============== GameViewSet - DESTROY method =============", flush=True)
         return Response({'html': f'<h3>issa game boi -- {pk}!</h3>'})
+    
+
+class LeaderBoardView(BaseView):
+    authentication_classes = [JWTCookieAuthentication]
+    permission_classes = [IsAuthenticated]
+    template_name = 'game/leaderboard.html'
+    css = ['game/leaderboard.css']
+    js = ['game/leaderboard.js']
+
+    def get(self, request):
+        return render(request, self.template_name)

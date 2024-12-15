@@ -46,8 +46,8 @@ class ChatRoomsView(APIView, BaseView):
 	permission_classes = [IsAuthenticated]
 	template_name = 'chat/chat.html'
 	title = 'Chat'
-	css = 'css/chat.css'
-	js = 'js/chat.js'
+	css = ['css/chat.css']
+	js = ['js/chat.js']
 
 	""" get method to get all the chatrooms that the user is a participant in """
 	def handle_exception(self, exception):

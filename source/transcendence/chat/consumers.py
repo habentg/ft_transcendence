@@ -31,7 +31,6 @@ class chatConsumer(AsyncWebsocketConsumer):
     async def receive(self, text_data):
         data = json.loads(text_data)
         recipient_username = data['recipient']
-        # room_group_name = f"chat_group_{room_name}"
 
         if data['type'] == 'private_message':
             message = data.get('message')
@@ -95,6 +94,11 @@ class chatConsumer(AsyncWebsocketConsumer):
             return False
 
     """ ------------------------- token auth -------------------------"""
+    """ 
+        self.scope - saves the websocket connection Metadata, including the headers, cookies ... as a dictionary
+        self.scope['headers'] - returns a list of tuples, where each tuple contains a key-value pair of the headers
+    """
+
     def extract_token_from_headers(self):
         headers = dict(self.scope['headers'])
         cookie_header = headers.get(b'cookie', b'').decode('utf-8')
@@ -104,16 +108,18 @@ class chatConsumer(AsyncWebsocketConsumer):
                 return cookie.split('=')[1]
         return None
 
+    """ 
+     Django ORM is synchronous, so using it directly in an async function would block the event loop. 
+     The decorator runs this function in a separate thread.  
+    """
     @database_sync_to_async
     def validate_token(self, token):            
         try:
-            # Decode the JWT token
             payload = jwt.decode(
                 token, 
                 settings.SECRET_KEY, 
                 algorithms=['HS256']
             )
-            # Retrieve user based on token payload
             return Player.objects.get(id=payload['user_id'])
         
         except Exception as e:

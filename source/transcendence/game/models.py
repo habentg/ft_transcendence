@@ -9,18 +9,19 @@ class Game(models.Model):
         ('TOURNAMENT', 'Played in Tournament')
     ]
     END_RESULT = [
-        ('WIN', 'Win'),
-        ('LOSS', 'Loss'),
-        ('CANCELLED', 'Cancelled')
+        ('STARTED', 'Game Started'),
+        ('WIN', 'You Won'),
+        ('LOSE', 'You Lost'),
+        ('CANCELLED', 'Game Cancelled')
     ]
     id = models.BigAutoField(primary_key=True)
     player_one = models.ForeignKey(Player, on_delete=models.CASCADE, related_name="player_one")
-    player_two = models.CharField(max_length=100, blank=False, null=False, default="Dummy")
-    game_time = models.DateTimeField(auto_now_add=True)
-    game_type = models.CharField(max_length=20, choices=GAME_TYPE)
-    game_score = models.CharField(max_length=20, blank=True, null=True)
-    game_outcome = models.CharField(max_length=20, choices=END_RESULT)
+    player_two = models.CharField(max_length=100, blank=False, null=False, default="AI")
+    type = models.CharField(max_length=20, choices=GAME_TYPE, default='AI')
+    final_score = models.CharField(max_length=20, blank=False, null=False, default="-")
+    outcome = models.CharField(max_length=20, choices=END_RESULT, default='STARTED')
+    start_time = models.DateTimeField(auto_now_add=True)
 
     class Meta:
         db_table = 'game_table'
-        ordering = ['-game_time']
+        ordering = ['id']

@@ -50,7 +50,7 @@ class Player(AbstractUser):
     id = models.BigAutoField(primary_key=True)
     username = models.CharField(max_length=150, unique=True)
     full_name = models.CharField(max_length=150, blank=True)
-    email: str = models.EmailField(unique=True)
+    email = models.EmailField(unique=True)
     password = models.CharField(max_length=150, validators=[MinLengthValidator(8)])
     is_staff = models.BooleanField(default=False)
     tfa = models.BooleanField(default=False)
@@ -61,7 +61,8 @@ class Player(AbstractUser):
         validators=[validate_image_size],
     )
     is_guest = models.BooleanField(default=False)
-    is_logged_in = models.BooleanField(default=False) ## for online status
+    is_logged_in = models.BooleanField(default=False)
+    rating = models.IntegerField(default=0)
 
     # Fields removed
     first_name = None
