@@ -454,7 +454,7 @@ function secondPlayerNameModal() {
         <div class="modal-body px-3 py-2">
           <div id="local-game-error-msg" class="alert alert-danger small py-2" style="display:none;"></div>
           <p class="text-white mb-0">Enter the name of the second player:</p>
-          <input type="text" id="secondPlayerName" class="form-control my-2" style="color=white;" placeholder="player_2" value="player_2" />
+          <input type="text" id="secondPlayerName" class="form-control my-2" style="color=white;" placeholder="Enter username" value="player_2" />
         </div>
         <div class="modal-footer border-0 py-3 d-flex justify-content-start">
           <button type="button" class="btn btn-primary btn-sm" id="submitSecondPlayerNameBtn">
@@ -523,6 +523,10 @@ function gameSettingsModal() {
   modal
     .querySelector("#applyButton")
     .addEventListener("click", changeSetting);
+
+  modal.addEventListener("keydown", (e) => {
+      if (e.key === "Enter") changeSetting();
+    });
   
   modal // close the modal
     .querySelector(".btn-close")
