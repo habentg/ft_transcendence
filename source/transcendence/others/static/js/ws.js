@@ -130,9 +130,11 @@ function addMessageToChat(data) {
   const chatMessages = document.getElementById(`${data.chat_id}`);
   if (!chatMessages) {
     console.log("chatMessages not found");
+    createToast("chat", `${data.sender} sent you a msg!`,  `${data.message.slice(0, 50)}...`);
     recipient_chatroom = document.getElementById(`${data.sender}`);
     if (recipient_chatroom) {
       // bootstrap toast
+      console.log(`${data.sender} chatroom found`);
       // recipient_chatroom.classList.add("unread");
       const msg_indicator = document.createElement("span");
       msg_indicator.classList.add("text-danger");

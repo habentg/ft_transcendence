@@ -17,7 +17,9 @@
 	/* margin-top: 80px; */
 	background-color: rgba(0, 0, 0, 0.8);
 	border: 1px solid rgba(132, 221, 252, 0.2);
-	border-radius: 15px;
+	/* border-radius: 15px; */
+	border-top-right-radius: 15px;
+	border-bottom-right-radius: 15px;
 	padding: 10px;
 	/* max-width: 600px; */
 	/* width: fit-content; */
@@ -104,7 +106,9 @@
 	color: #84ddfc;
 	border-right: 1px solid rgba(132, 221, 252, 0.2);
 	overflow-y: auto;
-	border-radius: 15px;
+	/* border-radius: 15px; */
+	border-top-left-radius: 15px;
+	border-bottom-left-radius: 15px;
 }
 
 .sidebar-header {

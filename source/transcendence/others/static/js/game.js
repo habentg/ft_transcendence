@@ -8,7 +8,7 @@
 //Game settings
 let paddleSpeed = 6;
 let ballSpeed = 4.5;
-let maxScore = 5;
+let maxScore = 2;
 let slowServe = false;
 
 //this flags would determine which game mode we are playing
@@ -124,6 +124,27 @@ window.onload = function () {
 					errorMsg.style.display = "block";
 				}
 			});
+	
+	// submit when Enter key is pressed
+	modal.querySelector("#secondPlayerName").addEventListener("keypress", (event) => {
+		if (event.key === "Enter") {
+			modal.querySelector("#submitSecondPlayerNameBtn").click();
+		}
+	});
+	  
+	// Close & submit the modal when the close button is clicked
+	modal.querySelector(".btn-close").addEventListener("click", () => {
+		modal.querySelector("#submitSecondPlayerNameBtn").click();
+		// closeModal("secondPlayerNameModal");
+	});
+
+	// Close & the modal when the modal is clicked outside
+	modal.addEventListener("click", (event) => {
+		if (event.target === modal) {
+			modal.querySelector("#submitSecondPlayerNameBtn").click();
+			// closeModal("secondPlayerNameModal");
+		}
+	});
 
 			initGame(); //initializing the game flags and adding players etc.
 
@@ -150,9 +171,9 @@ window.onload = function () {
 		document.getElementById("aiButton").addEventListener("click", startaiGame);
 	}
 
-	document.addEventListener("keydown", move);
-	document.addEventListener("keyup", stopMovement);
-	displayStartMessage();
+  document.addEventListener("keydown", move);
+  document.addEventListener("keyup", stopMovement);
+//   displayStartMessage();
 };
 
 // function for getting game mode (ai , 1v1, tournament)
@@ -267,10 +288,9 @@ function startGame(player1, player2) {
 	document.getElementById("player2").classList.remove("d-none");
 
 
-	document.getElementById("startButton").disabled = true; //disable start button when the game starts
-	document.getElementById("startButton").disabled = true; //disable start button when the game starts
-	document.getElementById("settingButton").disabled = true;
-	// document.getElementById("aiButton").disabled = true;
+    document.getElementById("startButton").disabled = true; //disable start button when the game starts
+    document.getElementById("settingButton").disabled = true;
+    // document.getElementById("aiButton").disabled = true;
 
 	// hide settings menu
 	// document.getElementById("settingButton").style.display = "none";
@@ -575,6 +595,22 @@ function resetGame(player1, player2, direction) {
 		ball.velocityY = 2 * (Math.random() > 0.5 ? 1 : -1);
 	}
 
+  // drawFlag = !isGameOver();
+  if (isGameOver()) {
+        drawFlag = false;
+        aiFlag = false;
+        console.log("Game Over: SHOULD RETURN SETTINGS MENU");
+
+        if (document.getElementById("aiButton")) {
+            document.getElementById("aiButton").disabled = false;
+        }
+        if (document.getElementById("startButton")) {
+            document.getElementById("startButton").disabled = false;
+        }
+        if (document.getElementById("settingButton")) {
+            document.getElementById("settingButton").disabled = false;
+        }
+    }
 }
 
 function isGameOver(player1, player2) {
@@ -674,15 +710,15 @@ function drawCapsulePaddle(
 //ai view
 let lastballPosition = { x: 0, y: 0 };
 
-function startaiGame(player1, player2) {
-	aiFlag = true; // Enable AI
-	player1.score = 0;
-	player2.score = 0;
-	drawFlag = true;
-	setInterval(aiView, 50);
-	setInterval(aiLogic, 50);
-	requestAnimationFrame(draw);
-	// document.getElementById("startButton").disabled = true;
+function startaiGame() {
+  aiFlag = true; // Enable AI
+  player1Score = 0;
+  player2Score = 0;
+  drawFlag = true;
+  setInterval(aiView, 50);
+  setInterval(aiLogic, 50);
+  requestAnimationFrame(draw);
+    // document.getElementById("startButton").disabled = true;
 
 	// make player 2 name as AI
 	document.getElementById("player2Name").textContent = "@ AI";
