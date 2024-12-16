@@ -381,6 +381,29 @@ td {
     opacity: 0.9;
 }
 
+/*  Toast  */
+#toast {
+  position: fixed; 
+  top: 75px;       
+  right: 0px;     
+  min-width: 250px;
+  max-width: 350px; 
+  z-index: 1050;  
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); 
+  border-radius: 8px; 
+  overflow: hidden; 
+  border: none; 
+}
+
+#toast-header {
+  background-color: #84ddfc; 
+  color: white; 
+  padding: 10px 15px; 
+  font-size: 16px; 
+  font-weight: bold; 
+  display: flex; 
+}
+
 /* Responsive Adjustments */
 @media (max-width: 991px) {
   .custom-navbar {
@@ -477,4 +500,5 @@ td {
   .footer h5 {
     font-size: 1rem;
   }
+
 }

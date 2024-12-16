@@ -64,7 +64,7 @@ saturday night - to do:
 
 
 NEW -  to do:
-1. chat notification - toast
-2. show error - toast
-3. chat UI 
+1. chat notification - toast : Completed
+2. show error - toast : Completed
+3. chat UI : Completed
 4. 

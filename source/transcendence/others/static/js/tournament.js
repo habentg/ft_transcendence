@@ -55,6 +55,8 @@ let drawFlag = false;
 let matchCount = 0;
 let matchHistory = [];
 
+let tournamentElement;
+
 function initializeGame() {
   board = document.getElementById("board");
   board.height = boardHeight;
@@ -65,7 +67,7 @@ function initializeGame() {
   document.addEventListener("keyup", stopMovement);
 }
 
-function startGame() {
+function startGame(player1, player2) {
   player1Score = 0;
   player2Score = 0;
   player1LastKey = null;
@@ -77,8 +79,7 @@ function startGame() {
   document.getElementById("player2Name").style.display = "block";
   document.getElementById("player1").classList.remove("d-none");
   document.getElementById("player2").classList.remove("d-none");
-
-  requestAnimationFrame(draw);
+  requestAnimationFrame(() => draw(player1, player2))
 }
 
 function draw() {
@@ -322,6 +323,7 @@ function getPlayerNumberModal() {
 function createTournamentMap() {
   const tournamentWrapper = document.createElement("div");
   tournamentWrapper.className = "tournamentWrapper";
+  tournamentWrapper.id = "tournamentWrapper";
 
   tournamentWrapper.innerHTML = `
 				<h1 class="text-center mb-5">Tournament Map</h1>
@@ -335,7 +337,7 @@ function createTournamentMap() {
 								<div class="game game1 mb-5">
 									<div class="card">
 										<div class="card-body-custom">
-											<h5 id="game1" class="card-title">Game 1</h5>
+											<h5 id="game1" class="card-title game-1">Game 1</h5>
 											<div class="d-flex justify-content-between align-items-center">
 												<div class="team">
 													<i class="profileIcon fas fa-user-circle "></i>
@@ -357,7 +359,7 @@ function createTournamentMap() {
 								<div class="game game2 mb-5">
 									<div class="card">
 										<div class="card-body-custom">
-											<h5 id="game2" class="card-title">Game 2</h5>
+											<h5 id="game2" class="card-title game-2">Game 2</h5>
 											<div class="d-flex justify-content-between align-items-center">
 												<div class="team">
 													<i class="profileIcon fas fa-user-circle "></i>
@@ -379,7 +381,7 @@ function createTournamentMap() {
 								<div class="game game3 mb-5">
 									<div class="card">
 										<div class="card-body-custom">
-											<h5 id="game3" class="card-title">Game 3</h5>
+											<h5 id="game3" class="card-title game-3">Game 3</h5>
 											<div class="d-flex justify-content-between align-items-center">
 												<div class="team">
 													<i class="profileIcon fas fa-user-circle "></i>
@@ -401,7 +403,7 @@ function createTournamentMap() {
 								<div class="game game4 mb-5">
 									<div class="card">
 										<div class="card-body-custom">
-											<h5 id="game4" class="card-title">Game 4</h5>
+											<h5 id="game4" class="card-title game-4">Game 4</h5>
 											<div class="d-flex justify-content-between align-items-center">
 												<div class="team">
 													<i class="profileIcon fas fa-user-circle "></i>
@@ -432,7 +434,7 @@ function createTournamentMap() {
 								<div class="game game5 ">
 									<div class="card">
 										<div class="card-body-custom">
-											<h5 id="game5" class="card-title">Game 5</h5>
+											<h5 id="game5" class="card-title game-5">Game 5</h5>
 											<div class="d-flex justify-content-between align-items-center">
 												<div class="team">
 													<i class="profileIcon fas fa-user-circle "></i>
@@ -454,7 +456,7 @@ function createTournamentMap() {
 								<div class="game game6 mb-5">
 									<div class="card">
 										<div class="card-body-custom">
-											<h5 id="game6" class="card-title">Game 6</h5>
+											<h5 id="game6" class="card-title game-6">Game 6</h5>
 											<div class="d-flex justify-content-between align-items-center">
 												<div class="team">
 													<i class="profileIcon fas fa-user-circle "></i>
@@ -482,10 +484,10 @@ function createTournamentMap() {
 							<!-- <h6 class="text-center">Final Round</h6> -->
 							<!-- <div class="vertical-line"> -->
 								<!-- Game 7 -->
-								<div id="game7" class="game game7 mb-5">
+								<div class="game game7 mb-5">
 									<div class="card">
 										<div class="card-body-custom">
-											<h5 class="card-title">Game 7</h5>
+											<h5 id="game7" class="card-title game-7">Game 7</h5>
 											<div class="d-flex justify-content-between align-items-center">
 												<div class="team">
 													<i class="profileIcon fas fa-user-circle "></i>
@@ -625,7 +627,7 @@ document.addEventListener("DOMContentLoaded", () => {
       if (maxPlayerNumbers < 4 || maxPlayerNumbers > 8) {
         alert("Not between 4 and 8");
       }
-      console.log("Creating tournament with ", playersNumber, " players");
+      console.log("Creating tournament with ", maxPlayerNumbers, " players");
       closeModal("tournamentModal");
       setUpPlayerAddition();
     });
@@ -661,8 +663,8 @@ document.addEventListener("DOMContentLoaded", () => {
         alert("Player already added!");
         return;
       }
-      if (players.length != maxPlayerNumbers) {
-        alert("Not the correct set number of players");
+      if (players.length == maxPlayerNumbers) {
+        alert("Max Players reached");
         return;
       }
 
@@ -728,8 +730,6 @@ document.addEventListener("DOMContentLoaded", () => {
       friendBoard.remove();
       const tournament = createPingPongTournament(players);
       try {
-        const tournamentContainer = document.getElementById("background");
-        tournamentContainer.appendChild(initMap(createTournamentMap()));
         const champion = await tournament.runTournament();
         console.log("Champion:", champion);
         console.log("Match History:", tournament.getMatchHistory());
@@ -763,23 +763,68 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 });
 
+function updateTournamentMap(match) {
+  matchCount += 1;
 
-function updateTournamentMap(match)
-{
-	matchCount += 1;
+  // Determine which game to update based on matchCount
+  const gameToUpdate = tournamentElement.querySelector(`#game${matchCount}`);
 
-	tournamentDiv = document.querySelector("#tournamentWrapper");
+  if (gameToUpdate) {
+    // Update team names
+    const teamElements = gameToUpdate
+      .closest(".game")
+      .querySelectorAll(".team span");
+    teamElements[0].textContent = match.player1;
+    teamElements[1].textContent = match.player2;
 
-	
+    // Update scores
+    // Get the parent score element
+    const scoreElement = gameToUpdate.closest(".game").querySelector(".score");
+
+    // Clear existing content and update with spans
+    scoreElement.innerHTML = `<span class="score-value">${match.player1Score}</span> :
+    <span class="score-value">${match.player2Score}</span>`;
+
+    // Route winner to next round based on tournament progression
+    routeWinnerToNextRound(matchCount, match.winner);
+  }
 }
+
+function routeWinnerToNextRound(currentGameNumber, winner) {
+  // Mapping of game progression
+  const gameProgressionMap = {
+    1: { nextGame: 5, teamPosition: 0 },
+    2: { nextGame: 5, teamPosition: 1 },
+    3: { nextGame: 6, teamPosition: 0 },
+    4: { nextGame: 6, teamPosition: 1 },
+    5: { nextGame: 7, teamPosition: 0 },
+    6: { nextGame: 7, teamPosition: 1 },
+  };
+
+  // Check if this game has a next round
+  const progression = gameProgressionMap[currentGameNumber];
+  if (progression) {
+    const nextGameElement = tournamentElement.querySelector(
+      `#game${progression.nextGame}`
+    );
+    if (nextGameElement) {
+      const teamElements = nextGameElement.closest(".game").querySelectorAll(".team span");
+      teamElements[progression.teamPosition].textContent = winner;
+    }
+  }
+}
+
 //LOGIC: This is to display initial the tournament logic
 function createPingPongTournament(players) {
-
-
   async function playMatch(player1, player2) {
-    const tournamentContainer = document.getElementById("background");
+    // Delay the execution of the code below
+    await new Promise((resolve) => setTimeout(resolve, 1500));
+
+    tournamentDiv = document.querySelector("#tournamentWrapper");
+    tournamentDiv.remove();
+    const pageContainer = document.getElementById("background");
     const game = gameCanvas();
-    tournamentContainer.appendChild(game);
+    pageContainer.appendChild(game);
 
     return new Promise((resolve, reject) => {
       try {
@@ -787,7 +832,9 @@ function createPingPongTournament(players) {
         player1Score = 0;
         player2Score = 0;
         drawFlag = true;
-        player1Name = player1;
+        player1Obj = new Player(player1, "left");;
+        player2Obj = new Player(player2, "right");;
+		
         player2Name = player2;
 
         const gameboard = document.getElementById("tableBoard");
@@ -796,23 +843,22 @@ function createPingPongTournament(players) {
         canvas.style.visibility = "visible";
 
         initializeGame(); // Ensure clean game initialization
-        startGame();
+        startGame(player1Obj, player2Obj);
 
         const checkGameStatus = () => {
           if (!drawFlag) {
             const match = {
-              player1: player1,
-              player2: player2,
-              player1Score: player1Score,
-              player2Score: player2Score,
-              winner: player1Score >= maxScore ? player1 : player2,
+              player1: player1Obj.playerName,
+              player2: player2Obj.playerName,
+              player1Score: player1Obj.score,
+              player2Score: player2Obj.score,
+              winner: player1Obj.score >= maxScore ? player1Obj.playerName : player2Obj.playerName,
             };
 
             matchHistory.push(match);
-			updateTournamentMap(match);
-            // gameboard.style.visibility = 'hidden';
-            // canvas.style.visibility = 'hidden';
+            updateTournamentMap(match);
             game.remove();
+            pageContainer.appendChild(tournamentElement);
             resolve(match.winner);
           } else {
             requestAnimationFrame(checkGameStatus);
@@ -828,6 +874,9 @@ function createPingPongTournament(players) {
 
   async function runTournament() {
     let currentPlayers = [...players];
+    const tournamentContainer = document.getElementById("background");
+    tournamentElement = initMap(createTournamentMap());
+    tournamentContainer.appendChild(tournamentElement);
 
     // Validate initial number of players
     if (![4, 8].includes(currentPlayers.length)) {

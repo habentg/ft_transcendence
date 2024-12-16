@@ -1,14 +1,14 @@
 
 /*
    todos
-	grab 2 string name of player 1 and 2. store game results in a variable
-	game results should be who won and scores.
+	Need to work on AI logic. If the ball is too fast it wont be able to follow the ball.
+	keyinputs are working fine.
 */
 
 //Game settings
 let paddleSpeed = 6;
-let ballSpeed = 4.5;
-let maxScore = 5;
+let ballSpeed = 2;
+let maxScore = 500;
 let slowServe = false;
 
 //this flags would determine which game mode we are playing
@@ -48,7 +48,7 @@ class Player {
 			this.y = boardHeight / 2 - playerHeight / 2;
 			this.parryKey = "KeyA";
 		} else if (position === "right") {
-			this.x = 10;
+			this.x = boardWidth - playerWidth - 10;
 			this.y = boardHeight / 2 - playerHeight / 2;
 			this.parryKey = "Numpad0";
 		}
@@ -68,31 +68,12 @@ let ball = {
 let drawFlag = false;
 let defp1Name = "";
 let defp2Name = "";
-window.onload = function () {
+
+function loadGame() {
 	board = document.getElementById("board");
 	board.height = boardHeight;
 	board.width = boardWidth;
 	context = board.getContext("2d");
-
-	/* 
-		this part should load all the players. First we have to determine which type of game they would play (ai, 1v1, tournament)
-		We create player objects and store them with names and which side they would be playing. 
-	*/
-
-	// let gameType = "";
-	// gameType = document.getElementById("gameType").textcontent;
-
-	// function setgameFlags(type) {
-	// 	if (type === "tournament"){
-	// 		tournamentFlag = true;
-	// 	} else if (type === "versus") {
-	// 		versusFlag = true;
-	// 	} else if (type === "ai") {
-	// 		aiFlag = true;
-	// 	} else if (type === "parry") {
-	// 		parryFlag = true;
-	// 	}
-	// }
 
 	defp1Name = document.getElementById("player1Name").textContent;
 
@@ -124,9 +105,31 @@ window.onload = function () {
 					errorMsg.style.display = "block";
 				}
 			});
+	
+	// submit when Enter key is pressed
+	modal.querySelector("#secondPlayerName").addEventListener("keypress", (event) => {
+		if (event.key === "Enter") {
+			modal.querySelector("#submitSecondPlayerNameBtn").click();
+		}
+	});
+	  
+	// Close & submit the modal when the close button is clicked
+	modal.querySelector(".btn-close").addEventListener("click", () => {
+		modal.querySelector("#submitSecondPlayerNameBtn").click();
+		// closeModal("secondPlayerNameModal");
+	});
+
+	// Close & the modal when the modal is clicked outside
+	modal.addEventListener("click", (event) => {
+		if (event.target === modal) {
+			modal.querySelector("#submitSecondPlayerNameBtn").click();
+			// closeModal("secondPlayerNameModal");
+		}
+	});
 
 			initGame(); //initializing the game flags and adding players etc.
-
+			console.log("Player 1 values:", players[0]);
+			console.log("Player 2 values:", players[1]);
 			document.getElementById("startButton").addEventListener("click", () => {
 			// send to backend to create the game -
 			/* 
@@ -147,17 +150,20 @@ window.onload = function () {
 	}
 
 	if (document.getElementById("aiButton")) {
-		document.getElementById("aiButton").addEventListener("click", startaiGame);
+		initGame();
+		document.getElementById("aiButton").addEventListener("click", startaiGame(players[0], players[1]));
 	}
 
-	document.addEventListener("keydown", move);
-	document.addEventListener("keyup", stopMovement);
-	displayStartMessage();
+  document.addEventListener("keydown", move);
+  document.addEventListener("keyup", stopMovement);
+//   displayStartMessage();
 };
 
-// function for getting game mode (ai , 1v1, tournament)
+// function for getting game mode (ai , 1v1, tournament)w
 function getgameMode() {
-	return document.getElementById("gameType").textContent;
+	if (document.getElementById("aiButton")) return "ai";
+	else if (document.getElementById("startButton")) return "versus";
+	// return document.getElementById("gameType").textContent;
 }
 
 function isparryFlag() {
@@ -174,7 +180,7 @@ function initGame() {
 		versusFlag = true;
 	} else if (gameMode === "ai") {
 		players.push(new Player(defp1Name, "left"));
-		players.push(new Player(bot, "right"));
+		players.push(new Player("bot", "right"));
 		aiFlag = true;
 	} else if (gameMode === "tournament") {
 		/* 
@@ -261,25 +267,17 @@ function changeSetting() {
 function startGame(player1, player2) {
 	drawFlag = true;
 
-	requestAnimationFrame(draw(player1, player2));
-
+	
 	document.getElementById("player1").classList.remove("d-none");
 	document.getElementById("player2").classList.remove("d-none");
-
-
-	document.getElementById("startButton").disabled = true; //disable start button when the game starts
-	document.getElementById("startButton").disabled = true; //disable start button when the game starts
-	document.getElementById("settingButton").disabled = true;
-	// document.getElementById("aiButton").disabled = true;
-
-	// hide settings menu
-	// document.getElementById("settingButton").style.display = "none";
+	
+	
+    document.getElementById("startButton").disabled = true; //disable start button when the game starts
+    document.getElementById("settingButton").disabled = true;
+	
 	document.getElementById("startButton").disabled = true; //disable start button when the game starts
 	document.getElementById("settingButton").disabled = true;
-	// document.getElementById("aiButton").disabled = true;
-
-	// hide settings menu
-	// document.getElementById("settingButton").style.display = "none";
+	requestAnimationFrame(draw(player1, player2));
 }
 
 function drawLine() {
@@ -298,11 +296,12 @@ function draw(player1, player2) {
 	if (!drawFlag) {
 		return;
 	}
-	requestAnimationFrame(draw(player1, player2));
-	// til this part
-	updatePaddleVelocities();
 	// Clear board
 	context.clearRect(0, 0, board.width, board.height);
+	// requestAnimationFrame(draw(player1, player2));
+	requestAnimationFrame(() => draw(player1, player2));
+	// til this part
+	updatePaddleVelocities(player1, player2);
 
 	// if (aiFlag) aiLogic();
 	drawLine(); //draw line in the middle 
@@ -364,38 +363,10 @@ function drawBall() {
 	context.closePath();
 }
 
-// function move(e) {
-//     if (e.code === "KeyW") {
-//         player1.velocityY = -paddleSpeed;
-//         player1LastKey = "KeyW";
-//     }
-//     if (e.code === "KeyS") {
-//         player1.velocityY = paddleSpeed;
-//         player1LastKey = "KeyS";
-//     }
-//     if (e.code === "ArrowUp") {
-//         player2.velocityY = -paddleSpeed;
-//         player2LastKey = "ArrowUp";
-//     }
-//     if (e.code === "ArrowDown") {
-//         player2.velocityY = paddleSpeed;
-//         player2LastKey = "ArrowDown";
-//     }
-// }
-
-// function stopMovement(e) {
-//     if (e.code === "KeyW" || e.code === "KeyS"){
-//         player1.velocityY = 0;
-//         player1LastKey = e.code;
-//     }
-//     if (e.code === "ArrowUp" || e.code === "ArrowDown"){
-//         player2.velocityY = 0;
-//         player2LastKey = e.code;
-//     }
-// }
-
 function updatePaddleVelocities(player1, player2) {
 	// Player 1 movement
+	// console.log("Player 1 values:", player1);
+	// console.log("Player 2 values:", player2);
 	if (activeKeys["KeyW"]) {
 		player1.velocityY = -paddleSpeed;
 	} else if (activeKeys["KeyS"]) {
@@ -575,11 +546,27 @@ function resetGame(player1, player2, direction) {
 		ball.velocityY = 2 * (Math.random() > 0.5 ? 1 : -1);
 	}
 
+  // drawFlag = !isGameOver();
+  if (isGameOver(player1, player2)) {
+        drawFlag = false;
+        aiFlag = false;
+        console.log("Game Over: SHOULD RETURN SETTINGS MENU");
+
+        if (document.getElementById("aiButton")) {
+            document.getElementById("aiButton").disabled = false;
+        }
+        if (document.getElementById("startButton")) {
+            document.getElementById("startButton").disabled = false;
+        }
+        if (document.getElementById("settingButton")) {
+            document.getElementById("settingButton").disabled = false;
+        }
+    }
 }
 
 function isGameOver(player1, player2) {
 	if (player1.score >= maxScore || player2.score >= maxScore) {
-		displayGameOver();
+		displayGameOver(player1, player2);
 		return true;
 	}
 	return false;
@@ -675,15 +662,9 @@ function drawCapsulePaddle(
 let lastballPosition = { x: 0, y: 0 };
 
 function startaiGame(player1, player2) {
-	aiFlag = true; // Enable AI
-	player1.score = 0;
-	player2.score = 0;
-	drawFlag = true;
-	setInterval(aiView, 50);
-	setInterval(aiLogic, 50);
-	requestAnimationFrame(draw);
-	// document.getElementById("startButton").disabled = true;
-
+  aiFlag = true; // Enable AI
+  drawFlag = true;
+  	
 	// make player 2 name as AI
 	document.getElementById("player2Name").textContent = "@ AI";
 	document.getElementById("player2Name").style.display = "block";
@@ -693,6 +674,11 @@ function startaiGame(player1, player2) {
 
 	document.getElementById("aiButton").disabled = true;
 	document.getElementById("settingButton").disabled = true;
+
+ 	setInterval(aiView, 100);
+	setInterval(() => aiLogic(player2), 50);
+
+	requestAnimationFrame(() => draw(player1, player2));
 }
 
 function aiLogic(player2) {
@@ -700,58 +686,84 @@ function aiLogic(player2) {
 	const currentBallY = ball.y; // Current ball Y position
 	const previousBallY = lastballPosition.y; // Last recorded ball Y position
 	const direction = currentBallY - previousBallY; // Determine ball movement direction
-
+  
 	// Calculate predicted target position based on the direction and speed of the ball
 	const targetY = currentBallY + direction - player2.height / 2;
-
-	if (targetY > player2.y - 40 && targetY < player2.y + 40) return;
+  
+	if (targetY > player2.y - 40 && targetY < player2.y + 40) {
+	  // If the AI is close enough to the target Y position, stop moving
+	  aikeyEvents("stop");
+	  return;
+	}
+  
 	if (player2.y + tolerance < targetY) {
-		aikeyEvents("down");
+	  aikeyEvents("down");  // Keep moving down until target is reached
 	} else if (player2.y - tolerance > targetY) {
-		aikeyEvents("up");
-	} else {
-		aikeyEvents("stop");
+	  aikeyEvents("up");    // Keep moving up until target is reached
 	}
 }
+  
+  
 
+
+let aiMovingUp = false;
+let aiMovingDown = false;
 
 function aikeyEvents(moveDirection) {
-	let event;
+  let event;
 
-	// Simulate 'keydown' for up or down based on moveDirection
-	if (moveDirection === "up") {
-		event = new KeyboardEvent("keydown", {
-			key: "ArrowUp",
-			code: "ArrowUp",
-			keyCode: 38, // Deprecated but still included for backward compatibility
-			bubbles: true,
-			cancelable: true,
-		});
-	} else if (moveDirection === "down") {
-		event = new KeyboardEvent("keydown", {
-			key: "ArrowDown",
-			code: "ArrowDown",
-			keyCode: 40,
-			bubbles: true,
-			cancelable: true,
-		});
-	} else if (moveDirection === "stop") {
-		// Simulate 'keyup' for stopping movement
-		event = new KeyboardEvent("keyup", {
-			key: "ArrowUp",
-			code: "ArrowUp",
-			keyCode: 38,
-			bubbles: true,
-			cancelable: true,
-		});
-	}
-
-	// Dispatch the event
-	if (event) document.dispatchEvent(event);
+  // Simulate 'keydown' for up or down based on moveDirection
+  if (moveDirection === "up" && !aiMovingUp) {
+    event = new KeyboardEvent("keydown", {
+      key: "ArrowUp",
+      code: "ArrowUp",
+      keyCode: 38,
+      bubbles: true,
+      cancelable: true,
+    });
+    document.dispatchEvent(event);
+    aiMovingUp = true;  // Track that the key is being held down
+  } else if (moveDirection === "down" && !aiMovingDown) {
+    event = new KeyboardEvent("keydown", {
+      key: "ArrowDown",
+      code: "ArrowDown",
+      keyCode: 40,
+      bubbles: true,
+      cancelable: true,
+    });
+    document.dispatchEvent(event);
+    aiMovingDown = true;  // Track that the key is being held down
+  } else if (moveDirection === "stop") {
+    // Simulate 'keyup' for stopping movement
+    if (aiMovingUp) {
+      event = new KeyboardEvent("keyup", {
+        key: "ArrowUp",
+        code: "ArrowUp",
+        keyCode: 38,
+        bubbles: true,
+        cancelable: true,
+      });
+      document.dispatchEvent(event);
+      aiMovingUp = false;  // Stop holding up
+    }
+    if (aiMovingDown) {
+      event = new KeyboardEvent("keyup", {
+        key: "ArrowDown",
+        code: "ArrowDown",
+        keyCode: 40,
+        bubbles: true,
+        cancelable: true,
+      });
+      document.dispatchEvent(event);
+      aiMovingDown = false;  // Stop holding down
+    }
+  }
 }
 
+  
 // function to check/store balls last position every 1 second.
 function aiView() {
+	console.log("Lastball values:", lastballPosition);
 	if (aiFlag) {
 		lastballPosition.x = ball.x;
 		lastballPosition.y = ball.y;
@@ -777,6 +789,7 @@ function checkScreenSize() {
 	}
 }
 
+loadGame();
 // Run check on page load
 checkScreenSize();
 
