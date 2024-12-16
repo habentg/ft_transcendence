@@ -13,5 +13,8 @@ source/.env
 # Ignore .git files
 .git/
 
+# Ignore profile pictures
+source/transcendence/profile_pics/
+
 # Ignore migration files
 **/migration/

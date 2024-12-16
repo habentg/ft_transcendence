@@ -16,7 +16,7 @@
 	/* margin: auto; */
 	/* margin-top: 80px; */
 	background-color: rgba(0, 0, 0, 0.8);
-	border: 1px solid rgba(132, 221, 252, 0.2);
+	border: 1px solid rgba(62, 166, 205, 0.8);
 	/* border-radius: 15px; */
 	border-top-right-radius: 15px;
 	border-bottom-right-radius: 15px;
@@ -104,11 +104,15 @@
 	/* width: fit-content; */
 	background-color: rgba(0, 0, 0, 0.9);
 	color: #84ddfc;
-	border-right: 1px solid rgba(132, 221, 252, 0.2);
 	overflow-y: auto;
 	/* border-radius: 15px; */
 	border-top-left-radius: 15px;
 	border-bottom-left-radius: 15px;
+	border: 1px solid rgba(62, 166, 205, 0.8);
+
+	 /* Make the sidebar scrollable */
+	 max-height: 500px; 
+	 overflow-y: auto; /* Add vertical scroll when content exceeds max-height */
 }
 
 .sidebar-header {
@@ -136,12 +140,12 @@
 
 .friend-list li:hover {
 	transform: translateY(-2px);
-    background: linear-gradient(45deg, #b02c98, #84ddfc);
-    box-shadow: 0 4px 15px rgba(132, 221, 252, 0.3);
+	background: rgba(132, 221, 252, 0.3);
+	box-shadow: 0 4px 15px rgba(132, 221, 252, 0.3);
 }
 
 .friend-list li.active {
-	background-color: rgba(176, 44, 152, 0.8);
+	background-color: #b02c98;
 	color: white;
 }
 
@@ -196,7 +200,23 @@
 	}
 } */
 
-@media (max-width: 576px) {
+/* Ensure the iconbtn stays in the top-right corner */
+.iconbtn {
+	position: absolute;
+	top: 2;
+	right: 0;
+	margin-bottom: 2rem;
+	z-index: 1050;
+}
+
+/* Fix dropdown menu alignment for smaller screens */
+#three_dots .dropdown-menu {
+	right: 0 !important;
+	left: auto !important;
+	transform: translate(0, 0) !important;
+}
+
+@media (max-width: 768px) {
 	.friend-item .profile-icon {
 		display: none;
 	}
@@ -205,8 +225,11 @@
 		width: fit-content;
 	}
 
-	.sidebar-header h5 {
-		font-size: 1rem;
+	.sidebar-header {
+		padding-bottom: 26px;
 	}
-	
+
+	.sidebar-header h5 {
+		font-size: 0.8rem;
+	}
 }
