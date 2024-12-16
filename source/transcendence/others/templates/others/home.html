@@ -6,63 +6,32 @@
       <!-- Search and Friends Section -->
       <div class="row justify-content-center mb-4">
         {% if not player.is_guest %}
-        <div class="col-lg-8">
-          <div class="content p-4">
-            <div class="row g-3">
-              <!-- Search Bar -->
-              <div class="col-md-6">
-                <div class="input-group">
-                  <input
-                    type="text"
-                    id="searchInput"
-                    class="form-control"
-                    placeholder="Search for players..."
-                  />
-                  <button id="searchIcon" class="btn btn-primary">
-                    <i class="fa-solid fa-search"></i>
-                  </button>
+          <div class="col-lg-8">
+            <div class="content p-4">
+              <div class="row g-3">
+                <!-- Search Bar -->
+                <div class="col-md-6">
+                  <div class="input-group">
+                    <input type="text" id="searchInput" class="form-control" placeholder="Search for players..." />
+                    <button id="searchIcon" class="btn btn-primary"><i class="fa-solid fa-search"></i></button>
+                  </div>
+                </div>
+                <!-- Friend Buttons -->
+                <div class="options col-md-6 d-flex gap-2 justify-content-md-end">
+                  <button id="friends_btn" class="btn btn-outline-light"><i class="fas fa-users me-2"></i>Friends</button>
+                  <button id="friend_requests_btn" class="btn btn-outline-light"><i class="fas fa-user-plus me-2"></i>Requests</button>
                 </div>
               </div>
-              <!-- Friend Buttons -->
-              <div class="options col-md-6 d-flex gap-2 justify-content-md-end">
-                <button id="friends_btn" class="btn btn-outline-light">
-                  <i class="fas fa-users me-2"></i>Friends
-                </button>
-                <button id="friend_requests_btn" class="btn btn-outline-light">
-                  <i class="fas fa-user-plus me-2"></i>Requests
-                </button>
-              </div>
-            </div>
-            <div id="searchResults" class="mt-3 d-none">
-              <div id="search_list"></div>
-              <div
-                id="pagination_navigation"
-                class="pagination d-flex align-items-center justify-content-center d-none"
-              >
-                <button
-                  type="button"
-                  id="prevPage"
-                  class="btn btn-secondary"
-                  data-url=""
-                >
-                  &lt;&lt;
-                </button>
-                <span id="pageNumbers"
-                  ><span id="current_page"></span> of
-                  <span id="total_pages"></span> pages</span
-                >
-                <button
-                  type="button"
-                  id="nextPage"
-                  class="btn btn-primary"
-                  data-url=""
-                >
-                  &gt;&gt;
-                </button>
+              <div id="searchResults" class="mt-3 d-none">
+                <div id="search_list"></div>
+                <div id="pagination_navigation" class="pagination d-flex align-items-center justify-content-center d-none">
+                  <button type="button" id="prevPage" class="btn btn-secondary" data-url="">&lt;&lt;</button>
+                  <span id="pageNumbers"><span id="current_page"></span> of <span id="total_pages"></span> pages</span>
+                  <button type="button" id="nextPage" class="btn btn-primary" data-url="">&gt;&gt;</button>
+                </div>
               </div>
             </div>
           </div>
-        </div>
         {% endif %}
       </div>
 
@@ -72,48 +41,29 @@
           <div class="content p-4">
             <div class="row g-4">
               <div class="col-md-6">
-                <button
-                  id="localGameBtn"
-                  onclick="createLocalGameModal()"
-                  class="menu-item d-flex align-items-center p-3"
-                >
+                <button id="localGameBtn" onclick="createLocalGameModal()" class="menu-item d-flex align-items-center p-3">
                   <i class="fas fa-gamepad fa-2x me-3"></i>
                   <h5 class="mb-0">Local Game</h5>
                 </button>
               </div>
               <div class="col-md-6">
-                <a
-                  id="profile_btn"
-                  onclick="appRouter()"
-                  class="menu-item d-flex align-items-center p-3"
-                  href="/profile/{{ player.username }}"
-                  data-username="{{ player.username }}"
-                >
+                <a id="profile_btn" onclick="appRouter()" class="menu-item d-flex align-items-center p-3" href="/profile/{{ player.username }}" data-username="{{ player.username }}">
                   <i class="fas fa-user fa-2x me-3"></i>
                   {% if player.profile_picture %}
-                  <h5
-                    id="nav_profile_pic"
-                    data-pfp="{{ player.profile_picture }}"
-                  >
-                    Profile
-                  </h5>
+                    <h5 id="nav_profile_pic" data-pfp="{{ player.profile_picture }}">Profile</h5>
                   {% else %}
-                  <h5 class="mb-0">Profile</h5>
+                    <h5 class="mb-0">Profile</h5>
                   {% endif %}
                 </a>
               </div>
               <div id="createTournamentBtn" class="col-md-6">
-                <button class="menu-item d-flex align-items-center p-3">
+                <a onclick="appRouter()" href="/tournament" class="menu-item d-flex align-items-center p-3">
                   <i class="fas fa-trophy fa-2x me-3"></i>
                   <h5 class="mb-0">Create Tournament</h5>
-                </button>
+                </a>
               </div>
               <div class="col-md-6">
-                <a
-                  onclick="appRouter()"
-                  href="/settings"
-                  class="menu-item d-flex align-items-center p-3"
-                >
+                <a onclick="appRouter()" href="/settings" class="menu-item d-flex align-items-center p-3">
                   <i class="fas fa-cog fa-2x me-3"></i>
                   <h5 class="mb-0">Settings</h5>
                 </a>

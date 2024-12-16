@@ -4,8 +4,8 @@
 {% for notification in notifications %}
   <li style="border-bottom: 1px solid #ffffff; padding-bottom: 0.3rem; margin-bottom: 0.3rem;">
     <a class="dropdown-item" href="/profile/{{notification.sender_username}}">
-      {% if notification.sender_pfp_url %}
-        <img src="{{ notification.sender_pfp_url }}" alt="Profile Picture" class="profile-pic-nav rounded-circle" style="width: 32px; height: 32px" />
+      {% if notification.sender_profile_picture %}
+        <img src="{{ notification.sender_profile_picture }}" alt="Profile Picture" class="profile-pic-nav rounded-circle" style="width: 32px; height: 32px" />
       {% else %}
         <img src="{% static 'images/default_profile_pic.jpeg' %}" alt="Default Profile Picture" class="profile-pic-nav rounded-circle" style="width: 32px; height: 32px" />
       {% endif %}Friend Request <i class="fas fa-user-plus ms-3"></i>

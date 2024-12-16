@@ -11,7 +11,7 @@ import json
 from django.conf import settings
 import requests
 from .models import Player
-from django.contrib.auth import get_user_model, authenticate
+from django.contrib.auth import get_user_model
 from django.core.mail import send_mail
 from django.contrib.auth.tokens import default_token_generator
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
@@ -19,12 +19,10 @@ from django.utils.encoding import force_bytes, force_str
 from django.shortcuts import render
 from .utils import send_2fa_code
 import pyotp
-import jwt
 from django.urls import reverse
 from rest_framework.permissions import IsAuthenticated
-from .auth_middleware import JWTCookieAuthentication, add_token_to_blacklist
+from .auth_middleware import *
 from django.middleware.csrf import get_token
-from django.db import connection
 from rest_framework.response import Response
 from rest_framework.exceptions import AuthenticationFailed
 import urllib.parse
@@ -119,11 +117,10 @@ class SignOutView(APIView, BaseView):
 	def get(self, request):
 		player = request.user
 		token_string = request.COOKIES.get('access_token')
-		print("our player: ", player, flush=True)
 		if token_string:
 			try:
 				add_token_to_blacklist(token_string)
-			except jwt.ExpiredSignatureError or jwt.InvalidTokenError or jwt.DecodeError as e:
+			except Exception as e:
 				print(e, flush=True)
 				return HttpResponseRedirect(reverse('landing'))
 			response = HttpResponseRedirect(reverse('landing'))
@@ -134,6 +131,7 @@ class SignOutView(APIView, BaseView):
 			response.singed_out = True
 			if (player.is_guest):
 				player.delete()
+			player.is_logged_in = False
 			return response
 		return HttpResponseRedirect(reverse('landing'))
 
@@ -405,7 +403,6 @@ class PlayerProfileView(APIView, BaseView):
 				'am_i_requested': request.user.received_requests.filter(sender=queried_user).exists(),
 				'is_self': queried_user == request.user,
 			}
-		print(" is_self:", data['is_self'], flush=True)
 		return data
 
 # profile view
@@ -523,18 +520,3 @@ class AnonymizePlayer(APIView):
 		response.set_cookie('refresh_token', str(new_jwts), httponly=True)
 		anon.save()
 		return response
-
-# create a chat view
-class ChatView(APIView, BaseView):
-	authentication_classes = [JWTCookieAuthentication]
-	permission_classes = [IsAuthenticated]
-	template_name = 'account/chat.html'
-	title = 'Chat'
-	css = 'css/chat.css'
-	js = 'js/chat.js'
-
-	def get_context_data(self, request):
-		return {'player': PlayerSerializer(request.user).data}
-	
-	def get(self, request):
-		return super().get(request)

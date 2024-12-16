@@ -1,0 +1,81 @@
+{% load static %}
+
+<div class="chatPage">
+  <div class="background-image">
+    <div class="container py-5">
+      <div>
+        <h3 style="color: red;">Hi, {{ user.username }}! Enjoy....</h3>
+      </div>
+      <div class="chat-wrapper">
+        <!-- Sidebar -->
+        <div class="chat-sidebar">
+          <div class="sidebar-header">
+            <h5 class="mb-0">Chats</h5>
+          </div>
+          {% if chatrooms %}
+            <ul class="friend-list mb-3" id="friendList">
+              <!-- chatrooms will be loaded dynamically -->
+              {% for chatroom in chatrooms %}
+                {% if not chatroom.get_participant_one or not chatroom.get_participant_two %}
+                  <li id="deleted_player" class="friend-item d-flex align-items-center disabled" data-recipent="Deleted Player" onclick="openChat('deleted_player', '{{ chatroom.name }}')">
+                    <i class="fas fa-user me-2 profile-icon" style="color:red;"></i>
+                    <span class="mb-0">deleted_player</span>
+                  </li>
+                {% elif chatroom.get_participant_one.username == user.username %}
+                  <li id="{{ chatroom.get_participant_two.username }}" class="friend-item d-flex align-items-center" data-recipent="{{ chatroom.get_participant_two.full_name }}" onclick="openChat('{{ chatroom.get_participant_two.username }}', '{{ chatroom.name }}')">
+                    <i class="fas fa-user me-2 profile-icon"></i>
+                    <span class="mb-0 username_span">{{ chatroom.get_participant_two.username }} </span>
+                  </li>
+                {% elif chatroom.get_participant_two.username == user.username %}
+                  <li id="{{ chatroom.get_participant_one.username }}" class="friend-item d-flex align-items-center" data-recipent="{{ chatroom.get_participant_one.full_name }}" onclick="openChat('{{ chatroom.get_participant_one.username }}', '{{ chatroom.name }}')">
+                    <i class="fas fa-user me-2 profile-icon"></i>
+                    <span class="mb-0">{{ chatroom.get_participant_one.username }} </span>
+                  </li>
+                {% endif %}
+              {% endfor %}
+            </ul>
+          {% else %}
+            <div class="alert alert-info">No chats found</div>
+          {% endif %}
+        </div>
+
+        <!-- Chat Container -->
+        <div class="chat-container position-relative">
+          <div class="chat-header">
+            <div class="d-flex align-items-center justify-content-between">
+              <div class="d-flex align-items-center">
+                <i class="fas fa-user-circle fa-2x me-2"></i>
+                <h6 class="mb-0" id="chatTitle">Select a friend to chat</h6>
+              </div>
+            </div>
+          </div>
+          <div id="three_dots" class="position-absolute top-0 end-0 m-2 d-none">
+            <!-- Dropdown for option -->
+            <div class="dropdown">
+              <button class="btn btn-secondary" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false"><i class="fas fa-ellipsis-v"></i></button>
+              <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="dropdownMenuButton">
+                <li>
+                  <button id="viewProfileBtn" class="dropdown-item" type="button">View Profile</button>
+                </li>
+                <li>
+                  <button id="blockBtn" class="dropdown-item" type="button">Block</button>
+                </li>
+                <li>
+                  <button id="unblockBtn" class="dropdown-item" type="button">Unblock</button>
+                </li>
+                <li>
+                  <button id="deleteChatRoomBtn" class="dropdown-item" type="button">Delete</button>
+                </li>
+              </ul>
+            </div>
+          </div>
+          <div class="chat-messages" id="chatMessages"></div>
+          <div class="chat-input d-flex">
+            <input type="text" id="messageInput" class="form-control me-2 d-none" placeholder="Type a message..." />
+            <button id="chat_send_btn" class="btn btn-primary d-none">Send</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

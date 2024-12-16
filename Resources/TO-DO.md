@@ -37,7 +37,7 @@ fixing & testing needed:
   -> partial fix: now he is bieng redirected back to the home page, but the url is still /signin
   #? another issue - browser back/forward is resulting 404 for nested routes like /profile/haben
 3. bunch of if conditions for the eventlistners in home.js for the search system so it doesnt raise error in anonymouse user.
-
+4. when token expired, clicked on the profile (in dropdown)... singin loaded but the URL was still /profile/'player'.
 
 
 
@@ -52,3 +52,19 @@ UI Improvement: Resolved
 
 Friday cases - Unsolved Cases
 1, All css & js files are deleted, except the during signout from friend search (needs revision).
+
+
+
+
+
+saturday night - to do:
+1. duplication of notifications - ex: sending friendship notification - cancel it - send request again. there will be two notifications,
+    -> will think about it if its okay like that or just remove the older one or update the date of friend request or some....
+2. checkout friendship eventlistners for accepting and declining friend request ... accept is not refreshing the page (if clicked from the friendship list from home)
+
+
+NEW -  to do:
+1. chat notification - toast
+2. show error - toast
+3. chat UI 
+4. 

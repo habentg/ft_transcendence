@@ -40,6 +40,7 @@ ALLOWED_HOSTS = [
 # Application definition
 
 INSTALLED_APPS = [
+    'daphne',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -53,6 +54,7 @@ INSTALLED_APPS = [
     'account',
     'friendship',
     'others',
+    'chat',
 ]
 
 MIDDLEWARE = [
@@ -231,13 +233,72 @@ REDIS_DB = 1
 """ basically we will run 'collectstatic' and it will collect all the static files from all the apps and put them in the static folder in the root directory of the project """
 STATIC_URL = 'static/'
 # to be commented out when deploying
-# STATIC_ROOT = BASE_DIR / 'static'
-# STATICFILES_DIRS = [
-#     BASE_DIR / "others" / "static",
-#     BASE_DIR / "account" / "static",
-# ]
-STATIC_ROOT = '/media_static/static'
+STATIC_ROOT = BASE_DIR / 'static'
+STATICFILES_DIRS = [
+    BASE_DIR / "others" / "static",
+    BASE_DIR / "account" / "static",
+    BASE_DIR / "chat" / "static",
+    BASE_DIR / "friendship" / "static",
+]
+# STATIC_ROOT = '/media_static/static'
 
 # Media settings (determines where images will be uploaded)
 MEDIA_URL = 'media/'
-MEDIA_ROOT = '/media_static/media'
+# MEDIA_ROOT = '/media_static/media'
+
+import logging
+
+class HealthCheckFilter(logging.Filter):
+    def filter(self, record):
+        if '/health/' in record.getMessage():
+            return False
+        return True
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'formatters': {
+        'verbose': {
+            'format': '{levelname} {asctime} {module} {process:d} {thread:d} {message}',
+            'style': '{',
+        },
+        'simple': {
+            'format': '[{asctime}] {message}',
+            'style': '{',
+            'datefmt': '%d/%b/%Y %H:%M:%S'
+        },
+    },
+    'handlers': {
+        'console': {
+            'level': 'DEBUG',
+            'class': 'logging.StreamHandler',
+            'formatter': 'simple',
+            'filters': [HealthCheckFilter()],  # Use the imported class here
+        },
+    },
+    'loggers': {
+        'django': {
+            'handlers': ['console'],
+            'level': 'INFO',
+            'propagate': True,
+        },
+        'django.server': {
+            'handlers': ['console'],
+            'level': 'DEBUG',
+            'propagate': False,
+        },
+        'django.request': {
+            'handlers': ['console'],
+            'level': 'DEBUG',
+            'propagate': False,
+        },
+    },
+    'root': {
+        'handlers': ['console'],
+        'level': 'INFO',
+    },
+    'django.contrib.staticfiles': {
+        'handlers': ['console'],
+        'level': 'DEBUG',
+    },
+}

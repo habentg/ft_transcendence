@@ -32,10 +32,8 @@ try:
             )
             FriendList.objects.create(player=player)
             print(f"Created user: {username}")
-        except IntegrityError as e:
-            print(f"Failed to create user {username}: {str(e)}")
         except Exception as e:
-            print(f"Unexpected error creating user {username}: {str(e)}")
+            print(f"Error creating user {username}")
 except FileNotFoundError:
     print("Could not find dummy_users.json file!")
 except json.JSONDecodeError:
