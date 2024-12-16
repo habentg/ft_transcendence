@@ -8,7 +8,7 @@
 //Game settings
 let paddleSpeed = 6;
 let ballSpeed = 4.5;
-let maxScore = 2;
+let maxScore = 420;
 let slowServe = false;
 
 //this flags would determine which game mode we are playing
@@ -48,7 +48,7 @@ class Player {
 			this.y = boardHeight / 2 - playerHeight / 2;
 			this.parryKey = "KeyA";
 		} else if (position === "right") {
-			this.x = 10;
+			this.x = boardWidth - playerWidth - 10;
 			this.y = boardHeight / 2 - playerHeight / 2;
 			this.parryKey = "Numpad0";
 		}
@@ -68,7 +68,8 @@ let ball = {
 let drawFlag = false;
 let defp1Name = "";
 let defp2Name = "";
-window.onload = function () {
+
+function loadGame() {
 	board = document.getElementById("board");
 	board.height = boardHeight;
 	board.width = boardWidth;
@@ -147,7 +148,8 @@ window.onload = function () {
 	});
 
 			initGame(); //initializing the game flags and adding players etc.
-
+			console.log("Player 1 values:", players[0]);
+			console.log("Player 2 values:", players[1]);
 			document.getElementById("startButton").addEventListener("click", () => {
 			// send to backend to create the game -
 			/* 
@@ -176,9 +178,11 @@ window.onload = function () {
 //   displayStartMessage();
 };
 
-// function for getting game mode (ai , 1v1, tournament)
+// function for getting game mode (ai , 1v1, tournament)w
 function getgameMode() {
-	return document.getElementById("gameType").textContent;
+	if (document.getElementById("aiButton")) return "ai";
+	else if (document.getElementById("startButton")) return "versus";
+	// return document.getElementById("gameType").textContent;
 }
 
 function isparryFlag() {
@@ -282,24 +286,17 @@ function changeSetting() {
 function startGame(player1, player2) {
 	drawFlag = true;
 
-	requestAnimationFrame(draw(player1, player2));
-
+	
 	document.getElementById("player1").classList.remove("d-none");
 	document.getElementById("player2").classList.remove("d-none");
-
-
+	
+	
     document.getElementById("startButton").disabled = true; //disable start button when the game starts
     document.getElementById("settingButton").disabled = true;
-    // document.getElementById("aiButton").disabled = true;
-
-	// hide settings menu
-	// document.getElementById("settingButton").style.display = "none";
+	
 	document.getElementById("startButton").disabled = true; //disable start button when the game starts
 	document.getElementById("settingButton").disabled = true;
-	// document.getElementById("aiButton").disabled = true;
-
-	// hide settings menu
-	// document.getElementById("settingButton").style.display = "none";
+	requestAnimationFrame(draw(player1, player2));
 }
 
 function drawLine() {
@@ -315,14 +312,16 @@ function drawLine() {
 }
 
 function draw(player1, player2) {
+	console.log("draw flag:", drawFlag);
 	if (!drawFlag) {
 		return;
 	}
-	requestAnimationFrame(draw(player1, player2));
-	// til this part
-	updatePaddleVelocities();
 	// Clear board
 	context.clearRect(0, 0, board.width, board.height);
+	// requestAnimationFrame(draw(player1, player2));
+	requestAnimationFrame(() => draw(player1, player2));
+	// til this part
+	updatePaddleVelocities(player1, player2);
 
 	// if (aiFlag) aiLogic();
 	drawLine(); //draw line in the middle 
@@ -416,6 +415,8 @@ function drawBall() {
 
 function updatePaddleVelocities(player1, player2) {
 	// Player 1 movement
+	console.log("Player 1 values:", player1);
+	console.log("Player 2 values:", player2);
 	if (activeKeys["KeyW"]) {
 		player1.velocityY = -paddleSpeed;
 	} else if (activeKeys["KeyS"]) {
@@ -596,7 +597,7 @@ function resetGame(player1, player2, direction) {
 	}
 
   // drawFlag = !isGameOver();
-  if (isGameOver()) {
+  if (isGameOver(player1, player2)) {
         drawFlag = false;
         aiFlag = false;
         console.log("Game Over: SHOULD RETURN SETTINGS MENU");
@@ -615,7 +616,7 @@ function resetGame(player1, player2, direction) {
 
 function isGameOver(player1, player2) {
 	if (player1.score >= maxScore || player2.score >= maxScore) {
-		displayGameOver();
+		displayGameOver(player1, player2);
 		return true;
 	}
 	return false;
@@ -813,6 +814,7 @@ function checkScreenSize() {
 	}
 }
 
+loadGame();
 // Run check on page load
 checkScreenSize();
 
