@@ -1,12 +1,11 @@
-version: '3.8'
 
 services:
   postgres:
-    container_name: postgresql
+    container_name: db
     image: postgres:15-alpine
     restart: unless-stopped
     volumes:
-      - our_db:/var/lib/postgresql/data
+      - db_data:/var/lib/postgresql/data
     networks:
       - trans_net
     env_file:
@@ -49,6 +48,8 @@ services:
       timeout: 5s
       retries: 3
       start_period: 10s
+    # ports:
+    #   - "8000:8000"
 
   redis:
     container_name: redis
@@ -86,48 +87,14 @@ services:
       # - ./transcendence/media:/media
 
 volumes:
-  our_db:
-    driver: local
+  db_data:
+    # driver: local
   redis_data:
-    driver: local
+    # driver: local
   media_static_vol: #media_static_vol - acts as a bridge between your App and Nginx services allowing uploaded media and static files through Django to be immediately available for Nginx to serve. (needs to do do collectstatic for the static files to be available)
-    driver: local  
+    # driver: local  
 
 networks:
   trans_net:
     name: trans_net
     driver: bridge
-  
-# Cyber security module - 1 (I will get back to it if I find it necessary, for now it sounds like an overkill)
-  # vault:
-  #   image: hashicorp/vault
-  #   container_name: hashicorp_vault
-  #   ports:
-  #     - "8200:8200"
-  #   volumes:
-  #     - ./vault/config:/vault/config
-  #     - ./vault/data:/vault/data
-  #     - ./vault/logs:/vault/logs
-  #   cap_add:
-  #     - IPC_LOCK
-  #   environment:
-  #     - VAULT_ADDR=http://0.0.0.0:8200
-  #   command: server
-  #   networks:
-  #     - trans_net
-
-  # modsecurity:
-  #   container_name: modsecurity
-  #   image: owasp/modsecurity
-  #   restart: unless-stopped
-  #   depends_on:
-  #     nginx:
-  #       condition: service_healthy
-  #   networks:
-  #     - trans_net
-  #   volumes:
-  #     - ./modsecurity/rules:/etc/modsecurity/rules
-  #   ports:
-  #     - "8080:8080"
-  #   env_file:
-  #     - .env

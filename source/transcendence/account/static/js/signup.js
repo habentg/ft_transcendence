@@ -89,8 +89,7 @@ async function handleSignupSubmit(e) {
         await updateUI(`/home`, false);
         // update the navbar
         updateNavBar(true);
-        // history.pushState(null, '', `/home`);
-        // handleLocationChange();
+        createWebSockets();
     } catch (error) {
         console.error('Error:', error);
     }

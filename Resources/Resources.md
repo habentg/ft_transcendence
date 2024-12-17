@@ -1,4 +1,15 @@
 
+# --------------------- Django -----------------
+* what is django and how it works .. simplified article
+https://radixweb.com/blog/what-is-django
+
+* wtf are asgi and wsgi
+https://samagra.me/wtf/2024/09/27/gateway-interfaces.html
+
+* DJANGO multiple language support blog
+https://medium.com/@sakhawy/multilingual-support-in-django-5706e1e144a8
+
+
 # --------------------- Cybersecurity Module resources -----------------
 
 ## JWT
@@ -25,15 +36,6 @@ https://security.stackexchange.com/questions/175536/does-a-csrf-cookie-need-to-b
 ## Python Debuging Handbook
 https://www.freecodecamp.org/news/python-debugging-handbook/
 
-
-# WAF - ModSecurity
-https://www.youtube.com/watch?v=tWjGwdZ59w4       -> modsecurity with nginx
-
-https://hidora.io/en/ressources/quest-ce-que-modsecurity-et-comment-peut-il-maider/              -> explanation blog
-
-https://docs.nginx.com/nginx-waf/admin-guide/nginx-plus-modsecurity-waf-installation-logging/        -> installation Guide
-
-# hashiCorp Vaults
 
 
 

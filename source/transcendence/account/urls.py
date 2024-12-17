@@ -9,10 +9,10 @@ urlpatterns = [
     re_path(r'^oauth/?$', OauthCallback.as_view(), name='oauth'),
     re_path(r'^password_reset/?$', PasswordReset.as_view(), name='password_reset'),
     re_path(r'^password_reset_newpass/(?P<uidb64>[0-9A-Za-z_\-]+)/(?P<token>[0-9A-Za-z\-]+)/?$', PassResetNewPass.as_view(), name='password_reset_newpass'),
-    re_path(r'^password_reset_confirm/?$', PassResetConfirm.as_view(), name='password_reset_newpass'),
     re_path(r'^2fa/?$', TwoFactorAuth.as_view(), name='password_reset_newpass'),
-    re_path(r'^profile/?$', ProfileView.as_view(), name='profile'),
-    re_path(r'^update_password/?$', UpdatePlayerPassword.as_view(), name='update_password'),
+    re_path(r'^update_profile/?$', PlayerProfileUpdatingView.as_view(), name='update_profile'),
+    re_path(r'^profile/(?P<username>[\w-]+)/?$', PlayerProfileView.as_view(), name='player_profile'),
     re_path(r'^settings/?$', PlayerSettings.as_view(), name='settings'),
     re_path(r'^anonymize/?$', AnonymizePlayer.as_view(), name='anonymize'),
+    re_path(r'^temp_player/?$', TempPlayer.as_view(), name='temp_player'),
 ]

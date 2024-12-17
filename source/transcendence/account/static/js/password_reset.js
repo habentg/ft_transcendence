@@ -1,6 +1,7 @@
 // Initiate the password reset process
 async function handlePassResetSubmit(e) {
   e.preventDefault();
+  loadSpinner();
 
   const formData = {
     email: document.getElementById("email").value,
@@ -33,8 +34,24 @@ async function handlePassResetSubmit(e) {
     localStorage.setItem('uidb64', uidb64);
     localStorage.setItem('token', token);
 
-    // Redirect to the password reset new password page
-    await updateUI(`/password_reset_confirm`, false);
+    
+    const otpModal = resetPasswordConfirmModal();
+    document.body.appendChild(otpModal);
+    document.body.classList.add('modal-open');
+
+    otpModal.querySelector("close-otp-modal").addEventListener("click", () => closeModal("eset-password-confirm-modal"));
+
+    otpModal.addEventListener("click", (e) => {
+      if (e.target === otpModal) {
+        closeModal("reset-password-confirm-modal");
+      }
+    });
+
+    document.getElementById('returnToSignIn').addEventListener('click', async function() {
+      closeModal("reset-password-confirm-modal");
+      updateUI(`/signin`, false);
+    });
+
   } catch (error) {
     console.error('Error:', error);
   }
@@ -70,9 +87,10 @@ async function handlePassChangeSubmit(e) {
       alert("Password couldn't reset: " + responseData.error_msg);
       return;
     }
-    alert("Password reset successfully! Please sign in with your new password.");
-    // Redirect to the signin page
-    await updateUI(`/signin`, false);
+
+    showSuccessModal("Password reset successfully! Please sign in with your new password.");
+    updateUI(`/signin`, false);
+
     // Clear the local storage
     localStorage.removeItem('uidb64');
     localStorage.removeItem('token');
@@ -81,3 +99,37 @@ async function handlePassChangeSubmit(e) {
     console.error('Error:', error);
   }
 }
+
+
+// Add password toggle functionality
+document.querySelectorAll(".toggle-password").forEach((button) => {
+  button.addEventListener("click", function () {
+    const targetId = this.getAttribute("data-target");
+    const input = document.getElementById(targetId);
+    const icon = this.querySelector("i");
+
+    if (input.type === "password") {
+      input.type = "text";
+      icon.classList.remove("fa-eye");
+      icon.classList.add("fa-eye-slash");
+    } else {
+      input.type = "password";
+      icon.classList.remove("fa-eye-slash");
+      icon.classList.add("fa-eye");
+    }
+  });
+});
+
+// function loadSpinner() {
+//   const spinner = document.getElementById("load-spinner");
+
+//   if (spinner) {
+//     spinner.style.display = "block";
+//   }
+//   // Show spinner for 2 seconds
+//   setTimeout(() => {
+//     if (spinner) {
+//       spinner.style.display = "none";
+//     }
+//   }, 2000);
+// }

@@ -1,20 +1,68 @@
 {% load static %}
 
-<div class="container my-5">
-  <form class="col-6 mx-auto card p-3 form-cont" onsubmit="handlePassChangeSubmit(event)">
-    {% csrf_token %}
-    <h1 style="text-align: center"><span style="color: rgb(34, 34, 34)">Reset Your Password</span></h1>
-    <hr />
-    <!-- Display error/success messages -->
-    <div class="alert alert-danger" role="alert" id="error-msg" style="display: none"></div>
-    <div class="mb-3">
-      <label for="new_password" class="form-label">New Password</label>
-      <input type="password" class="form-control" id="new_password" name="new_pass" />
-    </div>
-    <div class="mb-3">
-      <label for="confirm_pass" class="form-label">Confirm New Password</label>
-      <input type="password" class="form-control" id="confirm_pass" name="new_pass" />
-    </div>
-    <button type="submit" class="btn btn-dark">Change Password</button>
-  </form>
+<div class="container-fluid min-vh-100 d-flex align-items-center justify-content-center background-image">
+  <div class="col-12 col-sm-10 col-md-8 col-lg-6 col-xl-4 form-cont">
+    <form onsubmit="handlePassChangeSubmit(event)">
+      {% csrf_token %}
+      
+      <div class="text-center mb-4">
+        <h2 class="mb-0">
+          <i class="fas fa-key me-2"></i>Reset Password
+        </h2>
+      </div>
+
+      <!-- Error message container -->
+      <div class="alert alert-danger small py-2" role="alert" id="error-msg" style="display: none"></div>
+
+      <!-- New Password Field -->
+      <div class="mb-3">
+        <label for="new_password" class="form-label">New Password</label>
+        <div class="input-group">
+          <input 
+            type="password" 
+            class="form-control" 
+            id="new_password" 
+            name="new_pass"
+            placeholder="Enter new password"
+          />
+          <button 
+            class="btn btn-outline-light toggle-password" 
+            type="button" 
+            data-target="new_password"
+          >
+            <i class="fas fa-eye"></i>
+          </button>
+        </div>
+      </div>
+
+      <!-- Confirm Password Field -->
+      <div class="mb-4">
+        <label for="confirm_pass" class="form-label">Confirm Password</label>
+        <div class="input-group">
+          <input 
+            type="password" 
+            class="form-control" 
+            id="confirm_pass" 
+            name="confirm_pass"
+            placeholder="Confirm your password"
+          />
+          <button 
+            class="btn btn-outline-light toggle-password" 
+            type="button" 
+            data-target="confirm_pass"
+          >
+            <i class="fas fa-eye"></i>
+          </button>
+        </div>
+      </div>
+
+      <!-- Submit Button -->
+      <div class="d-grid gap-2">
+        <button type="submit" class="btn btn-primary">
+          <i class="fas fa-save me-2"></i>Change Password
+        </button>
+      </div>
+    </form>
+  </div>
 </div>
+

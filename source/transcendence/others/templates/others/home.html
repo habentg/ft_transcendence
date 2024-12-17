@@ -1,32 +1,38 @@
 {% load static %}
 
 <div class="first-page">
-  <div class="background-image">
-    {% comment %} <div class="container d-flex justify-content-center my-4">
-      <h1 style="color:white">Hi, Haben!</h1>
-    </div> {% endcomment %}
-    <div class="container py-5">
+  <div class="background-image home-btn w-100">
+    <div class="friendBoard py-5">
       <!-- Search and Friends Section -->
       <div class="row justify-content-center mb-4">
-        <div class="col-lg-8">
-          <div class="content p-4">
-            <div class="row g-3">
-              <!-- Search Bar -->
-              <div class="col-md-6">
-                <div class="input-group">
-                  <input type="text" id="searchInput" class="form-control" placeholder="Search for users..." />
-                  <button id="searchIcon" class="btn btn-primary"><i class="fa-solid fa-search"></i></button>
+        {% if not player.is_guest %}
+          <div class="col-lg-8">
+            <div class="content p-4">
+              <div class="row g-3">
+                <!-- Search Bar -->
+                <div class="col-md-6">
+                  <div class="input-group">
+                    <input type="text" id="searchInput" class="form-control" placeholder="Search for players..." />
+                    <button id="searchIcon" class="btn btn-primary"><i class="fa-solid fa-search"></i></button>
+                  </div>
+                </div>
+                <!-- Friend Buttons -->
+                <div class="options col-md-6 d-flex gap-2 justify-content-md-end">
+                  <button id="friends_btn" class="btn btn-outline-light"><i class="fas fa-users me-2"></i>Friends</button>
+                  <button id="friend_requests_btn" class="btn btn-outline-light"><i class="fas fa-user-plus me-2"></i>Requests</button>
                 </div>
               </div>
-              <!-- Friend Buttons -->
-              <div class="col-md-6 d-flex gap-2 justify-content-md-end">
-                <button id="friends_btn" class="btn btn-outline-light"><i class="fas fa-users me-2"></i>Friends</button>
-                <button id="friend_requests_btn" class="btn btn-outline-light"><i class="fas fa-user-plus me-2"></i>Requests</button>
+              <div id="searchResults" class="mt-3 d-none">
+                <div id="search_list"></div>
+                <div id="pagination_navigation" class="pagination d-flex align-items-center justify-content-center d-none">
+                  <button type="button" id="prevPage" class="btn btn-secondary" data-url="">&lt;&lt;</button>
+                  <span id="pageNumbers"><span id="current_page"></span> of <span id="total_pages"></span> pages</span>
+                  <button type="button" id="nextPage" class="btn btn-primary" data-url="">&gt;&gt;</button>
+                </div>
               </div>
             </div>
-            <div id="searchResults" class="mt-3"></div>
           </div>
-        </div>
+        {% endif %}
       </div>
 
       <!-- Menu Grid -->
@@ -35,13 +41,13 @@
           <div class="content p-4">
             <div class="row g-4">
               <div class="col-md-6">
-                <a href="#" class="menu-item d-flex align-items-center p-3">
+                <button id="localGameBtn" onclick="createLocalGameModal()" class="menu-item d-flex align-items-center p-3">
                   <i class="fas fa-gamepad fa-2x me-3"></i>
                   <h5 class="mb-0">Local Game</h5>
-                </a>                
+                </button>
               </div>
               <div class="col-md-6">
-                <a onclick="appRouter()" class="menu-item d-flex align-items-center p-3" href="/profile/{{player.username}}">
+                <a id="profile_btn" onclick="appRouter()" class="menu-item d-flex align-items-center p-3" href="/profile/{{ player.username }}" data-username="{{ player.username }}">
                   <i class="fas fa-user fa-2x me-3"></i>
                   {% if player.profile_picture %}
                     <h5 id="nav_profile_pic" data-pfp="{{ player.profile_picture }}">Profile</h5>
@@ -50,8 +56,8 @@
                   {% endif %}
                 </a>
               </div>
-              <div class="col-md-6">
-                <a href="#" class="menu-item d-flex align-items-center p-3">
+              <div id="createTournamentBtn" class="col-md-6">
+                <a onclick="appRouter()" href="/tournament" class="menu-item d-flex align-items-center p-3">
                   <i class="fas fa-trophy fa-2x me-3"></i>
                   <h5 class="mb-0">Create Tournament</h5>
                 </a>
@@ -62,16 +68,18 @@
                   <h5 class="mb-0">Settings</h5>
                 </a>
               </div>
-              <div class="col-md-6">
-                <a href="#" class="menu-item d-flex align-items-center p-3">
-                  <i class="fas fa-dice fa-2x me-3"></i>
-                  <h5 class="mb-0">Other Game</h5>
-                </a>
-              </div>
             </div>
           </div>
         </div>
       </div>
+      <!-- <div id="toast" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
+        <div id="toast-header" class="toast-header">
+          <span id="toast-icon" class="me-2"></span>
+          <strong id="toast-title" class="ms-2 me-auto">Notification</strong>
+          <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+        </div>
+        <div id="toast-body" class="toast-body"></div>
+      </div>       -->
     </div>
   </div>
 </div>

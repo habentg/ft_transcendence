@@ -19,7 +19,8 @@ class FriendList(models.Model):
         return self.player.username
     """ adding friend is bidirectional - add to both sides """
     def add_friend(self, new_friend):
-        if not new_friend in self.friends.all():
+        # if not new_friend in self.friends.all():
+        if not self.friends.filter(id=new_friend.id).exists():
             self.friends.add(new_friend)
             new_friend.friend_list.friends.add(self.player)
             self.save()
@@ -74,9 +75,12 @@ class FriendRequest(models.Model):
         # Add to both players' friend lists
         sender_friends, _ = FriendList.objects.get_or_create(player=self.sender)
         receiver_friends, _ = FriendList.objects.get_or_create(player=self.receiver)
-        
-        sender_friends.friends.add(self.receiver)
-        receiver_friends.friends.add(self.sender)
+        try:
+            sender_friends.add_friend(self.receiver)
+            receiver_friends.add_friend(self.sender)
+        except Exception as e:
+            print("Error adding friends: ", e, flush=True)
+            raise e
         print(f"Friendship created between {self.sender.username} and {self.receiver.username}", flush=True)
 
     def decline(self):
@@ -88,3 +92,41 @@ class FriendRequest(models.Model):
         """Decline the friend request"""
         self.status = 'CANCELLED'
         self.save()
+
+# """ Notification model """
+class Notification(models.Model):
+    id = models.AutoField(primary_key=True)
+    player = models.ForeignKey('account.Player', on_delete=models.CASCADE, related_name='notifications')
+    notification_type = models.CharField(max_length=20)
+    sender = models.ForeignKey('account.Player', on_delete=models.CASCADE, related_name='sent_notifications', null=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    read_status = models.BooleanField(default=False)
+
+    class Meta:
+        db_table = 'notifications_table'
+        ordering = ['-created_at']
+    
+    def __str__(self):
+        return f"{self.player.username} - {self.notification_type}"
+    
+    @property
+    def sender_profile_picture(self):
+        return self.sender.profile_picture
+
+    @property
+    def sender_username(self):
+        return self.sender.username
+    
+
+# """ ChatMessage model """
+class ChatMessage(models.Model):
+    sender = models.ForeignKey('account.Player', related_name='sent_messages', on_delete=models.CASCADE)
+    recipient = models.ForeignKey('account.Player', related_name='received_messages', on_delete=models.CASCADE)
+    content = models.TextField()
+    timestamp = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ['timestamp']  # Order messages by timestamp
+
+    def __str__(self):
+        return f"{self.sender.username} to {self.recipient.username}: {self.content[:10]}..."

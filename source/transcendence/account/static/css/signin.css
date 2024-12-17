@@ -1,14 +1,14 @@
-.sign_in_page {
-  min-height: 100%;
-  width: 100%;
-}
 
-.background-image {
+.sign_in_page .background-image {
+  display: flex;
+  align-items: center;
+  justify-content: center;
   background-image: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.7)), url('/static/images/download.jpeg');
   background-size: cover;
   background-position: center;
-  background-repeat: no-repeat;
-  min-height: 100%;
+
+  height: fit-content;
+  min-height: 100vh;
 }
 
 .form-cont {
@@ -20,6 +20,7 @@
   border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 15px;
   padding: 2rem;
+  /* margin-top: 5rem ; */
   color: white;
   box-shadow: 0px 4px 24px -1px rgba(0, 0, 0, 0.2);
 }
@@ -117,9 +118,13 @@
 }
 
 @media (max-width: 768px) {
+  .background-image {
+    height: 100vh;
+  }
+
   .form-cont {
     padding: 1.5rem;
-    margin: 1rem;
+    margin-top: 5rem;
   }
 
   .form-cont h2 {
@@ -133,8 +138,13 @@
 }
 
 @media (max-width: 576px) {
+  .background-image {
+    height: 100vh;
+  }
   .form-cont {
     padding: 1.25rem;
+    margin: 0.5rem;
+    margin-top: 2rem;
   }
 
   .form-cont h2 {

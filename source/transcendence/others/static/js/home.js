@@ -1,32 +1,63 @@
+createWebSockets();
 
 // load content of the player profile
-async function search(query_parameter) {
-  if (!query_parameter) {
-    console.error("No query_parameter provided");
-    return;
+async function search(query_parameter, url) {
+  let route_url = `/paginated_search?q=${query_parameter}`;
+  // url = 'http://localhost/paginated_search?page=4&q=k';
+  if (url !== undefined) {
+    const fullUrl = new URL(url);
+    route_url = fullUrl.pathname + fullUrl.search; // Extract the relative path and query string
   }
+  console.log("route_url: ", route_url);
   try {
-    const response = await fetch(`search?q=${query_parameter}`, {
+    const response = await fetch(route_url.slice(1), {
       method: "GET",
       headers: {
         "X-Requested-With": "XMLHttpRequest",
       },
-      // body: JSON.stringify({'action': 'all_players'}),  // Browser said it wont send 'body' in GET request, so I put it in headers
     });
+
+    if (response.status === 205)
+      updateUI("/home", false);
     if (response.ok) {
-      history.pushState({ query_parameter }, "", `/search?q=${query_parameter}`);
+      // history.pushState({ query_parameter }, "", route_url);
       const responseData = await response.json();
-      const resultsDiv = document.getElementById("searchResults");
+      // console.log(responseData);
+      /* activating the div */
+      document.getElementById("searchResults").classList.remove("d-none");
+      /* filling up the result to the inner div */
+      const resultsDiv = document.getElementById("search_list");
       resultsDiv.innerHTML = responseData.html;
-      loadCssandJS(responseData, false);
+      /* updating next and prev butons */
+
+      if (responseData.total_items === 0) {
+        document.getElementById("pagination_navigation").classList.add("d-none");
+        return;
+      }
+      document.getElementById("pagination_navigation").classList.remove("d-none");
+      const nextPageBtn = document.getElementById("nextPage");
+      nextPageBtn.classList.remove("disabled");
+      const prevPageBtn = document.getElementById("prevPage")
+      prevPageBtn.classList.remove("disabled");
+      nextPageBtn.setAttribute("data-url", responseData.next_page_link);
+      prevPageBtn.setAttribute("data-url", responseData.previous_page_link);
+      /* updating whats in bitween buttons lmao GIGGDY */
+      document.getElementById("current_page").textContent = responseData.current_page;
+      if (responseData.next_page_link === null) {
+        nextPageBtn.classList.add("disabled");
+      }
+      document.getElementById("total_pages").textContent = responseData.total_pages;
+      if (responseData.previous_page_link === null) {
+        prevPageBtn.classList.add("disabled");
+      }
       attachSearchEventListners();
+      loadCssandJS(responseData, false);
     }
     else if (response.status === 302) {
       updateUI("/signin", false);
-    }else {
+    } else {
       console.error("Failed to load -- ", query_parameter, "-- search content");
     }
-    
 
   } catch (error) {
     console.error(`Failed to load -- ${query_parameter} -- profile content:`, error);
@@ -41,27 +72,79 @@ for searched profiles, we need to attach event listeners to the buttons
 
 function searchingSystem() {
 
-  document.getElementById("friend_requests_btn").addEventListener("click", () => {
-    search("friend_requests")
+  // const localGameBtn = document.getElementById("localGameBtn");
+  // const createTournamentBtn = document.getElementById("createTournamentBtn");
+
+  // if (localGameBtn) {
+  //   localGameBtn.addEventListener("click", () => {
+  //     createLocalGameModal();
+  //   });
+  // }
+
+  // if (createTournamentBtn) {
+  //   createTournamentBtn.addEventListener("click", () => {
+  //     createTournamentModal();
+  //   });
+  // }
+  /* search related eventlistners */
+  // createToast("error", "This is a test ", "This is an error toast message");
+  // createToast("chat", "This is a test ", "This is an chat toast message");
+  const home_friendrequest_search = document.getElementById("friend_requests_btn");
+  const home_friends_search = document.getElementById("friends_btn");
+  if (home_friendrequest_search) {
+    home_friendrequest_search.addEventListener("click", () => {
+      search("friend_requests")
+    });
   }
-  );
-  document.getElementById("friends_btn").addEventListener("click", () => {
-    search("friends")
+  if (home_friends_search) {
+    home_friends_search.addEventListener("click", () => {
+      search("friends")
+    });
   }
-  );
-  document.getElementById("searchIcon").addEventListener("click", (event) => {
-    const query = document.getElementById("searchInput").value;
-    console.log("uppp This: ", query);
-    if (query) {
-      console.log("searching for: ", query);
-      search(query);
-    } else console.log("your search is empty");
-  });
+  const home_searchIcon = document.getElementById("searchIcon");
+  if (home_searchIcon) {
+    home_searchIcon.addEventListener("click", () => {
+      triggerSearch();
+    });
+  }
+  const home_searchInputField = document.getElementById("searchInput");
+  if (home_searchInputField) {
+
+    home_searchInputField.addEventListener("keydown", (event) => {
+      if (event.key === "Enter") {
+        triggerSearch();
+      }
+    });
+  }
+  /* pagination next and prev fetchers */
+  const pagination_nextBtn = document.getElementById("nextPage");
+  if (pagination_nextBtn) {
+    pagination_nextBtn.addEventListener("click", async () => {
+      const nextPageUrl = document.getElementById("nextPage").getAttribute("data-url");
+      await search("", nextPageUrl);
+    });
+  }
+  const pagination_prevBtn = document.getElementById("prevPage");
+  if (pagination_prevBtn) {
+    pagination_prevBtn.addEventListener("click", async () => {
+      const prevPageUrl = document.getElementById("prevPage").getAttribute("data-url");
+      await search("", prevPageUrl);
+    });
+  }
 
 }
 
+function triggerSearch() {
+  const query = document.getElementById("searchInput").value;
+  if (query) {
+    search(query.trim());
+  } else {
+    document.getElementById("searchResults").classList.add("d-none")
+  }
+}
+
 function attachSearchEventListners() {
-  
+
   /* after search result is added */
   /* 
     @ acceptFriendRequestBtn: 
@@ -69,115 +152,127 @@ function attachSearchEventListners() {
     - when clicked, it will send a request to the server to accept the friend request
     - the 'false' paramenter is just boolean to indicate that the request is not from the friend profile page
   */
-    const acceptFriendRequestBtn = document.getElementsByClassName("acc_req_btn"); // could be multiple
-    if (acceptFriendRequestBtn) {
-      for (let i = 0; i < acceptFriendRequestBtn.length; i++) {
-        acceptFriendRequestBtn[i].addEventListener("click", () => {
-          const toBeFriend = document
-          .getElementsByClassName("acc_req_btn")[i]
+  // const acceptFriendRequestBtn = document.getElementsByClassName("acc_req_btn"); // could be multiple
+  // if (acceptFriendRequestBtn) {
+  //   for (let i = 0; i < acceptFriendRequestBtn.length; i++) {
+  //     acceptFriendRequestBtn[i].addEventListener("click", (event) => {
+  //       event.stopPropagation()
+  //       const toBeFriend = document
+  //         .getElementsByClassName("acc_req_btn")[i]
+  //         .getAttribute("data-username");
+  //       // console.log("accepting friend request from: ", toBeFriend);
+  //       searchedFriendRequestResponce(event, "accept", toBeFriend);
+  //       console.log("R: ", toBeFriend);
+  //     });
+  //   }
+  // }
+  // const declineFriendRequestBtn = document.getElementsByClassName("rej_req_btn"); // could be multiple
+  // if (declineFriendRequestBtn) {
+  //   for (let i = 0; i < declineFriendRequestBtn.length; i++) {
+  //     declineFriendRequestBtn[i].addEventListener("click", (event) => {
+  //       event.stopPropagation();
+  //       const toBeFriend = document
+  //       .getElementsByClassName("rej_req_btn")[i]
+  //       .getAttribute("data-username");
+  //       // console.log("declineing friend request from: ", toBeFriend);
+  //       searchedFriendRequestResponce(event, "decline", toBeFriend);
+  //       // alert(" --- sfa -- asdf -as ")
+  //       console.log("R: ", toBeFriend);
+  //     });
+  //   }
+  // }
+  const chatFriendBtn = document.getElementsByClassName("chat_btn"); // could be multiple
+  if (chatFriendBtn) {
+    for (let i = 0; i < chatFriendBtn.length; i++) {
+      chatFriendBtn[i].addEventListener("click", async () => {
+        const toBeFriend = document
+          .getElementsByClassName("chat_btn")[i]
           .getAttribute("data-username");
-          console.log("accepting friend request from: ", toBeFriend);
-          acceptOrDeclineFriendRequest("accept", toBeFriend, false);
-        });
-      }
+          console.log("I will send create chatroom request directly from friendlist with: ", toBeFriend);
+        // await create_chatroom(toBeFriend);
+      });
     }
-    const declineFriendRequestBtn = document.getElementsByClassName("rej_req_btn"); // could be multiple
-    if (declineFriendRequestBtn) {
-      for (let i = 0; i < declineFriendRequestBtn.length; i++) {
-        declineFriendRequestBtn[i].addEventListener("click", () => {
-          const toBeFriend = document
-          .getElementsByClassName("rej_req_btn")[i]
-          .getAttribute("data-username");
-          console.log("declineing friend request from: ", toBeFriend);
-          acceptOrDeclineFriendRequest("decline", toBeFriend, false);
-        });
-      }
-    }
+  }
 }
 
 
-// Sign Out Modal
-function showSignOutModal() {
-  const existingModal = document.getElementById("sign-out-modal");
-  if (existingModal) existingModal.remove();
 
-  const modal = document.createElement("div");
-  modal.id = "sign-out-modal";
-  modal.className = "modal fade show";
-  modal.style.display = "block";
-  modal.style.backgroundColor = "rgba(0, 0, 0, 0.5)";
+// Create a modal for Local game either with AI or with another player
+function createLocalGameModal() {
+  // e.preventDefault();
+  const existingModal = document.getElementById("localGameModal");
+  if (existingModal) {
+    existingModal.remove();
+  }
 
-  modal.innerHTML = `
-    <div class="modal-dialog modal-dialog-centered modal-sm">
-      <div class="content modal-content">
-        <div class="modal-header border-0 py-3">
-          <h5 class="modal-title text-info">
-            <i class="fas fa-sign-out-alt me-2"></i>Sign Out
-          </h5>
-          <button type="button" class="btn-close btn-close-white" id="close-signout-modal"></button>
-        </div>
-        <div class="modal-body px-3 py-2">
-          <p class="text-white mb-0">Are you sure you want to sign out?</p>
-        </div>
-        <div class="modal-footer border-0 py-3">
-          <button id="signout-confirm" class="btn btn-info btn-sm">
-            <i class="fas fa-sign-out-alt me-2"></i>Sign Out
-          </button>
-          <button id="signout-cancel" class="btn btn-outline-light btn-sm">
-            Cancel
-          </button>
-        </div>
-      </div>
-    </div>
-  `;
-
+  
+  const modal = optionLocalGameModal();
   document.body.appendChild(modal);
-  document.body.classList.add("modal-open");
 
   // Event Listeners
-  modal
-    .querySelector("#close-signout-modal")
-    .addEventListener("click", closeSignOutModal);
-  modal
-    .querySelector("#signout-cancel")
-    .addEventListener("click", closeSignOutModal);
-  modal
-    .querySelector("#signout-confirm")
-    .addEventListener("click", handleSignOut);
-  modal.addEventListener("click", (e) => {
-    if (e.target === modal) closeSignOutModal();
+  document.getElementById("aiGameBtn").addEventListener("click", () => {
+    //  Send to AI game page (1 vs AI)
+    console.log("Creating AI game");
+    closeModal("localGameModal");
+    // For now, page is refreshing. Need to fix.
+    window.location.href = "/game/?isAI=true";  
+
   });
-}
+  document.getElementById("playFriends").addEventListener("click", () => {
+    // Send to localgame game page (1 vs 1)
+    console.log("Creating local game");
+    closeModal("localGameModal");
 
-function closeSignOutModal() {
-  const modal = document.getElementById("sign-out-modal");
-  if (modal) {
-    modal.remove();
-    document.body.classList.remove("modal-open");
-  }
-}
+    // For now, page is refreshing. Need to fix.
+    // updateUI("/game?isAI=false", false);
+    window.location.href = "/game/?isAI=false";
+  });
 
-async function handleSignOut() {
-  try {
-    const response = await fetch("/signout/", {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-        "X-CSRFToken": await getCSRFToken(),
-      },
-    });
+  // close the modal when the close button is clicked
+  document.querySelector("#localGameModal .btn-close").addEventListener("click", () => {
+    closeModal("localGameModal");
+  });
 
-    if (response.status === 200) {
-      closeSignOutModal();
-      updateNavBar(false); 
-      await updateUI("/", false);
-    } else {
-      throw new Error("Failed to sign out");
+  // close the modal when the modal is clicked outside
+  modal.addEventListener("click", (event) => {
+    if (event.target === modal) {
+      closeModal("localGameModal");
     }
-  } catch (error) {
-    console.error("Error:", error);
-    displayError({ error_msg: "Failed to sign out" });
+  });
+
+}
+
+// Create a modal for creating a tournament
+function createTournamentModal() {
+  const existingModal = document.getElementById("tournamentModal");
+  if (existingModal) {
+    existingModal.remove();
   }
+
+  
+  const modal = getPlayerNumberModal();
+  document.body.appendChild(modal);
+
+  // Event Listeners
+  document.getElementById("submitPlayerNumBtn").addEventListener("click", () => {
+    const playersNumber = document.getElementById("playersNumber").value;
+    console.log("Creating tournament with ", playersNumber, " players");
+    // createTournament(playersNumber);
+    closeModal("tournamentModal");
+  });
+
+  // close the modal when the close button is clicked
+  document.querySelector("#tournamentModal .btn-close").addEventListener("click", () => {
+    closeModal("tournamentModal");
+  });
+
+  // close the modal when the modal is clicked outside
+  modal.addEventListener("click", (event) => {
+    if (event.target === modal) {
+      closeModal("tournamentModal");
+    }
+  });
+
 }
 
 searchingSystem();
