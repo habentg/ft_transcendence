@@ -343,7 +343,7 @@ async function handleNotificationBellClick(action) {
   const notification_ul = document.getElementById("notification_ul");
   if (response.status === 404) {
     notification_ul.innerHTML = `
-      <p class="text-center text-muted my-2">No notifications</p>
+      <p class="text-center my-2" style="color:white;">No notifications</p>
     `;
     return console.log("No notifications");
   }

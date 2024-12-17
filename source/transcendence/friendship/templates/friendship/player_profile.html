@@ -81,6 +81,7 @@
                     <th>Score</th>
                     <th>Points</th>
                     <th>Date</th>
+                    <th>Type</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -96,6 +97,7 @@
                     <td>5 - 3</td>
                     <td>+25</td>
                     <td>Today</td>
+                    <td>Local</td>
                   </tr>
                   <tr>
                     <td>
@@ -109,6 +111,7 @@
                     <td>5 - 2</td>
                     <td>+25</td>
                     <td>Today</td>
+                    <td>AI</td>
                   </tr>
                   <tr>
                     <td>
@@ -122,6 +125,7 @@
                     <td>3 - 5</td>
                     <td>-15</td>
                     <td>Yesterday</td>
+                    <td>Tournament</td>
                   </tr>
                   <tr>
                     <td>
@@ -135,6 +139,7 @@
                     <td>2 - 5</td>
                     <td>-15</td>
                     <td>Yesterday</td>
+                    <td>Tournament</td>
                   </tr>
                 </tbody>
               </table>
@@ -153,6 +158,26 @@
           </div>
         </div>
       </div>
+
+      <!-- new div for game stats with a pie chart and line graph in it side by side -->
+      <div class="row justify-content-center g-4 mt-2">
+        <div class="col-lg-4">
+          <div class="content game-stats-card p-4">
+            <h3 class="text-center mb-4"> Win-Loss Stats </h3>
+            <div class="d-flex justify-content-center">
+              <canvas id="game-stats-pie-chart" ></canvas>
+            </div>
+          </div>
+        </div>
+        <div class="col-lg-8">
+          <div class="content game-stats-card p-4">
+            <h3 class="text-center mb-4"> Leaderboard ranking </h3> 
+            <div class="d-flex justify-content-center">
+              <canvas id="game-stats-line-chart" canvas>
+            </div>
+          </div>
+        </div>
+      </div>  
     </div>
   </div>
 </div>

@@ -3,7 +3,7 @@
 ## ******************************* UI related TODO list **************************
 1. chat notification - toast : ................................................................................DONE!
 2. show error - toast..........................................................................................DONE!
-3. chat UI .....................................................................................................DONE!
+3. chat UI (three dot & small-screens ) .....................................................................................................Revise!
 4. loading screen..........................................................................................->
 
 ## ******************************* UX related TODO list **************************
@@ -27,3 +27,5 @@
 3. after login/signup and redirected to homepage, if you click on the browser back button, it will take you to sign in page (eventhogh he is authenticated)!
   -> partial fix: now he is bieng redirected back to the home page, but the url is still /signin
   #? another issue - browser back/forward is resulting 404 for nested routes like /profile/haben............................................->
+4. When a localgame is selected (either 1 v 1 or AI), then home is clicked and then again localgame is selected, Error is happening for both AI and 1 V 1 : Error=> global variable has already been declared
+

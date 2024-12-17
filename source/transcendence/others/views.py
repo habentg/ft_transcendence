@@ -228,8 +228,8 @@ class GameView(APIView, BaseView):
 	# def get(self, request):
 	# 	return super().get(request)
 	def get_context_data(self, request, **kwargs):
+		# print request.GET params
 		is_ai = request.GET.get('isAI', 'false').lower() == 'true'
-		print(f"####### isAI : {is_ai}", flush=True)
 		return {
 			'isAI': is_ai,
 			'current_username': request.user.username

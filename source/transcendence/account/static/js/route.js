@@ -18,8 +18,8 @@ async function updateUI(path, deep_route) {
   if (deep_route)
     history.pushState(null, "", `${path}`);
   else
-    history.pushState(null, "", `${window.baseUrl}${path}`);
-  await loadContent(`${window.baseUrl}${path}`);
+    history.pushState(null, "", `${path}`);
+  await loadContent(`${path}`);
 }
 
 // routing function
@@ -35,17 +35,20 @@ async function appRouter(event) {
     event.preventDefault();
     
     const href = event.target.closest('a').href;
-    let urlObj = new URL(href);
-    let path = urlObj.pathname;
-    if (path === window.location.pathname)
+    // console.log("href - of:", href);
+    // let urlObj = new URL(href);
+    // let path = urlObj.pathname;
+    // console.log("path - of:", path);
+    // console.log("window.location - of:", window.location);
+    if (href === window.location.href)
         return;
-    await updateUI(path, false);
+    await updateUI(href, false);
 };
 
 // Load the content of the page
 async function loadContent(route) {
   try {
-    const response = await fetch(`${route}/`, {
+    const response = await fetch(`${route}`, {
       method: "GET",
       headers: {
         "X-Requested-With": "XMLHttpRequest",
