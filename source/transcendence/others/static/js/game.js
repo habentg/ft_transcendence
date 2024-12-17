@@ -41,7 +41,21 @@ class Player {
     this.parryCooldown = 0;
     this.velocityY = playerVelocityY;
     this.score = 0;
+    this.seed = 0; // this part is for randomizing brackets for the tournament
+    this.gameWon = 0;
     this.position = "";
+    if (position === "left") {
+      this.x = 10;
+      this.y = boardHeight / 2 - playerHeight / 2;
+      this.parryKey = "KeyA";
+    } else if (position === "right") {
+      this.x = boardWidth - playerWidth - 10;
+      this.y = boardHeight / 2 - playerHeight / 2;
+      this.parryKey = "Numpad0";
+    }
+  }
+
+  setplayPos(position){
     if (position === "left") {
       this.x = 10;
       this.y = boardHeight / 2 - playerHeight / 2;
@@ -581,9 +595,13 @@ function isGameOver(player1, player2) {
 
 function resetScores(player1, player2) {
   if (player1) {
+    if (player1.score === maxScore)
+        player1.gamesWon += 1;
     player1.score = 0;
   }
   if (player2) {
+    if (player2.score === maxScore)
+      player2.gamesWon += 1;
     player2.score = 0;
   }
 }
@@ -775,8 +793,8 @@ function aikeyEvents(moveDirection) {
 
 // function to check/store balls last position every 1 second.
 function aiView() {
-  console.log("Lastball values:", lastballPosition);
   if (aiFlag) {
+    console.log("Lastball values:", lastballPosition);
     lastballPosition.x = ball.x;
     lastballPosition.y = ball.y;
   }
