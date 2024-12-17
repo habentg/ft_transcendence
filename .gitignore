@@ -15,3 +15,6 @@ source/.env
 
 # Ignore migration files
 **/migration/
+
+# Ignore the pfp directory
+**/profile_pics/

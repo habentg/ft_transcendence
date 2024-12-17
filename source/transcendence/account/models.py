@@ -63,6 +63,8 @@ class Player(AbstractUser):
     is_guest = models.BooleanField(default=False)
     is_logged_in = models.BooleanField(default=False)
     rating = models.IntegerField(default=0)
+    blocked_players = models.ManyToManyField('self', symmetrical=False, blank=True, related_name="players_blocked_list")
+
 
     # Fields removed
     first_name = None
@@ -81,3 +83,22 @@ class Player(AbstractUser):
 
     def __str__(self):
         return self.username
+    
+    def block(self, player):
+        if player == self:
+            raise ValidationError("You cannot block yourself")
+        if self.blocked_players.filter(username=player.username).exists():
+            raise ValidationError(f"{player.username} is already blocked")
+        self.blocked_players.add(player)
+        return True
+
+    def unblock(self, player):
+        if player == self:
+            raise ValidationError("You cannot unblock yourself")
+        if not self.blocked_players.filter(username=player.username).exists():
+            raise ValidationError(f"{player.username} is wasnt in blocked list")
+        self.blocked_players.remove(player)
+        return True
+
+    def is_blocked(self, player):
+        return self.blocked_players.filter(username=player.username).exists()

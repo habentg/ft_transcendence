@@ -17,17 +17,17 @@
               <!-- chatrooms will be loaded dynamically -->
               {% for chatroom in chatrooms %}
                 {% if not chatroom.get_participant_one or not chatroom.get_participant_two %}
-                  <li id="deleted_player" class="friend-item d-flex align-items-center disabled" data-recipent="Deleted Player" onclick="openChat('deleted_player', '{{ chatroom.name }}')">
+                  <li data-blocked="{{chatroom.blocker_username}}" id="deleted_player" class="friend-item d-flex align-items-center disabled" data-recipent="Deleted Player" onclick="openChat('deleted_player', '{{ chatroom.name }}')">
                     <i class="fas fa-user me-2 profile-icon" style="color:red;"></i>
                     <span class="mb-0">deleted_player</span>
                   </li>
                 {% elif chatroom.get_participant_one.username == user.username %}
-                  <li id="{{ chatroom.get_participant_two.username }}" class="friend-item d-flex align-items-center" data-recipent="{{ chatroom.get_participant_two.full_name }}" onclick="openChat('{{ chatroom.get_participant_two.username }}', '{{ chatroom.name }}')">
+                  <li data-blocked="{{chatroom.blocker_username}}" id="{{ chatroom.get_participant_two.username }}" class="friend-item d-flex align-items-center" data-recipent="{{ chatroom.get_participant_two.full_name }}" onclick="openChat('{{ chatroom.get_participant_two.username }}', '{{ chatroom.name }}')">
                     <i class="fas fa-user me-2 profile-icon"></i>
                     <span class="mb-0 username_span">{{ chatroom.get_participant_two.username }} </span>
                   </li>
                 {% elif chatroom.get_participant_two.username == user.username %}
-                  <li id="{{ chatroom.get_participant_one.username }}" class="friend-item d-flex align-items-center" data-recipent="{{ chatroom.get_participant_one.full_name }}" onclick="openChat('{{ chatroom.get_participant_one.username }}', '{{ chatroom.name }}')">
+                  <li data-blocked="{{chatroom.blocker_username}}" id="{{ chatroom.get_participant_one.username }}" class="friend-item d-flex align-items-center" data-recipent="{{ chatroom.get_participant_one.full_name }}" onclick="openChat('{{ chatroom.get_participant_one.username }}', '{{ chatroom.name }}')">
                     <i class="fas fa-user me-2 profile-icon"></i>
                     <span class="mb-0">{{ chatroom.get_participant_one.username }} </span>
                   </li>
@@ -53,18 +53,18 @@
             <!-- Dropdown for option -->
             <div class="dropdown">
               <button class="btn btn-secondary" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false"><i class="fas fa-ellipsis-v"></i></button>
-              <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="dropdownMenuButton">
-                <li>
+              <ul id="ul_display_option" class="dropdown-menu dropdown-menu-end" aria-labelledby="dropdownMenuButton">
+                <li id="vProfile_list_item">
                   <button id="viewProfileBtn" class="dropdown-item" type="button">View Profile</button>
                 </li>
-                <li>
-                  <button id="blockBtn" class="dropdown-item" type="button">Block</button>
+                {% comment %} <li id="block_list_item">
+                  <button id="" class="dropdown-item blockBtn" type="button" onclick="blockPlayer()">Block</button>
                 </li>
-                <li>
-                  <button id="unblockBtn" class="dropdown-item" type="button">Unblock</button>
-                </li>
-                <li>
-                  <button id="deleteChatRoomBtn" class="dropdown-item" type="button">Delete</button>
+                <li id="unblock_list_item">
+                  <button id="" class="dropdown-item unblockBtn" type="button" onclick="unBlockPlayer()">Unblock</button>
+                </li> {% endcomment %}
+                <li id="delete_list_item">
+                  <button id="" class="dropdown-item deleteChatRoomBtn" type="button">Delete</button>
                 </li>
               </ul>
             </div>

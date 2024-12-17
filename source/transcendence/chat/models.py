@@ -44,4 +44,3 @@ class Message(models.Model):
     @property
     def get_sender(self):
         return self.sender.username
-

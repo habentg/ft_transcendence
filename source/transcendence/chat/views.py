@@ -93,5 +93,18 @@ class ChatRoomsView(APIView, BaseView):
 			return Response({'error': e}, status=400)
 
 
-	
-	""" patch to block/unblock a user """
+"""  block/unblock a player checker """
+class IsBlocked(APIView):
+	authentication_classes = [JWTCookieAuthentication]
+	permission_classes = [IsAuthenticated]
+
+	def get(self, request):
+		try:
+			recipient_username =request.GET.get('recipient', '')
+			print(f" we hitting the endpoint {recipient_username}", flush=True)
+			recipient = Player.objects.get(username=recipient_username)
+			if request.user.is_blocked(recipient):
+				return Response({'status': 'blocked'}, status=200)
+			return Response({'status': 'not_blocked'}, status=200)
+		except Exception as e:
+			return Response({'error': 'something happened while checking if user is blocked'}, status=400)

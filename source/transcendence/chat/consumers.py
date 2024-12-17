@@ -31,19 +31,26 @@ class chatConsumer(AsyncWebsocketConsumer):
     async def receive(self, text_data):
         data = json.loads(text_data)
         recipient_username = data['recipient']
+        recipient = await database_sync_to_async(Player.objects.get)(username=recipient_username)
+        if not recipient:
+            await self.send(text_data=json.dumps({
+                'type': 'chat_message_error',
+                'message': f'User {recipient_username} not found'
+            }))
+            return
+        room_id = f"{min(self.sender.id, recipient.id)}_{max(self.sender.id, recipient.id)}"
 
         if data['type'] == 'private_message':
             message = data.get('message')
             try:
-                recipient = await database_sync_to_async(Player.objects.get)(username=recipient_username)
-                room_id = f"{min(self.sender.id, recipient.id)}_{max(self.sender.id, recipient.id)}"
                 priv_room = await database_sync_to_async(ChatRoom.objects.get)(name=room_id)
+                if await database_sync_to_async(recipient.is_blocked)(self.sender):
+                    return 
                 await database_sync_to_async(Message.objects.create)(
                     room=priv_room,
                     sender=self.sender,
                     content=message
                 )
-                # SEND DIRECTLY TO RECIPIENT'S CHAT GROUP
                 await self.channel_layer.group_send(
                     f"chat_{recipient.username}",
                     {
@@ -60,6 +67,42 @@ class chatConsumer(AsyncWebsocketConsumer):
                     'type': 'chat_message_error',
                     'message': f'Error sending message to {recipient_username}'
                 }))
+        elif data['type'] == 'block_unblock_player':
+            block_action = data['block_action']
+            if block_action == 'block':
+                try:
+                    await database_sync_to_async(self.sender.block)(recipient)
+                    print(f"{self.sender.username} blocked {recipient.username}", flush=True)
+                    await self.send(text_data=json.dumps({
+                        'type': 'block_unblock_player',
+                        'message': f'Unblocked {recipient_username}',
+                        'action': 'blocked',
+                        'recipient': recipient_username
+                    }))
+                except Exception as e:
+                    print(f"Error blocking user {recipient_username}: {e}", flush=True)
+                    await self.send(text_data=json.dumps({
+                        'type': 'chat_message_error',
+                        'message': f'Error blocking user {recipient_username}'
+                    }))
+                    return
+            elif block_action == 'unblock':
+                try:
+                    await database_sync_to_async(self.sender.unblock)(recipient)
+                    print(f"{self.sender.username} unblocked {recipient.username}", flush=True)
+                    await self.send(text_data=json.dumps({
+                        'type': 'block_unblock_player',
+                        'message': f'Unblocked {recipient_username}',
+                        'action': 'unblocked',
+                        'recipient': recipient_username
+                    }))
+                except Exception as e:
+                    print(f"Error unblocking user {recipient_username}: {e}", flush=True)
+                    await self.send(text_data=json.dumps({
+                        'type': 'chat_message_error',
+                        'message': f'Error unblocking user {recipient_username}'
+                    }))
+                    return
 
     """ message sending handler """
     async def chat_message_handler(self, event):
