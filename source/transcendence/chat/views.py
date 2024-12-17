@@ -21,18 +21,25 @@ class chatMessagesView(APIView):
 	template_name = 'chat/chat_messages.html'
 
 	def get(self, request):
-		# recipeint_username = request.GET.get('room', '')
 		room_name = request.GET.get('room', '')
+		recipeint_username = request.GET.get('recipient', '')
+		print(f"room_name: {room_name}, recipient: {recipeint_username}")
 		try:
-			# recipeint = Player.objects.get(username=recipeint_username)
-			# room_name = f"{min(request.user.id, recipeint.id)}_{max(request.user.id, recipeint.id)}"
 			chatroom = ChatRoom.objects.get(name=room_name)
 			messages = Message.objects.filter(room=chatroom).order_by('timestamp')
 			context = {
 				'messages': messages,
 				'current_user': PlayerSerializer(request.user).data
 			}
-			return Response({'messages': render_to_string(self.template_name, context)}, status=200)
+			return_json = {
+				'messages': render_to_string(self.template_name, context),
+				'is_blocked': False,
+			}
+			if recipeint_username != 'deleted_player':
+				recipeint = Player.objects.get(username=recipeint_username)
+				return_json['is_blocked'] = request.user.is_blocked(recipeint)
+			print("returning messages: ", return_json, flush=True)
+			return Response(return_json, status=200)
 		except ChatRoom.DoesNotExist:
 			print("Error: ", e)
 			return Response({'error': "No active chatroom for with this player!"}, status=404)

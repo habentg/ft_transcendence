@@ -255,51 +255,51 @@ class HealthCheckFilter(logging.Filter):
             return False
         return True
 
-LOGGING = {
-    'version': 1,
-    'disable_existing_loggers': False,
-    'formatters': {
-        'verbose': {
-            'format': '{levelname} {asctime} {module} {process:d} {thread:d} {message}',
-            'style': '{',
-        },
-        'simple': {
-            'format': '[{asctime}] {message}',
-            'style': '{',
-            'datefmt': '%d/%b/%Y %H:%M:%S'
-        },
-    },
-    'handlers': {
-        'console': {
-            'level': 'DEBUG',
-            'class': 'logging.StreamHandler',
-            'formatter': 'simple',
-            'filters': [HealthCheckFilter()],  # Use the imported class here
-        },
-    },
-    'loggers': {
-        'django': {
-            'handlers': ['console'],
-            'level': 'INFO',
-            'propagate': True,
-        },
-        'django.server': {
-            'handlers': ['console'],
-            'level': 'DEBUG',
-            'propagate': False,
-        },
-        'django.request': {
-            'handlers': ['console'],
-            'level': 'DEBUG',
-            'propagate': False,
-        },
-    },
-    'root': {
-        'handlers': ['console'],
-        'level': 'INFO',
-    },
-    'django.contrib.staticfiles': {
-        'handlers': ['console'],
-        'level': 'DEBUG',
-    },
-}
+# LOGGING = {
+#     'version': 1,
+#     'disable_existing_loggers': False,
+#     'formatters': {
+#         'verbose': {
+#             'format': '{levelname} {asctime} {module} {process:d} {thread:d} {message}',
+#             'style': '{',
+#         },
+#         'simple': {
+#             'format': '[{asctime}] {message}',
+#             'style': '{',
+#             'datefmt': '%d/%b/%Y %H:%M:%S'
+#         },
+#     },
+#     'handlers': {
+#         'console': {
+#             'level': 'DEBUG',
+#             'class': 'logging.StreamHandler',
+#             'formatter': 'simple',
+#             'filters': [HealthCheckFilter()],  # Use the imported class here
+#         },
+#     },
+    # 'loggers': {
+    #     'django': {
+    #         'handlers': ['console'],
+    #         'level': 'INFO',
+    #         'propagate': True,
+    #     },
+    #     'django.server': {
+    #         'handlers': ['console'],
+    #         'level': 'DEBUG',
+    #         'propagate': False,
+    #     },
+    #     'django.request': {
+    #         'handlers': ['console'],
+    #         'level': 'DEBUG',
+    #         'propagate': False,
+    #     },
+    # },
+    # 'root': {
+    #     'handlers': ['console'],
+    #     'level': 'INFO',
+    # },
+    # 'django.contrib.staticfiles': {
+    #     'handlers': ['console'],
+    #     'level': 'DEBUG',
+    # },
+# }
