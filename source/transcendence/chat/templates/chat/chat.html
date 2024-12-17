@@ -9,7 +9,7 @@
       <div class="chat-wrapper">
         <!-- Sidebar -->
         <div class="chat-sidebar">
-          <div class="sidebar-header">
+          <div class="sidebar-header p-3">
             <h5 class="mb-0">Chats</h5>
           </div>
           {% if chatrooms %}
@@ -35,7 +35,7 @@
               {% endfor %}
             </ul>
           {% else %}
-            <div class="alert alert-info">No chats found</div>
+          <div class="alert alert-info">No chats found</div>
           {% endif %}
         </div>
 
@@ -71,7 +71,8 @@
           </div>
           <div class="chat-messages" id="chatMessages"></div>
           <div class="chat-input d-flex">
-            <input type="text" id="messageInput" class="form-control me-2 d-none" placeholder="Type a message..." />
+            <input type="text" id="messageInput" class="form-control me-2 d-none" style="color: white;"
+              placeholder="Type a message..." />
             <button id="chat_send_btn" class="btn btn-primary d-none">Send</button>
           </div>
         </div>

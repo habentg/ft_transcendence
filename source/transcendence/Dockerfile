@@ -35,4 +35,4 @@ RUN chown -R transcendance_user:transcendance_user /media_static && chmod -R 755
 
 USER transcendance_user
 
-ENTRYPOINT [ "./entry_point.sh" ]
+ENTRYPOINT [ "sh", "entry_point.sh" ]
