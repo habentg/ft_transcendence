@@ -552,7 +552,7 @@ function closeModal(modalId) {
 }
 
 // ShowSuccessMessage Function
-function showSuccessMessage(message, timeout = 3000) {
+function showSuccessMessage(message, timeout = 3000, successHeader=`Success`) {
   // create and show success modal
   const existingModal = document.getElementById("success-modal");
   if (existingModal) existingModal.remove();
@@ -568,7 +568,7 @@ function showSuccessMessage(message, timeout = 3000) {
       <div class="content modal-content">
         <div class="modal-header border-0 py-3">
           <h5 class="modal-title text-success">
-            <i class="fas fa-check-circle me-2"></i>Success
+            <i class="fas fa-check-circle me-2"></i>${successHeader}
           </h5>
           <button type="button" class="btn-close btn-close-white" id="close-success-modal"></button>
         </div>
@@ -606,7 +606,7 @@ function showSuccessMessage(message, timeout = 3000) {
 }
 
 // Create a modal for displaying error messages
-function showErrorMessage(message) {
+function showErrorMessage(message, timeout = 3000, errorHeader=`Error`) {
   // create and show error modal
   const existingModal = document.getElementById("error-modal");
   if (existingModal) existingModal.remove();
@@ -622,7 +622,7 @@ function showErrorMessage(message) {
       <div class="content modal-content">
         <div class="modal-header border-0 py-3">
           <h5 class="modal-title text-danger">
-            <i class="fas fa-exclamation-triangle me-2"></i>Error
+            <i class="fas fa-exclamation-triangle me-2"></i>${errorHeader}
           </h5>
           <button type="button" class="btn-close btn-close-white" id="close-error-modal"></button>
         </div>
@@ -652,6 +652,10 @@ function showErrorMessage(message) {
     if (e.target === modal) closeModal("error-modal");
   }
   );
+  // Close modal after 3 seconds
+  setTimeout(() => {
+    closeModal("error-modal");
+  }, timeout);
 }
 
 // call the function to show the error message: TEST

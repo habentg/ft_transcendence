@@ -219,12 +219,14 @@ function initChatWebsocket() {
           sendButton.removeEventListener("click", handleMessageSend);
           sendButton.addEventListener("click", handleMessageSend);
         }
+        showErrorMessage(`You have blocked ${data['recipient']}!`, 3000, "Blocked!");
       }
       else {
         if (messageInput)
           messageInput.classList.remove("d-none");
         if (sendButton)
           sendButton.classList.remove("d-none");
+          showSuccessMessage(`You have unblocked ${data['recipient']}!`, 2000, "Unblocked!");
       }
     }
     else if (data.type === "room_deleted_notification") {
