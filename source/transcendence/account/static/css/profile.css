@@ -37,6 +37,11 @@
     padding: 3px;
 }
 
+#change-profile-pic {
+    color: whitesmoke;
+    border-radius: 10px;
+}
+
 .profile-details .detail-item {
     display: flex;
     align-items: center;
@@ -252,6 +257,10 @@
     .btn {
         padding: 0.5rem 1rem;
         font-size: 0.9rem;
+    }
+
+    #change-profile-pic {
+        padding: 4px 6px;
     }
 }
 

@@ -40,7 +40,7 @@ async function updatePlayerPassword() {
 
     // Success - close modal and show success message
     closeModal("password-change-modal");
-    showSuccessMessage("Password updated successfully!");
+    showSuccessMessage("Password updated successfully. Please log in again with your new password.", 4000);
     updateUI("/settings", false);
   } catch (error) {
     console.error("Error:", error);

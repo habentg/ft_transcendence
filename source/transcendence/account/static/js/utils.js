@@ -284,7 +284,7 @@ async function handleSignOut() {
       console.log("Signed out successfully ------ from utils");
       removeResource();
       updateNavBar(false);
-      await updateUI("", false);
+      await updateUI(``, false);
     } else {
       throw new Error("Failed to sign out");
     }
@@ -447,8 +447,10 @@ function createToast(type, title, message) {
     toastIcon.className = "fas fa-exclamation-circle text-warning";
   } else if (type === "chat") {
     toastHeader.classList.remove("bg-danger", "text-white");
-    toastHeader.classList.add("bg-primary", "text-light");
+    toastHeader.classList.add("#84ddfc", "text-light");
     toastIcon.className = "fas fa-comment-dots text-info";
+    // make the color of the icon red
+    toastIcon.style.color = "red";
   } else {
     console.warn("Unknown toast type, defaulting to chat.");
     toastHeader.classList.remove("bg-danger", "text-white");

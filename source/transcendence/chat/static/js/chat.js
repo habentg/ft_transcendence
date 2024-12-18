@@ -132,7 +132,7 @@ function chatOptionsModifier(action, delete_user=false) {
 }
 
 /* fetching message of an active chat */
-async function fetchMessages(chatMessages) {
+async function fetchMessages(activeChatRecipient, chatMessages) {
   try {
     const response = await fetch(`/chat_messages?room=${activeChatId}&recipient=${activeChatRecipient}`);
     if (response.ok) {

@@ -404,6 +404,10 @@ td {
   display: flex; 
 }
 
+#toastIcon {
+  color: red;
+}
+
 /* Responsive Adjustments */
 @media (max-width: 991px) {
   .custom-navbar {
