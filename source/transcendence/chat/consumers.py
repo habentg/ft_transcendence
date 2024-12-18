@@ -45,6 +45,10 @@ class chatConsumer(AsyncWebsocketConsumer):
             try:
                 priv_room = await database_sync_to_async(ChatRoom.objects.get)(name=room_id)
                 if await database_sync_to_async(recipient.is_blocked)(self.sender):
+                    print(f"{recipient.username} has blocked you", flush=True)
+                    return 
+                if await database_sync_to_async(self.sender.is_blocked)(recipient):
+                    print(f"you have blocked {recipient.username}", flush=True)
                     return 
                 await database_sync_to_async(Message.objects.create)(
                     room=priv_room,
@@ -75,7 +79,7 @@ class chatConsumer(AsyncWebsocketConsumer):
                     print(f"{self.sender.username} blocked {recipient.username}", flush=True)
                     await self.send(text_data=json.dumps({
                         'type': 'block_unblock_player',
-                        'message': f'Unblocked {recipient_username}',
+                        'message': f'blocked {recipient_username}',
                         'action': 'blocked',
                         'recipient': recipient_username
                     }))
@@ -93,7 +97,7 @@ class chatConsumer(AsyncWebsocketConsumer):
                     await self.send(text_data=json.dumps({
                         'type': 'block_unblock_player',
                         'message': f'Unblocked {recipient_username}',
-                        'action': 'unblocked',
+                        'action': 'not_blocked',
                         'recipient': recipient_username
                     }))
                 except Exception as e:
