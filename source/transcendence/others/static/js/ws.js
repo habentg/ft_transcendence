@@ -205,6 +205,29 @@ function initChatWebsocket() {
       console.log("private message ERROR", data);
       alert(`${data.message}`);
     }
+    else if (data.type === "block_unblock_player") {
+      chatOptionsModifier(data.action, false);
+      let messageInput = document.getElementById("messageInput");
+      let sendButton = document.getElementById("chat_send_btn");
+      if (data.action === 'blocked') {
+        if (messageInput) {
+          messageInput.classList.add("d-none");
+          messageInput.removeEventListener("keyup", messageInputHandler);
+          messageInput.addEventListener("keyup", messageInputHandler);
+        }
+        if (sendButton) {
+          sendButton.classList.add("d-none");
+          sendButton.removeEventListener("click", handleMessageSend);
+          sendButton.addEventListener("click", handleMessageSend);
+        }
+      }
+      else {
+        if (messageInput)
+          messageInput.classList.remove("d-none");
+        if (sendButton)
+          sendButton.classList.remove("d-none");
+      }
+    }
     else if (data.type === "room_deleted_notification") {
       // remove the chatroom from the list
       alert("room deleted --- chatroom will be removed");

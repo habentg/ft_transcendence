@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title id="title">
       {% if title %}
-        {{ title }}
+        {{ title }} - PONG
       {% else %}
         PING-PONG
       {% endif %}
@@ -38,9 +38,14 @@
     <script src="{% static 'js/route.js' %}" defer></script>
     <!-- will dynamically page specific css and js files -->
     {% if css %}
-      <link rel="stylesheet" href="{% static css %}" id="{% static css %}-id" />
-    {% endif %} {% if js %}
-      <script src="{% static js %}" id="{% static js %}-id" defer></script>
+      {% for ccs_file in css %}
+        <link rel="stylesheet" href="{% static ccs_file %}" id="{% static ccs_file %}-id" />
+      {% endfor %}
+    {% endif %}
+    {% if js %}
+      {% for js_file in js %}
+        <script src="{% static js_file %}" id="{% static js_file %}-id" defer></script>
+      {% endfor %}
     {% endif %}
   </head>
 
@@ -70,8 +75,7 @@
                   </li>
                   <li id="notification_dropdown_list" class="nav-item ms-lg-2 dropdown">
                     <a onclick="handleNotificationBellClick()" class="nav-link position-relative notification-badge" role="button" id="notificationDropdown" data-bs-toggle="dropdown" aria-expanded="false"><i class="fas fa-bell"></i></a>
-                    <ul id="notification_ul" class="dropdown-menu dropdown-menu-end" aria-labelledby="notificationDropdown" style="width: 300px;">
-                    </ul>
+                    <ul id="notification_ul" class="dropdown-menu dropdown-menu-end" aria-labelledby="notificationDropdown" style="width: 300px;"></ul>
                   </li>
 
                   <li class="nav-item ms-lg-2 dropdown">

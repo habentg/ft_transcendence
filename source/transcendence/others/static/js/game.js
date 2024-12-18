@@ -29,7 +29,7 @@ let playerVelocityY = 0;
 let activeKeys = {};
 const cooldownTime = 3000; // cooldown for parry power up
 
-let players = [];
+// let players = [];
 
 // need to convert everything to a class so it we could easily handle multiple players when tryin to play tournament mode
 class Player {
@@ -41,6 +41,7 @@ class Player {
     this.parryCooldown = 0;
     this.velocityY = playerVelocityY;
     this.score = 0;
+    this.finalScore = 0;
     this.position = "";
     if (position === "left") {
       this.x = 10;
@@ -433,6 +434,9 @@ function parryRefresh(player) {
 }
 
 function move(e) {
+    if(['ArrowUp', 'ArrowDown', 'PageUp', 'PageDown', ' '].includes(e.key)) {
+        e.preventDefault();
+    }
   activeKeys[e.code] = true;
   console.log(`Key Down: ${e.code}`); // Debugging
 }
@@ -581,9 +585,11 @@ function isGameOver(player1, player2) {
 
 function resetScores(player1, player2) {
   if (player1) {
+	player1.finalScore = player1.score
     player1.score = 0;
   }
   if (player2) {
+	player2.finalScore = player2.score
     player2.score = 0;
   }
 }
@@ -801,7 +807,7 @@ function checkScreenSize() {
   }
 }
 
-loadGame();
+// loadGame();
 // Run check on page load
 checkScreenSize();
 

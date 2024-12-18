@@ -3,6 +3,8 @@ let matchCount = 0;
 let matchHistory = [];
 
 let tournamentElement;
+let playersNumber;
+let maxPlayerNumbers;
 
 function initializeGame() {
   board = document.getElementById("board");
@@ -16,53 +18,55 @@ function initializeGame() {
 
 function startGame(player1, player2) {
   drawFlag = true;
-  document.getElementById("player1Name").textContent = "@ " + player1Name;
+  document.getElementById("player1Name").textContent =
+    "@ " + player1.playerName;
   document.getElementById("player1Name").style.display = "block";
-  document.getElementById("player2Name").textContent = "@ " + player2Name;
+  document.getElementById("player2Name").textContent =
+    "@ " + player2.playerName;
   document.getElementById("player2Name").style.display = "block";
   document.getElementById("player1").classList.remove("d-none");
   document.getElementById("player2").classList.remove("d-none");
-  requestAnimationFrame(() => draw(player1, player2))
+  requestAnimationFrame(() => draw(player1, player2));
 }
 
 function prepTournament4() {
-	var game3 = tournamentElement.getElementsByClassName("game3");
-	var game4 = tournamentElement.getElementsByClassName("game4");
-	var game6 = tournamentElement.getElementsByClassName("game6");
-	var game7 = tournamentElement.getElementsByClassName("game7");
-  
-	for (var i = 0; i < game3.length; i++) {
-	  game3[i].style.display = "none";
-	}
-	for (var i = 0; i < game4.length; i++) {
-	  game4[i].style.display = "none";
-	}
-	for (var i = 0; i < game6.length; i++) {
-	  game6[i].style.display = "none";
-	}
-	for (var i = 0; i < game7.length; i++) {
-	  game7[i].style.display = "none";
-	}
-  
-	// Also delete pseudo elements that start from game 5. class .connection-5-7
-	var connection57 = tournamentElement.getElementsByClassName("connection-5-7");
-	for (var i = 0; i < connection57.length; i++) {
-	  connection57[i].style.display = "none";
-	}
-  
-	// Adjust the position of the game 5
-	var game5 = tournamentElement.getElementsByClassName("game5");
-	game5[0].style.top = "85%";
-	game5[0].style.left = "45%";
-	game5[0].style.transform = "translate(-50%, -50%)";
-	// game5[0].style.width = "100%";
+  var game3 = tournamentElement.getElementsByClassName("game3");
+  var game4 = tournamentElement.getElementsByClassName("game4");
+  var game6 = tournamentElement.getElementsByClassName("game6");
+  var game7 = tournamentElement.getElementsByClassName("game7");
+
+  for (var i = 0; i < game3.length; i++) {
+    game3[i].style.display = "none";
   }
+  for (var i = 0; i < game4.length; i++) {
+    game4[i].style.display = "none";
+  }
+  for (var i = 0; i < game6.length; i++) {
+    game6[i].style.display = "none";
+  }
+  for (var i = 0; i < game7.length; i++) {
+    game7[i].style.display = "none";
+  }
+
+  // Also delete pseudo elements that start from game 5. class .connection-5-7
+  var connection57 = tournamentElement.getElementsByClassName("connection-5-7");
+  for (var i = 0; i < connection57.length; i++) {
+    connection57[i].style.display = "none";
+  }
+
+  // Adjust the position of the game 5
+  var game5 = tournamentElement.getElementsByClassName("game5");
+  game5[0].style.top = "85%";
+  game5[0].style.left = "45%";
+  game5[0].style.transform = "translate(-50%, -50%)";
+  // game5[0].style.width = "100%";
+}
 
 //END OF GAME LOGIC
 //TOURNAMENT LOGIC
 
 //ADD THE This is to add players
-const players = ["Tofara Mususa"];
+let playersNames = ["Tofara Mususa"];
 
 function getPlayerNumberModal() {
   const modal = document.createElement("div");
@@ -75,7 +79,7 @@ function getPlayerNumberModal() {
 	  <div class="modal-content">
 		<div class="modal-header border-0 py-3">
 		  <h5 class="modal-title">
-			<i class="fas fa-trophy me-2"></i> Create Tournament
+			<i class="fas fa-trophy me-2"></i> Confirm Players
 		  </h5>
 		  <button type="button" class="btn-close btn-close-white" data-dismiss="modal"></button>
 		</div>
@@ -285,6 +289,11 @@ function createTournamentMap() {
 						</div>
 					</div>
 				</div>
+			<button
+              class="btn continueButton btn-success btn-md d-flex justify-content-center"
+            >
+              Create Tournament
+            </button>
     `;
 
   return tournamentWrapper;
@@ -337,7 +346,8 @@ function createTournamentModal() {
   document
     .getElementById("submitPlayerNumBtn")
     .addEventListener("click", () => {
-      const playersNumber = document.getElementById("playersNumber").value;
+      playersNumber = document.getElementById("playersNumber").value;
+      //here need to check the number of players
       console.log("Creating tournament with ", playersNumber, " players");
       // createTournament(playersNumber);
       closeModal("tournamentModal");
@@ -365,22 +375,21 @@ function initMap(tournamentMap) {
   const teamSpans = tournamentMap.querySelectorAll(".team span");
 
   // Update Game 1
-  teamSpans[0].textContent = players[0];
-  teamSpans[1].textContent = players[1];
+  teamSpans[0].textContent = playersNames[0];
+  teamSpans[1].textContent = playersNames[1];
 
   // Update Game 2
-  teamSpans[2].textContent = players[2];
-  teamSpans[3].textContent = players[3];
+  teamSpans[2].textContent = playersNames[2];
+  teamSpans[3].textContent = playersNames[3];
 
- if(players.length == 8)
- {
-	 teamSpans[4].textContent = players[4];
-	 teamSpans[5].textContent = players[5];
-   
-	 // Update Game 4
-	 teamSpans[6].textContent = players[6];
-	 teamSpans[7].textContent = players[7];
- }
+  if (playersNames.length == 8) {
+    teamSpans[4].textContent = playersNames[4];
+    teamSpans[5].textContent = playersNames[5];
+
+    // Update Game 4
+    teamSpans[6].textContent = playersNames[6];
+    teamSpans[7].textContent = playersNames[7];
+  }
   return tournamentMap;
 }
 
@@ -396,19 +405,43 @@ document.addEventListener("DOMContentLoaded", () => {
   const modal = getPlayerNumberModal();
   document.body.appendChild(modal);
 
-  // Event Listeners
-  document
-    .getElementById("submitPlayerNumBtn")
-    .addEventListener("click", () => {
-      maxPlayerNumbers = document.getElementById("playersNumber").value;
-      if (maxPlayerNumbers < 4 || maxPlayerNumbers > 8) {
-        alert("Not between 4 and 8");
-      }
-      console.log("Creating tournament with ", maxPlayerNumbers, " players");
-      closeModal("tournamentModal");
-      setUpPlayerAddition();
-    });
+  const playersNumberInput = document.getElementById("playersNumber");
+  const errorMsgDiv = document.getElementById("local-game-error-msg");
+  const submitPlayerNumBtn = document.getElementById("submitPlayerNumBtn");
 
+  // Input validation function
+  function validatePlayerNumber() {
+    const maxPlayerNumbers = playersNumberInput.value;
+
+    if (maxPlayerNumbers === "") return false;
+    if (
+      isNaN(maxPlayerNumbers) ||
+      maxPlayerNumbers < 4 ||
+      maxPlayerNumbers > 8
+    ) {
+      errorMsgDiv.textContent = "Please enter a valid number between 4 and 8";
+      errorMsgDiv.style.display = "block";
+      return false;
+    } else {
+      errorMsgDiv.style.display = "none";
+      return true;
+    }
+  }
+
+  // Add input event listener for real-time validation
+  playersNumberInput.addEventListener("input", validatePlayerNumber);
+
+  // Modify existing submit button event listener
+  submitPlayerNumBtn.addEventListener("click", () => {
+    if (!validatePlayerNumber()) {
+      return;
+    }
+
+    maxPlayerNumbers = playersNumberInput.value;
+    console.log("Creating tournament with ", maxPlayerNumbers, " players");
+    closeModal("tournamentModal");
+    setUpPlayerAddition();
+  });
   // close the modal when the close button is clicked
   document
     .querySelector("#tournamentModal .btn-close")
@@ -423,6 +456,51 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 
+  function validatePlayerName(trimmedName) {
+    const errorMsgDiv = document.getElementById("player-name-error-msg");
+
+    // Remove any existing error message when input changes
+    errorMsgDiv.textContent = "";
+    errorMsgDiv.style.display = "none";
+
+    // Check if max players reached
+    if (playersNames.length == maxPlayerNumbers) {
+      errorMsgDiv.textContent = "Max Players reached";
+      errorMsgDiv.style.display = "block";
+      return false;
+    }
+    // Check if name contains only letters
+    const letterRegex = /^[A-Za-z]+$/;
+    if (!letterRegex.test(trimmedName)) {
+      errorMsgDiv.textContent = "Name must contain only letters";
+      errorMsgDiv.style.display = "block";
+      return false;
+    }
+
+    // Check name length
+    if (trimmedName.length < 5 || trimmedName.length > 9) {
+      errorMsgDiv.textContent = "Name must be between 5 and 9 characters";
+      errorMsgDiv.style.display = "block";
+      return false;
+    }
+
+    // Check if player already exists
+    if (playersNames.includes(trimmedName)) {
+      errorMsgDiv.textContent = "Player name is taken!";
+      errorMsgDiv.style.display = "block";
+      return false;
+    }
+
+    return true;
+  }
+  document.getElementById("searchInput").addEventListener("input", function () {
+    const errorMsgDiv = document.getElementById("player-name-error-msg");
+    if (errorMsgDiv) {
+      errorMsgDiv.textContent = "";
+      errorMsgDiv.style.display = "none";
+    }
+  });
+
   function setUpPlayerAddition() {
     const searchInput = document.getElementById("searchInput");
     const searchIcon = document.getElementById("searchIcon");
@@ -433,20 +511,10 @@ document.addEventListener("DOMContentLoaded", () => {
     function addPlayer(playerName) {
       // Trim and validate player name
       const trimmedName = playerName.trim();
-      if (!trimmedName) return;
-
-      // Check if player already exists
-      if (players.includes(trimmedName)) {
-        alert("Player already added!");
-        return;
-      }
-      if (players.length == maxPlayerNumbers) {
-        alert("Max Players reached");
-        return;
-      }
+      if (!trimmedName || !validatePlayerName(trimmedName)) return;
 
       // Add player to array
-      players.push(trimmedName);
+      playersNames.push(trimmedName);
 
       // Create new player button
       const playerButton = document.createElement("button");
@@ -470,9 +538,9 @@ document.addEventListener("DOMContentLoaded", () => {
           return;
         }
         // Remove from players array
-        const index = players.indexOf(trimmedName);
+        const index = playersNames.indexOf(trimmedName);
         if (index > -1) {
-          players.splice(index, 1);
+          playersNames.splice(index, 1);
         }
 
         // Remove button from DOM
@@ -499,13 +567,13 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 
     startButton.addEventListener("click", async () => {
-      if (players.length < 2) {
+      if (playersNames.length < 2) {
         alert("Please add at least 2 players to start the tournament!");
         return;
       }
       const friendBoard = document.querySelector(".friendBoard");
       friendBoard.remove();
-      const tournament = createPingPongTournament(players);
+      const tournament = createPingPongTournament(playersNames);
       try {
         const champion = await tournament.runTournament();
         console.log("Champion:", champion);
@@ -543,8 +611,12 @@ document.addEventListener("DOMContentLoaded", () => {
 function updateTournamentMap(match) {
   matchCount += 1;
 
-  // Determine which game to update based on matchCount
+  if (playersNames.length == 4 && matchCount == 3) {
+    matchCount = 5;
+  }
+
   const gameToUpdate = tournamentElement.querySelector(`#game${matchCount}`);
+  // Determine which game to update based on matchCount
 
   if (gameToUpdate) {
     // Update team names
@@ -569,20 +641,20 @@ function updateTournamentMap(match) {
 
 function routeWinnerToNextRound(currentGameNumber, winner) {
   // Mapping of game progression
-  const gameProgressionMap = players.length == 8 ? {
-    1: { nextGame: 5, teamPosition: 0 },
-    2: { nextGame: 5, teamPosition: 1 },
-    3: { nextGame: 6, teamPosition: 0 },
-    4: { nextGame: 6, teamPosition: 1 },
-    5: { nextGame: 7, teamPosition: 0 },
-    6: { nextGame: 7, teamPosition: 1 },
-  } : 
-  {
-    1: { nextGame: 5, teamPosition: 0 },
-    2: { nextGame: 5, teamPosition: 1 },
-  }
-;
-
+  const gameProgressionMap =
+    playersNames.length == 8
+      ? {
+          1: { nextGame: 5, teamPosition: 0 },
+          2: { nextGame: 5, teamPosition: 1 },
+          3: { nextGame: 6, teamPosition: 0 },
+          4: { nextGame: 6, teamPosition: 1 },
+          5: { nextGame: 7, teamPosition: 0 },
+          6: { nextGame: 7, teamPosition: 1 },
+        }
+      : {
+          1: { nextGame: 5, teamPosition: 0 },
+          2: { nextGame: 5, teamPosition: 1 },
+        };
   // Check if this game has a next round
   const progression = gameProgressionMap[currentGameNumber];
   if (progression) {
@@ -590,18 +662,23 @@ function routeWinnerToNextRound(currentGameNumber, winner) {
       `#game${progression.nextGame}`
     );
     if (nextGameElement) {
-      const teamElements = nextGameElement.closest(".game").querySelectorAll(".team span");
+      const teamElements = nextGameElement
+        .closest(".game")
+        .querySelectorAll(".team span");
       teamElements[progression.teamPosition].textContent = winner;
     }
   }
 }
 
+function initPlayers() {
+  for (let i = 0; i < playerNames.length; i++) {
+    players.push;
+  }
+}
+
 //LOGIC: This is to display initial the tournament logic
 function createPingPongTournament(players) {
-  async function playMatch(player1, player2) {
-    // Delay the execution of the code below
-    await new Promise((resolve) => setTimeout(resolve, 1500));
-
+  async function playMatch(player1Name, player2Name) {
     tournamentDiv = document.querySelector("#tournamentWrapper");
     tournamentDiv.remove();
     const pageContainer = document.getElementById("background");
@@ -611,13 +688,9 @@ function createPingPongTournament(players) {
     return new Promise((resolve, reject) => {
       try {
         // Reset game state completely
-        player1Score = 0;
-        player2Score = 0;
         drawFlag = true;
-        player1Obj = new Player(player1, "left");;
-        player2Obj = new Player(player2, "right");;
-		
-        player2Name = player2;
+        player1Obj = new Player(player1Name, "left");
+        player2Obj = new Player(player2Name, "right");
 
         const gameboard = document.getElementById("tableBoard");
         const canvas = document.getElementById("board");
@@ -631,16 +704,17 @@ function createPingPongTournament(players) {
           if (!drawFlag) {
             const match = {
               player1: player1Obj.playerName,
+              player1Score: player1Obj.finalScore,
               player2: player2Obj.playerName,
-              player1Score: player1Obj.score,
-              player2Score: player2Obj.score,
-              winner: player1Obj.score >= maxScore ? player1Obj.playerName : player2Obj.playerName,
+              player2Score: player2Obj.finalScore,
+              winner:
+                player1Obj.finalScore >= maxScore
+                  ? player1Obj.playerName
+                  : player2Obj.playerName,
             };
-
             matchHistory.push(match);
             updateTournamentMap(match);
             game.remove();
-            pageContainer.appendChild(tournamentElement);
             resolve(match.winner);
           } else {
             requestAnimationFrame(checkGameStatus);
@@ -654,14 +728,51 @@ function createPingPongTournament(players) {
     });
   }
 
+  function randomisePlayers(array) {
+    // Create a copy of the original array to avoid modifying the original
+    const shuffledArray = [...array];
+
+    // Start from the last element and swap with a random previous element
+    for (let i = shuffledArray.length - 1; i > 0; i--) {
+      // Generate a random index between 0 and i (inclusive)
+      const j = Math.floor(Math.random() * (i + 1));
+
+      // Swap elements
+      [shuffledArray[i], shuffledArray[j]] = [
+        shuffledArray[j],
+        shuffledArray[i],
+      ];
+    }
+
+    return shuffledArray;
+  }
+
+  function waitForContinueButton() {
+	return new Promise((resolve, reject) => {
+	  const continueButton = document.querySelector(".continueButton");
+	  if (!continueButton) {
+		console.error("Continue button not found in the DOM.");
+		return; // Exit the function early to prevent further execution
+	  }
+  
+	  const handleClick = () => {
+		continueButton.removeEventListener("click", handleClick);
+		resolve();
+	  };
+  
+	  continueButton.addEventListener("click", handleClick);
+	});
+  }
+  
   async function runTournament() {
-    let currentPlayers = [...players];
+    playersNames = randomisePlayers(playersNames);
+    let currentPlayers = [...playersNames];
+    //randomise the players names here
     const tournamentContainer = document.getElementById("background");
     tournamentElement = initMap(createTournamentMap());
-	if(players.length == 4)
-	{
-		prepTournament4();
-	}
+    if (playersNames.length == 4) {
+      prepTournament4();
+    }
     tournamentContainer.appendChild(tournamentElement);
 
     // Validate initial number of players
@@ -674,11 +785,14 @@ function createPingPongTournament(players) {
       //need to add a div saying that we are the quarter finals
       const quarterFinalWinners = [];
       for (let i = 0; i < currentPlayers.length; i += 2) {
-        const winner = await playMatch(
-          currentPlayers[i],
-          currentPlayers[i + 1]
-        );
-        quarterFinalWinners.push(winner);
+		await waitForContinueButton();
+		  const winner = await playMatch(
+			  currentPlayers[i],
+			  currentPlayers[i + 1]
+			  );
+			  quarterFinalWinners.push(winner);
+		tournamentContainer.appendChild(tournamentElement);
+
       }
       currentPlayers = quarterFinalWinners;
     }
@@ -687,13 +801,15 @@ function createPingPongTournament(players) {
     const semiFinalWinners = [];
     //need to add a div saying this semifinals
     for (let i = 0; i < currentPlayers.length; i += 2) {
+		await waitForContinueButton();
       const winner = await playMatch(currentPlayers[i], currentPlayers[i + 1]);
       semiFinalWinners.push(winner);
+	  tournamentContainer.appendChild(tournamentElement);
     }
 
-    // Final
-    // add the finals div here saying there are the players playing
+	await waitForContinueButton();
     const champion = await playMatch(semiFinalWinners[0], semiFinalWinners[1]);
+	tournamentContainer.appendChild(tournamentElement);
 
     return champion;
   }

@@ -56,7 +56,6 @@ class FriendRequest(models.Model):
     # updated_at = models.DateTimeField(auto_now=True)
 
     class Meta:
-        # Prevent duplicate requests between the same users - will not create multiple entries.
         unique_together = ['sender', 'receiver']
         db_table = 'friend_request'
         

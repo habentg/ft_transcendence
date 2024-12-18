@@ -16,8 +16,8 @@ from django.core.mail import send_mail
 from django.contrib.auth.tokens import default_token_generator
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.utils.encoding import force_bytes, force_str
-from django.shortcuts import render
 from .utils import send_2fa_code
+from django.shortcuts import render
 import pyotp
 from django.urls import reverse
 from rest_framework.permissions import IsAuthenticated
@@ -40,8 +40,8 @@ class SignUpView(APIView, BaseView):
 	permission_classes = []
 	template_name = 'account/signup.html'
 	title = 'Sign Up'
-	css = 'css/signup.css'
-	js = 'js/signup.js'
+	css = ['css/signup.css']
+	js = ['js/signup.js']
 
 	def get(self, request):
 		if isUserisAuthenticated(request):
@@ -76,8 +76,8 @@ class SignInView(APIView, BaseView):
 	permission_classes = []
 	template_name = 'account/signin.html'
 	title = 'Sign In'
-	css = 'css/signin.css'
-	js = 'js/signin.js'
+	css = ['css/signin.css']
+	js = ['js/signin.js']
 
 	def get(self, request):
 		if isUserisAuthenticated(request):
@@ -227,8 +227,8 @@ class PasswordReset(BaseView):
 	permission_classes = []
 	template_name = 'account/password_reset.html'
 	title = 'Password Reset'
-	css = 'css/password_reset.css'
-	js = 'js/password_reset.js'
+	css = ['css/password_reset.css']
+	js = ['js/password_reset.js']
 
 	def get(self, request):
 		return super().get(request)
@@ -268,8 +268,8 @@ class PassResetNewPass(View):
 	permission_classes = []
 	template_name = 'account/change_pass.html'
 	title = 'Password Reset'
-	js = 'js/password_reset.js'
-	css = 'css/password_reset.css'
+	css = ['css/password_reset.css']
+	js = ['js/password_reset.js']
 
 	def get(self, request, uidb64=None, token=None):
 		Player = get_user_model()
@@ -317,8 +317,8 @@ class TwoFactorAuth(APIView, BaseView):
 	permission_classes = [IsAuthenticated]
 	template_name = 'account/2fa.html'
 	title = 'Two Factor Authentication'
-	css = 'css/2fa.css'
-	js = 'js/2fa.js'
+	css = ['css/2fa.css']
+	js = ['js/2fa.js']
 
 	def handle_exception(self, exception):
 		if isinstance(exception, AuthenticationFailed):
@@ -366,8 +366,8 @@ class PlayerProfileView(APIView, BaseView):
 
 	template_name = 'friendship/player_profile.html'
 	title = 'Player Profile'
-	css = 'css/profile.css'
-	js = 'js/profile.js'
+	css = ['css/profile.css']
+	js = ['js/profile.js']
 
 	def handle_exception(self, exception):
 		if isinstance(exception, AuthenticationFailed):
@@ -449,10 +449,18 @@ class PlayerProfileUpdatingView(APIView, BaseView):
 				return JsonResponse({'error_msg': 'Invalid current password!'}, status=status.HTTP_400_BAD_REQUEST)
 			if serializer.validated_data['new_password'] != serializer.validated_data['confirm_password']:
 				return JsonResponse({'error_msg': 'Mismatch while confirming password!'}, status=status.HTTP_400_BAD_REQUEST)
+			""" blacklisting the old token """
+			token_string = request.COOKIES.get('access_token')
+			if token_string:
+				try:
+					add_token_to_blacklist(token_string)
+				except Exception as e:
+					print(e, flush=True)
+					return HttpResponseRedirect(reverse('landing'))
 			player.set_password(serializer.validated_data['new_password'])
 			player.save()
 			print("password update success - POST - PlayerProfileUpdatingView", flush=True)
-			return Response({'username': player.username}, status=status.HTTP_200_OK)
+			return Response({'user_data': player.username}, status=status.HTTP_200_OK)
 		return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
@@ -462,8 +470,8 @@ class PlayerSettings(APIView, BaseView):
 	permission_classes = [IsAuthenticated]
 	template_name = 'account/settings.html'
 	title = 'settings'
-	css = 'css/settings.css'
-	js = 'js/settings.js'
+	css = ['css/settings.css']
+	js = ['js/settings.js']
 
 	def handle_exception(self, exception):
 		if isinstance(exception, AuthenticationFailed):

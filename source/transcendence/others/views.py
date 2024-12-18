@@ -55,8 +55,8 @@ class Catch_All(BaseView):
 	permission_classes = []
 	template_name = 'others/404.html'
 	title = 'Error Page'
-	css = 'css/404.css'
-	js = 'js/404.js'
+	css = ['css/404.css']
+	js = ['js/404.js']
 
 	def get(self, request, path=None, *args, **kwargs):
 		return super().get(request)
@@ -67,8 +67,8 @@ class HomeView(APIView, BaseView):
 	permission_classes = [IsAuthenticated]
 	template_name = 'others/home.html'
 	title = 'Home Page'
-	css = 'css/home.css'
-	js = 'js/home.js'
+	css = ['css/home.css']
+	js = ['js/home.js']
 	
 	def handle_exception(self, exception):
 		if isinstance(exception, AuthenticationFailed):
@@ -91,8 +91,7 @@ class LandingPageView(BaseView):
 	authentication_classes = []
 	permission_classes = []
 	template_name = 'others/landing.html'
-	css = 'css/landing.css'
-	# js = 'js/landing.js'
+	css = ['css/landing.css']
 	title = 'Index Page'
 
 	def get(self, request):
@@ -127,21 +126,21 @@ class AboutView(BaseView):
 	permission_classes = []
 	template_name = 'others/about.html'
 	title = 'About Us'
-	css = 'css/static_pages.css'
+	css = ['css/static_pages.css']
 
 class PrivacyView(BaseView):
 	authentication_classes = []
 	permission_classes = []
 	template_name = 'others/privacy.html'
 	title = 'Privacy Policy'
-	css = 'css/static_pages.css'
+	css = ['css/static_pages.css']
 
 class TermsView(BaseView):
 	authentication_classes = []
 	permission_classes = []
 	template_name = 'others/terms.html'
 	title = 'Terms of Service'
-	css = 'css/static_pages.css'
+	css = ['css/static_pages.css']
 
 
 from django.core.paginator import Paginator
@@ -156,8 +155,8 @@ class PaginatedSearch(APIView, BaseView):
 	authentication_classes = [JWTCookieAuthentication]
 	permission_classes = [IsAuthenticated]
 	template_name = 'others/paginated_page.html'
-	css = 'css/search.css'
-	js = 'js/friend.js'
+	css = ['css/search.css']
+	js = ['js/friend.js']
 
 	def handle_exception(self, exception):
 		if isinstance(exception, AuthenticationFailed):
@@ -223,8 +222,8 @@ class GameView(APIView, BaseView):
 	permission_classes = [IsAuthenticated]
 	template_name = 'others/game.html'
 	title = 'Game Page'
-	css = 'css/game.css'
-	js = 'js/game.js'
+	css = ['css/game.css']
+	js = ['js/game.js']
 
 	# def get(self, request):
 	# 	return super().get(request)
@@ -241,8 +240,8 @@ class TournamentView(BaseView):
 	permission_classes = []
 	template_name = 'others/tournament.html'
 	title = 'Tournament Page'
-	css = 'css/tournament.css'
-	js = 'js/tournament.js'
+	css = ['css/tournament.css']
+	js = ['js/game.js', 'js/tournament.js']
 
 	def get(self, request):
 		return super().get(request)
@@ -257,8 +256,8 @@ class TournamentView(BaseView):
 # 	permission_classes = []
 # 	template_name = 'others/game.html'
 # 	title = 'Game AI Page'
-# 	css = 'css/game.css'
-# 	js = 'js/gameai.js'
+# 	css = ['css/game.css']
+# 	js = ['js/gameai.js']
 
 # 	def get(self, request):
 # 		return super().get(request)
