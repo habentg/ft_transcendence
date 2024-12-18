@@ -30,6 +30,22 @@ class chatConsumer(AsyncWebsocketConsumer):
     
     async def receive(self, text_data):
         data = json.loads(text_data)
+        if data['type'] == 'delete_chatroom':
+            room_id = data['room']
+            success = await self.delete_chatroom(room_id)
+            if success:
+                await self.send(text_data=json.dumps({
+                    'type': 'room_deleted_notification',
+                    'message': 'Chatroom has been deleted',
+                    'room': room_id,
+                }))
+            else:
+                await self.send(text_data=json.dumps({
+                    'type': 'room_deleted_notification',
+                    'message': 'Chatroom could not be deleted',
+                    'room': room_id,
+                }))
+            return
         recipient_username = data['recipient']
         recipient = await database_sync_to_async(Player.objects.get)(username=recipient_username)
         if not recipient:
@@ -108,6 +124,7 @@ class chatConsumer(AsyncWebsocketConsumer):
                     }))
                     return
 
+
     """ message sending handler """
     async def chat_message_handler(self, event):
         print("chat_message_handler invoked with event:", event, flush=True)
@@ -132,6 +149,7 @@ class chatConsumer(AsyncWebsocketConsumer):
     @database_sync_to_async
     def delete_chatroom(self, room_name):
         try:
+            print(f"UYYYY Deleting chatroom '{room_name}'", flush=True)
             room = ChatRoom.objects.get(name=room_name)
             room.participants.clear()
             room.delete()
@@ -172,25 +190,5 @@ class chatConsumer(AsyncWebsocketConsumer):
         except Exception as e:
             print("Exeption in validating token in FriendshipNotificationConsumer: ", e, flush=True)
             return None
-        #     if data['type'] == 'delete_chatroom':
-        #     success = await self.delete_chatroom(room_name)
-        #     if success:
-        #         await self.channel_layer.group_send(
-        #             room_group_name,
-        #             {
-        #                 'type': 'room_deleted_notification',
-        #                 'message': 'Chatroom has been deleted',
-        #                 'room': room_name
-        #             }
-        #         )
-        #         await self.channel_layer.group_discard(
-        #             room_group_name,
-        #             self.channel_name
-        #         )
-        #     else:
-        #         await self.send(text_data=json.dumps({
-        #             'type': 'room_deleted_notification_error',
-        #             'message': 'Chatroom could not be deleted',
-        #         }))
 
         # el

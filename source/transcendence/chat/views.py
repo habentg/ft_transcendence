@@ -35,6 +35,7 @@ class chatMessagesView(APIView):
 				'messages': render_to_string(self.template_name, context),
 				'is_blocked': False,
 			}
+			print("returning messages: ", return_json, flush=True)
 			if recipeint_username != 'deleted_player':
 				recipeint = Player.objects.get(username=recipeint_username)
 				return_json['is_blocked'] = request.user.is_blocked(recipeint)

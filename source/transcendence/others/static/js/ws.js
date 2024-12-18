@@ -162,7 +162,8 @@ function addMessageToChat(data) {
   chatMessages.scrollTop = chatMessages.scrollHeight;
 }
 
-function deleteChatRoom(data) {
+function chatRoomDeletionHandler(data) {
+  console.table(data['room']);
   const chatPage = document.getElementsByClassName("chatPage");
   if (!chatPage) {
     return;
@@ -171,9 +172,7 @@ function deleteChatRoom(data) {
   if (chatRoom) {
     chatRoom.remove();
     alert("chatroom deleted: ", data.room);
-  }
-  else {
-    alert("chatroom not found");
+    updateUI('/chat', false);
   }
 }
 
@@ -231,7 +230,7 @@ function initChatWebsocket() {
     else if (data.type === "room_deleted_notification") {
       // remove the chatroom from the list
       alert("room deleted --- chatroom will be removed");
-      deleteChatRoom(data);
+      chatRoomDeletionHandler(data);
     }
     else if (data.type === "room_deleted_notification_error") {
       // remove the chatroom from the list
