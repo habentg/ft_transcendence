@@ -102,20 +102,6 @@ const removeResource = () => {
       allScripts[i].remove();
     }
   }
-  // if (currentResourcesName.css !== null) {
-  //   const prev_css = document.getElementById(`/static/${currentResourcesName.css}-id`);
-  //   if (prev_css) {
-  //     prev_css.remove();
-  //   }
-  //   currentResourcesName.css = null;
-  // }
-  // if (currentResourcesName.js !== null) {
-  //   const prev_js = document.getElementById(`/static/${currentResourcesName.js}-id`);
-  //   if (prev_js) {
-  //     prev_js.remove();
-  //   }
-  //   currentResourcesName.js = null;
-  // }
 };
 
 const loadCssandJS = (data, remove_prev_resources) => {
@@ -125,7 +111,10 @@ const loadCssandJS = (data, remove_prev_resources) => {
         cont css_file_path = data.css
         cont js_file_path = data.js
     */
-  const { js: js_file_path, css: css_file_path } = data;
+  const { css: css_file_paths, js: js_file_paths } = data;
+
+  console.log("--->>> js_file_path:", js_file_paths);
+  console.log("--->>> css_file_path:", css_file_paths);
 
   // Remove previous CSS & js
   if (remove_prev_resources) {
@@ -133,25 +122,29 @@ const loadCssandJS = (data, remove_prev_resources) => {
     removeResource();
   }
   // loading new css
-  if (css_file_path) {
-    if (document.getElementById(`/static/${css_file_path}-id`)) return;
-    let link = document.createElement("link");
-    link.rel = "stylesheet";
-    link.type = "text/css";
-    link.href = `/static/${css_file_path}`;
-    link.id = `/static/${css_file_path}-id`;
-    document.head.appendChild(link);
-    // currentResourcesName.css = css_file_path; // hold it for delete
+  if (css_file_paths) {
+    for (let i = 0; i < css_file_paths.length; i++) {
+      if (document.getElementById(`/static/${css_file_paths[i]}-id`))
+        return;
+      let link = document.createElement("link");
+      link.rel = "stylesheet";
+      link.type = "text/css";
+      link.href = `/static/${css_file_paths[i]}`;
+      link.id = `/static/${css_file_paths[i]}-id`;
+      document.head.appendChild(link);
+    }
   }
   // loading new js
-  if (js_file_path) {
-    if (document.getElementById(`/static/${js_file_path}-id`)) return;
-    let script = document.createElement("script");
-    script.src = `/static/${js_file_path}`;
-    script.id = `/static/${js_file_path}-id`;
-    script.defer = true;
-    document.head.appendChild(script);
-    // currentResourcesName.js = js_file_path;
+  if (js_file_paths) {
+    for (let i = 0; i < js_file_paths.length; i++) {
+      if (document.getElementById(`/static/${js_file_paths[i]}-id`))
+        return;
+      let script = document.createElement("script");
+      script.src = `/static/${js_file_paths[i]}`;
+      script.id = `/static/${js_file_paths[i]}-id`;
+      script.defer = true;
+      document.head.appendChild(script);
+    }
   }
 };
 

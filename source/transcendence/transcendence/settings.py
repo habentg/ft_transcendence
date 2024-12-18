@@ -55,6 +55,7 @@ INSTALLED_APPS = [
     'friendship',
     'others',
     'chat',
+    'game',
 ]
 
 MIDDLEWARE = [
@@ -232,7 +233,7 @@ REDIS_DB = 1
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
 """ basically we will run 'collectstatic' and it will collect all the static files from all the apps and put them in the static folder in the root directory of the project """
 STATIC_URL = 'static/'
-# to be commented out when deploying
+# # to be commented out when deploying
 STATIC_ROOT = BASE_DIR / 'static'
 STATICFILES_DIRS = [
     BASE_DIR / "others" / "static",
@@ -254,51 +255,51 @@ class HealthCheckFilter(logging.Filter):
             return False
         return True
 
-LOGGING = {
-    'version': 1,
-    'disable_existing_loggers': False,
-    'formatters': {
-        'verbose': {
-            'format': '{levelname} {asctime} {module} {process:d} {thread:d} {message}',
-            'style': '{',
-        },
-        'simple': {
-            'format': '[{asctime}] {message}',
-            'style': '{',
-            'datefmt': '%d/%b/%Y %H:%M:%S'
-        },
-    },
-    'handlers': {
-        'console': {
-            'level': 'DEBUG',
-            'class': 'logging.StreamHandler',
-            'formatter': 'simple',
-            'filters': [HealthCheckFilter()],  # Use the imported class here
-        },
-    },
-    'loggers': {
-        'django': {
-            'handlers': ['console'],
-            'level': 'INFO',
-            'propagate': True,
-        },
-        'django.server': {
-            'handlers': ['console'],
-            'level': 'DEBUG',
-            'propagate': False,
-        },
-        'django.request': {
-            'handlers': ['console'],
-            'level': 'DEBUG',
-            'propagate': False,
-        },
-    },
-    'root': {
-        'handlers': ['console'],
-        'level': 'INFO',
-    },
-    'django.contrib.staticfiles': {
-        'handlers': ['console'],
-        'level': 'DEBUG',
-    },
-}
+# LOGGING = {
+#     'version': 1,
+#     'disable_existing_loggers': False,
+#     'formatters': {
+#         'verbose': {
+#             'format': '{levelname} {asctime} {module} {process:d} {thread:d} {message}',
+#             'style': '{',
+#         },
+#         'simple': {
+#             'format': '[{asctime}] {message}',
+#             'style': '{',
+#             'datefmt': '%d/%b/%Y %H:%M:%S'
+#         },
+#     },
+#     'handlers': {
+#         'console': {
+#             'level': 'DEBUG',
+#             'class': 'logging.StreamHandler',
+#             'formatter': 'simple',
+#             'filters': [HealthCheckFilter()],  # Use the imported class here
+#         },
+#     },
+    # 'loggers': {
+    #     'django': {
+    #         'handlers': ['console'],
+    #         'level': 'INFO',
+    #         'propagate': True,
+    #     },
+    #     'django.server': {
+    #         'handlers': ['console'],
+    #         'level': 'DEBUG',
+    #         'propagate': False,
+    #     },
+    #     'django.request': {
+    #         'handlers': ['console'],
+    #         'level': 'DEBUG',
+    #         'propagate': False,
+    #     },
+    # },
+    # 'root': {
+    #     'handlers': ['console'],
+    #     'level': 'INFO',
+    # },
+    # 'django.contrib.staticfiles': {
+    #     'handlers': ['console'],
+    #     'level': 'DEBUG',
+    # },
+# }

@@ -11,7 +11,6 @@ from .models import *
 from .serializers import *
 from channels.layers import get_channel_layer
 from asgiref.sync import async_to_sync
-from rest_framework import viewsets
 from django.template.loader import render_to_string 
 from account.serializers import PlayerSerializer
 

@@ -13,8 +13,6 @@ from rest_framework.exceptions import AuthenticationFailed
 from account.auth_middleware import JWTCookieAuthentication
 from django.template.loader import render_to_string
 from rest_framework.response import Response
-from channels.layers import get_channel_layer
-from asgiref.sync import async_to_sync
 
 """ chat message related enpoints """
 class chatMessagesView(APIView):
@@ -23,18 +21,25 @@ class chatMessagesView(APIView):
 	template_name = 'chat/chat_messages.html'
 
 	def get(self, request):
-		# recipeint_username = request.GET.get('room', '')
 		room_name = request.GET.get('room', '')
+		recipeint_username = request.GET.get('recipient', '')
+		print(f"room_name: {room_name}, recipient: {recipeint_username}")
 		try:
-			# recipeint = Player.objects.get(username=recipeint_username)
-			# room_name = f"{min(request.user.id, recipeint.id)}_{max(request.user.id, recipeint.id)}"
 			chatroom = ChatRoom.objects.get(name=room_name)
 			messages = Message.objects.filter(room=chatroom).order_by('timestamp')
 			context = {
 				'messages': messages,
 				'current_user': PlayerSerializer(request.user).data
 			}
-			return Response({'messages': render_to_string(self.template_name, context)}, status=200)
+			return_json = {
+				'messages': render_to_string(self.template_name, context),
+				'is_blocked': False,
+			}
+			if recipeint_username != 'deleted_player':
+				recipeint = Player.objects.get(username=recipeint_username)
+				return_json['is_blocked'] = request.user.is_blocked(recipeint)
+			print("returning messages: ", return_json, flush=True)
+			return Response(return_json, status=200)
 		except ChatRoom.DoesNotExist:
 			print("Error: ", e)
 			return Response({'error': "No active chatroom for with this player!"}, status=404)
@@ -48,8 +53,8 @@ class ChatRoomsView(APIView, BaseView):
 	permission_classes = [IsAuthenticated]
 	template_name = 'chat/chat.html'
 	title = 'Chat'
-	css = 'css/chat.css'
-	js = 'js/chat.js'
+	css = ['css/chat.css']
+	js = ['js/chat.js']
 
 	""" get method to get all the chatrooms that the user is a participant in """
 	def handle_exception(self, exception):
@@ -95,5 +100,18 @@ class ChatRoomsView(APIView, BaseView):
 			return Response({'error': e}, status=400)
 
 
-	
-	""" patch to block/unblock a user """
+"""  block/unblock a player checker """
+class IsBlocked(APIView):
+	authentication_classes = [JWTCookieAuthentication]
+	permission_classes = [IsAuthenticated]
+
+	def get(self, request):
+		try:
+			recipient_username =request.GET.get('recipient', '')
+			print(f" we hitting the endpoint {recipient_username}", flush=True)
+			recipient = Player.objects.get(username=recipient_username)
+			if request.user.is_blocked(recipient):
+				return Response({'status': 'blocked'}, status=200)
+			return Response({'status': 'not_blocked'}, status=200)
+		except Exception as e:
+			return Response({'error': 'something happened while checking if user is blocked'}, status=400)

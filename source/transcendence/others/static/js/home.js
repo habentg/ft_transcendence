@@ -188,7 +188,7 @@ function attachSearchEventListners() {
         const toBeFriend = document
           .getElementsByClassName("chat_btn")[i]
           .getAttribute("data-username");
-          console.log("I will send create chatroom request directly from friendlist with: ", toBeFriend);
+        console.log("I will send create chatroom request directly from friendlist with: ", toBeFriend);
         // await create_chatroom(toBeFriend);
       });
     }
@@ -205,7 +205,7 @@ function createLocalGameModal() {
     existingModal.remove();
   }
 
-  
+
   const modal = optionLocalGameModal();
   document.body.appendChild(modal);
 
@@ -215,7 +215,7 @@ function createLocalGameModal() {
     console.log("Creating AI game");
     closeModal("localGameModal");
     // For now, page is refreshing. Need to fix.
-    window.location.href = "/game/?isAI=true";  
+    window.location.href = "/game/?isAI=true";
 
   });
   document.getElementById("playFriends").addEventListener("click", () => {
@@ -249,7 +249,7 @@ function createTournamentModal() {
     existingModal.remove();
   }
 
-  
+
   const modal = getPlayerNumberModal();
   document.body.appendChild(modal);
 
@@ -276,3 +276,107 @@ function createTournamentModal() {
 }
 
 searchingSystem();
+
+
+
+/* Game Api tester */
+async function gameApiPATCHFunction(endgame_data, game_id) {
+  try {
+    const response = await fetch(`/game_api/${game_id}/`, {
+      method: "PATCH",
+      headers: {
+        "X-Requested-With": "XMLHttpRequest",
+        "X-CSRFToken": await getCSRFToken(),
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(endgame_data),
+    });
+    if (response.ok) {
+      const responseData = await response.json();
+      console.log(responseData);
+      return;
+    }
+    throw new Error("Failed to load gameApiPATCHFunction");
+  } catch (error) {
+    console.error("ERROR: ", error);
+  }
+}
+async function gameApiPOSTFunction(startgame_data) {
+  try {
+    const response = await fetch("/game_api/", {
+      method: "POST",
+      headers: {
+        "X-Requested-With": "XMLHttpRequest",
+        "X-CSRFToken": await getCSRFToken(),
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(startgame_data),
+    });
+    if (response.ok) {
+      const responseData = await response.json();
+      console.log(responseData);
+      return;
+    }
+    throw new Error("Failed to load gameApiPOSTFunction");
+  } catch (error) {
+    console.error("ERROR: ", error);
+  }
+}
+
+async function gameApiDELETEFunction(game_id) {
+  try {
+    const response = await fetch(`/game_api/${game_id}/`, {
+      method: "DELETE",
+      headers: {
+        "X-Requested-With": "XMLHttpRequest",
+        "Content-Type": "application/json",
+      },
+    });
+    if (response.ok) {
+      const responseData = await response.json();
+      console.log(responseData);
+      return;
+    }
+    throw new Error("Failed to load gameApiDELETEFunction");
+  } catch (error) {
+    console.error("ERROR: ", error);
+  }
+}
+async function gameApiGETFunction() {
+  try {
+    const response = await fetch("/game_api/", {
+      method: "GET",
+      headers: {
+        "X-Requested-With": "XMLHttpRequest",
+        "Content-Type": "application/json",
+      },
+    });
+    if (response.ok) {
+      const responseData = await response.json();
+      console.log(responseData);
+      return;
+    }
+    throw new Error("Failed to load gameApiGETFunction");
+  } catch (error) {
+    console.error("ERROR: ", error);
+  }
+}
+
+async function GameApiTester() {
+  /* Get request - to get all history */
+  const data = {
+    player_two: "martin",
+    type: "TOURNAMENT",
+  };
+  const endgame_data = {
+    outcome: "CANCELLED",
+  };
+
+  // await gameApiGETFunction();
+  
+  await gameApiPOSTFunction(data);
+  
+  // await gameApiPATCHFunction(endgame_data, 5);
+
+  // await gameApiDELETEFunction(1);
+}

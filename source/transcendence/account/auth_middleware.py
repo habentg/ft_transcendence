@@ -52,42 +52,5 @@ class JWTCookieAuthentication(JWTAuthentication):
             return (authenticated_player, validated_token)
         except InvalidToken as e:
             raise AuthenticationFailed(str(e))
-        except AuthenticationFailed as e:
-            raise AuthenticationFailed(str(e))
         except Exception as e:
-            raise AuthenticationFailed('An unexpected error occurred.')
-
-
-import logging
-
-class SilenceHealthCheckLogsMiddleware:
-    def __init__(self, app):
-        self.app = app
-
-    async def __call__(self, scope, receive, send):
-        # Create a custom filter to exclude health check logs
-        class HealthCheckFilter(logging.Filter):
-            def filter(self, record):
-                return '/health/' not in record.getMessage()
-
-        # Get the loggers you want to filter
-        loggers = [
-            logging.getLogger('django.request'),
-            logging.getLogger('daphne'),
-            logging.getLogger('django.server')
-        ]
-
-        # Store original filters
-        original_filters = [logger.filters.copy() for logger in loggers]
-
-        # Add health check filter to loggers
-        for logger in loggers:
-            logger.addFilter(HealthCheckFilter())
-
-        try:
-            # Call the next ASGI application
-            await self.app(scope, receive, send)
-        finally:
-            # Restore original filters
-            for logger, orig_filters in zip(loggers, original_filters):
-                logger.filters = orig_filters
+            raise AuthenticationFailed(str(e))
