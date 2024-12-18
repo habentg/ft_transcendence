@@ -708,32 +708,47 @@ function startaiGame(player1, player2) {
 
   document.getElementById("aiButton").disabled = true;
   document.getElementById("settingButton").disabled = true;
-
-  setInterval(aiView, 100);
-  setInterval(() => aiLogic(player2), 50);
-
+  setInterval(aiView, 50);
+  setInterval(()=> aiLogic(player2), 50);
+  
   requestAnimationFrame(() => draw(player1, player2));
 }
 
 function aiLogic(player2) {
   const tolerance = 5; // Allow a small margin of error
-  const currentBallY = ball.y; // Current ball Y position
-  const previousBallY = lastballPosition.y; // Last recorded ball Y position
-  const direction = currentBallY - previousBallY; // Determine ball movement direction
 
-  // Calculate predicted target position based on the direction and speed of the ball
-  const targetY = currentBallY + direction - player2.height / 2;
+  const time = (player2.x - ball.x) / ball.velocityX;
+  const yChange = ball.velocityY * time;
+  let yHit = ball.y + yChange;
 
-  if (targetY > player2.y - 40 && targetY < player2.y + 40) {
+  if (yHit < 0){
+    yHit *= -1;
+  } else if (yHit > boardHeight) {
+    yHit -= boardHeight;
+  }
+
+  let target = Math.abs(yHit - player2.height / 2);
+  console.log("Target Value: ", target);
+  if (target > player2.y - tolerance && target < player2.y + 40) {
     // If the AI is close enough to the target Y position, stop moving
     aikeyEvents("stop");
     return;
   }
-
-  if (player2.y + tolerance < targetY) {
+  if (player2.y + tolerance < target) {
     aikeyEvents("down"); // Keep moving down until target is reached
-  } else if (player2.y - tolerance > targetY) {
+  } else if (player2.y - tolerance > target) {
     aikeyEvents("up"); // Keep moving up until target is reached
+  }
+}
+
+
+
+// function to check/store balls last position every 1 second.
+function aiView() {
+  if (aiFlag) {
+    console.log("Lastball values:", lastballPosition);
+    lastballPosition.x = ball.x;
+    lastballPosition.y = ball.y;
   }
 }
 
@@ -788,15 +803,6 @@ function aikeyEvents(moveDirection) {
       document.dispatchEvent(event);
       aiMovingDown = false; // Stop holding down
     }
-  }
-}
-
-// function to check/store balls last position every 1 second.
-function aiView() {
-  if (aiFlag) {
-    console.log("Lastball values:", lastballPosition);
-    lastballPosition.x = ball.x;
-    lastballPosition.y = ball.y;
   }
 }
 
