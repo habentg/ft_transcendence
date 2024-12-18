@@ -55,12 +55,12 @@
               <button class="btn btn-secondary" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false"><i class="fas fa-ellipsis-v"></i></button>
               <ul id="ul_display_option" class="dropdown-menu dropdown-menu-end" aria-labelledby="dropdownMenuButton">
                 <li>
-                  <a onclick="appRouter()" class="dropdown-item" href="/profile/{{ user.username }}"><i class="fas fa-user-circle me-2"></i>View Profile</a>
+                  <a id="view_profile_option" onclick="appRouter()" class="dropdown-item" href=""><i class="fas fa-user-circle me-2"></i>View Profile</a>
                 </li>
-                <li id="block_list_item">
+                <li>
                   <button id="" class="dropdown-item blockBtn" type="button" onclick="blockPlayer()"><i class="fas fa-user-lock me-2"></i>Block</button>
                 </li>
-                <li id="unblock_list_item">
+                <li>
                   <button id="" class="dropdown-item unblockBtn" type="button" onclick="unBlockPlayer()"><i class="fas fa-unlock me-2"></i>Unblock</button>
                 </li>
                 <li id="delete_list_item">

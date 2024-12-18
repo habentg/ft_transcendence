@@ -3,9 +3,6 @@ createWebSockets();
 // Global variable to track the current chat recipient
 let activeChatRecipient = null;
 let activeChatId = null;
-let is_blocked = false;
-let messageInput = document.getElementById("messageInput");
-let sendButton = document.getElementById("chat_send_btn");
 
 // Define a persistent named function for the event listener
 function messageInputHandler(event) {
@@ -49,6 +46,10 @@ function activeChatHeaderUpdate(activeChatFullname) {
   const three_dots = document.getElementById("three_dots");
   three_dots.setAttribute("data-recipient", `three_dots_${activeChatRecipient}`);
   three_dots.classList.remove("d-none");
+
+  // updating view profile option
+  const view_profile = document.getElementById("view_profile_option");
+  view_profile.setAttribute("href", `/profile/${activeChatRecipient}`);
 }
 
 // Open chat for a specific friend
@@ -95,6 +96,7 @@ function sendMessage(message, recipient, chat_id) {
     const chatMessages = document.getElementById(chat_id);
     messageDiv.appendChild(createMsgDiv(message));
     chatMessages.appendChild(messageDiv);
+    let messageInput = document.getElementById("messageInput");
     messageInput.value = "";
     messageInput.focus();
     chatMessages.scrollTop = chatMessages.scrollHeight;
@@ -138,6 +140,8 @@ async function fetchMessages(chatMessages) {
       chatMessages.innerHTML = "";
       chatMessages.innerHTML = data.messages;
       chatMessages.scrollTop = chatMessages.scrollHeight;
+      let messageInput = document.getElementById("messageInput");
+      let sendButton = document.getElementById("chat_send_btn");
       if (data['is_blocked'] === true || activeChatRecipient === 'deleted_player') {
         messageInput.classList.add("d-none");
         sendButton.classList.add("d-none");
@@ -195,10 +199,4 @@ function unBlockPlayer() {
     };
     window.ws_chat.send(JSON.stringify(chatMessage));
   }
-}
-
-function displayOptionsList(class_name, btn_name) {
-  let optionList = document.createElement("li");
-  optionList.innerHTML = `<button id="" class="dropdown-item ${class_name}" type="button">${btn_name}</button>`
-  return optionList;
 }
