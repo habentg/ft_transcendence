@@ -202,12 +202,12 @@ function validatePlayerName(trimmedName, maxPlayerNumbers) {
     return false;
   }
 
-  // Check name length
-  if (trimmedName.length < 5 || trimmedName.length > 9) {
-    errorMsgDiv.textContent = "Name must be between 5 and 9 characters";
-    errorMsgDiv.style.display = "block";
-    return false;
-  }
+//   // Check name length
+//   if (trimmedName.length < 5 || trimmedName.length > 9) {
+//     errorMsgDiv.textContent = "Name must be between 5 and 9 characters";
+//     errorMsgDiv.style.display = "block";
+//     return false;
+//   }
 
   // Check if player already exists
   if (playersNames.includes(trimmedName)) {
