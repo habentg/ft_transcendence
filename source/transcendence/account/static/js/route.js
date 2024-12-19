@@ -60,10 +60,11 @@ async function loadContent(route) {
       }
       if (response.status === 401) {
         // removing any css js if there is any
+        showErrorMessage("Unauthorized access, please login to continue", 3000, 'Unauthorized');
         console.log("Unauthorized, asdf asdf asfd");
         return;
       }
-      throw new Error("HTTP " + response.status);
+      throw new Error({ status: response.status, route: route, statusText: response.statusText });
     }
     // history.replaceState(null, "", response.url);
     let data = await response.json();
@@ -71,6 +72,7 @@ async function loadContent(route) {
     document.title = data.title;
     document.getElementById("content").innerHTML = data.html;
   } catch (error) {
+    showErrorMessage(`${error.status} : Error loading '${route}' - ${error.statusText}`, 3000, 'Error');
     console.error(`Failed to load -- ${route} -- page content:`, error);
   }
 }
