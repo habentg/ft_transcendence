@@ -29,13 +29,13 @@ async function updateUI(path) {
     then update the UI;
 */
 async function appRouter(event) {
-    event = event || window.event;
-    event.preventDefault();
-    
-    const href = event.target.closest('a').href;
-    if (href === window.location.href)
-        return;
-    await updateUI(href);
+  event = event || window.event;
+  event.preventDefault();
+
+  const href = event.target.closest('a').href;
+  if (href === window.location.href)
+    return;
+  await updateUI(href);
 };
 
 // Load the content of the page
@@ -81,33 +81,24 @@ async function loadContent(route) {
     load the content of the page;
     NOTE: this will be used almost everywhere in this SPA;
 */
-async function handleLocationChange() {
-  let path = window.location.pathname.slice(1);
-
-  if (isInitialLoad) { // if its initial load ... page will come already loaded from the server
-    isInitialLoad = false;
-    return;
-  }
-  console.log("handleLocationChange() of:", path);
-  await loadContent(path);
-}
 
 async function initApp() {
   // browser back/forward buttons
-  window.addEventListener("popstate", async (event) => {
-    console.log("popstate event:", event);
-    await handleLocationChange();
+  window.addEventListener("popstate", async () => {
+    const route = window.location.pathname;
+    console.log("Handling popstate for route:", route);
+    await loadContent(route);
   });
   
   // Handling initial load
-  window.addEventListener("load", async (event) => {
+  window.addEventListener("load", async () => {
     isInitialLoad = true;
-    // /* websocket - for real-time updates and chat*/
-    // initWebsocket();
-    await handleLocationChange();
+    const route = window.location.pathname;
+    console.log("Handling onload for route:", route);
+    await loadContent(route);
   });
-
   
+
   window.baseUrl = "http://localhost";
 }
 
