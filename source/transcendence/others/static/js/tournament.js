@@ -70,13 +70,15 @@ function prepTournament4() {
   // make final4 class name div's from justify-content-center to start
   var final4 = document.getElementsByClassName("final4");
   for (var i = 0; i < final4.length; i++) {
-	final4[i].classList.replace("justify-content-center", "justify-content-start");
+    final4[i].classList.replace(
+      "justify-content-center",
+      "justify-content-start"
+    );
   }
-
 }
 
 // Function for Tournament of 4 players
-prepTournament4();
+// prepTournament4();
 
 // Congratualtory modal with the winner's name and celebration gif
 function tournamentClosingModal() {
@@ -84,15 +86,18 @@ function tournamentClosingModal() {
   const modalHTML = `
     <div class="modal fade" id="congratsModal" tabindex="-1" role="dialog" aria-labelledby="modalTitle" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
-            <div class="card modal-card">
-				<button type="button" class="btn-close btn-close-white" id="close-username-modal"></button>
+            <div class="card modal-card position-relative">
+                <button type="button" 
+                        class="btn-close btn-close-white position-absolute top-0 end-0 m-2" 
+                        onclick="closeModal('congratsModal')" 
+                        aria-label="Close"></button>
                 <div class="card-body text-center"> 
-					<h2 class="modal-title" id="modalTitle">🎉 CONGRATULATIONS Miguel! 🎉</h2>
+                    <h2 class="modal-title" id="modalTitle">🎉 Congratulations Miguel! 🎉</h2>
                     <img src="https://img.icons8.com/bubbles/200/000000/trophy.png" alt="Trophy" class="modal-trophy">
-                    <p class="modal-text">The winner of the tournament is <strong>Miguel Santos</strong>.🏆🏆🏆</p>
-					<p class="modal-text">2nd place goes to <strong>John Doe</strong> </strong>. 🥈🥈🥈</p>
-					<p class="modal-text">Thank you for participating in the tournament. 🎉🎉🎉</p> 
-                    <button class="btn btn-secondary btn-sm modal-continue" onclick="closeModal("congratsModal")">CONTINUE</button>
+                    <p class="modal-text">The winner of the tournament is <strong>Miguel Santos</strong>. 🏆🏆🏆</p>
+                    <p class="modal-text">2nd place goes to <strong>John Doe</strong>. 🥈🥈🥈</p>
+                    <p class="modal-text">Thank you for participating in the tournament. 🎉🎉🎉</p> 
+                    <button class="btn btn-secondary btn-sm modal-continue" onclick="closeModal('congratsModal')">CONTINUE</button>
                 </div>
             </div>
         </div>
@@ -118,10 +123,13 @@ function gameClosingModal() {
   const modalHTML = `
 	<div class="modal fade" id="gameClosing" tabindex="-1" role="dialog" aria-labelledby="modalTitle" aria-hidden="true">
 		<div class="modal-dialog modal-dialog-centered modal-md" role="document">
-			<div class="card modal-card shadow-lg  position-relative">
-				<button type="button" class="btn-close btn-close-white close-btn" onclick="closeModal('gameClosing')" aria-label="Close"></button>
+			<div class="card modal-card shadow-lg position-relative">
+				<button type="button" 
+                        class="btn-close btn-close-white position-absolute top-0 end-0 m-2" 
+                        onclick="closeModal('gameClosing')" 
+                        aria-label="Close"></button>
 				<div class="card-body text-center"> 
-					<h3 class="modal-title " id="modalTitle2"> Miguel wins the game! </h3>
+					<h3 class="modal-title" id="modalTitle2"> Miguel wins the game! </h3>
 					<p class="modal-text winner-text mt-3"> Miguel passes to the next round </p>
 					<button class="btn btn-secondary btn-sm modal-continue mt-4" onclick="closeModal('gameClosing')">CONTINUE</button>
 				</div>
@@ -136,6 +144,7 @@ function gameClosingModal() {
   modalContainer.innerHTML = modalHTML;
   body.appendChild(modalContainer);
 
+  // Show the modal
   const modal = new bootstrap.Modal(document.getElementById("gameClosing"));
   modal.show();
 }
@@ -150,7 +159,7 @@ function nextMatchModal() {
   <div class="modal fade" id="nextMatch" tabindex="-1" role="dialog" aria-labelledby="modalTitle" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered modal-md" role="document">
       <div class="card modal-card shadow-lg  position-relative">
-        <button type="button" class="btn-close btn-close-white close-btn" onclick="closeModal('nextMatch')" aria-label="Close"></button>
+        <button type="button" class="btn-close btn-close-white close-btn position-absolute top-0 end-0 m-2" onclick="closeModal('nextMatch')" aria-label="Close"></button>
         <div class="card-body text-center"> 
           <h3 class="modal-title " id="modalTitle2"> Next Match </h3>
           <p class="modal-text winner-text mt-3"> Miguel vs John Doe </p>
@@ -172,4 +181,4 @@ function nextMatchModal() {
 }
 
 // Call this function before every match to display the player names
-// nextMatchModal();
+nextMatchModal();
