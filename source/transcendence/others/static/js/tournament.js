@@ -4,7 +4,8 @@ let matchHistory = [];
 
 let tournamentElement;
 let playersNumber;
-let maxPlayerNumbers;
+let maxPlayerNumbers = 0;
+let playersNames = ["Tofara Mususa"];
 
 function initializeGame() {
   board = document.getElementById("board");
@@ -110,240 +111,6 @@ function prepTournament4() {
 //END OF GAME LOGIC
 //TOURNAMENT LOGIC
 
-//ADD THE This is to add players
-let playersNames = ["Tofara Mususa"];
-
-function getPlayerNumberModal() {
-  const modal = document.createElement("div");
-  modal.classList.add("modal");
-  modal.id = "tournamentModal";
-  modal.className = "modal fade show";
-  modal.style.display = "block";
-  modal.innerHTML = `
-	<div class="modal-dialog modal-dialog-centered modal-md">
-	  <div class="modal-content">
-		<div class="modal-header border-0 py-3">
-		  <h5 class="modal-title">
-			<i class="fas fa-trophy me-2"></i> Confirm Players
-		  </h5>
-		  <button type="button" class="btn-close btn-close-white" data-dismiss="modal"></button>
-		</div>
-		<div class="modal-body px-3 py-2">
-		  <div id="local-game-error-msg" class="alert alert-danger small py-2" style="display:none;"></div>
-		  <p class="text-white mb-0">Enter number of player in tournament</p>
-		  <input type="int" id="playersNumber" class="form-control my-2" placeholder="Enter number of players" />
-		  <small class="notice mt-2 d-block">Minimum players: 4 | Max players: 8</small>
-		</div>
-		<div class="modal-footer border-0 py-3 d-flex justify-content-start">
-		  <button type="button" class="btn btn-primary btn-sm" id="submitPlayerNumBtn">
-			<i class="fas fa-paper-plane me-2"></i> Submit
-		</button>
-	  </div>
-	  </div>
-	</div>
-	`;
-  return modal;
-}
-
-function createTournamentMap() {
-  const tournamentWrapper = document.createElement("div");
-  tournamentWrapper.className = "tournamentWrapper";
-  tournamentWrapper.id = "tournamentWrapper";
-
-  tournamentWrapper.innerHTML = `
-				<h1 class="text-center mb-5">Tournament Map</h1>
-				<div class="row d-flex position-relative ">
-					<!-- First Round -->
-					<div class="col-4 d-flex justify-content-center align-items-end">
-						<div class="round first-round mb-5">
-							<!-- <h6 class="text-center">First Round</h6> -->
-							<div class="vertical-line">
-								<!-- Game 1 -->
-								<div class="game game1 mb-5">
-									<div class="card">
-										<div class="card-body-custom">
-											<h5 id="game1" class="card-title game-1">Game 1</h5>
-											<div class="d-flex justify-content-between align-items-center">
-												<div class="team">
-													<i class="profileIcon fas fa-user-circle "></i>
-													<span class=""></span>
-												</div>
-												<div class="score">
-												<span class="score-value"></span>vs.<span class="score-value "></span>
-												</div>
-												<div class="team">
-													<span></span>
-													<i class="profileIcon fas fa-user-circle "></i>
-												</div>
-											</div>
-										</div>
-										<div class="connection-line connection-1-5"></div>
-									</div>
-								</div>
-								<!-- Game 2 -->
-								<div class="game game2 mb-5">
-									<div class="card">
-										<div class="card-body-custom">
-											<h5 id="game2" class="card-title game-2">Game 2</h5>
-											<div class="d-flex justify-content-between align-items-center">
-												<div class="team">
-													<i class="profileIcon fas fa-user-circle "></i>
-													<span class=""></span>
-												</div>
-												<div class="score">
-												<span class="score-value"></span>vs.<span class="score-value "></span>
-												</div>
-												<div class="team">
-													<span ></span>
-													<i class="profileIcon fas fa-user-circle "></i>
-												</div>
-											</div>
-										</div>
-									</div>
-									<div class="connection-line connection-2-5"></div>
-								</div>
-								<!-- Game 3 -->
-								<div class="game game3 mb-5">
-									<div class="card">
-										<div class="card-body-custom">
-											<h5 id="game3" class="card-title game-3">Game 3</h5>
-											<div class="d-flex justify-content-between align-items-center">
-												<div class="team">
-													<i class="profileIcon fas fa-user-circle "></i>
-													<span class=""></span>
-												</div>
-												<div class="score">
-												<span class="score-value"></span>vs.<span class="score-value "></span>
-												</div>
-												<div class="team">
-													<span class=""></span>
-													<i class="profileIcon fas fa-user-circle "></i>
-												</div>
-											</div>
-										</div>
-									</div>
-									<div class="connection-line connection-3-6"></div>
-								</div>
-								<!-- Game 4 -->
-								<div class="game game4 mb-5">
-									<div class="card">
-										<div class="card-body-custom">
-											<h5 id="game4" class="card-title game-4">Game 4</h5>
-											<div class="d-flex justify-content-between align-items-center">
-												<div class="team">
-													<i class="profileIcon fas fa-user-circle "></i>
-													<span class=""></span>
-												</div>
-												<div class="score">
-												<span class="score-value"></span>vs.<span class="score-value "></span>
-												</div>
-												<div class="team">
-													<span class ></span>
-													<i class="profileIcon fas fa-user-circle "></i>
-												</div>
-											</div>
-										</div>
-									</div>
-									<div class="connection-line connection-4-6"></div>
-								</div>
-							</div>
-						</div>
-					</div>
-
-					<!-- Second Round -->
-					<div class="col-4 d-flex justify-content-center  ">
-						<div class="round second-round mb-5">
-							<!-- <h6 class="text-center">Second Round</h6> -->
-							<div class="vertical-line ">
-								<!-- Game 5 -->
-								<div class="game game5 ">
-									<div class="card">
-										<div class="card-body-custom">
-											<h5 id="game5" class="card-title game-5">Game 5</h5>
-											<div class="d-flex justify-content-between align-items-center">
-												<div class="team">
-													<i class="profileIcon fas fa-user-circle "></i>
-													<span class=" ">TBD</span>
-												</div>
-												<div class="score">
-													<span class="score-value"></span>vs.<span class="score-value "></span>
-												</div>
-												<div class="team">
-													<span class="">TBD</span>
-													<i class="profileIcon fas fa-user-circle "></i>
-												</div>
-											</div>
-										</div>
-									</div>
-									<div class="connection-line connection-5-7"></div>
-								</div>
-								<!-- Game 6 -->
-								<div class="game game6 mb-5">
-									<div class="card">
-										<div class="card-body-custom">
-											<h5 id="game6" class="card-title game-6">Game 6</h5>
-											<div class="d-flex justify-content-between align-items-center">
-												<div class="team">
-													<i class="profileIcon fas fa-user-circle "></i>
-													<span class=" ">TBD</span>
-												</div>
-												<div class="score">
-													<span class="score-value"></span>vs.<span class="score-value"></span>
-												</div>
-												<div class="team">
-													<span>TBD</span>
-													<i class="profileIcon fas fa-user-circle "></i>
-												</div>
-											</div>
-										</div>
-									</div>
-									<div class="connection-line connection-6-7"></div>
-								</div>
-							</div>
-						</div>
-					</div>
-
-					<!-- Final Round -->
-					<div class="col-4 d-flex justify-content-center">
-						<div class="round final-round">
-							<!-- <h6 class="text-center">Final Round</h6> -->
-							<!-- <div class="vertical-line"> -->
-								<!-- Game 7 -->
-								<div class="game game7 mb-5">
-									<div class="card">
-										<div class="card-body-custom">
-											<h5 id="game7" class="card-title game-7">Game 7</h5>
-											<div class="d-flex justify-content-between align-items-center">
-												<div class="team">
-													<i class="profileIcon fas fa-user-circle "></i>
-													<span class=" ">TBD</span>
-												</div>
-												<div class="score">
-													<span class="score-value"></span>vs.<span class="score-value "></span>
-												</div>
-												<div class="team">
-													<span class="">TBD</span>
-													<i class="profileIcon fas fa-user-circle "></i>
-												</div>
-											</div>
-										</div>
-									</div>
-									<div class="connection-line connection-7-8"></div>
-								</div>
-							<!-- </div> -->
-						</div>
-					</div>
-				</div>
-			<button
-              class="btn continueButton btn-success btn-md d-flex justify-content-center"
-            >
-              Create Tournament
-            </button>
-    `;
-
-  return tournamentWrapper;
-}
-
 function mapContinueButton(buttonClass) {
   return new Promise((resolve, reject) => {
     const continueButton = document.querySelector(buttonClass);
@@ -362,28 +129,6 @@ function mapContinueButton(buttonClass) {
   });
 }
 
-function gameCanvas() {
-  const gameBoard = document.createElement("div");
-  gameBoard.id = "tableBoard";
-  gameBoard.className = "justify-content-center";
-
-  gameBoard.innerHTML = `
-    <div class="gamePlayers d-flex justify-content-between">
-        <div id="player1" class="col-12 col-md-6 text-center d-none">
-            <h3 id="player1Name" class="playerNames"></h3> 
-        </div>
-        <div id="player2" class="col-12 col-md-6 text-center d-none">
-            <h3 id="player2Name" class="playerNames"></h3>
-        </div>
-    </div>
-    <div class="text-center">
-        <canvas id="board" class="mt-2 shadow"></canvas>
-    </div>
-    `;
-
-  return gameBoard;
-}
-
 function closeModal(modalId) {
   console.log("closing modal");
   const modal = document.getElementById(modalId);
@@ -393,42 +138,6 @@ function closeModal(modalId) {
   } else {
     console.warn(`Modal with id "${modalId}" not found.`);
   }
-}
-
-// Create a modal for creating a tournament
-function createTournamentModal() {
-  const existingModal = document.getElementById("tournamentModal");
-  if (existingModal) {
-    existingModal.remove();
-  }
-
-  const modal = getPlayerNumberModal();
-  document.body.appendChild(modal);
-
-  // Event Listeners
-  document
-    .getElementById("submitPlayerNumBtn")
-    .addEventListener("click", () => {
-      playersNumber = document.getElementById("playersNumber").value;
-      //here need to check the number of players
-      console.log("Creating tournament with ", playersNumber, " players");
-      // createTournament(playersNumber);
-      closeModal("tournamentModal");
-    });
-
-  // close the modal when the close button is clicked
-  document
-    .querySelector("#tournamentModal .btn-close")
-    .addEventListener("click", () => {
-      closeModal("tournamentModal");
-    });
-
-  // close the modal when the modal is clicked outside
-  modal.addEventListener("click", (event) => {
-    if (event.target === modal) {
-      closeModal("tournamentModal");
-    }
-  });
 }
 
 function initMap(tournamentMap) {
@@ -452,8 +161,172 @@ function initMap(tournamentMap) {
     // Update Game 4
     teamSpans[6].textContent = playersNames[6];
     teamSpans[7].textContent = playersNames[7];
-  } 
+  }
   return tournamentMap;
+}
+// Input validation function
+function validatePlayerNumber() {
+  const playersNumberInput = document.getElementById("playersNumber");
+  const errorMsgDiv = document.getElementById("local-game-error-msg");
+  const maxPlayers = playersNumberInput.value;
+
+  if (maxPlayers === "") return false;
+  if (maxPlayers != 4 && maxPlayers != 8) {
+    errorMsgDiv.textContent = "Please enter either 4 or 8";
+    errorMsgDiv.style.display = "block";
+    return false;
+  } else {
+    errorMsgDiv.style.display = "none";
+    return true;
+  }
+}
+
+function validatePlayerName(trimmedName, maxPlayerNumbers) {
+  const errorMsgDiv = document.getElementById("player-name-error-msg");
+
+  // Remove any existing error message when input changes
+  errorMsgDiv.textContent = "";
+  errorMsgDiv.style.display = "none";
+
+  // Check if max players reached
+  if (playersNames.length == maxPlayerNumbers) {
+    errorMsgDiv.textContent = "Max Players reached";
+    errorMsgDiv.style.display = "block";
+    return false;
+  }
+  // Check if name contains only letters
+  const letterRegex = /^[A-Za-z]+$/;
+  if (!letterRegex.test(trimmedName)) {
+    errorMsgDiv.textContent = "Name must contain only letters";
+    errorMsgDiv.style.display = "block";
+    return false;
+  }
+
+  // Check name length
+  if (trimmedName.length < 5 || trimmedName.length > 9) {
+    errorMsgDiv.textContent = "Name must be between 5 and 9 characters";
+    errorMsgDiv.style.display = "block";
+    return false;
+  }
+
+  // Check if player already exists
+  if (playersNames.includes(trimmedName)) {
+    errorMsgDiv.textContent = "Player name is taken!";
+    errorMsgDiv.style.display = "block";
+    return false;
+  }
+  return true;
+}
+
+function setUpPlayerAddition(maxPlayerNumbers) {
+  const searchInput = document.getElementById("searchInput");
+  const searchIcon = document.getElementById("searchIcon");
+  const createTournamentBtn = document.getElementById("createTournamentBtn");
+  const startButton = document.getElementById("startButton");
+
+	maxPlayerNumbers = maxPlayerNumbers === 0 ? 4 : maxPlayerNumbers; 
+  // Function to add a new player
+  function addPlayer(playerName) {
+    // Trim and validate player name
+    const trimmedName = playerName.trim();
+    if (!trimmedName || !validatePlayerName(trimmedName, maxPlayerNumbers))
+      return;
+
+    // Add player to array
+    playersNames.push(trimmedName);
+
+    // Create new player button
+    const playerButton = document.createElement("button");
+    playerButton.classList.add(
+      "menu-item",
+      "d-flex",
+      "justify-content-center",
+      "align-items-center",
+      "p-3"
+    );
+    playerButton.innerHTML = `
+			<i class="fas fa-user fa-1x me-2"></i>
+			<h6 class="mb-0">${trimmedName}</h6>
+		`;
+
+    // Add click event to remove player
+    playerButton.addEventListener("click", () => {
+      // Prevent removing Tofara Mususa
+      if (trimmedName === "Tofara Mususa") {
+        alert("Cannot remove Tofara Mususa");
+        return;
+      }
+      // Remove from players array
+      const index = playersNames.indexOf(trimmedName);
+      if (index > -1) {
+        playersNames.splice(index, 1);
+      }
+
+      // Remove button from DOM
+      playerButton.remove();
+    });
+
+    // Add the new player button to the createTournamentBtn div
+    createTournamentBtn.appendChild(playerButton);
+
+    // Clear input
+    searchInput.value = "";
+  }
+
+  // Event listener for search icon click
+  searchIcon.addEventListener("click", () => {
+    addPlayer(searchInput.value);
+  });
+
+  // Event listener for enter key in search input
+  searchInput.addEventListener("keypress", (e) => {
+    if (e.key === "Enter") {
+      addPlayer(searchInput.value);
+    }
+  });
+
+  startButton.addEventListener("click", async () => {
+    if (playersNames.length != maxPlayerNumbers) {
+      const errorMsgDiv = document.getElementById("player-name-error-msg");
+      errorMsgDiv.textContent = "";
+      errorMsgDiv.style.display = "none";
+      errorMsgDiv.textContent = "Players do not match total number of players";
+      errorMsgDiv.style.display = "block";
+      return;
+    }
+    const friendBoard = document.querySelector(".friendBoard");
+    friendBoard.remove();
+    try {
+      const champion = await runTournament();
+      console.log("Champion:", champion);
+      console.log("Match History:", getMatchHistory());
+    } catch (error) {
+      console.error("Tournament error:", error);
+    }
+  });
+
+  // Add initial Tofara Mususa button (if not already present)
+  if (!document.querySelector("#createTournamentBtn .menu-item")) {
+    const initialPlayerButton = document.createElement("button");
+    initialPlayerButton.classList.add(
+      "menu-item",
+      "d-flex",
+      "justify-content-center",
+      "align-items-center",
+      "p-3"
+    );
+    initialPlayerButton.innerHTML = `
+			<i class="fas fa-trophy fa-1x me-2"></i>
+			<h6 class="mb-0">Tofara Mususa</h6>
+		`;
+
+    // Add click event to remove player
+    //   initialPlayerButton.addEventListener("click", () => {
+    //     alert("Cannot remove the user");
+    //   });
+
+    createTournamentBtn.appendChild(initialPlayerButton);
+  }
 }
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -469,27 +342,7 @@ document.addEventListener("DOMContentLoaded", () => {
   document.body.appendChild(modal);
 
   const playersNumberInput = document.getElementById("playersNumber");
-  const errorMsgDiv = document.getElementById("local-game-error-msg");
   const submitPlayerNumBtn = document.getElementById("submitPlayerNumBtn");
-
-  // Input validation function
-  function validatePlayerNumber() {
-    const maxPlayerNumbers = playersNumberInput.value;
-
-    if (maxPlayerNumbers === "") return false;
-    if (
-      isNaN(maxPlayerNumbers) ||
-      maxPlayerNumbers < 4 ||
-      maxPlayerNumbers > 8
-    ) {
-      errorMsgDiv.textContent = "Please enter a valid number between 4 and 8";
-      errorMsgDiv.style.display = "block";
-      return false;
-    } else {
-      errorMsgDiv.style.display = "none";
-      return true;
-    }
-  }
 
   // Add input event listener for real-time validation
   playersNumberInput.addEventListener("input", validatePlayerNumber);
@@ -503,7 +356,7 @@ document.addEventListener("DOMContentLoaded", () => {
     maxPlayerNumbers = playersNumberInput.value;
     console.log("Creating tournament with ", maxPlayerNumbers, " players");
     closeModal("tournamentModal");
-    setUpPlayerAddition();
+    setUpPlayerAddition(maxPlayerNumbers);
   });
   // close the modal when the close button is clicked
   document
@@ -519,43 +372,6 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 
-  function validatePlayerName(trimmedName) {
-    const errorMsgDiv = document.getElementById("player-name-error-msg");
-
-    // Remove any existing error message when input changes
-    errorMsgDiv.textContent = "";
-    errorMsgDiv.style.display = "none";
-
-    // Check if max players reached
-    if (playersNames.length == maxPlayerNumbers) {
-      errorMsgDiv.textContent = "Max Players reached";
-      errorMsgDiv.style.display = "block";
-      return false;
-    }
-    // Check if name contains only letters
-    const letterRegex = /^[A-Za-z]+$/;
-    if (!letterRegex.test(trimmedName)) {
-      errorMsgDiv.textContent = "Name must contain only letters";
-      errorMsgDiv.style.display = "block";
-      return false;
-    }
-
-    // Check name length
-    if (trimmedName.length < 5 || trimmedName.length > 9) {
-      errorMsgDiv.textContent = "Name must be between 5 and 9 characters";
-      errorMsgDiv.style.display = "block";
-      return false;
-    }
-
-    // Check if player already exists
-    if (playersNames.includes(trimmedName)) {
-      errorMsgDiv.textContent = "Player name is taken!";
-      errorMsgDiv.style.display = "block";
-      return false;
-    }
-
-    return true;
-  }
   document.getElementById("searchInput").addEventListener("input", function () {
     const errorMsgDiv = document.getElementById("player-name-error-msg");
     if (errorMsgDiv) {
@@ -563,112 +379,6 @@ document.addEventListener("DOMContentLoaded", () => {
       errorMsgDiv.style.display = "none";
     }
   });
-
-  function setUpPlayerAddition() {
-    const searchInput = document.getElementById("searchInput");
-    const searchIcon = document.getElementById("searchIcon");
-    const createTournamentBtn = document.getElementById("createTournamentBtn");
-    const startButton = document.getElementById("startButton");
-
-    // Function to add a new player
-    function addPlayer(playerName) {
-      // Trim and validate player name
-      const trimmedName = playerName.trim();
-      if (!trimmedName || !validatePlayerName(trimmedName)) return;
-
-      // Add player to array
-      playersNames.push(trimmedName);
-
-      // Create new player button
-      const playerButton = document.createElement("button");
-      playerButton.classList.add(
-        "menu-item",
-        "d-flex",
-        "justify-content-center",
-        "align-items-center",
-        "p-3"
-      );
-      playerButton.innerHTML = `
-            <i class="fas fa-user fa-1x me-2"></i>
-            <h6 class="mb-0">${trimmedName}</h6>
-        `;
-
-      // Add click event to remove player
-      playerButton.addEventListener("click", () => {
-        // Prevent removing Tofara Mususa
-        if (trimmedName === "Tofara Mususa") {
-          alert("Cannot remove Tofara Mususa");
-          return;
-        }
-        // Remove from players array
-        const index = playersNames.indexOf(trimmedName);
-        if (index > -1) {
-          playersNames.splice(index, 1);
-        }
-
-        // Remove button from DOM
-        playerButton.remove();
-      });
-
-      // Add the new player button to the createTournamentBtn div
-      createTournamentBtn.appendChild(playerButton);
-
-      // Clear input
-      searchInput.value = "";
-    }
-
-    // Event listener for search icon click
-    searchIcon.addEventListener("click", () => {
-      addPlayer(searchInput.value);
-    });
-
-    // Event listener for enter key in search input
-    searchInput.addEventListener("keypress", (e) => {
-      if (e.key === "Enter") {
-        addPlayer(searchInput.value);
-      }
-    });
-
-    startButton.addEventListener("click", async () => {
-      if (playersNames.length < 2) {
-        alert("Please add at least 2 players to start the tournament!");
-        return;
-      }
-      const friendBoard = document.querySelector(".friendBoard");
-      friendBoard.remove();
-      const tournament = createPingPongTournament(playersNames);
-      try {
-        const champion = await tournament.runTournament();
-        console.log("Champion:", champion);
-        console.log("Match History:", tournament.getMatchHistory());
-      } catch (error) {
-        console.error("Tournament error:", error);
-      }
-    });
-
-    // Add initial Tofara Mususa button (if not already present)
-    if (!document.querySelector("#createTournamentBtn .menu-item")) {
-      const initialPlayerButton = document.createElement("button");
-      initialPlayerButton.classList.add(
-        "menu-item",
-        "d-flex",
-        "justify-content-center",
-        "align-items-center",
-        "p-3"
-      );
-      initialPlayerButton.innerHTML = `
-            <i class="fas fa-trophy fa-1x me-2"></i>
-            <h6 class="mb-0">Tofara Mususa</h6>
-        `;
-
-      // Add click event to remove player
-      initialPlayerButton.addEventListener("click", () => {
-        alert("Cannot remove Tofara Mususa");
-      });
-
-      createTournamentBtn.appendChild(initialPlayerButton);
-    }
-  }
 });
 
 function updateTournamentMap(match) {
@@ -733,256 +443,159 @@ function routeWinnerToNextRound(currentGameNumber, winner) {
   }
 }
 
-function nextMatchModal(player1, player2) {
-  // Create the modal structure
-  const modalHTML = `
-	<div class="modal fade" id="nextMatch" tabindex="-1" role="dialog" aria-labelledby="modalTitle" aria-hidden="true">
-	  <div class="modal-dialog modal-dialog-centered modal-md" role="document">
-		<div class="card modal-card shadow-lg  position-relative">
-		  <button type="button" class="btn-close btn-close-white close-btn" onclick="closeModal('nextMatch')" aria-label="Close"></button>
-		  <div class="card-body text-center"> 
-			<h3 class="modal-title " id="modalTitle2"> Next Match </h3>
-			<p class="modal-text winner-text mt-3"> ${player1} vs ${player2} </p>
-			<button class="btn btn-secondary btn-sm modal-continue mt-4" onclick="closeModal('nextMatch')">CONTINUE</button>
-		  </div>
-		</div>
-	  </div>
-	</div>
-	`;
+async function playMatch(player1Name, player2Name) {
+  tournamentDiv = document.querySelector("#tournamentWrapper");
+  tournamentDiv.remove();
+  nextMatchModal(player1Name, player2Name);
+  await waitForModal("nextMatch");
+  console.log("WE ARE HERE");
+  const pageContainer = document.getElementById("background");
+  const game = gameCanvas();
+  pageContainer.appendChild(game);
 
-  // Append the modal to the body
-  const body = document.querySelector("body");
-  const modalContainer = document.createElement("div");
-  modalContainer.innerHTML = modalHTML;
-  body.appendChild(modalContainer);
+  return new Promise((resolve, reject) => {
+    try {
+      // Reset game state completely
+      drawFlag = true;
+      player1Obj = new Player(player1Name, "left");
+      player2Obj = new Player(player2Name, "right");
 
-  const modal = new bootstrap.Modal(document.getElementById("nextMatch"));
-  modal.show();
-}
+      const gameboard = document.getElementById("tableBoard");
+      const canvas = document.getElementById("board");
+      gameboard.style.visibility = "visible";
+      canvas.style.visibility = "visible";
 
-function gameWinnerModal(playerName) {
-  // Create the modal structure
-  const modalHTML = `
-	  <div class="modal fade" id="gameClosing" tabindex="-1" role="dialog" aria-labelledby="modalTitle" aria-hidden="true">
-		  <div class="modal-dialog modal-dialog-centered modal-md" role="document">
-			  <div class="card modal-card shadow-lg  position-relative">
-				  <button type="button" class="btn-close btn-close-white close-btn" onclick="closeModal('gameClosing')" aria-label="Close"></button>
-				  <div class="card-body text-center"> 
-					  <h3 class="modal-title " id="modalTitle2"> ${playerName} wins the game! </h3>
-					  <p class="modal-text winner-text mt-3"> Miguel passes to the next round </p>
-					  <button class="btn btn-secondary btn-sm modal-continue mt-4" onclick="closeModal('gameClosing')">CONTINUE</button>
-				  </div>
-			  </div>
-		  </div>
-	  </div>
-	  `;
+      initializeGame(); // Ensure clean game initialization
+      startGame(player1Obj, player2Obj);
 
-  // Append the modal to the body
-  const body = document.querySelector("body");
-  const modalContainer = document.createElement("div");
-  modalContainer.innerHTML = modalHTML;
-  body.appendChild(modalContainer);
+      const checkGameStatus = () => {
+        if (!drawFlag) {
+          const match = {
+            player1: player1Obj.playerName,
+            player1Score: player1Obj.finalScore,
+            player2: player2Obj.playerName,
+            player2Score: player2Obj.finalScore,
+            winner:
+              player1Obj.finalScore >= maxScore
+                ? player1Obj.playerName
+                : player2Obj.playerName,
+          };
+          matchHistory.push(match);
+          updateTournamentMap(match);
+          game.remove();
+          resolve(match.winner);
+        } else {
+          requestAnimationFrame(checkGameStatus);
+        }
+      };
 
-  const modal = new bootstrap.Modal(document.getElementById("gameClosing"));
-  modal.show();
-}
-
-function tournamentClosingModal(winner, secondplace) {
-  // Create the modal structure
-  const modalHTML = `
-	  <div class="modal fade" id="congratsModal" tabindex="-1" role="dialog" aria-labelledby="modalTitle" aria-hidden="true">
-		  <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
-			  <div class="card modal-card">
-				  <button type="button" class="btn-close btn-close-white" id="close-username-modal"></button>
-				  <div class="card-body text-center"> 
-					  <h2 class="modal-title" id="modalTitle">🎉 CONGRATULATIONS ${winner}! 🎉</h2>
-					  <img src="https://img.icons8.com/bubbles/200/000000/trophy.png" alt="Trophy" class="modal-trophy">
-					  <p class="modal-text">The winner of the tournament is <strong>${winner}</strong>.🏆🏆🏆</p>
-					  <p class="modal-text">2nd place goes to <strong>${secondplace}</strong> </strong>. 🥈🥈🥈</p>
-					  <p class="modal-text">Thank you for participating in the tournament. 🎉🎉🎉</p> 
-					  <button class="btn btn-secondary btn-sm modal-continue" onclick="closeModal("congratsModal")">CONTINUE</button>
-				  </div>
-			  </div>
-		  </div>
-	  </div>`;
-
-  // Append the modal to the body
-  const body = document.querySelector("body");
-  const modalContainer = document.createElement("div");
-  modalContainer.innerHTML = modalHTML;
-  body.appendChild(modalContainer);
-
-  // Show the modal (requires Bootstrap JS to work)
-  const modal = new bootstrap.Modal(document.getElementById("congratsModal"));
-  modal.show();
-}
-
-//LOGIC: This is to display initial the tournament logic
-function createPingPongTournament(players) {
-  async function playMatch(player1Name, player2Name) {
-    tournamentDiv = document.querySelector("#tournamentWrapper");
-    tournamentDiv.remove();
-    nextMatchModal(player1Name, player2Name);
-    await waitForModal('nextMatch');
-    console.log("WE ARE HERE");
-    const pageContainer = document.getElementById("background");
-    const game = gameCanvas();
-    pageContainer.appendChild(game);
-
-    return new Promise((resolve, reject) => {
-      try {
-        // Reset game state completely
-        drawFlag = true;
-        player1Obj = new Player(player1Name, "left");
-        player2Obj = new Player(player2Name, "right");
-
-        const gameboard = document.getElementById("tableBoard");
-        const canvas = document.getElementById("board");
-        gameboard.style.visibility = "visible";
-        canvas.style.visibility = "visible";
-
-        initializeGame(); // Ensure clean game initialization
-        startGame(player1Obj, player2Obj);
-
-        const checkGameStatus = () => {
-          if (!drawFlag) {
-            const match = {
-              player1: player1Obj.playerName,
-              player1Score: player1Obj.finalScore,
-              player2: player2Obj.playerName,
-              player2Score: player2Obj.finalScore,
-              winner:
-                player1Obj.finalScore >= maxScore
-                  ? player1Obj.playerName
-                  : player2Obj.playerName,
-            };
-            matchHistory.push(match);
-            updateTournamentMap(match);
-            game.remove();
-            resolve(match.winner);
-          } else {
-            requestAnimationFrame(checkGameStatus);
-          }
-        };
-
-        checkGameStatus();
-      } catch (error) {
-        reject(error);
-      }
-    });
-  }
-
-  function randomisePlayers(array) {
-    // Create a copy of the original array to avoid modifying the original
-    const shuffledArray = [...array];
-
-    // Start from the last element and swap with a random previous element
-    for (let i = shuffledArray.length - 1; i > 0; i--) {
-      // Generate a random index between 0 and i (inclusive)
-      const j = Math.floor(Math.random() * (i + 1));
-
-      // Swap elements
-      [shuffledArray[i], shuffledArray[j]] = [
-        shuffledArray[j],
-        shuffledArray[i],
-      ];
+      checkGameStatus();
+    } catch (error) {
+      reject(error);
     }
+  });
+}
 
-    return shuffledArray;
+function randomisePlayers(array) {
+  // Create a copy of the original array to avoid modifying the original
+  const shuffledArray = [...array];
+
+  // Start from the last element and swap with a random previous element
+  for (let i = shuffledArray.length - 1; i > 0; i--) {
+    // Generate a random index between 0 and i (inclusive)
+    const j = Math.floor(Math.random() * (i + 1));
+
+    // Swap elements
+    [shuffledArray[i], shuffledArray[j]] = [shuffledArray[j], shuffledArray[i]];
   }
 
-  function waitForModal(modalId) {
-	return new Promise((resolve) => {
-	  let elapsedTime = 0;
-	  const interval = 100; // Check every 100ms
-	  const timeout = 10000; // 10 seconds
-  
-	  const checker = setInterval(() => {
-		const modal = document.getElementById(modalId);
-  
-		// Check if the modal exists and the body still has the modal-open class
-		const isBodyClassRemoved = !document.body.classList.contains("modal-open");
-  
-		if (isBodyClassRemoved) {
-		  console.log("Modal and modal-open class no longer exist. Resolving...");
-		  clearInterval(checker);
-		  resolve();
-		} else if (elapsedTime >= timeout) {
-		  // If time exceeds 10 seconds, close the modal
-		  console.warn("Modal exists for too long. Closing modal...");
-		  clearInterval(checker);
-		  closeModal(modalId);
-		  resolve();
-		} else {
-		  console.log("Modal is still open or body class remains. Continue checking...");
-		  elapsedTime += interval;
-		}
-	  }, interval);
-	});
-  }
-  
-  
-  async function runTournament() {
-    playersNames = randomisePlayers(playersNames);
-    let currentPlayers = [...playersNames];
-    //randomise the players names here
-    const tournamentContainer = document.getElementById("background");
-    tournamentElement = initMap(createTournamentMap());
-    // if (playersNames.length == 4) {
-    //   prepTournament4();
-    // }
-    tournamentContainer.appendChild(tournamentElement);
+  return shuffledArray;
+}
 
-    // Validate initial number of players
-    if (![4, 8].includes(currentPlayers.length)) {
-      alert("Tournament supports only 4, 8 players");
-    }
+function waitForModal(modalId) {
+  return new Promise((resolve) => {
+    let elapsedTime = 0;
+    const interval = 100; // Check every 100ms
+    const timeout = 10000; // 10 seconds
 
-    // Quarter Finals (if applicable)
-    if (currentPlayers.length === 8) {
-      //need to add a div saying that we are the quarter finals
-      const quarterFinalWinners = [];
-      for (let i = 0; i < currentPlayers.length; i += 2) {
-        await mapContinueButton(".continueButton");
-        const winner = await playMatch(
-          currentPlayers[i],
-          currentPlayers[i + 1]
+    const checker = setInterval(() => {
+      const modal = document.getElementById(modalId);
+
+      // Check if the modal exists and the body still has the modal-open class
+      const isBodyClassRemoved =
+        !document.body.classList.contains("modal-open");
+
+      if (isBodyClassRemoved) {
+        console.log("Modal and modal-open class no longer exist. Resolving...");
+        clearInterval(checker);
+        resolve();
+      } else if (elapsedTime >= timeout) {
+        // If time exceeds 10 seconds, close the modal
+        console.warn("Modal exists for too long. Closing modal...");
+        clearInterval(checker);
+        closeModal(modalId);
+        resolve();
+      } else {
+        console.log(
+          "Modal is still open or body class remains. Continue checking..."
         );
-        gameWinnerModal(winner);
-        await waitForModal('gameClosing');
-        quarterFinalWinners.push(winner);
-        tournamentContainer.appendChild(tournamentElement);
+        elapsedTime += interval;
       }
-      currentPlayers = quarterFinalWinners;
-    }
+    }, interval);
+  });
+}
 
-    // Semi Finals
-    const semiFinalWinners = [];
-    //need to add a div saying this semifinals
+async function runTournament() {
+  playersNames = randomisePlayers(playersNames);
+  let currentPlayers = [...playersNames];
+  const tournamentContainer = document.getElementById("background");
+  tournamentElement = initMap(createTournamentMap());
+  if (playersNames.length == 4) {
+    prepTournament4();
+  }
+  tournamentContainer.appendChild(tournamentElement);
+
+  // Validate initial number of players
+  if (![4, 8].includes(currentPlayers.length)) {
+    alert("Tournament supports only 4, 8 players");
+  }
+
+  // Quarter Finals (if applicable)
+  if (currentPlayers.length === 8) {
+    //need to add a div saying that we are the quarter finals
+    const quarterFinalWinners = [];
     for (let i = 0; i < currentPlayers.length; i += 2) {
       await mapContinueButton(".continueButton");
       const winner = await playMatch(currentPlayers[i], currentPlayers[i + 1]);
-      semiFinalWinners.push(winner);
       gameWinnerModal(winner);
-      await waitForModal('gameClosing');
+      await waitForModal("gameClosing");
+      quarterFinalWinners.push(winner);
       tournamentContainer.appendChild(tournamentElement);
     }
+    currentPlayers = quarterFinalWinners;
+  }
 
+  // Semi Finals
+  const semiFinalWinners = [];
+  //need to add a div saying this semifinals
+  for (let i = 0; i < currentPlayers.length; i += 2) {
     await mapContinueButton(".continueButton");
-    const champion = await playMatch(semiFinalWinners[0], semiFinalWinners[1]);
-    tournamentClosingModal(champion, "John Doe");
-    await waitForModal('congratsModal');
+    const winner = await playMatch(currentPlayers[i], currentPlayers[i + 1]);
+    semiFinalWinners.push(winner);
+    gameWinnerModal(winner);
+    await waitForModal("gameClosing");
     tournamentContainer.appendChild(tournamentElement);
-
-    return champion;
   }
 
-  function getMatchHistory() {
-    return matchHistory;
-  }
+  await mapContinueButton(".continueButton");
+  const champion = await playMatch(semiFinalWinners[0], semiFinalWinners[1]);
+  const runnerUp = champion === semiFinalWinners[0] ? semiFinalWinners[0] : semiFinalWinners[1];
+  tournamentClosingModal(champion, runnerUp);
+  await waitForModal("congratsModal");
+  tournamentContainer.appendChild(tournamentElement);
+  return champion;
+}
 
-  return {
-    runTournament,
-    getMatchHistory,
-  };
+function getMatchHistory() {
+  return matchHistory;
 }
