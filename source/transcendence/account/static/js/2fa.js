@@ -28,7 +28,7 @@ async function handleOTPSubmit(event) {
     updateNavBar(true);
     
     // redirect to the protected page
-    await updateUI(`/${responseData.redirect}`, false);
+    await updateUI(`/${responseData.redirect}`);
   } catch (error) {
     console.error("Error:", error);
   }

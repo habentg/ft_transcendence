@@ -172,7 +172,7 @@ function chatRoomDeletionHandler(data) {
   if (chatRoom) {
     chatRoom.remove();
     alert("chatroom deleted: ", data.room);
-    updateUI('/chat', false);
+    updateUI('/chat');
   }
 }
 

@@ -40,8 +40,8 @@ async function updatePlayerPassword() {
 
     // Success - close modal and show success message
     closeModal("password-change-modal");
-    showSuccessMessage("Password updated successfully!");
-    updateUI("/settings", false);
+    showSuccessMessage("Password updated successfully. Please log in again with your new password.", 4000);
+    updateUI("/settings");
   } catch (error) {
     console.error("Error:", error);
     displayError({ error_msg: "An error occurred while updating password" });
@@ -82,7 +82,7 @@ async function handleEnableDisable2FA() {
         button.textContent = "Enable 2FA";
         showSuccessMessage("Two-Factor Authentication disabled successfully!", 2000);
       }
-      updateUI("/settings", false);
+      updateUI("/settings");
     } else {
       throw new Error("Failed to update 2FA status");
     }
@@ -195,7 +195,7 @@ async function deleteAccount() {
     if (response.status === 200) {
       closeModal("delete-account-modal");
       updateNavBar(false);
-      updateUI("", false);
+      updateUI("");
     } else {
       throw new Error("Failed to delete account");
     }
@@ -290,7 +290,7 @@ async function anonAccount() {
     console.log("Account anonymized");
     showSuccessMessage("Account anonymized successfully!", 2000);
     updateNavBar(true); // updating navbar
-    updateUI("/profile", false);
+    updateUI("/profile");
   } catch (error) {
     console.error("Error:", error);
   }

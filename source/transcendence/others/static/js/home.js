@@ -17,8 +17,10 @@ async function search(query_parameter, url) {
       },
     });
 
-    if (response.status === 205)
-      updateUI("/home", false);
+    if (response.status === 205) {
+      updateUI("/home");
+      return ;
+    }
     if (response.ok) {
       // history.pushState({ query_parameter }, "", route_url);
       const responseData = await response.json();
@@ -54,7 +56,7 @@ async function search(query_parameter, url) {
       loadCssandJS(responseData, false);
     }
     else if (response.status === 302) {
-      updateUI("/signin", false);
+      updateUI("/signin");
     } else {
       console.error("Failed to load -- ", query_parameter, "-- search content");
     }
@@ -205,40 +207,41 @@ function createLocalGameModal() {
     existingModal.remove();
   }
 
+  optionLocalGameModal();
 
-  const modal = optionLocalGameModal();
-  document.body.appendChild(modal);
+  // const modal = optionLocalGameModal();
+  // document.body.appendChild(modal);
 
-  // Event Listeners
-  document.getElementById("aiGameBtn").addEventListener("click", () => {
-    //  Send to AI game page (1 vs AI)
-    console.log("Creating AI game");
-    closeModal("localGameModal");
-    // For now, page is refreshing. Need to fix.
-    window.location.href = "/game/?isAI=true";
+  // // Event Listeners
+  // document.getElementById("aiGameBtn").addEventListener("click", () => {
+  //   //  Send to AI game page (1 vs AI)
+  //   console.log("Creating AI game");
+  //   closeModal("localGameModal");
+  //   // For now, page is refreshing. Need to fix.
+  //   // window.location.href = "/game/?isAI=true";
 
-  });
-  document.getElementById("playFriends").addEventListener("click", () => {
-    // Send to localgame game page (1 vs 1)
-    console.log("Creating local game");
-    closeModal("localGameModal");
+  // });
+  // document.getElementById("playFriends").addEventListener("click", () => {
+  //   // Send to localgame game page (1 vs 1)
+  //   console.log("Creating local game");
+  //   closeModal("localGameModal");
 
-    // For now, page is refreshing. Need to fix.
-    // updateUI("/game?isAI=false", false);
-    window.location.href = "/game/?isAI=false";
-  });
+  //   // For now, page is refreshing. Need to fix.
+  //   // updateUI("/game?isAI=false");
+  //   // window.location.href = "/game/?isAI=false";
+  // });
 
-  // close the modal when the close button is clicked
-  document.querySelector("#localGameModal .btn-close").addEventListener("click", () => {
-    closeModal("localGameModal");
-  });
+  // // close the modal when the close button is clicked
+  // document.querySelector("#localGameModal .btn-close").addEventListener("click", () => {
+  //   closeModal("localGameModal");
+  // });
 
-  // close the modal when the modal is clicked outside
-  modal.addEventListener("click", (event) => {
-    if (event.target === modal) {
-      closeModal("localGameModal");
-    }
-  });
+  // // close the modal when the modal is clicked outside
+  // modal.addEventListener("click", (event) => {
+  //   if (event.target === modal) {
+  //     closeModal("localGameModal");
+  //   }
+  // });
 
 }
 

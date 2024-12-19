@@ -49,9 +49,7 @@ async function handleSignInSubmit(e) {
         if (!response.ok) {
             if (response.status === 302) {
                 // Redirect to the two factor authentication page
-                await updateUI(`/2fa`, false);
-                // history.pushState(null, '', `/2fa`);
-                // handleLocationChange();
+                await updateUI(`/2fa`);
             }
             else
             {
@@ -63,7 +61,7 @@ async function handleSignInSubmit(e) {
         }
         // redirect to the protected page
 
-        await updateUI(`/home`, false);
+        await updateUI(`/home`);
         updateNavBar(true); // update the navbar for authenticated users
         /* websocket - for real-time updates and chat*/
         createWebSockets();

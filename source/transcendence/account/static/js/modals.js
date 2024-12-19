@@ -422,17 +422,46 @@ function optionLocalGameModal() {
         <p class="text-white mb-0">Choose who you'd like to play:</p>
       </div>
       <div class="modal-footer border-0 py-3 d-flex justify-content-start">
-        <button type="button" class="btn btn-primary btn-sm me-2" id="aiGameBtn">
+        <a class="btn btn-primary btn-sm me-2" id="aiGameBtn" onclick="appRouter()" href="/game?isAI=true">
           <i class="fas fa-robot me-2"></i> Play with AI
-        </button>
-        <button type="button" class="btn btn-outline-light btn-sm me-2" id="playFriends">
+        </a>
+        <a class="btn btn-outline-light btn-sm me-2" id="playFriends" onclick="appRouter()" href="/game?isAI=false">
           <i class="fas fa-user-friends me-2"></i> Play with a friend
-        </button>
+        </a>
       </div>
     </div>
   </div>
   `;
-  return modal;
+  // return modal;
+
+  document.body.appendChild(modal);
+
+  // Event Listeners
+  document.getElementById("aiGameBtn").addEventListener("click", () => {
+    //  Send to AI game page (1 vs AI)
+    console.log("Creating AI game");
+    closeModal("localGameModal");
+    // For now, page is refreshing. Need to fix.
+    // window.location.href = "/game/?isAI=true";
+
+  });
+  document.getElementById("playFriends").addEventListener("click", () => {
+    // Send to localgame game page (1 vs 1)
+    console.log("Creating local game");
+    closeModal("localGameModal");
+  });
+
+  // close the modal when the close button is clicked
+  document.querySelector("#localGameModal .btn-close").addEventListener("click", () => {
+    closeModal("localGameModal");
+  });
+
+  // close the modal when the modal is clicked outside
+  modal.addEventListener("click", (event) => {
+    if (event.target === modal) {
+      closeModal("localGameModal");
+    }
+  });
 }
 
 // functin to ask for second player name before starting the game

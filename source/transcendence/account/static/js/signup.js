@@ -86,7 +86,7 @@ async function handleSignupSubmit(e) {
             return;
         }
         // redirect to the protected page
-        await updateUI(`/home`, false);
+        await updateUI(`/home`);
         // update the navbar
         updateNavBar(true);
         createWebSockets();

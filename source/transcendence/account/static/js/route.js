@@ -9,17 +9,15 @@ window.isInitialLoad = true;
         - calls a function to load the content of the page;
 */
 
-async function updateUI(path, deep_route) {
+async function updateUI(path) {
   if (isInitialLoad) {
     isInitialLoad = false;
     return;
   }
-  console.log("updateUI() of:", path);
-  if (deep_route)
-    history.pushState(null, "", `${path}`);
-  else
-    history.pushState(null, "", `${window.baseUrl}${path}`);
-  await loadContent(`${window.baseUrl}${path}`);
+  if (!path.includes(`${window.location.origin}`))
+    path = `${window.location.origin}${path}`;
+  history.pushState(null, "", `${path}`);
+  await loadContent(`${path}`);
 }
 
 // routing function
@@ -35,17 +33,15 @@ async function appRouter(event) {
     event.preventDefault();
     
     const href = event.target.closest('a').href;
-    let urlObj = new URL(href);
-    let path = urlObj.pathname;
-    if (path === window.location.pathname)
+    if (href === window.location.href)
         return;
-    await updateUI(path, false);
+    await updateUI(href);
 };
 
 // Load the content of the page
 async function loadContent(route) {
   try {
-    const response = await fetch(`${route}/`, {
+    const response = await fetch(`${route}`, {
       method: "GET",
       headers: {
         "X-Requested-With": "XMLHttpRequest",

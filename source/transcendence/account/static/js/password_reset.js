@@ -49,7 +49,7 @@ async function handlePassResetSubmit(e) {
 
     document.getElementById('returnToSignIn').addEventListener('click', async function() {
       closeModal("reset-password-confirm-modal");
-      updateUI(`/signin`, false);
+      updateUI(`/signin`);
     });
 
   } catch (error) {
@@ -89,7 +89,7 @@ async function handlePassChangeSubmit(e) {
     }
 
     showSuccessModal("Password reset successfully! Please sign in with your new password.");
-    updateUI(`/signin`, false);
+    updateUI(`/signin`);
 
     // Clear the local storage
     localStorage.removeItem('uidb64');
