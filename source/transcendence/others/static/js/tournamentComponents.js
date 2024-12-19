@@ -219,11 +219,15 @@ function getPlayerNumberModal() {
 						  </div>
 					  </div>
 				  </div>
-			  <button
-				class="btn continueButton btn-success btn-md d-flex justify-content-center"
-			  >
-				Create Tournament
-			  </button>
+				  <div class="d-flex justify-content-center">
+				  <button
+					id="startButton"
+					class="btn btn-success btn-md"
+					style="display: flex; align-items: center"
+				  >
+					Continue
+				  </button>
+				</div>
 	  `;
   
 	return tournamentWrapper;
@@ -253,20 +257,23 @@ function getPlayerNumberModal() {
 
   function nextMatchModal(player1, player2) {
 	// Create the modal structure
+	console.log(player1, player2)
+	const existingModal = document.getElementById("nextMatch");
+	if (existingModal) existingModal.remove();
 	const modalHTML = `
-	  <div class="modal fade" id="nextMatch" tabindex="-1" role="dialog" aria-labelledby="modalTitle" aria-hidden="true">
-		<div class="modal-dialog modal-dialog-centered modal-md" role="document">
-		  <div class="card modal-card shadow-lg  position-relative">
-			<button type="button" class="btn-close btn-close-white close-btn" onclick="closeModal('nextMatch')" aria-label="Close"></button>
-			<div class="card-body text-center"> 
-			  <h3 class="modal-title " id="modalTitle2"> Next Match </h3>
-			  <p class="modal-text winner-text mt-3"> ${player1} vs ${player2} </p>
-			  <button class="btn btn-secondary btn-sm modal-continue mt-4" onclick="closeModal('nextMatch')">CONTINUE</button>
-			</div>
+	<div class="modal fade" id="nextMatch" tabindex="-1" role="dialog" aria-labelledby="modalTitle" aria-hidden="true">
+	  <div class="modal-dialog modal-dialog-centered modal-md" role="document">
+		<div class="card modal-card shadow-lg  position-relative">
+		  <button type="button" class="btn-close btn-close-white close-btn position-absolute top-0 end-0 m-2" onclick="closeModal('nextMatch')" aria-label="Close"></button>
+		  <div class="card-body text-center"> 
+			<h3 class="modal-title " id="modalTitle2"> Next Match </h3>
+			<p class="modal-text winner-text mt-3"> ${player1} vs ${player2} </p>
+			<button class="btn btn-secondary btn-sm modal-continue mt-4" onclick="closeModal('nextMatch')">CONTINUE</button>
 		  </div>
 		</div>
 	  </div>
-	  `;
+	</div>
+	`;  
   
 	// Append the modal to the body
 	const body = document.querySelector("body");
@@ -280,20 +287,26 @@ function getPlayerNumberModal() {
   
   function gameWinnerModal(playerName) {
 	// Create the modal structure
+	console.log(playerName)
+	const existingModal = document.getElementById("gameClosing");
+	if (existingModal) existingModal.remove();
 	const modalHTML = `
-		<div class="modal fade" id="gameClosing" tabindex="-1" role="dialog" aria-labelledby="modalTitle" aria-hidden="true">
-			<div class="modal-dialog modal-dialog-centered modal-md" role="document">
-				<div class="card modal-card shadow-lg  position-relative">
-					<button type="button" class="btn-close btn-close-white close-btn" onclick="closeModal('gameClosing')" aria-label="Close"></button>
-					<div class="card-body text-center"> 
-						<h3 class="modal-title " id="modalTitle2"> ${playerName} wins the game! </h3>
-						<p class="modal-text winner-text mt-3"> ${playerName} passes to the next round </p>
-						<button class="btn btn-secondary btn-sm modal-continue mt-4" onclick="closeModal('gameClosing')">CONTINUE</button>
-					</div>
+	<div class="modal fade" id="gameClosing" tabindex="-1" role="dialog" aria-labelledby="modalTitle" aria-hidden="true">
+		<div class="modal-dialog modal-dialog-centered modal-md" role="document">
+			<div class="card modal-card shadow-lg position-relative">
+				<button type="button" 
+                        class="btn-close btn-close-white position-absolute top-0 end-0 m-2" 
+                        onclick="closeModal('gameClosing')" 
+                        aria-label="Close"></button>
+				<div class="card-body text-center"> 
+					<h3 class="modal-title" id="modalTitle2"> ${playerName} wins the game! </h3>
+					<p class="modal-text winner-text mt-3"> ${playerName} passes to the next round </p>
+					<button class="btn btn-secondary btn-sm modal-continue mt-4" onclick="closeModal('gameClosing')">CONTINUE</button>
 				</div>
 			</div>
 		</div>
-		`;
+	</div>
+	`;
   
 	// Append the modal to the body
 	const body = document.querySelector("body");
@@ -307,22 +320,27 @@ function getPlayerNumberModal() {
 
   function tournamentClosingModal(winner, secondplace) {
 	// Create the modal structure
+	const existingModal = document.getElementById("congratsModal");
+	if (existingModal) existingModal.remove();
 	const modalHTML = `
-		<div class="modal fade" id="congratsModal" tabindex="-1" role="dialog" aria-labelledby="modalTitle" aria-hidden="true">
-			<div class="modal-dialog modal-dialog-centered modal-lg" role="document">
-				<div class="card modal-card">
-					<button type="button" class="btn-close btn-close-white" id="close-username-modal"></button>
-					<div class="card-body text-center"> 
-						<h2 class="modal-title" id="modalTitle">🎉 CONGRATULATIONS ${winner}! 🎉</h2>
-						<img src="https://img.icons8.com/bubbles/200/000000/trophy.png" alt="Trophy" class="modal-trophy">
-						<p class="modal-text">The winner of the tournament is <strong>${winner}</strong>.🏆🏆🏆</p>
-						<p class="modal-text">2nd place goes to <strong>${secondplace}</strong> </strong>. 🥈🥈🥈</p>
-						<p class="modal-text">Thank you for participating in the tournament. 🎉🎉🎉</p> 
-						<button class="btn btn-secondary btn-sm modal-continue" onclick="closeModal("congratsModal")">CONTINUE</button>
-					</div>
-				</div>
-			</div>
-		</div>`;
+    <div class="modal fade" id="congratsModal" tabindex="-1" role="dialog" aria-labelledby="modalTitle" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+            <div class="card modal-card position-relative">
+                <button type="button" 
+                        class="btn-close btn-close-white position-absolute top-0 end-0 m-2" 
+                        onclick="closeModal('congratsModal')" 
+                        aria-label="Close"></button>
+                <div class="card-body text-center"> 
+                    <h2 class="modal-title" id="modalTitle">🎉 Congratulations ${winner}! 🎉</h2>
+                    <img src="https://img.icons8.com/bubbles/200/000000/trophy.png" alt="Trophy" class="modal-trophy">
+                    <p class="modal-text">The winner of the tournament is <strong>${winner}</strong>. 🏆🏆🏆</p>
+                    <p class="modal-text">2nd place goes to <strong>${secondplace}</strong>. 🥈🥈🥈</p>
+                    <p class="modal-text">Thank you for participating in the tournament. 🎉🎉🎉</p> 
+                    <button class="btn btn-secondary btn-sm modal-continue" onclick="closeModal('congratsModal')">CONTINUE</button>
+                </div>
+            </div>
+        </div>
+    </div>`;
   
 	// Append the modal to the body
 	const body = document.querySelector("body");
