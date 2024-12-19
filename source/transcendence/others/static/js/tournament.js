@@ -31,79 +31,82 @@ function startGame(player1, player2) {
 
 // Drop game 3, 4, 6, and 7 with class names game3, game4, game6, and game7
 function prepTournament4() {
-	var game3 = document.getElementsByClassName("game3");
-	var game4 = document.getElementsByClassName("game4");
-	var game6 = document.getElementsByClassName("game6");
-	var game7 = document.getElementsByClassName("game7");
-  
-	for (var i = 0; i < game3.length; i++) {
-	  game3[i].style.display = "none";
-	}
-	for (var i = 0; i < game4.length; i++) {
-	  game4[i].style.display = "none";
-	}
-	for (var i = 0; i < game6.length; i++) {
-	  game6[i].style.display = "none";
-	}
-	for (var i = 0; i < game7.length; i++) {
-	  game7[i].style.display = "none";
-	}
-  
-	// Also delete pseudo elements that start from game 5. class .connection-5-7
-	var connection57 = document.getElementsByClassName("connection-5-7");
-	for (var i = 0; i < connection57.length; i++) {
-	  connection57[i].style.display = "none";
-	}
-  
-	// Adjust the position of the game 5
-	var game5 = document.getElementsByClassName("game5");
-	game5[0].style.top = "85%";
-	game5[0].style.left = "45%";
-	game5[0].style.transform = "translate(-50%, -50%)";
-	// game5[0].style.width = "100%";
-  
-	// Select the div with the class 'col-4 d-flex justify-content-center last'
-	const divToDelete = document.querySelector(
-	  ".col-4.d-flex.justify-content-center.last"
-	);
-	if (divToDelete) {
-	  divToDelete.remove();
-	}
-  
-	// Select the first round div to update the class
-	const divToUpdate = document.querySelector(
-	  ".col-4.d-flex.justify-content-center.align-items-end"
-	);
-	if (divToUpdate) {
-	  divToUpdate.classList.replace("col-4", "col-6");
-	}
-  
-	// Select the second round div to update the class
-	const divToUpdate2 = document.querySelector(
-	  ".col-4.d-flex.justify-content-center.align-items-start"
-	);
-	if (divToUpdate2) {
-	  divToUpdate2.classList.replace("col-4", "col-6");
-	}
-  
-	// make the connection between game 1 and game 5 width to 80px
-	var connection15 = document.getElementsByClassName("connection-1-5");
-	for (var i = 0; i < connection15.length; i++) {
-	  connection15[i].style.width = "80px";
-	}
-  
-	// make the connection between game 2 and game 5 width to 80px
-	var connection25 = document.getElementsByClassName("connection-2-5");
-	for (var i = 0; i < connection25.length; i++) {
-	  connection25[i].style.width = "80px";
-	}
-  
-	// make final4 class name div's from justify-content-center to start
-	var final4 = document.getElementsByClassName("final4");
-	for (var i = 0; i < final4.length; i++) {
-	  final4[i].classList.replace("justify-content-center", "justify-content-start");
-	}
+  var game3 = document.getElementsByClassName("game3");
+  var game4 = document.getElementsByClassName("game4");
+  var game6 = document.getElementsByClassName("game6");
+  var game7 = document.getElementsByClassName("game7");
+
+  for (var i = 0; i < game3.length; i++) {
+    game3[i].style.display = "none";
   }
+  for (var i = 0; i < game4.length; i++) {
+    game4[i].style.display = "none";
+  }
+  for (var i = 0; i < game6.length; i++) {
+    game6[i].style.display = "none";
+  }
+  for (var i = 0; i < game7.length; i++) {
+    game7[i].style.display = "none";
+  }
+
+  // Also delete pseudo elements that start from game 5. class .connection-5-7
+  var connection57 = document.getElementsByClassName("connection-5-7");
+  for (var i = 0; i < connection57.length; i++) {
+    connection57[i].style.display = "none";
+  }
+
+  // Adjust the position of the game 5
+  var game5 = document.getElementsByClassName("game5");
+  game5[0].style.top = "85%";
+  game5[0].style.left = "45%";
+  game5[0].style.transform = "translate(-50%, -50%)";
+  // game5[0].style.width = "100%";
+
+  // Select the div with the class 'col-4 d-flex justify-content-center last'
+  const divToDelete = document.querySelector(
+    ".col-4.d-flex.justify-content-center.last"
+  );
+  if (divToDelete) {
+    divToDelete.remove();
+  }
+
+  // Select the first round div to update the class
+  const divToUpdate = document.querySelector(
+    ".col-4.d-flex.justify-content-center.align-items-end"
+  );
+  if (divToUpdate) {
+    divToUpdate.classList.replace("col-4", "col-6");
+  }
+
+  // Select the second round div to update the class
+  const divToUpdate2 = document.querySelector(
+    ".col-4.d-flex.justify-content-center.align-items-start"
+  );
+  if (divToUpdate2) {
+    divToUpdate2.classList.replace("col-4", "col-6");
+  }
+
+  // make the connection between game 1 and game 5 width to 80px
+  var connection15 = document.getElementsByClassName("connection-1-5");
+  for (var i = 0; i < connection15.length; i++) {
+    connection15[i].style.width = "80px";
+  }
+
+  // make the connection between game 2 and game 5 width to 80px
+  var connection25 = document.getElementsByClassName("connection-2-5");
+  for (var i = 0; i < connection25.length; i++) {
+    connection25[i].style.width = "80px";
+  }
+
+  // make final4 class name div's from justify-content-center to start
+  var final4 = document.getElementsByClassName("final4");
+  for (var i = 0; i < final4.length; i++) {
+    final4[i].classList.replace(
+      "justify-content-center",
+      "justify-content-start"
+    );
+  }
+}
 //END OF GAME LOGIC
 //TOURNAMENT LOGIC
 
@@ -260,13 +263,13 @@ function createTournamentMap() {
 											<div class="d-flex justify-content-between align-items-center">
 												<div class="team">
 													<i class="profileIcon fas fa-user-circle "></i>
-													<span class=" ">TDB</span>
+													<span class=" ">TBD</span>
 												</div>
 												<div class="score">
 													<span class="score-value"></span>vs.<span class="score-value "></span>
 												</div>
 												<div class="team">
-													<span class="">TDB</span>
+													<span class="">TBD</span>
 													<i class="profileIcon fas fa-user-circle "></i>
 												</div>
 											</div>
@@ -282,13 +285,13 @@ function createTournamentMap() {
 											<div class="d-flex justify-content-between align-items-center">
 												<div class="team">
 													<i class="profileIcon fas fa-user-circle "></i>
-													<span class=" ">TDB</span>
+													<span class=" ">TBD</span>
 												</div>
 												<div class="score">
 													<span class="score-value"></span>vs.<span class="score-value"></span>
 												</div>
 												<div class="team">
-													<span>TDB</span>
+													<span>TBD</span>
 													<i class="profileIcon fas fa-user-circle "></i>
 												</div>
 											</div>
@@ -313,13 +316,13 @@ function createTournamentMap() {
 											<div class="d-flex justify-content-between align-items-center">
 												<div class="team">
 													<i class="profileIcon fas fa-user-circle "></i>
-													<span class=" ">TDB</span>
+													<span class=" ">TBD</span>
 												</div>
 												<div class="score">
 													<span class="score-value"></span>vs.<span class="score-value "></span>
 												</div>
 												<div class="team">
-													<span class="">TDB</span>
+													<span class="">TBD</span>
 													<i class="profileIcon fas fa-user-circle "></i>
 												</div>
 											</div>
@@ -339,6 +342,24 @@ function createTournamentMap() {
     `;
 
   return tournamentWrapper;
+}
+
+function mapContinueButton(buttonClass) {
+  return new Promise((resolve, reject) => {
+    const continueButton = document.querySelector(buttonClass);
+    if (!continueButton) {
+      reject("Not working");
+      console.error("Continue button not found in the DOM.");
+      return; // Exit the function early to prevent further execution
+    }
+
+    const handleClick = () => {
+      continueButton.removeEventListener("click", handleClick);
+      resolve();
+    };
+
+    continueButton.addEventListener("click", handleClick);
+  });
 }
 
 function gameCanvas() {
@@ -431,7 +452,7 @@ function initMap(tournamentMap) {
     // Update Game 4
     teamSpans[6].textContent = playersNames[6];
     teamSpans[7].textContent = playersNames[7];
-  }
+  } 
   return tournamentMap;
 }
 
@@ -712,15 +733,9 @@ function routeWinnerToNextRound(currentGameNumber, winner) {
   }
 }
 
-function initPlayers() {
-  for (let i = 0; i < playerNames.length; i++) {
-    players.push;
-  }
-}
-
 function nextMatchModal(player1, player2) {
-	// Create the modal structure
-	const modalHTML = `
+  // Create the modal structure
+  const modalHTML = `
 	<div class="modal fade" id="nextMatch" tabindex="-1" role="dialog" aria-labelledby="modalTitle" aria-hidden="true">
 	  <div class="modal-dialog modal-dialog-centered modal-md" role="document">
 		<div class="card modal-card shadow-lg  position-relative">
@@ -734,21 +749,20 @@ function nextMatchModal(player1, player2) {
 	  </div>
 	</div>
 	`;
-  
-	// Append the modal to the body
-	const body = document.querySelector("body");
-	const modalContainer = document.createElement("div");
-	modalContainer.innerHTML = modalHTML;
-	body.appendChild(modalContainer);
-  
-	const modal = new bootstrap.Modal(document.getElementById("nextMatch"));
-	modal.show();
-  }
 
+  // Append the modal to the body
+  const body = document.querySelector("body");
+  const modalContainer = document.createElement("div");
+  modalContainer.innerHTML = modalHTML;
+  body.appendChild(modalContainer);
+
+  const modal = new bootstrap.Modal(document.getElementById("nextMatch"));
+  modal.show();
+}
 
 function gameWinnerModal(playerName) {
-	// Create the modal structure
-	const modalHTML = `
+  // Create the modal structure
+  const modalHTML = `
 	  <div class="modal fade" id="gameClosing" tabindex="-1" role="dialog" aria-labelledby="modalTitle" aria-hidden="true">
 		  <div class="modal-dialog modal-dialog-centered modal-md" role="document">
 			  <div class="card modal-card shadow-lg  position-relative">
@@ -762,20 +776,20 @@ function gameWinnerModal(playerName) {
 		  </div>
 	  </div>
 	  `;
-  
-	// Append the modal to the body
-	const body = document.querySelector("body");
-	const modalContainer = document.createElement("div");
-	modalContainer.innerHTML = modalHTML;
-	body.appendChild(modalContainer);
-  
-	const modal = new bootstrap.Modal(document.getElementById("gameClosing"));
-	modal.show();
-  }
 
-  function tournamentClosingModal(winner, secondplace) {
-	// Create the modal structure
-	const modalHTML = `
+  // Append the modal to the body
+  const body = document.querySelector("body");
+  const modalContainer = document.createElement("div");
+  modalContainer.innerHTML = modalHTML;
+  body.appendChild(modalContainer);
+
+  const modal = new bootstrap.Modal(document.getElementById("gameClosing"));
+  modal.show();
+}
+
+function tournamentClosingModal(winner, secondplace) {
+  // Create the modal structure
+  const modalHTML = `
 	  <div class="modal fade" id="congratsModal" tabindex="-1" role="dialog" aria-labelledby="modalTitle" aria-hidden="true">
 		  <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
 			  <div class="card modal-card">
@@ -791,28 +805,26 @@ function gameWinnerModal(playerName) {
 			  </div>
 		  </div>
 	  </div>`;
-  
-	// Append the modal to the body
-	const body = document.querySelector("body");
-	const modalContainer = document.createElement("div");
-	modalContainer.innerHTML = modalHTML;
-	body.appendChild(modalContainer);
-  
-	// Show the modal (requires Bootstrap JS to work)
-	const modal = new bootstrap.Modal(document.getElementById("congratsModal"));
-	modal.show();
-  }
+
+  // Append the modal to the body
+  const body = document.querySelector("body");
+  const modalContainer = document.createElement("div");
+  modalContainer.innerHTML = modalHTML;
+  body.appendChild(modalContainer);
+
+  // Show the modal (requires Bootstrap JS to work)
+  const modal = new bootstrap.Modal(document.getElementById("congratsModal"));
+  modal.show();
+}
 
 //LOGIC: This is to display initial the tournament logic
 function createPingPongTournament(players) {
-
-
   async function playMatch(player1Name, player2Name) {
     tournamentDiv = document.querySelector("#tournamentWrapper");
     tournamentDiv.remove();
-	nextMatchModal(player1Name, player2Name);
-	// await waitForContinueButton(".modal-continue")
-	console.log("WE ARE HERE")
+    nextMatchModal(player1Name, player2Name);
+    await waitForModal('nextMatch');
+    console.log("WE ARE HERE");
     const pageContainer = document.getElementById("background");
     const game = gameCanvas();
     pageContainer.appendChild(game);
@@ -879,22 +891,36 @@ function createPingPongTournament(players) {
     return shuffledArray;
   }
 
-  function waitForContinueButton(buttonClass) {
-	return new Promise((resolve, reject) => {
-	  const continueButton = document.querySelector(buttonClass);
-	  if (!continueButton) {
-		console.error("Continue button not found in the DOM.");
-		return; // Exit the function early to prevent further execution
-	  }
+  function waitForModal(modalId) {
+	return new Promise((resolve) => {
+	  let elapsedTime = 0;
+	  const interval = 100; // Check every 100ms
+	  const timeout = 10000; // 10 seconds
   
-	  const handleClick = () => {
-		continueButton.removeEventListener("click", handleClick);
-		resolve();
-	  };
+	  const checker = setInterval(() => {
+		const modal = document.getElementById(modalId);
   
-	  continueButton.addEventListener("click", handleClick);
+		// Check if the modal exists and the body still has the modal-open class
+		const isBodyClassRemoved = !document.body.classList.contains("modal-open");
+  
+		if (isBodyClassRemoved) {
+		  console.log("Modal and modal-open class no longer exist. Resolving...");
+		  clearInterval(checker);
+		  resolve();
+		} else if (elapsedTime >= timeout) {
+		  // If time exceeds 10 seconds, close the modal
+		  console.warn("Modal exists for too long. Closing modal...");
+		  clearInterval(checker);
+		  closeModal(modalId);
+		  resolve();
+		} else {
+		  console.log("Modal is still open or body class remains. Continue checking...");
+		  elapsedTime += interval;
+		}
+	  }, interval);
 	});
   }
+  
   
   async function runTournament() {
     playersNames = randomisePlayers(playersNames);
@@ -917,16 +943,15 @@ function createPingPongTournament(players) {
       //need to add a div saying that we are the quarter finals
       const quarterFinalWinners = [];
       for (let i = 0; i < currentPlayers.length; i += 2) {
-		// await waitForContinueButton(".continueButton");
-		  const winner = await playMatch(
-			  currentPlayers[i],
-			  currentPlayers[i + 1]
-			  );
-			  gameWinnerModal(winner);
-			//   await waitForContinueButton(".modal-continue");
-			  quarterFinalWinners.push(winner);
-		tournamentContainer.appendChild(tournamentElement);
-
+        await mapContinueButton(".continueButton");
+        const winner = await playMatch(
+          currentPlayers[i],
+          currentPlayers[i + 1]
+        );
+        gameWinnerModal(winner);
+        await waitForModal('gameClosing');
+        quarterFinalWinners.push(winner);
+        tournamentContainer.appendChild(tournamentElement);
       }
       currentPlayers = quarterFinalWinners;
     }
@@ -935,19 +960,19 @@ function createPingPongTournament(players) {
     const semiFinalWinners = [];
     //need to add a div saying this semifinals
     for (let i = 0; i < currentPlayers.length; i += 2) {
-		// await waitForContinueButton(".continueButton");
+      await mapContinueButton(".continueButton");
       const winner = await playMatch(currentPlayers[i], currentPlayers[i + 1]);
       semiFinalWinners.push(winner);
-	  gameWinnerModal(winner);
-	//   await waitForContinueButton(".modal-continue");
-	  tournamentContainer.appendChild(tournamentElement);
+      gameWinnerModal(winner);
+      await waitForModal('gameClosing');
+      tournamentContainer.appendChild(tournamentElement);
     }
 
-	// await waitForContinueButton(".continueButton");
+    await mapContinueButton(".continueButton");
     const champion = await playMatch(semiFinalWinners[0], semiFinalWinners[1]);
-	tournamentClosingModal(champion, "John Doe")
-	// await waitForContinueButton("modal-continue")
-	tournamentContainer.appendChild(tournamentElement);
+    tournamentClosingModal(champion, "John Doe");
+    await waitForModal('congratsModal');
+    tournamentContainer.appendChild(tournamentElement);
 
     return champion;
   }
