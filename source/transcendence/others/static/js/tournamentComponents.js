@@ -1,41 +1,9 @@
-function getPlayerNumberModal() {
-	const modal = document.createElement("div");
-	modal.classList.add("modal");
-	modal.id = "tournamentModal";
-	modal.className = "modal fade show";
-	modal.style.display = "block";
-	modal.innerHTML = `
-	  <div class="modal-dialog modal-dialog-centered modal-md">
-		<div class="modal-content">
-		  <div class="modal-header border-0 py-3">
-			<h5 class="modal-title">
-			  <i class="fas fa-trophy me-2"></i> Confirm Players
-			</h5>
-			<button type="button" class="btn-close btn-close-white" data-dismiss="modal"></button>
-		  </div>
-		  <div class="modal-body px-3 py-2">
-			<div id="local-game-error-msg" class="alert alert-danger small py-2" style="display:none;"></div>
-			<p class="text-white mb-0">Enter number of player in tournament</p>
-			<input type="int" id="playersNumber" class="form-control my-2" placeholder="Enter number of players" />
-			<small class="notice mt-2 d-block">Minimum players: 4 | Max players: 8</small>
-		  </div>
-		  <div class="modal-footer border-0 py-3 d-flex justify-content-start">
-			<button type="button" class="btn btn-primary btn-sm" id="submitPlayerNumBtn">
-			  <i class="fas fa-paper-plane me-2"></i> Submit
-		  </button>
-		</div>
-		</div>
-	  </div>
-	  `;
-	return modal;
-  }
+function createTournamentMap() {
+  const tournamentWrapper = document.createElement("div");
+  tournamentWrapper.className = "tournamentWrapper";
+  tournamentWrapper.id = "tournamentWrapper";
 
-  function createTournamentMap() {
-	const tournamentWrapper = document.createElement("div");
-	tournamentWrapper.className = "tournamentWrapper";
-	tournamentWrapper.id = "tournamentWrapper";
-  
-	tournamentWrapper.innerHTML = `
+  tournamentWrapper.innerHTML = `
 				  <h1 class="text-center mb-5">Tournament Map</h1>
 				  <div class="row d-flex position-relative ">
 					  <!-- First Round -->
@@ -229,16 +197,16 @@ function getPlayerNumberModal() {
 				  </button>
 				</div>
 	  `;
-  
-	return tournamentWrapper;
-  }
 
-  function gameCanvas() {
-	const gameBoard = document.createElement("div");
-	gameBoard.id = "tableBoard";
-	gameBoard.className = "justify-content-center";
-  
-	gameBoard.innerHTML = `
+  return tournamentWrapper;
+}
+
+function gameCanvas() {
+  const gameBoard = document.createElement("div");
+  gameBoard.id = "tableBoard";
+  gameBoard.className = "justify-content-center";
+
+  gameBoard.innerHTML = `
 	  <div class="gamePlayers d-flex justify-content-between">
 		  <div id="player1" class="col-12 col-md-6 text-center d-none">
 			  <h3 id="player1Name" class="playerNames"></h3> 
@@ -251,16 +219,16 @@ function getPlayerNumberModal() {
 		  <canvas id="board" class="mt-2 shadow"></canvas>
 	  </div>
 	  `;
-  
-	return gameBoard;
-  }
 
-  function nextMatchModal(player1, player2) {
-	// Create the modal structure
-	console.log(player1, player2)
-	const existingModal = document.getElementById("nextMatch");
-	if (existingModal) existingModal.remove();
-	const modalHTML = `
+  return gameBoard;
+}
+
+function nextMatchModal(player1, player2) {
+  // Create the modal structure
+  console.log(player1, player2);
+  const existingModal = document.getElementById("nextMatch");
+  if (existingModal) existingModal.remove();
+  const modalHTML = `
 	<div class="modal fade" id="nextMatch" tabindex="-1" role="dialog" aria-labelledby="modalTitle" aria-hidden="true">
 	  <div class="modal-dialog modal-dialog-centered modal-md" role="document">
 		<div class="card modal-card shadow-lg  position-relative">
@@ -273,24 +241,24 @@ function getPlayerNumberModal() {
 		</div>
 	  </div>
 	</div>
-	`;  
-  
-	// Append the modal to the body
-	const body = document.querySelector("body");
-	const modalContainer = document.createElement("div");
-	modalContainer.innerHTML = modalHTML;
-	body.appendChild(modalContainer);
-  
-	const modal = new bootstrap.Modal(document.getElementById("nextMatch"));
-	modal.show();
-  }
-  
-  function gameWinnerModal(playerName) {
-	// Create the modal structure
-	console.log(playerName)
-	const existingModal = document.getElementById("gameClosing");
-	if (existingModal) existingModal.remove();
-	const modalHTML = `
+	`;
+
+  // Append the modal to the body
+  const body = document.querySelector("body");
+  const modalContainer = document.createElement("div");
+  modalContainer.innerHTML = modalHTML;
+  body.appendChild(modalContainer);
+
+  const modal = new bootstrap.Modal(document.getElementById("nextMatch"));
+  modal.show();
+}
+
+function gameWinnerModal(playerName) {
+  // Create the modal structure
+  console.log(playerName);
+  const existingModal = document.getElementById("gameClosing");
+  if (existingModal) existingModal.remove();
+  const modalHTML = `
 	<div class="modal fade" id="gameClosing" tabindex="-1" role="dialog" aria-labelledby="modalTitle" aria-hidden="true">
 		<div class="modal-dialog modal-dialog-centered modal-md" role="document">
 			<div class="card modal-card shadow-lg position-relative">
@@ -307,22 +275,22 @@ function getPlayerNumberModal() {
 		</div>
 	</div>
 	`;
-  
-	// Append the modal to the body
-	const body = document.querySelector("body");
-	const modalContainer = document.createElement("div");
-	modalContainer.innerHTML = modalHTML;
-	body.appendChild(modalContainer);
-  
-	const modal = new bootstrap.Modal(document.getElementById("gameClosing"));
-	modal.show();
-  }
 
-  function tournamentClosingModal(winner, secondplace) {
-	// Create the modal structure
-	const existingModal = document.getElementById("congratsModal");
-	if (existingModal) existingModal.remove();
-	const modalHTML = `
+  // Append the modal to the body
+  const body = document.querySelector("body");
+  const modalContainer = document.createElement("div");
+  modalContainer.innerHTML = modalHTML;
+  body.appendChild(modalContainer);
+
+  const modal = new bootstrap.Modal(document.getElementById("gameClosing"));
+  modal.show();
+}
+
+function tournamentClosingModal(winner, secondplace) {
+  // Create the modal structure
+  const existingModal = document.getElementById("congratsModal");
+  if (existingModal) existingModal.remove();
+  const modalHTML = `
     <div class="modal fade" id="congratsModal" tabindex="-1" role="dialog" aria-labelledby="modalTitle" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
             <div class="card modal-card position-relative">
@@ -341,49 +309,51 @@ function getPlayerNumberModal() {
             </div>
         </div>
     </div>`;
-  
-	// Append the modal to the body
-	const body = document.querySelector("body");
-	const modalContainer = document.createElement("div");
-	modalContainer.innerHTML = modalHTML;
-	body.appendChild(modalContainer);
-  
-	// Show the modal (requires Bootstrap JS to work)
-	const modal = new bootstrap.Modal(document.getElementById("congratsModal"));
-	modal.show();
+
+  // Append the modal to the body
+  const body = document.querySelector("body");
+  const modalContainer = document.createElement("div");
+  modalContainer.innerHTML = modalHTML;
+  body.appendChild(modalContainer);
+
+  // Show the modal (requires Bootstrap JS to work)
+  const modal = new bootstrap.Modal(document.getElementById("congratsModal"));
+  modal.show();
+}
+
+function createTournamentModal() {
+  const existingModal = document.getElementById("tournamentModal");
+  if (existingModal) {
+    existingModal.remove();
   }
-  
-  function createTournamentModal() {
-	const existingModal = document.getElementById("tournamentModal");
-	if (existingModal) {
-	  existingModal.remove();
-	}
-  
-	const modal = getPlayerNumberModal();
-	document.body.appendChild(modal);
-  
-	// Event Listeners
-	document
-	  .getElementById("submitPlayerNumBtn")
-	  .addEventListener("click", () => {
-		playersNumber = document.getElementById("playersNumber").value;
-		//here need to check the number of players
-		console.log("Creating tournament with ", playersNumber, " players");
-		// createTournament(playersNumber);
-		closeModal("tournamentModal");
-	  });
-  
+
+  const modal = getPlayerNumberModal();
+  document.body.appendChild(modal);
+
+  // Event Listeners
+  document
+    .getElementById("submitPlayerNumBtn")
+    .addEventListener("click", () => {
+      playersNumber = document.getElementById("playersNumber").value;
+      //here need to check the number of players
+      console.log("Creating tournament with ", playersNumber, " players");
+      // createTournament(playersNumber);
+      closeModal("tournamentModal");
+    });
+	
 	// close the modal when the close button is clicked
 	document
-	  .querySelector("#tournamentModal .btn-close")
-	  .addEventListener("click", () => {
+    .querySelector("#tournamentModal .btn-close")
+    .addEventListener("click", () => {
+		playersNumber = document.getElementById("playersNumber").value;
 		closeModal("tournamentModal");
-	  });
-  
+    });
+	
 	// close the modal when the modal is clicked outside
 	modal.addEventListener("click", (event) => {
-	  if (event.target === modal) {
-		closeModal("tournamentModal");
-	  }
-	});
-  }
+	if (event.target === modal) {
+		playersNumber = document.getElementById("playersNumber").value;
+      	closeModal("tournamentModal");
+    }
+  });
+}

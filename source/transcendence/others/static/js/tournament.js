@@ -36,35 +36,35 @@ function prepTournament4() {
   var game4 = document.getElementsByClassName("game4");
   var game6 = document.getElementsByClassName("game6");
   var game7 = document.getElementsByClassName("game7");
-  
+
   for (var i = 0; i < game3.length; i++) {
-	  game3[i].style.display = "none";
-	}
-	for (var i = 0; i < game4.length; i++) {
-		game4[i].style.display = "none";
-	}
-	for (var i = 0; i < game6.length; i++) {
-		game6[i].style.display = "none";
-	}
-	for (var i = 0; i < game7.length; i++) {
-		game7[i].style.display = "none";
-	}
-	
-	// Also delete pseudo elements that start from game 5. class .connection-5-7
-	var connection57 = document.getElementsByClassName("connection-5-7");
-	for (var i = 0; i < connection57.length; i++) {
-		connection57[i].style.display = "none";
-	}
-	
-	// Adjust the position of the game 5
-	var game5 = document.getElementsByClassName("game5");
-   if (game5) {
-	  console.log(game5)
-	  game5[0].style.top = "85%";
-	  game5[0].style.left = "45%";
-	  game5[0].style.transform = "translate(-50%, -50%)";
-	}
-	  // game5[0].style.width = "100%";
+    game3[i].style.display = "none";
+  }
+  for (var i = 0; i < game4.length; i++) {
+    game4[i].style.display = "none";
+  }
+  for (var i = 0; i < game6.length; i++) {
+    game6[i].style.display = "none";
+  }
+  for (var i = 0; i < game7.length; i++) {
+    game7[i].style.display = "none";
+  }
+
+  // Also delete pseudo elements that start from game 5. class .connection-5-7
+  var connection57 = document.getElementsByClassName("connection-5-7");
+  for (var i = 0; i < connection57.length; i++) {
+    connection57[i].style.display = "none";
+  }
+
+  // Adjust the position of the game 5
+  var game5 = document.getElementsByClassName("game5");
+  if (game5) {
+    console.log(game5);
+    game5[0].style.top = "85%";
+    game5[0].style.left = "45%";
+    game5[0].style.transform = "translate(-50%, -50%)";
+  }
+  // game5[0].style.width = "100%";
 
   // Select the div with the class 'col-4 d-flex justify-content-center last'
   const divToDelete = document.querySelector(
@@ -135,7 +135,7 @@ function closeModal(modalId) {
   console.log("closing modal");
   const modal = document.getElementById(modalId);
   if (modal) {
-	modal.hide
+    modal.hide;
     modal.remove(); // Remove the modal from the DOM
     document.body.classList.remove("modal-open"); // Remove the modal-open class from body
   } else {
@@ -205,12 +205,12 @@ function validatePlayerName(trimmedName, maxPlayerNumbers) {
     return false;
   }
 
-//   // Check name length
-//   if (trimmedName.length < 5 || trimmedName.length > 9) {
-//     errorMsgDiv.textContent = "Name must be between 5 and 9 characters";
-//     errorMsgDiv.style.display = "block";
-//     return false;
-//   }
+  //   // Check name length
+  //   if (trimmedName.length < 5 || trimmedName.length > 9) {
+  //     errorMsgDiv.textContent = "Name must be between 5 and 9 characters";
+  //     errorMsgDiv.style.display = "block";
+  //     return false;
+  //   }
 
   // Check if player already exists
   if (playersNames.includes(trimmedName)) {
@@ -227,7 +227,7 @@ function setUpPlayerAddition(maxPlayerNumbers) {
   const createTournamentBtn = document.getElementById("createTournamentBtn");
   const startButton = document.getElementById("startButton");
 
-	maxPlayerNumbers = maxPlayerNumbers === 0 ? 4 : maxPlayerNumbers; 
+  maxPlayerNumbers = maxPlayerNumbers === 0 ? 4 : maxPlayerNumbers;
   // Function to add a new player
   function addPlayer(playerName) {
     // Trim and validate player name
@@ -238,21 +238,11 @@ function setUpPlayerAddition(maxPlayerNumbers) {
     // Add player to array
     playersNames.push(trimmedName);
 
-    // Create new player button
-    const playerButton = document.createElement("button");
-    playerButton.classList.add(
-      "menu-item",
-      "d-flex",
-      "justify-content-center",
-      "align-items-center",
-      "p-3"
-    );
-    playerButton.innerHTML = `
-			<i class="fas fa-user fa-1x me-2"></i>
-			<h6 class="mb-0">${trimmedName}</h6>
-		`;
-
-    // Add click event to remove player
+    // Add a delete icon to the player button
+    const playerButton = document.createElement("i");
+    playerButton.classList.add("fas", "fa-times", "ms-2");
+    playerButton.style.color = "red";
+    playerButton.style.cursor = "pointer";
     playerButton.addEventListener("click", () => {
       // Prevent removing Tofara Mususa
       if (trimmedName === "Tofara Mususa") {
@@ -268,6 +258,38 @@ function setUpPlayerAddition(maxPlayerNumbers) {
       // Remove button from DOM
       playerButton.remove();
     });
+
+
+    // Create new player button
+    // const playerButton = document.createElement("button");
+    playerButton.classList.add(
+      "menu-item",
+      "d-flex",
+      "justify-content-center",
+      "align-items-center",
+      "p-3"
+    );
+    playerButton.innerHTML = `
+			<i class="fas fa-user fa-1x me-2"></i>
+			<h6 class="mb-0">${trimmedName}</h6>
+		`;
+
+    // Add click event to remove player
+    // playerButton.addEventListener("click", () => {
+    //   // Prevent removing Tofara Mususa
+    //   if (trimmedName === "Tofara Mususa") {
+    //     alert("Cannot remove Tofara Mususa");
+    //     return;
+    //   }
+    //   // Remove from players array
+    //   const index = playersNames.indexOf(trimmedName);
+    //   if (index > -1) {
+    //     playersNames.splice(index, 1);
+    //   }
+
+    //   // Remove button from DOM
+    //   playerButton.remove();
+    // });
 
     // Add the new player button to the createTournamentBtn div
     createTournamentBtn.appendChild(playerButton);
@@ -332,7 +354,7 @@ function setUpPlayerAddition(maxPlayerNumbers) {
   }
 }
 
-document.addEventListener("DOMContentLoaded", () => {
+function onLoadTournament() {
   // Players array with Tofara Mususa as first element
   // Get DOM elements
 
@@ -365,13 +387,19 @@ document.addEventListener("DOMContentLoaded", () => {
   document
     .querySelector("#tournamentModal .btn-close")
     .addEventListener("click", () => {
+      maxPlayerNumbers = playersNumberInput.value;
+      console.log("Creating tournament with ", maxPlayerNumbers, " players");
       closeModal("tournamentModal");
+      setUpPlayerAddition(maxPlayerNumbers);
     });
 
   // close the modal when the modal is clicked outside
   modal.addEventListener("click", (event) => {
     if (event.target === modal) {
+      maxPlayerNumbers = playersNumberInput.value;
+      console.log("Creating tournament with ", maxPlayerNumbers, " players");
       closeModal("tournamentModal");
+      setUpPlayerAddition(maxPlayerNumbers);
     }
   });
 
@@ -382,7 +410,61 @@ document.addEventListener("DOMContentLoaded", () => {
       errorMsgDiv.style.display = "none";
     }
   });
-});
+}
+
+onLoadTournament();
+
+// document.addEventListener("DOMContentLoaded", () => {
+//   // Players array with Tofara Mususa as first element
+//   // Get DOM elements
+
+//   const existingModal = document.getElementById("tournamentModal");
+//   if (existingModal) {
+//     existingModal.remove();
+//   }
+
+//   const modal = getPlayerNumberModal();
+//   document.body.appendChild(modal);
+
+//   const playersNumberInput = document.getElementById("playersNumber");
+//   const submitPlayerNumBtn = document.getElementById("submitPlayerNumBtn");
+
+//   // Add input event listener for real-time validation
+//   playersNumberInput.addEventListener("input", validatePlayerNumber);
+
+//   // Modify existing submit button event listener
+//   submitPlayerNumBtn.addEventListener("click", () => {
+//     if (!validatePlayerNumber()) {
+//       return;
+//     }
+
+//     maxPlayerNumbers = playersNumberInput.value;
+//     console.log("Creating tournament with ", maxPlayerNumbers, " players");
+//     closeModal("tournamentModal");
+//     setUpPlayerAddition(maxPlayerNumbers);
+//   });
+//   // close the modal when the close button is clicked
+//   document
+//     .querySelector("#tournamentModal .btn-close")
+//     .addEventListener("click", () => {
+//       closeModal("tournamentModal");
+//     });
+
+//   // close the modal when the modal is clicked outside
+//   modal.addEventListener("click", (event) => {
+//     if (event.target === modal) {
+//       closeModal("tournamentModal");
+//     }
+//   });
+
+//   document.getElementById("searchInput").addEventListener("input", function () {
+//     const errorMsgDiv = document.getElementById("player-name-error-msg");
+//     if (errorMsgDiv) {
+//       errorMsgDiv.textContent = "";
+//       errorMsgDiv.style.display = "none";
+//     }
+//   });
+// });
 
 function updateTournamentMap(match) {
   matchCount += 1;
@@ -592,7 +674,10 @@ async function runTournament() {
 
   await mapContinueButton(".continueButton");
   const champion = await playMatch(semiFinalWinners[0], semiFinalWinners[1]);
-  const runnerUp = champion === semiFinalWinners[0] ? semiFinalWinners[1] : semiFinalWinners[0];
+  const runnerUp =
+    champion === semiFinalWinners[0]
+      ? semiFinalWinners[1]
+      : semiFinalWinners[0];
   tournamentClosingModal(champion, runnerUp);
   await waitForModal("congratsModal");
   tournamentContainer.appendChild(tournamentElement);

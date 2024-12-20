@@ -387,7 +387,7 @@ function getPlayerNumberModal() {
       <div class="modal-body px-3 py-2">
         <div id="local-game-error-msg" class="alert alert-danger small py-2" style="display:none;"></div>
         <p class="text-white mb-0">Enter number of player in tournament</p>
-        <input type="int" id="playersNumber" class="form-control my-2" placeholder="Enter number of players" />
+        <input type="int" id="playersNumber" class="form-control my-2" placeholder="Enter number of players" value="4" />
         <small class="notice mt-2 d-block">Minimum players: 4 | Max players: 8</small>
       </div>
       <div class="modal-footer border-0 py-3 d-flex justify-content-start">

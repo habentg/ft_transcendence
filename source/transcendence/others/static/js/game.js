@@ -1,4 +1,4 @@
-/*
+  /*
    todos
 	Need to work on AI logic. If the ball is too fast it wont be able to follow the ball.
 	keyinputs are working fine.
@@ -802,8 +802,12 @@ function checkScreenSize() {
     warningMessage.classList.remove("d-none");
     gameContent.classList.add("d-none");
   } else {
-    warningMessage.classList.add("d-none");
-    gameContent.classList.remove("d-none");
+    if (warningMessage) {
+      warningMessage.classList.add("d-none");
+    }
+    if (gameContent) {
+      gameContent.classList.remove("d-none");
+    }
   }
 }
 
