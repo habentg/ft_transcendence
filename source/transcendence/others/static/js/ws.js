@@ -6,7 +6,7 @@ function createButton(text, class_list, id, onclick) {
   friendshipBtn.id = id;
   friendshipBtn.textContent = text;
   friendshipBtn.setAttribute('onclick', onclick);
-  
+
   return friendshipBtn;
 }
 
@@ -139,7 +139,7 @@ async function addMessageToChat(data) {
       recipient_chatroom.appendChild(msg_indicator);
     }
     else {
-      createToast("chat", `${data.sender} sent you a msg!`,  `${data.message.slice(0, 50)}...`);
+      createToast("chat", `${data.sender} sent you a msg!`, `${data.message.slice(0, 50)}...`);
     }
     return;
   }
@@ -170,7 +170,10 @@ async function clearConvoHandler(data) {
   const chatRoom = document.getElementById(data.room);
   if (chatRoom) {
     // chatRoom.remove();
-    chatRoom.innerHTML = `<div class="alert alert-info">No chats found</div>`;
+    chatRoom.innerHTML = `	<div id="no_msg_found" class="d-flex flex-column justify-content-center align-items-center py-5 mt-5">
+		<h5>No messages to display yet.</h5>
+		<p>Start a conversation to see messages here.</p>
+	</div>`;
   }
 }
 
@@ -224,7 +227,7 @@ function initChatWebsocket() {
           messageInput.classList.remove("d-none");
         if (sendButton)
           sendButton.classList.remove("d-none");
-          showSuccessMessage(`You have unblocked ${data['recipient']}!`, 2000, "Unblocked!");
+        showSuccessMessage(`You have unblocked ${data['recipient']}!`, 2000, "Unblocked!");
       }
     }
     else if (data.type === "room_deleted_notification") {

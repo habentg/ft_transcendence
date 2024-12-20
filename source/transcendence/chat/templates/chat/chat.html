@@ -78,7 +78,15 @@
               </ul>
             </div>
           </div>
-          <div class="chat-messages" id="chatMessages"></div>
+          <div class="chat-messages" id="chatMessages">
+            <div class="chatPageInfo text-center">
+              <!-- <img src="{% static 'images/3dimage.jpg' %}" alt="Chat Icon" class="mb-3" style="width: 180px; height: 120px; border-radius: 20px;"> -->
+              <i class="fas fa-comments fa-5x p-3  mt-5"></i>
+              <h5 class="mb-2">Welcome to Your Chat Dashboard</h5>
+              <p class="mb-1">Select a friend to start a conversation.</p>
+              <!-- <p class="mb-0">Connect, send messages, and stay in touch!</p>  -->
+            </div>
+          </div>
           <div class="chat-input d-flex">
             <input type="text" id="messageInput" class="form-control me-2 d-none" style="color: black;" placeholder="Type a message..." />
             <button id="chat_send_btn" class="btn btn-primary d-none">Send</button>

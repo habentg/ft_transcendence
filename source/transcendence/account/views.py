@@ -494,17 +494,18 @@ class PlayerSettings(APIView, BaseView):
 
 
 class TempPlayer(APIView):
-    authentication_classes = []
-    permission_classes = []
+	authentication_classes = []
+	permission_classes = []
 
-    def get(self, request, *args, **kwargs):
-        temp_player = createGuestPlayer()
-        temp_player.save()
-        new_jwts = RefreshToken.for_user(temp_player)
-        response = HttpResponseRedirect(reverse('home_page'))
-        response.set_cookie('access_token', str(new_jwts.access_token), httponly=True)
-        response.set_cookie('refresh_token', str(new_jwts), httponly=True)
-        return response
+	def get(self, request, *args, **kwargs):
+		temp_player = createGuestPlayer()
+		temp_player.is_logged_in = True
+		temp_player.save()
+		new_jwts = RefreshToken.for_user(temp_player)
+		response = HttpResponseRedirect(reverse('home_page'))
+		response.set_cookie('access_token', str(new_jwts.access_token), httponly=True)
+		response.set_cookie('refresh_token', str(new_jwts), httponly=True)
+		return response
 
 """ player anonymization view """
 class AnonymizePlayer(APIView):
@@ -522,9 +523,9 @@ class AnonymizePlayer(APIView):
 				print(e, flush=True)
 				return HttpResponseRedirect(reverse('landing'))
 		# create a new anonymous player
-		anon = createGuestPlayer(request)
+		anon = createGuestPlayer()
 		new_jwts = RefreshToken.for_user(anon)
-		response = Response(status=status.HTTP_200_OK)
+		response = Response({'anon_username': anon.username}, status=status.HTTP_200_OK)
 		response.set_cookie('access_token', str(new_jwts.access_token), httponly=True)
 		response.set_cookie('refresh_token', str(new_jwts), httponly=True)
 		anon.save()

@@ -15,7 +15,7 @@
                   <img src="{% static 'images/default_profile_pic.jpeg' %}" alt="Default Profile Picture" class="profile-pic rounded-circle" />
                 {% endif %}
                 {% if is_self %}
-                  <button id="change-profile-pic" class="btn btn-light btn-sm position-absolute bottom-0 end-0"><i class="fa-solid fa-pen"></i></button>
+                  <button id="change-profile-pic" class="btn btn-light btn-sm position-absolute bottom-0 end-0" onclick="updateProfilePic()"><i class="fa-solid fa-pen"></i></button>
                 {% else %}
                   {% if player.is_logged_in %}
                     <i class="fa-solid fa-globe position-absolute globe-icon" style="color:green;"></i>
@@ -46,19 +46,19 @@
               {% if player.is_guest %}
                 <h6>temp account</h6>
               {% elif is_self %}
-                <button id="update-user-info" class="btn btn-primary mb-2"><i class="fas fa-edit me-2"></i>Update Info</button>
+                <button type="button" id="update-user-info" class="btn btn-primary mb-2" onclick="updateProfileInfo()"><i class="fas fa-edit me-2"></i>Update Info</button>
                 <a onclick="appRouter()" href="/settings" id="profile-settings" class="btn btn-secondary mb-2"><i class="fas fa-cog me-2"></i> Settings</a>
                 <!-- <button id="player-anon" class="btn btn-primary mb-2"><i class="fas fa-user-secret me-2"></i>Anonymize</button> -->
                 
               {% else %}
                 {% if is_friend %}
-                  <button onclick="removeFriend()" id="unfriend_btn" type="button" class="btn btn-danger friendship_btn">Unfriend</button>
-                  <button onclick="create_chatroom('{{ player.username }}')" id="chat_btn" type="button" class="btn btn-dark chat_btn friendship_btn">chat</button>
+                  <button onclick="removeFriend()" id="unfriend_btn" type="button" class="btn btn-danger friendship_btn"><i class="fas fa-user-times me-2"></i>Unfriend</button>
+                  <button onclick="create_chatroom('{{ player.username }}')" id="chat_btn" type="button" class="btn btn-secondary chat_btn friendship_btn"> <i class="fas fa-comment-dots me-1"></i> chat</button>
                 {% elif is_requested_by_me %}
                   <button onclick="cancelFriendRequest()" id="cancel_request_btn" type="button" class="btn btn-danger friendship_btn">Cancel Request</button>
                 {% elif am_i_requested %}
-                  <button onclick="acceptOrDeclineFriendRequest(`accept`, `{{ player.username }}`)" id="accept_request_btn" type="button" class="btn btn-success friendship_btn me-1 mb-2">Accept</button>
-                  <button onclick="acceptOrDeclineFriendRequest(`decline`, `{{ player.username }}`)" id="decline_request_btn" type="button" class="btn btn-danger friendship_btn mb-2">Decline</button>
+                  <button onclick="acceptOrDeclineFriendRequest(`accept`, `{{ player.username }}`)" id="accept_request_btn" type="button" class="btn btn-success friendship_btn me-1 mb-2"><i class="fas fa-check me-2"></i>Accept</button>
+                  <button onclick="acceptOrDeclineFriendRequest(`decline`, `{{ player.username }}`)" id="decline_request_btn" type="button" class="btn btn-danger friendship_btn mb-2"><i class="fas fa-times me-2"></i>Decline</button>
                 {% else %}
                   <button onclick="addFriendRequest()" id="add_friend_btn" type="button" class="btn btn-primary friendship_btn">Send Request</button>
                 {% endif %}

@@ -154,6 +154,7 @@ function closeModal(modalId) {
 
 // Update User Info Modal
 function updateProfileInfo() {
+  console.log("Update user info =====");
   const existingModal = document.getElementById("username-modal");
   if (existingModal) existingModal.remove();
 
@@ -371,19 +372,19 @@ async function removeFriend() {
 
 // Function to initialize the profile page and add event listeners
 function initProfilePage() {
-  const updateProfilePicBtn = document.getElementById("change-profile-pic");
-  if (updateProfilePicBtn) {
-    updateProfilePicBtn.addEventListener("click", updateProfilePic);
-  }
+  // const updateProfilePicBtn = document.getElementById("change-profile-pic");
+  // if (updateProfilePicBtn) {
+  //   updateProfilePicBtn.addEventListener("click", updateProfilePic);
+  // }
 
-  const updateUserInfoBtn = document.getElementById("update-user-info");
+  // const updateUserInfoBtn = document.getElementById("update-user-info");
 
-  if (updateUserInfoBtn) {
-    updateUserInfoBtn.addEventListener("click", () => {
-      console.log("Update user info");
-      updateProfileInfo();
-    });
-  }
+  // if (updateUserInfoBtn) {
+  //   updateUserInfoBtn.addEventListener("click", () => {
+  //     console.log("Update user info");
+  //     updateProfileInfo();
+  //   });
+  // }
 }
 
 /* sending request to create chat room between current user and a friend */
