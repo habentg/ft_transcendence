@@ -96,6 +96,10 @@ async function initApp() {
   // Handling initial load
   window.addEventListener("load", async () => {
     isInitialLoad = true;
+    if (isInitialLoad) { // if its initial load ... page will come already loaded from the server
+      isInitialLoad = false;
+      return;
+    }
     const route = window.location.pathname;
     console.log("Handling onload for route:", route);
     await loadContent(route);
