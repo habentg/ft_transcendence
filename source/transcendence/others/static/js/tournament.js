@@ -111,8 +111,6 @@ function prepTournament4() {
     );
   }
 }
-//END OF GAME LOGIC
-//TOURNAMENT LOGIC
 
 function mapContinueButton(buttonClass) {
   return new Promise((resolve, reject) => {
@@ -221,143 +219,150 @@ function validatePlayerName(trimmedName, maxPlayerNumbers) {
   return true;
 }
 
-function setUpPlayerAddition(maxPlayerNumbers) {
-  const searchInput = document.getElementById("searchInput");
-  const searchIcon = document.getElementById("searchIcon");
-  const createTournamentBtn = document.getElementById("createTournamentBtn");
-  const startButton = document.getElementById("startButton");
+function getPlayerUiElements() {
+  return {
+    playerInput: document.getElementById("playerInput"),
+    playerIcon: document.getElementById("playerIcon"),
+    playerContainer: document.getElementById("playerContainer"),
+    initTournamentButton: document.getElementById("initTournamentButton"),
+  };
+}
 
-  maxPlayerNumbers = maxPlayerNumbers === 0 ? 4 : maxPlayerNumbers;
-  // Function to add a new player
-  function addPlayer(playerName) {
-    // Trim and validate player name
-    const trimmedName = playerName.trim();
-    if (!trimmedName || !validatePlayerName(trimmedName, maxPlayerNumbers))
-      return;
+function handlePlayerInput(playerInput, playerContainer, maxPlayerNumbers) {
+  const playerName = playerInput.value.trim();
+  if (!playerName || !validatePlayerName(playerName, maxPlayerNumbers)) {
+    return;
+  }
+  addPlayerToList(playerName, playerContainer);
+  playerInput.value = "";
+}
 
-    // Add player to array
-    playersNames.push(trimmedName);
+function addPlayerToList(playerName, playerContainer) {
+  if (playersNames.includes(playerName)) {
+    return;
+  }
+  playersNames.push(playerName);
+  const playerButton = createPlayerButtonWithRemoveOption(playerName);
+  playerContainer.appendChild(playerButton);
+}
 
-    // Add a delete icon to the player button
-    const playerButton = document.createElement("i");
-    playerButton.classList.add("fas", "fa-times", "ms-2");
-    playerButton.style.color = "red";
-    playerButton.style.cursor = "pointer";
-    playerButton.addEventListener("click", () => {
-      // Prevent removing Tofara Mususa
-      if (trimmedName === "Tofara Mususa") {
-        alert("Cannot remove Tofara Mususa");
-        return;
-      }
-      // Remove from players array
-      const index = playersNames.indexOf(trimmedName);
-      if (index > -1) {
-        playersNames.splice(index, 1);
-      }
+function createPlayerButtonWithRemoveOption(playerName) {
+  const playerButton = document.createElement("button");
+  playerButton.classList.add(
+    "menu-item",
+    "d-flex",
+    "justify-content-center",
+    "align-items-center",
+    "p-3"
+  );
+  playerButton.innerHTML = `
+	  <i class="fas fa-user fa-1x me-2"></i>
+	  <h6 class="mb-0">${playerName}</h6>
+	`;
 
-      // Remove button from DOM
-      playerButton.remove();
-    });
+  const deleteIcon = createRemovePlayerIcon(playerName);
+  playerButton.appendChild(deleteIcon);
 
+  return playerButton;
+}
 
-    // Create new player button
-    // const playerButton = document.createElement("button");
-    playerButton.classList.add(
-      "menu-item",
-      "d-flex",
-      "justify-content-center",
-      "align-items-center",
-      "p-3"
-    );
-    playerButton.innerHTML = `
-			<i class="fas fa-user fa-1x me-2"></i>
-			<h6 class="mb-0">${trimmedName}</h6>
-		`;
+function createRemovePlayerIcon(playerName) {
+  const deleteIcon = document.createElement("i");
+  deleteIcon.classList.add("fas", "fa-times", "ms-2");
+  deleteIcon.style.color = "red";
+  deleteIcon.style.cursor = "pointer";
+  deleteIcon.addEventListener("click", () =>
+    removePlayerFromList(playerName, deleteIcon)
+  );
+  return deleteIcon;
+}
 
-    // Add click event to remove player
-    // playerButton.addEventListener("click", () => {
-    //   // Prevent removing Tofara Mususa
-    //   if (trimmedName === "Tofara Mususa") {
-    //     alert("Cannot remove Tofara Mususa");
-    //     return;
-    //   }
-    //   // Remove from players array
-    //   const index = playersNames.indexOf(trimmedName);
-    //   if (index > -1) {
-    //     playersNames.splice(index, 1);
-    //   }
-
-    //   // Remove button from DOM
-    //   playerButton.remove();
-    // });
-
-    // Add the new player button to the createTournamentBtn div
-    createTournamentBtn.appendChild(playerButton);
-
-    // Clear input
-    searchInput.value = "";
+function removePlayerFromList(playerName, deleteIcon) {
+  if (playerName === "Tofara Mususa") {
+    alert("Cannot remove Tofara Mususa");
+    return;
   }
 
-  // Event listener for search icon click
-  searchIcon.addEventListener("click", () => {
-    addPlayer(searchInput.value);
-  });
+  const index = playersNames.indexOf(playerName);
+  if (index > -1) {
+    playersNames.splice(index, 1);
+  }
+  deleteIcon.parentElement.remove();
+}
 
-  // Event listener for enter key in search input
-  searchInput.addEventListener("keypress", (e) => {
-    if (e.key === "Enter") {
-      addPlayer(searchInput.value);
-    }
-  });
-
-  startButton.addEventListener("click", async () => {
-    if (playersNames.length != maxPlayerNumbers) {
-      const errorMsgDiv = document.getElementById("player-name-error-msg");
-      errorMsgDiv.textContent = "";
-      errorMsgDiv.style.display = "none";
-      errorMsgDiv.textContent = "Players do not match total number of players";
-      errorMsgDiv.style.display = "block";
-      return;
-    }
-    const friendBoard = document.querySelector(".friendBoard");
-    friendBoard.remove();
-    try {
-      const champion = await runTournament();
-      console.log("Champion:", champion);
-      console.log("Match History:", getMatchHistory());
-    } catch (error) {
-      console.error("Tournament error:", error);
-    }
-  });
-
-  // Add initial Tofara Mususa button (if not already present)
-  if (!document.querySelector("#createTournamentBtn .menu-item")) {
-    const initialPlayerButton = document.createElement("button");
-    initialPlayerButton.classList.add(
+function createDefaultPlayer(playerContainer) {
+  if (!document.querySelector("#playerContainer .menu-item")) {
+    const defaultPlayerButton = document.createElement("button");
+    defaultPlayerButton.classList.add(
       "menu-item",
       "d-flex",
       "justify-content-center",
       "align-items-center",
       "p-3"
     );
-    initialPlayerButton.innerHTML = `
-			<i class="fas fa-trophy fa-1x me-2"></i>
-			<h6 class="mb-0">Tofara Mususa</h6>
-		`;
-
-    // Add click event to remove player
-    //   initialPlayerButton.addEventListener("click", () => {
-    //     alert("Cannot remove the user");
-    //   });
-
-    createTournamentBtn.appendChild(initialPlayerButton);
+    defaultPlayerButton.innerHTML = `
+		<i class="fas fa-trophy fa-1x me-2"></i>
+		<h6 class="mb-0">Tofara Mususa</h6>
+	  `;
+    playerContainer.appendChild(defaultPlayerButton);
   }
 }
+
+async function startTournament(uiElements, maxPlayerNumbers) {
+  if (playersNames.length !== maxPlayerNumbers) {
+    displayPlayerCountError();
+    return;
+  }
+
+  document.querySelector(".playerListContainer").remove();
+  try {
+    const champion = await runTournament();
+    console.log("Champion:", champion);
+    console.log("Match History:", getMatchHistory());
+  } catch (error) {
+    console.error("Tournament error:", error);
+  }
+}
+
+function displayPlayerCountError() {
+  const errorMsgDiv = document.getElementById("player-name-error-msg");
+  errorMsgDiv.textContent = "Players do not match total number of players";
+  errorMsgDiv.style.display = "block";
+}
+
+function setUpPlayerAddition(maxPlayerNumbers) {
+	maxPlayerNumbers = maxPlayerNumbers === 0 ? 4 : maxPlayerNumbers;
+  
+	const uiElements = getPlayerUiElements();
+	createDefaultPlayer(uiElements.playerContainer);
+  
+	uiElements.playerIcon.addEventListener("click", () => {
+	  handlePlayerInput(
+		uiElements.playerInput,
+		uiElements.playerContainer,
+		maxPlayerNumbers
+	  );
+	});
+  
+	uiElements.playerInput.addEventListener("keypress", (e) => {
+	  if (e.key === "Enter") {
+		handlePlayerInput(
+		  uiElements.playerInput,
+		  uiElements.playerContainer,
+		  maxPlayerNumbers
+		);
+	  }
+	});
+  
+	uiElements.initTournamentButton.addEventListener("click", async () => {
+	  await startTournament(uiElements, maxPlayerNumbers);
+	});
+  }
 
 function onLoadTournament() {
   // Players array with Tofara Mususa as first element
   // Get DOM elements
-
+  console.log("LETS SEE IF YOU SHOW UP")
   const existingModal = document.getElementById("tournamentModal");
   if (existingModal) {
     existingModal.remove();
@@ -403,7 +408,7 @@ function onLoadTournament() {
     }
   });
 
-  document.getElementById("searchInput").addEventListener("input", function () {
+  document.getElementById("playerInput").addEventListener("input", function () {
     const errorMsgDiv = document.getElementById("player-name-error-msg");
     if (errorMsgDiv) {
       errorMsgDiv.textContent = "";
@@ -413,58 +418,6 @@ function onLoadTournament() {
 }
 
 onLoadTournament();
-
-// document.addEventListener("DOMContentLoaded", () => {
-//   // Players array with Tofara Mususa as first element
-//   // Get DOM elements
-
-//   const existingModal = document.getElementById("tournamentModal");
-//   if (existingModal) {
-//     existingModal.remove();
-//   }
-
-//   const modal = getPlayerNumberModal();
-//   document.body.appendChild(modal);
-
-//   const playersNumberInput = document.getElementById("playersNumber");
-//   const submitPlayerNumBtn = document.getElementById("submitPlayerNumBtn");
-
-//   // Add input event listener for real-time validation
-//   playersNumberInput.addEventListener("input", validatePlayerNumber);
-
-//   // Modify existing submit button event listener
-//   submitPlayerNumBtn.addEventListener("click", () => {
-//     if (!validatePlayerNumber()) {
-//       return;
-//     }
-
-//     maxPlayerNumbers = playersNumberInput.value;
-//     console.log("Creating tournament with ", maxPlayerNumbers, " players");
-//     closeModal("tournamentModal");
-//     setUpPlayerAddition(maxPlayerNumbers);
-//   });
-//   // close the modal when the close button is clicked
-//   document
-//     .querySelector("#tournamentModal .btn-close")
-//     .addEventListener("click", () => {
-//       closeModal("tournamentModal");
-//     });
-
-//   // close the modal when the modal is clicked outside
-//   modal.addEventListener("click", (event) => {
-//     if (event.target === modal) {
-//       closeModal("tournamentModal");
-//     }
-//   });
-
-//   document.getElementById("searchInput").addEventListener("input", function () {
-//     const errorMsgDiv = document.getElementById("player-name-error-msg");
-//     if (errorMsgDiv) {
-//       errorMsgDiv.textContent = "";
-//       errorMsgDiv.style.display = "none";
-//     }
-//   });
-// });
 
 function updateTournamentMap(match) {
   matchCount += 1;
@@ -533,7 +486,7 @@ async function playMatch(player1Name, player2Name) {
   tournamentDiv.remove();
   nextMatchModal(player1Name, player2Name);
   await waitForModal("nextMatch");
-  console.log("WE ARE HERE");
+  console.log(`The two playing this game ${player1Name} vs. ${player2Name}`);
   const pageContainer = document.getElementById("background");
   const game = gameCanvas();
   pageContainer.appendChild(game);
@@ -550,7 +503,7 @@ async function playMatch(player1Name, player2Name) {
       gameboard.style.visibility = "visible";
       canvas.style.visibility = "visible";
 
-      initializeGame(); // Ensure clean game initialization
+      initializeGame();
       startGame(player1Obj, player2Obj);
 
       const checkGameStatus = () => {
@@ -618,6 +571,7 @@ function waitForModal(modalId) {
         // If time exceeds 10 seconds, close the modal
         console.warn("Modal exists for too long. Closing modal...");
         clearInterval(checker);
+        modal.hide;
         closeModal(modalId);
         resolve();
       } else {
