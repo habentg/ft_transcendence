@@ -1,12 +1,12 @@
 createWebSockets();
 
 // editing user info
-function makeFieldEditable(fieldId) {
-  console.log(`Make ${fieldId} editable`);
-  const fieldInput = document.getElementById(fieldId);
-  fieldInput.disabled = false;
-  fieldInput.focus();
-}
+// function makeFieldEditable(fieldId) {
+//   console.log(`Make ${fieldId} editable`);
+//   const fieldInput = document.getElementById(fieldId);
+//   fieldInput.disabled = false;
+//   fieldInput.focus();
+// }
 
 // updating user info
 async function UpdateUserInfo() {
@@ -50,6 +50,7 @@ async function UpdateUserInfo() {
     // closeUsernameModal();
     closeModal("username-modal");
     await updateUI(`/profile/${responseData.username}`);
+    showSuccessMessage("Profile Information updated successfully");
   } catch (error) {
     console.error("Error:", error);
   }
@@ -130,6 +131,7 @@ async function handleUpload() {
       const responseData = await response.json();
       await updateUI(`/profile/${responseData.username}`);
       updateNavBar(true);
+      showSuccessMessage("Profile Picture updated successfully");
     } else {
       throw new Error("Failed to update profile pic");
     }
@@ -371,7 +373,7 @@ async function removeFriend() {
 }
 
 // Function to initialize the profile page and add event listeners
-function initProfilePage() {
+// function initProfilePage() {
   // const updateProfilePicBtn = document.getElementById("change-profile-pic");
   // if (updateProfilePicBtn) {
   //   updateProfilePicBtn.addEventListener("click", updateProfilePic);
@@ -385,7 +387,7 @@ function initProfilePage() {
   //     updateProfileInfo();
   //   });
   // }
-}
+// }
 
 /* sending request to create chat room between current user and a friend */
 async function create_chatroom(friend_username) {
@@ -406,7 +408,7 @@ async function create_chatroom(friend_username) {
 }
 
 // initialize the profile page
-initProfilePage();
+// initProfilePage();
 
 // Stat charts
 // const gamesPlayed = 10;

@@ -64,6 +64,10 @@ function updateProfileModal() {
           <button type="button" class="btn-close btn-close-white" id="close-username-modal"></button>
         </div>
         <div class="modal-body">
+          <div class="alert alert-warning small">
+            <i class="fas fa-exclamation-triangle me-2"></i> If you signed up using 42 account, changing your username or email may result in permanent loss of access.
+          </div>
+
           <div class="mb-3">
             <label for="new-fullname" class="form-label">Full Name</label>
             <input type="text" id="new-fullname" class="form-control bg-transparent text-white" value="${full_name}">
@@ -575,9 +579,10 @@ function closeModal(modalId) {
   if (modal) {
     modal.remove(); // Remove the modal from the DOM
     document.body.classList.remove("modal-open"); // Remove the modal-open class from body
-  } else {
-    console.warn(`Modal with id "${modalId}" not found.`);
-  }
+  } 
+  // else {
+  //   console.warn(`Modal with id "${modalId}" not found.`);
+  // }
 }
 
 // ShowSuccessMessage Function
@@ -620,16 +625,26 @@ function showSuccessMessage(message, timeout = 3000, successHeader=`Success`) {
   // Event Listeners
   modal
     .querySelector("#close-success-modal")
-    .addEventListener("click", () => closeModal("success-modal"));
+    .addEventListener("click", () => {
+      closeModal("success-modal")
+      return ;
+    });
   modal
     .querySelector("#success-modal-close")
-    .addEventListener("click", () => closeModal("success-modal"));
+    .addEventListener("click", () => {
+      closeModal("success-modal")
+      return ;
+    });
   modal.addEventListener("click", (e) => {
-    if (e.target === modal) closeModal("success-modal");
+    if (e.target === modal) {
+      closeModal("success-modal")
+      return ;
+    };
   });
 
   // Close modal after 3 seconds
   setTimeout(() => {
+    console.log("closing modal after timeout");
     closeModal("success-modal");
   }, timeout);
 }
