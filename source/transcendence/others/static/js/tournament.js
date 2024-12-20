@@ -36,32 +36,35 @@ function prepTournament4() {
   var game4 = document.getElementsByClassName("game4");
   var game6 = document.getElementsByClassName("game6");
   var game7 = document.getElementsByClassName("game7");
-
+  
   for (var i = 0; i < game3.length; i++) {
-    game3[i].style.display = "none";
-  }
-  for (var i = 0; i < game4.length; i++) {
-    game4[i].style.display = "none";
-  }
-  for (var i = 0; i < game6.length; i++) {
-    game6[i].style.display = "none";
-  }
-  for (var i = 0; i < game7.length; i++) {
-    game7[i].style.display = "none";
-  }
-
-  // Also delete pseudo elements that start from game 5. class .connection-5-7
-  var connection57 = document.getElementsByClassName("connection-5-7");
-  for (var i = 0; i < connection57.length; i++) {
-    connection57[i].style.display = "none";
-  }
-
-  // Adjust the position of the game 5
-  var game5 = document.getElementsByClassName("game5");
-  game5[0].style.top = "85%";
-  game5[0].style.left = "45%";
-  game5[0].style.transform = "translate(-50%, -50%)";
-  // game5[0].style.width = "100%";
+	  game3[i].style.display = "none";
+	}
+	for (var i = 0; i < game4.length; i++) {
+		game4[i].style.display = "none";
+	}
+	for (var i = 0; i < game6.length; i++) {
+		game6[i].style.display = "none";
+	}
+	for (var i = 0; i < game7.length; i++) {
+		game7[i].style.display = "none";
+	}
+	
+	// Also delete pseudo elements that start from game 5. class .connection-5-7
+	var connection57 = document.getElementsByClassName("connection-5-7");
+	for (var i = 0; i < connection57.length; i++) {
+		connection57[i].style.display = "none";
+	}
+	
+	// Adjust the position of the game 5
+	var game5 = document.getElementsByClassName("game5");
+   if (game5) {
+	  console.log(game5)
+	  game5[0].style.top = "85%";
+	  game5[0].style.left = "45%";
+	  game5[0].style.transform = "translate(-50%, -50%)";
+	}
+	  // game5[0].style.width = "100%";
 
   // Select the div with the class 'col-4 d-flex justify-content-center last'
   const divToDelete = document.querySelector(
@@ -550,10 +553,10 @@ async function runTournament() {
   let currentPlayers = [...playersNames];
   const tournamentContainer = document.getElementById("background");
   tournamentElement = initMap(createTournamentMap());
-//   if (playersNames.length == 4) {
-//     prepTournament4();
-//   }
   tournamentContainer.appendChild(tournamentElement);
+  if (playersNames.length == 4) {
+    prepTournament4();
+  }
 
   // Validate initial number of players
   if (![4, 8].includes(currentPlayers.length)) {

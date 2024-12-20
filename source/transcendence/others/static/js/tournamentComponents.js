@@ -222,7 +222,7 @@ function getPlayerNumberModal() {
 				  <div class="d-flex justify-content-center">
 				  <button
 					id="startButton"
-					class="btn btn-success btn-md"
+					class="btn btn-success continueButton btn-md"
 					style="display: flex; align-items: center"
 				  >
 					Continue
