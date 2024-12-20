@@ -315,31 +315,30 @@ function draw(player1, player2) {
   // Clear board
   context.clearRect(0, 0, board.width, board.height);
   // requestAnimationFrame(draw(player1, player2));
-  requestAnimationFrame(() => draw(player1, player2));
   // til this part
   updatePaddleVelocities(player1, player2);
-
+  
   // if (aiFlag) aiLogic();
   drawLine(); //draw line in the middle
   drawPlayers(player1, player2); //draw players
   drawBall();
-
+  
   // Checks if the position will be inside the map and adjusts its movement speed
   if (!oob(player1.y + player1.velocityY)) player1.y += player1.velocityY;
   if (!oob(player2.y + player2.velocityY)) player2.y += player2.velocityY;
-
+  
   // Update ball position
   ball.x += ball.velocityX;
   ball.y += ball.velocityY;
-
+  
   // Check ball collision with walls(top and bottom wall)
   if (ball.y - ballRadius <= 0 || ball.y + ballRadius >= boardHeight)
     ball.velocityY *= -1;
-
+  
   // Check ball collision with players
   ballCollision(ball, player1, "left");
   ballCollision(ball, player2, "right");
-
+  
   displayScores(player1, player2);
   // Check for goals
   if (ball.x - ballRadius < 0) {
@@ -349,23 +348,10 @@ function draw(player1, player2) {
     player1.score++;
     resetGame(player1, player2, -1);
   }
-
-  // if (isGameOver(player1, player2)) {
-  // 	drawFlag = false;
-  // 	aiFlag = false;
-  // 	console.log("Game Over: SHOULD RETURN SETTINGS MENU");
-  // 	if (document.getElementById("aiButton")) {
-  // 		document.getElementById("aiButton").disabled = false;
-  // 	}
-  // 	if (document.getElementById("startButton")) {
-  // 		document.getElementById("startButton").disabled = false;
-  // 	}
-
-  // 	//This is the part where we could collect everything for the match history
-  // 	// players names, player scores aside from game mode. maybe add another function throw players and return it from there.
-  // }
+  
+  // requestAnimationFrame(() => draw(player1, player2));
 }
-
+      
 // Display scores
 function displayScores(player1, player2) {
   context.fillStyle = "#ffffff";
@@ -402,7 +388,7 @@ function updatePaddleVelocities(player1, player2) {
   } else {
     player2.velocityY = 0;
   }
-  // change this one so it works like if it uses it and failed it would still go cooldown instead of cannot be used if cannot be parried. // to work on
+  
   if (parryFlag) {
     if (activeKeys["KeyA"] && !player1.cooldownFlag) {
       if (isParry(player1)) {
@@ -463,7 +449,7 @@ function oob(yPosition) {
 
 function ballCollision(ball, player, position) {
   // Define the maximum speed for the ball
-  const MAX_SPEED_X = 10; // Maximum horizontal speed (velocityX)
+  const MAX_SPEED_X = 8; // Maximum horizontal speed (velocityX)
   const MAX_SPEED_Y = 10; // Maximum vertical speed (velocityY)
 
   let isCollision =
@@ -517,7 +503,10 @@ function ballCollision(ball, player, position) {
 
     // Optional: Increase the ball's speed based on where it hits the paddle
     if (section === 0 || section === 3) {
-      ball.velocityX *= 1.2; // Slightly increase the horizontal speed for top/bottom hits (more challenge)
+      if (ball.velocityX * 1.2 > MAX_SPEED_X)
+          ball.velocityX = MAX_SPEED_X;
+      else
+        ball.velocityX *= 1.2; // Slightly increase the horizontal speed for top/bottom hits (more challenge)
     }
 
     // Resolve collision by moving the ball just outside the paddle (avoid sticking or going through the paddle)
@@ -693,7 +682,9 @@ function drawCapsulePaddle(
 // look for last ball position every one second. >>trans rules.
 
 //ai view
-let lastballPosition = { x: 0, y: 0 };
+let lastballPosition = { x: 0, y: 0, velocityX: 0, velocityY: 0};
+const fpsLimit = 60;
+const interval = 1000 / fpsLimit;
 
 function startaiGame(player1, player2) {
   aiFlag = true; // Enable AI
@@ -708,19 +699,51 @@ function startaiGame(player1, player2) {
 
   document.getElementById("aiButton").disabled = true;
   document.getElementById("settingButton").disabled = true;
-  setInterval(aiView, 50);
+  setInterval(aiView, 1000);
   setInterval(()=> aiLogic(player2), 50);
+  // aiLogic(player2);
   
-  requestAnimationFrame(() => draw(player1, player2));
+  let lastTime = 0;
+  function gameLoop(timestamp) {
+    if (timestamp - lastTime >= interval) {
+      lastTime = timestamp;
+      draw(player1, player2); // Draw the game at the desired FPS limit
+    }
+    requestAnimationFrame(gameLoop); // Request the next frame
+  }
+  
+  // Start the animation loop
+  requestAnimationFrame(gameLoop);
 }
 
+
+/*
+  Since the ai is only able to see the ball every 1 second interval we gotta calculate ball path depending on the balls position and velocity every second.
+
+  as of now we can calculate the actual path if the last recorded velocity for the ball is going towards the AI.
+
+  The tricky part is when the last recorded position of the ball is going towards the player.
+
+  We can do a guesstimate based on the balls distance and velocity. We cant accurately predict it since the paddle has four parts so it would go four different ways depending on that.
+
+
+
+*/
 function aiLogic(player2) {
+  if (!aiFlag)
+    return;
   const tolerance = 5; // Allow a small margin of error
 
-  const time = (player2.x - ball.x) / ball.velocityX;
+  const time = (player2.x - ball.x - player2.width) / ball.velocityX;
   const yChange = ball.velocityY * time;
   let yHit = ball.y + yChange;
 
+  if (parryFlag && lastballPosition.velocityX > 0) {
+    setTimeout(() => {
+      console.log("Parry yeah");
+      aikeyEvents("parry");
+    }, time*60);
+  }
   if (yHit < 0){
     yHit *= -1;
   } else if (yHit > boardHeight) {
@@ -749,6 +772,8 @@ function aiView() {
     console.log("Lastball values:", lastballPosition);
     lastballPosition.x = ball.x;
     lastballPosition.y = ball.y;
+    lastballPosition.velocityX = ball.velocityX;
+    lastballPosition.velocityY= ball.velocityY;
   }
 }
 
@@ -758,7 +783,7 @@ let aiMovingDown = false;
 function aikeyEvents(moveDirection) {
   let event;
 
-  // Simulate 'keydown' for up or down based on moveDirection
+  // Simulate 'keydown' for up, down, or parry based on moveDirection
   if (moveDirection === "up" && !aiMovingUp) {
     event = new KeyboardEvent("keydown", {
       key: "ArrowUp",
@@ -803,6 +828,28 @@ function aikeyEvents(moveDirection) {
       document.dispatchEvent(event);
       aiMovingDown = false; // Stop holding down
     }
+  } else if (moveDirection === "parry") {
+    // Simulate 'keydown' for the Numpad 0 key
+    event = new KeyboardEvent("keydown", {
+      key: "Numpad0",
+      code: "Numpad0",
+      keyCode: 96,
+      bubbles: true,
+      cancelable: true,
+    });
+    document.dispatchEvent(event);
+
+    // Simulate 'keyup' immediately after for a quick press
+    setTimeout(() => {
+      const releaseEvent = new KeyboardEvent("keyup", {
+        key: "Numpad0",
+        code: "Numpad0",
+        keyCode: 96,
+        bubbles: true,
+        cancelable: true,
+      });
+      document.dispatchEvent(releaseEvent);
+    }, 50); // Small delay to simulate a quick tap
   }
 }
 
