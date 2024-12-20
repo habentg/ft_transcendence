@@ -85,24 +85,27 @@ async function handle42Login() {
 
 /* removing the object form DOM */
 const removeResource = () => {
-  // get all syles and scripts
+  // Get all styles and scripts
   let allStyles = document.getElementsByTagName("link");
   let allScripts = document.getElementsByTagName("script");
 
-  // remove existing
-  for (let i = 0; i < allStyles.length; i++) {
+  // Remove styles in reverse order
+  for (let i = allStyles.length - 1; i >= 0; i--) {
     if (allStyles[i].id.includes("/static/")) {
       console.log("removing:", allStyles[i].id);
       allStyles[i].remove();
     }
   }
-  for (let i = 0; i < allScripts.length; i++) {
+
+  // Remove scripts in reverse order
+  for (let i = allScripts.length - 1; i >= 0; i--) {
     if (allScripts[i].id.includes("/static/")) {
       console.log("removing:", allScripts[i].id);
       allScripts[i].remove();
     }
   }
 };
+
 
 const loadCssandJS = (data, remove_prev_resources) => {
   // object deconstruction
@@ -121,6 +124,7 @@ const loadCssandJS = (data, remove_prev_resources) => {
     console.log("removing previous resources");
     removeResource();
   }
+  
   // loading new css
   if (css_file_paths) {
     for (let i = 0; i < css_file_paths.length; i++) {
@@ -174,47 +178,12 @@ async function updateNavBar(isAuthenticated) {
         <a href="#" class="nav-link"><i class="fas fa-trophy me-2"></i>Leaderboard</a>
       </li>
       <li class="nav-item">
-        <a href="#" class="nav-link"><i class="fas fa-users me-2"></i>Friends</a>
-      </li>
-      <li class="nav-item">
-        <a href="/chat" class="nav-link" onclick="appRouter()"><i class="fas fa-comments me-2"></i>Chat</a>
-      </li>
-      <li class="nav-item ms-lg-2 dropdown">
-        <a
-          class="nav-link position-relative notification-badge"
-          href="#"
-          role="button"
-          id="notificationDropdown"
-          data-bs-toggle="dropdown"
-          aria-expanded="false"
-        >
-          <i class="fas fa-bell"></i>
-        </a>
-        <ul
-          class="dropdown-menu dropdown-menu-end"
-          aria-labelledby="notificationDropdown"
-          style="width: 300px;" 
-        >
-          <!-- Notifications -->
-          <li style="border-bottom: 1px solid #ffffff; padding-bottom: 0.3rem; margin-bottom: 0.3rem;">
-            <a class="dropdown-item" href="#"><i class="fas fa-user me-3"></i>Friend Request <i class="fas fa-user-plus ms-3"></i></a>
-            <div class="small test-mute ms-3" style="color: antiquewhite;"> John Doe has sent you a friend request</div>
-          </li>
-          <li style="border-bottom: 1px solid #ffffff; padding-bottom: 0.3rem; margin-bottom: 0.3rem;">
-            <a class="dropdown-item" href="#"><i class="fas fa-user me-3"></i>Friend Request <i class="fas fa-user-plus ms-3"></i></a>
-            <div class="small test-mute ms-3" style="color: antiquewhite;"> John Doe has sent you a friend request</div>
-          </li>
-          <li style="border-bottom: 1px solid #ffffff; padding-bottom: 0.3rem; margin-bottom: 0.3rem;">
-            <a class="dropdown-item" href="#"><i class="fas fa-user me-3"></i> New message <i class="fas fa-envelope ms-3"></i></a>
-            <div class="small test ms-3" style="color: antiquewhite;"> John Doe has sent you a message</div>
-          </li>
-          <!-- See more option that leads to the notification page -->
-          <li>
-            <a class="dropdown-item" href="#"><i class="fas fa-ellipsis-h me-3"></i>See More</a>
-          </li>
-
-        </ul>
-      </li>
+      <a href="/chat" class="nav-link" onclick="appRouter()"><i class="fas fa-comments me-2"></i>Chat</a>
+    </li>
+    <li id="notification_dropdown_list" class="nav-item ms-lg-2 dropdown">
+      <a onclick="handleNotificationBellClick()" class="nav-link position-relative notification-badge" role="button" id="notificationDropdown" data-bs-toggle="dropdown" aria-expanded="false"><i class="fas fa-bell"></i></a>
+      <ul id="notification_ul" class="dropdown-menu dropdown-menu-end" aria-labelledby="notificationDropdown" style="width: 300px;"></ul>
+    </li>
       <li class="nav-item ms-lg-2 dropdown">
         <a class="nav-link profile-link" href="#" role="button" id="profileDropdown" 
            data-bs-toggle="dropdown" aria-expanded="false">

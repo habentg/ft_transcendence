@@ -5,6 +5,7 @@ from account.models import Player
 class ChatRoom(models.Model):
     name = models.CharField(max_length=255, blank=True, null=True)
     participants = models.ManyToManyField(Player)
+    conversed_at = models.DateTimeField(auto_now_add=True, blank=True, null=True)
 
     class Meta:
         db_table = "chat_room"

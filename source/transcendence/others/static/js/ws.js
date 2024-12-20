@@ -126,21 +126,20 @@ function initNotificationWebsocket() {
 }
 
 /* ---------------------------------------------- websocket stuff for chat ---------------------------------------------- */
-function addMessageToChat(data) {
+async function addMessageToChat(data) {
   const chatMessages = document.getElementById(`${data.chat_id}`);
   if (!chatMessages) {
     console.log("chatMessages not found");
-    createToast("chat", `${data.sender} sent you a msg!`,  `${data.message.slice(0, 50)}...`);
     recipient_chatroom = document.getElementById(`${data.sender}`);
     if (recipient_chatroom) {
-      // bootstrap toast
-      console.log(`${data.sender} chatroom found`);
       // recipient_chatroom.classList.add("unread");
       const msg_indicator = document.createElement("span");
       msg_indicator.classList.add("text-danger");
-      msg_indicator.textContent = "33";
+      msg_indicator.textContent = "!";
       recipient_chatroom.appendChild(msg_indicator);
-      console.log(`${data.sender} chatroom found`);
+    }
+    else {
+      createToast("chat", `${data.sender} sent you a msg!`,  `${data.message.slice(0, 50)}...`);
     }
     return;
   }
@@ -162,17 +161,16 @@ function addMessageToChat(data) {
   chatMessages.scrollTop = chatMessages.scrollHeight;
 }
 
-function chatRoomDeletionHandler(data) {
-  console.table(data['room']);
+async function clearConvoHandler(data) {
   const chatPage = document.getElementsByClassName("chatPage");
   if (!chatPage) {
     return;
   }
+  // await updateUI('/chat');
   const chatRoom = document.getElementById(data.room);
   if (chatRoom) {
-    chatRoom.remove();
-    alert("chatroom deleted: ", data.room);
-    updateUI('/chat');
+    // chatRoom.remove();
+    chatRoom.innerHTML = `<div class="alert alert-info">No chats found</div>`;
   }
 }
 
@@ -231,8 +229,7 @@ function initChatWebsocket() {
     }
     else if (data.type === "room_deleted_notification") {
       // remove the chatroom from the list
-      alert("room deleted --- chatroom will be removed");
-      chatRoomDeletionHandler(data);
+      clearConvoHandler(data);
     }
     else if (data.type === "room_deleted_notification_error") {
       // remove the chatroom from the list

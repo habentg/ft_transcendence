@@ -129,7 +129,6 @@ async function handleUpload() {
       // update the user info in the DOM
       const responseData = await response.json();
       await updateUI(`/profile/${responseData.username}`);
-      closeModal();
       updateNavBar(true);
     } else {
       throw new Error("Failed to update profile pic");
@@ -139,14 +138,6 @@ async function handleUpload() {
     const errorMsg = document.getElementById("error-msg");
     errorMsg.textContent = "Image is too large or invalid format";
     errorMsg.style.display = "block";
-  }
-}
-
-function closeModal() {
-  const modal = document.getElementById("profile-pic-modal");
-  if (modal) {
-    modal.remove();
-    document.body.classList.remove("modal-open");
   }
 }
 
@@ -407,15 +398,7 @@ async function create_chatroom(friend_username) {
       },
       body: JSON.stringify({ recipient: friend_username }),
     });
-
-    if (response.ok) {
-      const responseData = await response.json();
-      console.log("Chatroom created: ", responseData);
-      await updateUI(`/chat`, false);
-    } else {
-      const error = await response.json();
-      throw new Error(error.error);
-    }
+    await updateUI(`/chat`);
   } catch (error) {
     console.error("Failed to create chatroom: ", error);
   }
@@ -425,94 +408,94 @@ async function create_chatroom(friend_username) {
 initProfilePage();
 
 // Stat charts
-const gamesPlayed = 10;
-const wins = 6; // Number of wins
-const losses = gamesPlayed - wins; // Number of losses
+// const gamesPlayed = 10;
+// const wins = 6; // Number of wins
+// const losses = gamesPlayed - wins; // Number of losses
 
-const rankHistory = [10, 8, 7, 6, 5, 4];
-const timePoints = ["Day 1", "Day 2", "Day 3", "Day 4", "Day 5", "Day 6"]; // Corresponding time points
+// const rankHistory = [10, 8, 7, 6, 5, 4];
+// const timePoints = ["Day 1", "Day 2", "Day 3", "Day 4", "Day 5", "Day 6"]; // Corresponding time points
 
-// Pie Chart - Percentage of Wins and Losses
-const pieCtx = document.getElementById("game-stats-pie-chart").getContext("2d");
-new Chart(pieCtx, {
-  type: "pie",
-  data: {
-    labels: ["Wins", "Losses"],
-    datasets: [
-      {
-        data: [wins, losses],
-        backgroundColor: ["green", "red"],
-        borderColor: ["rgba(75, 192, 192, 1)", "rgba(255, 99, 132, 1)"],
-        borderWidth: 2,
-      },
-    ],
-  },
-  options: {
-    responsive: true,
-    maintainAspectRatio: true, // Ensure proper scaling
-    aspectRatio: 1.2, // Adjust aspect ratio for smaller height
-    plugins: {
-      legend: {
-        position: "bottom",
-      },
-      tooltip: {
-        callbacks: {
-          label: function (context) {
-            const total = wins + losses;
-            const percentage = ((context.raw / total) * 100).toFixed(1);
-            return `${context.label}: ${percentage}% (${context.raw})`;
-          },
-        },
-      },
-    },
-  },
-});
+// // Pie Chart - Percentage of Wins and Losses
+// const pieCtx = document.getElementById("game-stats-pie-chart").getContext("2d");
+// new Chart(pieCtx, {
+//   type: "pie",
+//   data: {
+//     labels: ["Wins", "Losses"],
+//     datasets: [
+//       {
+//         data: [wins, losses],
+//         backgroundColor: ["green", "red"],
+//         borderColor: ["rgba(75, 192, 192, 1)", "rgba(255, 99, 132, 1)"],
+//         borderWidth: 2,
+//       },
+//     ],
+//   },
+//   options: {
+//     responsive: true,
+//     maintainAspectRatio: true, // Ensure proper scaling
+//     aspectRatio: 1.2, // Adjust aspect ratio for smaller height
+//     plugins: {
+//       legend: {
+//         position: "bottom",
+//       },
+//       tooltip: {
+//         callbacks: {
+//           label: function (context) {
+//             const total = wins + losses;
+//             const percentage = ((context.raw / total) * 100).toFixed(1);
+//             return `${context.label}: ${percentage}% (${context.raw})`;
+//           },
+//         },
+//       },
+//     },
+//   },
+// });
 
-// Line Chart - Rank Leaderboard Over Time
-const lineCtx = document
-  .getElementById("game-stats-line-chart")
-  .getContext("2d");
-new Chart(lineCtx, {
-  type: "line",
-  data: {
-    labels: timePoints, // Time points
-    datasets: [
-      {
-        label: "Player Rank",
-        data: rankHistory,
-        backgroundColor: "rgba(54, 162, 235, 0.2)",
-        borderColor: "rgba(54, 162, 235, 1)",
-        borderWidth: 2,
-        tension: 0.4, // Smooth curves
-        fill: true,
-        pointBackgroundColor: "rgba(255, 99, 132, 1)", // Highlight points
-        pointRadius: 5,
-        pointHoverRadius: 8,
-      },
-    ],
-  },
-  options: {
-    responsive: true,
-    plugins: {
-      legend: {
-        position: "bottom",
-      },
-      tooltip: {
-        callbacks: {
-          label: function (context) {
-            return `Rank: ${context.raw}`;
-          },
-        },
-      },
-    },
-    scales: {
-      y: {
-        reverse: true, // Lower ranks are better
-        ticks: {
-          stepSize: 1,
-          precision: 0,
-        },
-      },
-    },
-  },
-});
+// // Line Chart - Rank Leaderboard Over Time
+// const lineCtx = document
+//   .getElementById("game-stats-line-chart")
+//   .getContext("2d");
+// new Chart(lineCtx, {
+//   type: "line",
+//   data: {
+//     labels: timePoints, // Time points
+//     datasets: [
+//       {
+//         label: "Player Rank",
+//         data: rankHistory,
+//         backgroundColor: "rgba(54, 162, 235, 0.2)",
+//         borderColor: "rgba(54, 162, 235, 1)",
+//         borderWidth: 2,
+//         tension: 0.4, // Smooth curves
+//         fill: true,
+//         pointBackgroundColor: "rgba(255, 99, 132, 1)", // Highlight points
+//         pointRadius: 5,
+//         pointHoverRadius: 8,
+//       },
+//     ],
+//   },
+//   options: {
+//     responsive: true,
+//     plugins: {
+//       legend: {
+//         position: "bottom",
+//       },
+//       tooltip: {
+//         callbacks: {
+//           label: function (context) {
+//             return `Rank: ${context.raw}`;
+//           },
+//         },
+//       },
+//     },
+//     scales: {
+//       y: {
+//         reverse: true, // Lower ranks are better
+//         ticks: {
+//           stepSize: 1,
+//           precision: 0,
+//         },
+//       },
+//     },
+//   },
+// });

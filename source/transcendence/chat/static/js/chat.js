@@ -25,18 +25,15 @@ function getActiveChatIdandRecipient() {
 function messageInputHandler(event) {
   const [active_chat_recipient, active_chat_id] = getActiveChatIdandRecipient();
   if (!active_chat_recipient || !active_chat_id) {
-    console.error("No active chat recipient.");
     return;
   }
   if (event.key === "Enter") {
     let messageInput = document.getElementById("messageInput");
     if (!messageInput) {
-      console.error("No message input found.");
       return;
     }
     const message = messageInput.value.trim();
     if (!message) {
-      console.error("Message is empty.");
       return;
     }
     sendMessage(message, active_chat_recipient, active_chat_id);
@@ -46,27 +43,21 @@ function messageInputHandler(event) {
 }
 
 function handleMessageSend() {
-  console.log("Sending message...");
   const [active_chat_recipient, active_chat_id] = getActiveChatIdandRecipient();
   if (!active_chat_recipient || !active_chat_id) {
-    console.error("No active chat recipient.");
     return;
   }
   let messageInput = document.getElementById("messageInput");
   if (!messageInput) {
-    console.error("No message input found.");
     return;
   }
   const message = messageInput.value.trim();
   if (!message) {
-    console.error("Message is empty.");
     return;
   }
   if (!active_chat_recipient || !active_chat_id) {
-    console.error("No active chat recipient.");
     return;
   }
-  console.log(`Sending message to ${active_chat_recipient}`);
   sendMessage(message, active_chat_recipient, active_chat_id);
   messageInput.value = '';
   messageInput.focus();
@@ -84,6 +75,17 @@ function activeChatHeaderUpdate(recipeint_username, activeChatFullname) {
   // updating view profile option
   const view_profile = document.getElementById("view_profile_option");
   view_profile.setAttribute("href", `/profile/${recipeint_username}`);
+
+  // update profile image - for the header one
+  const header_profile_image = document.getElementById("chatHeaderPFP");
+  const liElement = document.getElementById(recipeint_username);
+  const imgElement = liElement.querySelector('img');
+  header_profile_image.src = imgElement.src;
+  // hide the icon and display the image
+  header_profile_image.classList.remove("d-none");
+  const headerpfpIcon = document.getElementById("chatHeaderICON");
+  if (headerpfpIcon)
+    headerpfpIcon.classList.add("d-none");
 }
 
 // Open chat for a specific friend
@@ -97,7 +99,6 @@ async function openChat(recipeint_username, chat_id) {
   const prevActiveChat = document.getElementsByClassName("active")[0];
   // trying to not load if already active
   if (prevActiveChat && prevActiveChat.id === recipeint_username) {
-    console.log("Chat already active.");
     return;
   }
   if (prevActiveChat)
@@ -137,7 +138,7 @@ function sendMessage(message, recipient, chat_id) {
     chatMessages.scrollTop = chatMessages.scrollHeight;
   } else {
     console.error("WebSocket is not open. Unable to send message.");
-    createWebSockets();
+    // createWebSockets();
   }
 }
 
@@ -148,7 +149,6 @@ function chatOptionsModifier(action, delete_user = false) {
   let blocked_msg = document.getElementById('blocked_msg');
   const [active_chat_recipient, active_chat_id] = getActiveChatIdandRecipient();
   if (!active_chat_recipient || !active_chat_id) {
-    console.error("No active chat recipient.");
     return;
   }
   // Reset button visibility
@@ -185,7 +185,6 @@ async function fetchMessages(activeChatRecipient, chatMessages) {
     let sendButton = document.getElementById("chat_send_btn");
     chatMessages.innerHTML = "";
     chatMessages.innerHTML = data['messages'];
-    console.log(data['messages']);
     chatMessages.scrollTop = chatMessages.scrollHeight;
     if (data['is_blocked'] === true || activeChatRecipient === 'deleted_player') {
       messageInput.classList.add("d-none");
@@ -245,18 +244,19 @@ function unBlockPlayer() {
 }
 
 /* block, unblock and delete chat features */
-async function deleteChatRoom() {
+async function clearConvo() {
   const [chatroom_name, chat_id] = getActiveChatIdandRecipient();
   if (!chatroom_name || !chat_id) {
-    console.error("No chatroom name or chat id found.");
     return;
   }
   if (window.ws_chat && window.ws_chat.readyState === WebSocket.OPEN) {
     const chatMessage = {
-      type: "delete_chatroom",
+      type: "clear_chat",
       room: chat_id,
     };
     window.ws_chat.send(JSON.stringify(chatMessage));
+    console.log("Chatroom deleted.");
   }
-  console.log("Chatroom deleted.");
+  else
+    console.error("WebSocket is not open. Unable to delete chatroom.");
 }

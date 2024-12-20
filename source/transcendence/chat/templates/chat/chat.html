@@ -13,35 +13,37 @@
             <h5 class="mb-0">Chats</h5>
           </div>
           {% if chatrooms %}
-          <ul class="friend-list mb-3" id="friendList">
-            <!-- chatrooms will be loaded dynamically -->
-            {% for chatroom in chatrooms %}
-            {% if not chatroom.get_participant_one or not chatroom.get_participant_two %}
-            <li data-blocked="{{chatroom.blocker_username}}" id="deleted_player"
-              class="friend-item d-flex align-items-center disabled" data-recipent="Deleted Player"
-              onclick="openChat('deleted_player', '{{ chatroom.name }}')">
-              <i class="fas fa-user me-2 profile-icon" style="color:red;"></i>
-              <span class="mb-0">deleted_player</span>
-            </li>
-            {% elif chatroom.get_participant_one.username == user.username %}
-            <li data-blocked="{{chatroom.blocker_username}}" id="{{ chatroom.get_participant_two.username }}"
-              class="friend-item d-flex align-items-center" data-recipent="{{ chatroom.get_participant_two.full_name }}"
-              onclick="openChat('{{ chatroom.get_participant_two.username }}', '{{ chatroom.name }}')">
-              <i class="fas fa-user me-2 profile-icon"></i>
-              <span class="mb-0 username_span">{{ chatroom.get_participant_two.username }} </span>
-            </li>
-            {% elif chatroom.get_participant_two.username == user.username %}
-            <li data-blocked="{{chatroom.blocker_username}}" id="{{ chatroom.get_participant_one.username }}"
-              class="friend-item d-flex align-items-center" data-recipent="{{ chatroom.get_participant_one.full_name }}"
-              onclick="openChat('{{ chatroom.get_participant_one.username }}', '{{ chatroom.name }}')">
-              <i class="fas fa-user me-2 profile-icon"></i>
-              <span class="mb-0">{{ chatroom.get_participant_one.username }} </span>
-            </li>
-            {% endif %}
-            {% endfor %}
-          </ul>
+            <ul class="friend-list mb-3" id="friendList">
+              <!-- chatrooms will be loaded dynamically -->
+              {% for chatroom in chatrooms %}
+                {% if not chatroom.get_participant_one or not chatroom.get_participant_two %}
+                  <li id="deleted_player" class="friend-item d-flex align-items-center disabled" data-recipent="Deleted Player" onclick="openChat('deleted_player', '{{ chatroom.name }}')">
+                    <i class="fas fa-user me-2 profile-icon" style="color:red;"></i>
+                    <span class="mb-0">deleted_player</span>
+                  </li>
+                {% elif chatroom.get_participant_one.username == user.username %}
+                  <li id="{{ chatroom.get_participant_two.username }}" class="friend-item d-flex align-items-center" data-recipent="{{ chatroom.get_participant_two.full_name }}" onclick="openChat('{{ chatroom.get_participant_two.username }}', '{{ chatroom.name }}')">
+                    {% if chatroom.get_participant_two.profile_picture %}
+                      <img src="{{ chatroom.get_participant_two.profile_picture.url }}" alt="Profile Picture" class="profile-pic rounded-circle" style="width:30px;height: 30px;"/>
+                    {% else %}
+                      <img src="{% static 'images/default_profile_pic.jpeg' %}" alt="Default Profile Picture" class="profile-pic rounded-circle" style="width:30px;height: 30px;"/>
+                    {% endif %}
+                    <span class="mb-0 username_span">{{ chatroom.get_participant_two.username }}</span>
+                  </li>
+                  {% elif chatroom.get_participant_two.username == user.username %}
+                  <li id="{{ chatroom.get_participant_one.username }}" class="friend-item d-flex align-items-center" data-recipent="{{ chatroom.get_participant_one.full_name }}" onclick="openChat('{{ chatroom.get_participant_one.username }}', '{{ chatroom.name }}')">
+                    {% if chatroom.get_participant_one.profile_picture %}
+                      <img src="{{ chatroom.get_participant_one.profile_picture.url }}" alt="Profile Picture" class="profile-pic rounded-circle" style="width:30px;height: 30px;"/>
+                    {% else %}
+                      <img src="{% static 'images/default_profile_pic.jpeg' %}" alt="Default Profile Picture" class="profile-pic rounded-circle" style="width:30px;height: 30px;"/>
+                    {% endif %}
+                    <span class="mb-0">{{ chatroom.get_participant_one.username }}</span>
+                  </li>
+                {% endif %}
+              {% endfor %}
+            </ul>
           {% else %}
-          <div class="alert alert-info">No chats found</div>
+            <div class="alert alert-info">No chats found</div>
           {% endif %}
         </div>
 
@@ -50,7 +52,8 @@
           <div class="chat-header d-flex justify-content-center">
             <div class="d-flex align-items-center justify-content-between">
               <div class="d-flex align-items-center">
-                <i class="fas fa-user-circle fa-2x me-2"></i>
+                <i id="chatHeaderICON" class="fas fa-user-circle fa-2x me-2"></i>
+                <img id="chatHeaderPFP" src="" alt="Profile Picture" class="profile-pic rounded-circle me-2 d-none" style="width:30px;height: 30px;"/>
                 <h6 class="mb-0" id="chatTitle">Select a friend to chat</h6>
               </div>
             </div>
@@ -58,35 +61,30 @@
           <div id="three_dots" class="position-absolute top-8 end-0 m-2 d-none">
             <!-- Dropdown for option -->
             <div class="dropdown">
-              <button class="iconbtn btn btn-secondary" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown"
-                aria-expanded="false">
-                <i class="fas fa-ellipsis-v d-flex"></i>
-              </button>
+              <button class="iconbtn btn btn-secondary" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false"><i class="fas fa-ellipsis-v d-flex"></i></button>
               <ul id="ul_display_option" class="dropdown-menu dropdown-menu-end" aria-labelledby="dropdownMenuButton">
                 <li>
-                  <a id="view_profile_option" onclick="appRouter()" class="dropdown-item" href=""><i
-                      class="fas fa-user-circle me-2"></i>View Profile</a>
+                  <a id="view_profile_option" onclick="appRouter()" class="dropdown-item" href=""><i class="fas fa-user-circle me-2"></i>View Profile</a>
                 </li>
                 <li>
-                  <button id="" class="dropdown-item blockBtn" type="button" onclick="blockPlayer()"><i
-                      class="fas fa-user-lock me-2"></i>Block</button>
+                  <button id="" class="dropdown-item blockBtn" type="button" onclick="blockPlayer()"><i class="fas fa-user-lock me-2"></i>Block</button>
                 </li>
                 <li>
-                  <button id="" class="dropdown-item unblockBtn" type="button" onclick="unBlockPlayer()"><i
-                      class="fas fa-unlock me-2"></i>Unblock</button>
+                  <button id="" class="dropdown-item unblockBtn" type="button" onclick="unBlockPlayer()"><i class="fas fa-unlock me-2"></i>Unblock</button>
                 </li>
                 <li>
-                  <button id="" class="dropdown-item deleteChatRoomBtn" type="button" onclick="deleteChatRoom()"><i class="fas fa-trash me-2"></i>Delete</button>
+                  <button id="" class="dropdown-item clearConvoBtn" type="button" onclick="clearConvo()"><i class="fas fa-trash me-2"></i>Clear Convo</button>
                 </li>
               </ul>
             </div>
           </div>
           <div class="chat-messages" id="chatMessages"></div>
           <div class="chat-input d-flex">
-            <input type="text" id="messageInput" class="form-control me-2 d-none" style="color: black;"
-              placeholder="Type a message..." />
+            <input type="text" id="messageInput" class="form-control me-2 d-none" style="color: black;" placeholder="Type a message..." />
             <button id="chat_send_btn" class="btn btn-primary d-none">Send</button>
-            <p id="blocked_msg" class="d-none" style="color:red;"><i class="fas fa-user-lock me-2"></i>you have blocked this player! unblock them to continue chatting...</p>
+            <p id="blocked_msg" class="d-none" style="color:red;">
+              <i class="fas fa-user-lock me-2"></i>you have blocked this player! unblock them to continue chatting...
+            </p>
           </div>
         </div>
       </div>

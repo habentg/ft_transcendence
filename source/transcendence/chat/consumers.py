@@ -30,9 +30,9 @@ class chatConsumer(AsyncWebsocketConsumer):
     
     async def receive(self, text_data):
         data = json.loads(text_data)
-        if data['type'] == 'delete_chatroom':
+        if data['type'] == 'clear_chat':
             room_id = data['room']
-            success = await self.delete_chatroom(room_id)
+            success = await self.clear_chat_in_chatroom(room_id)
             if success:
                 await self.send(text_data=json.dumps({
                     'type': 'room_deleted_notification',
@@ -147,12 +147,13 @@ class chatConsumer(AsyncWebsocketConsumer):
     
     """ ------------------------- Helper functions -------------------------"""
     @database_sync_to_async
-    def delete_chatroom(self, room_name):
+    def clear_chat_in_chatroom(self, room_name):
         try:
-            print(f"UYYYY Deleting chatroom '{room_name}'", flush=True)
             room = ChatRoom.objects.get(name=room_name)
-            room.participants.clear()
-            room.delete()
+            convos = Message.objects.filter(room=room)
+            convos.delete()
+            # room.participants.clear()
+            # room.delete()
             return True
         except Exception as e:
             print(f"Error during deletion of chatroom '{room_name}': {e}", flush=True)

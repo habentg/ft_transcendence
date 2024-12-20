@@ -8,7 +8,7 @@ import jwt
 # strict redis instance - comes with redis client
 redis_instance = redis.StrictRedis(host=settings.REDIS_HOST, 
                                    port=settings.REDIS_PORT, 
-                                   db=settings.REDIS_DB)
+                                   db=settings.REDIS_DB_JWT_INVAL)
 # just checks if token is in blacklist
 #EX: `GET mykey`
 def is_valid_token(token_string):

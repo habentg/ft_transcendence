@@ -14,6 +14,7 @@ async function updateUI(path) {
     isInitialLoad = false;
     return;
   }
+  console.log("Updating UI for path:", path);
   if (!path.includes(`${window.location.origin}`))
     path = `${window.location.origin}${path}`;
   history.pushState(null, "", `${path}`);

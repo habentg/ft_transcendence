@@ -201,7 +201,8 @@ class OauthCallback(View):
 			img_temp = NamedTemporaryFile(delete=True)
 			img_temp.write(urlopen(image_url).read())
 			img_temp.flush()
-			ft_player.profile_picture.save(f"{ft_player.username}_profile.jpg", File(img_temp))
+			if not ft_player.profile_picture:
+				ft_player.profile_picture.save(f"{ft_player.username}_profile.jpg", File(img_temp))
 			ft_player.set_unusable_password() # User can't login with password
 			FriendList.objects.create(player=ft_player)
 			ft_player.save()
