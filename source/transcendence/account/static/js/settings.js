@@ -287,10 +287,10 @@ async function anonAccount() {
     if (!response.ok) {
       throw new Error("Failed to anonymize account");
     }
-    console.log("Account anonymized");
+    const responseData = await response.json();
     showSuccessMessage("Account anonymized successfully!", 2000);
     updateNavBar(true); // updating navbar
-    updateUI("/profile", false);
+    await updateUI(`/profile/${responseData['anon_username']}`, false);
   } catch (error) {
     console.error("Error:", error);
   }

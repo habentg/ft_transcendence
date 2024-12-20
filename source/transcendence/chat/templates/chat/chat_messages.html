@@ -13,5 +13,8 @@
     {% endif %}
   {% endfor %}
 {% else %}
-  <div id="no_msg_found" class="alert alert-info">No messages found</div>
+	<div id="no_msg_found" class="d-flex flex-column justify-content-center align-items-center py-5 mt-5">
+		<h5>No messages to display yet.</h5>
+		<p>Start a conversation to see messages here.</p>
+	</div>
 {% endif %}
