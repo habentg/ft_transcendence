@@ -210,11 +210,12 @@
 	right: 0;
 	margin-bottom: 2rem;
 	z-index: 1050;
+	/* background-color: black; */
 }
 
 /* Fix dropdown menu alignment for smaller screens */
 #three_dots .dropdown-menu {
-	right: 0 !important;
+	right: 50% !important;
 	left: auto !important;
 	transform: translate(0, 0) !important;
 }

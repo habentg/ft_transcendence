@@ -208,7 +208,7 @@ function changeSetting() {
     document.getElementById("paddleSpeed").value
   );
 
-  const ballSpeedInput = parseFloat(document.getElementById("ballSpeed").value);
+  // const ballSpeedInput = parseFloat(document.getElementById("ballSpeed").value);
   const maxScoreInput = parseInt(document.getElementById("maxScore").value);
   const slowServeInput = document.getElementById("slowServe").checked;
   const parryInput = document.getElementById("parryMode").checked;
@@ -223,11 +223,11 @@ function changeSetting() {
       `Paddle Speed must be between ${MIN_PADDLE_SPEED} and ${MAX_PADDLE_SPEED}.`
     );
   }
-  if (ballSpeedInput < MIN_BALL_SPEED || ballSpeedInput > MAX_BALL_SPEED) {
-    errors.push(
-      `Ball Speed must be between ${MIN_BALL_SPEED} and ${MAX_BALL_SPEED}.`
-    );
-  }
+  // if (ballSpeedInput < MIN_BALL_SPEED || ballSpeedInput > MAX_BALL_SPEED) {
+  //   errors.push(
+  //     `Ball Speed must be between ${MIN_BALL_SPEED} and ${MAX_BALL_SPEED}.`
+  //   );
+  // }
   if (maxScoreInput < MIN_MAX_SCORE || maxScoreInput > MAX_MAX_SCORE) {
     errors.push(
       `Winning Score must be between ${MIN_MAX_SCORE} and ${MAX_MAX_SCORE}.`
@@ -796,8 +796,12 @@ function checkScreenSize() {
     warningMessage.classList.remove("d-none");
     gameContent.classList.add("d-none");
   } else {
-    warningMessage.classList.add("d-none");
-    gameContent.classList.remove("d-none");
+    if (warningMessage) {
+      warningMessage.classList.add("d-none");
+    }
+    if (gameContent) {
+      gameContent.classList.remove("d-none");
+    }
   }
 }
 

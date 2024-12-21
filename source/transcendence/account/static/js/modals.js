@@ -2,6 +2,12 @@
 
 // update profile picture modal
 function updateProfilePictureModal() {
+  // check if the modal already exists
+  const existingModal = document.getElementById("profile-pic-modal");
+  if (existingModal) {
+    existingModal.remove();
+  }
+
   const modal = document.createElement("div");
   modal.id = "profile-pic-modal";
   modal.className = "modal fade show";
@@ -38,6 +44,11 @@ function updateProfilePictureModal() {
 
 // update userprofile modal
 function updateProfileModal() {
+  const existingModal = document.getElementById("username-modal");
+  if (existingModal) {
+    existingModal.remove();
+  }
+
   // Get the text content from spans inside the profile details
   const full_name = document
     .querySelector(".profile-info h3")
@@ -99,6 +110,11 @@ function updateProfileModal() {
 // ----------------- Modals from the settings page ----------------- //
 // Change password modal
 function changePasswordModal() {
+  const existingModal = document.getElementById("password-change-modal");
+  if (existingModal) {
+    existingModal.remove();
+  }
+
   const modal = document.createElement("div");
   modal.id = "password-change-modal";
   modal.className = "modal fade show";
@@ -168,6 +184,11 @@ function changePasswordModal() {
 
 // Enable/disable 2FA modal
 function twoFactorModal(button) {
+  const existingModal = document.getElementById("2fa-modal");
+  if (existingModal) {
+    existingModal.remove();
+  }
+
   const is2FAEnabled = button.id === "disable-2fa";
   const modalTitle = is2FAEnabled ? "Disable 2FA" : "Enable 2FA";
   const modalIcon = "fa-shield-alt";
@@ -212,6 +233,11 @@ function twoFactorModal(button) {
 
 /* anon modal */
 function anonymizeModal() {
+  const existingModal = document.getElementById("anon-account-modal");
+  if (existingModal) {
+    existingModal.remove();
+  }
+
   const anon_confirmation_modal = document.createElement("div");
   anon_confirmation_modal.id = "anon-account-modal";
   anon_confirmation_modal.className = "modal fade show";
@@ -302,6 +328,11 @@ function showSignOutModal(event) {
 
 // Delete account modal
 function deleteAccountModal() {
+  const existingModal = document.getElementById("delete-account-modal");
+  if (existingModal) {
+    existingModal.remove();
+  }
+
   const modal = document.createElement("div");
   modal.id = "delete-account-modal";
   modal.className = "modal fade show";
@@ -338,6 +369,11 @@ function deleteAccountModal() {
 
 // Reset password confirmation modal
 function resetPasswordConfirmModal() {
+  const existingModal = document.getElementById("reset-password-confirm-modal");
+  if (existingModal) {
+    existingModal.remove();
+  }
+
   // Show the reset password confirmation modal
   const otpModal = document.createElement("div");
   otpModal.className = "modal fade show";
@@ -374,6 +410,11 @@ function resetPasswordConfirmModal() {
 
 // Get Number of player for tournament
 function getPlayerNumberModal() {
+  const existingModal = document.getElementById("tournamentModal");
+  if (existingModal) {
+    existingModal.remove();
+  }
+
   const modal = document.createElement("div");
   modal.classList.add("modal");
   modal.id = "tournamentModal";
@@ -407,6 +448,11 @@ function getPlayerNumberModal() {
 
 // Modal for AI or localgame selection
 function optionLocalGameModal() {
+  const existingModal = document.getElementById("localGameModal");
+  if (existingModal) {
+    existingModal.remove();
+  }
+
   const modal = document.createElement("div");
   modal.classList.add("modal");
   modal.id = "localGameModal";
@@ -470,6 +516,11 @@ function optionLocalGameModal() {
 
 // functin to ask for second player name before starting the game
 function secondPlayerNameModal() {
+  const existingModal = document.getElementById("secondPlayerNameModal");
+  if (existingModal) {
+    existingModal.remove();
+  }
+
   const modal = document.createElement("div");
   modal.classList.add("modal");
   modal.id = "secondPlayerNameModal";
@@ -503,7 +554,11 @@ function secondPlayerNameModal() {
 
 // game settings modal for game settings
 function gameSettingsModal() {
-  console.log("##################1");
+  const existingModal = document.getElementById("gameSettingsModal");
+  if (existingModal) {
+    existingModal.remove();
+  }
+  
   const modal = document.createElement("div");
   modal.classList.add("modal");
   modal.id = "gameSettingsModal";
@@ -523,10 +578,6 @@ function gameSettingsModal() {
             <div class="mb-3">
                 <label for="paddleSpeed" class="form-label text-light">Paddle Speed:</label>
                 <input type="number" class="form-control" id="paddleSpeed" min="1" value="6">
-            </div>
-            <div class="mb-3">
-                <label for="ballSpeed" class="form-label text-light">Ball Speed:</label>
-                <input type="number" class="form-control" id="ballSpeed" min="1" value="4.5">
             </div>
             <div class="mb-3">
                 <label for="maxScore" class="form-label text-light">Score to Win:</label>

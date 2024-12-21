@@ -82,36 +82,40 @@ function prepTournament4() {
 
 // Congratualtory modal with the winner's name and celebration gif
 function tournamentClosingModal() {
-  // Create the modal structure
-  const modalHTML = `
-    <div class="modal fade" id="congratsModal" tabindex="-1" role="dialog" aria-labelledby="modalTitle" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
-            <div class="card modal-card position-relative">
-                <button type="button" 
-                        class="btn-close btn-close-white position-absolute top-0 end-0 m-2" 
-                        onclick="closeModal('congratsModal')" 
-                        aria-label="Close"></button>
-                <div class="card-body text-center"> 
-                    <h2 class="modal-title" id="modalTitle">🎉 Congratulations Miguel! 🎉</h2>
-                    <img src="https://img.icons8.com/bubbles/200/000000/trophy.png" alt="Trophy" class="modal-trophy">
-                    <p class="modal-text">The winner of the tournament is <strong>Miguel Santos</strong>. 🏆🏆🏆</p>
-                    <p class="modal-text">2nd place goes to <strong>John Doe</strong>. 🥈🥈🥈</p>
-                    <p class="modal-text">Thank you for participating in the tournament. 🎉🎉🎉</p> 
-                    <button class="btn btn-secondary btn-sm modal-continue" onclick="closeModal('congratsModal')">CONTINUE</button>
-                </div>
-            </div>
-        </div>
-    </div>`;
+	// check if the modal already exists
+	const existingModal = document.getElementById("congratsModal");
+	if (existingModal) {
+		existingModal.remove();
+	}
+	
+	const modal = document.createElement("div");
+	modal.classList.add("modal", "fade");
+	modal.id = "congratsModal";
+	modal.style.display = "block";
+	modal.style.backgroundColor = "rgba(0, 0, 0, 0.5)";
 
-  // Append the modal to the body
-  const body = document.querySelector("body");
-  const modalContainer = document.createElement("div");
-  modalContainer.innerHTML = modalHTML;
-  body.appendChild(modalContainer);
+	modal.innerHTML = `
+		<div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+			<div class="card modal-card position-relative">
+				<button type="button" class="btn-close btn-close-white position-absolute top-0 end-0 m-2"
+					onclick="closeModal('congratsModal')" aria-label="Close"></button>
+				<div class="card-body text-center">
+					<h2 class="modal-title" id="modalTitle">🎉 Congratulations Miguel! 🎉</h2>
+					<img src="https://img.icons8.com/bubbles/200/000000/trophy.png" alt="Trophy" class="modal-trophy">
+					<p class="modal-text">The winner of the tournament is <strong>Miguel Santos</strong>. 🏆🏆🏆</p>
+					<p class="modal-text">2nd place goes to <strong>John Doe</strong>. 🥈🥈🥈</p>
+					<p class="modal-text">Thank you for participating in the tournament. 🎉🎉🎉</p>
+					<button class="btn btn-secondary btn-sm modal-continue" onclick="closeModal('congratsModal')">CONTINUE</button>
+				</div>
+			</div>
+		</div>
+	`;
 
-  // Show the modal (requires Bootstrap JS to work)
-  const modal = new bootstrap.Modal(document.getElementById("congratsModal"));
-  modal.show();
+	document.body.appendChild(modal);
+
+	const modalInstance = new bootstrap.Modal(document.getElementById("congratsModal"));
+	modalInstance.show();
+
 }
 
 // Call this after the tournament is over
@@ -119,65 +123,71 @@ function tournamentClosingModal() {
 
 // Function to create a modal after every game to show the winner
 function gameClosingModal() {
-  // Create the modal structure
-  const modalHTML = `
-	<div class="modal fade" id="gameClosing" tabindex="-1" role="dialog" aria-labelledby="modalTitle" aria-hidden="true">
+	// check if the modal already exists
+	const existingModal = document.getElementById("gameClosing");
+	if (existingModal) {
+		existingModal.remove();
+	}
+
+	const modal = document.createElement("div");
+	modal.classList.add("modal", "fade");
+	modal.id = "gameClosing";
+	modal.style.display = "block";
+	modal.style.backgroundColor = "rgba(0, 0, 0, 0.5)";
+
+	modal.innerHTML = `
 		<div class="modal-dialog modal-dialog-centered modal-md" role="document">
 			<div class="card modal-card shadow-lg position-relative">
-				<button type="button" 
-                        class="btn-close btn-close-white position-absolute top-0 end-0 m-2" 
-                        onclick="closeModal('gameClosing')" 
-                        aria-label="Close"></button>
-				<div class="card-body text-center"> 
+				<button type="button" class="btn-close btn-close-white position-absolute top-0 end-0 m-2"
+					onclick="closeModal('gameClosing')" aria-label="Close"></button>
+				<div class="card-body text-center">
 					<h3 class="modal-title" id="modalTitle2"> Miguel wins the game! </h3>
 					<p class="modal-text winner-text mt-3"> Miguel passes to the next round </p>
 					<button class="btn btn-secondary btn-sm modal-continue mt-4" onclick="closeModal('gameClosing')">CONTINUE</button>
 				</div>
 			</div>
 		</div>
-	</div>
 	`;
 
-  // Append the modal to the body
-  const body = document.querySelector("body");
-  const modalContainer = document.createElement("div");
-  modalContainer.innerHTML = modalHTML;
-  body.appendChild(modalContainer);
+	document.body.appendChild(modal);
 
-  // Show the modal
-  const modal = new bootstrap.Modal(document.getElementById("gameClosing"));
-  modal.show();
+	const modalInstance = new bootstrap.Modal(document.getElementById("gameClosing"));
+	modalInstance.show();
 }
 
-// Call this function after every game is over
-// gameClosingModal();
 
 // Function to display the Player name for the next match
 function nextMatchModal() {
-  // Create the modal structure
-  const modalHTML = `
-  <div class="modal fade" id="nextMatch" tabindex="-1" role="dialog" aria-labelledby="modalTitle" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered modal-md" role="document">
-      <div class="card modal-card shadow-lg  position-relative">
-        <button type="button" class="btn-close btn-close-white close-btn position-absolute top-0 end-0 m-2" onclick="closeModal('nextMatch')" aria-label="Close"></button>
-        <div class="card-body text-center"> 
-          <h3 class="modal-title " id="modalTitle2"> Next Match </h3>
-          <p class="modal-text winner-text mt-3"> Miguel vs John Doe </p>
-          <button class="btn btn-secondary btn-sm modal-continue mt-4" onclick="closeModal('nextMatch')">CONTINUE</button>
-        </div>
-      </div>
-    </div>
-  </div>
-  `;
+	// check if there is a modal already present
+	const existingModal = document.getElementById("nextMatch");
+	if (existingModal) {
+		existingModal.remove();
+	}
 
-  // Append the modal to the body
-  const body = document.querySelector("body");
-  const modalContainer = document.createElement("div");
-  modalContainer.innerHTML = modalHTML;
-  body.appendChild(modalContainer);
+	const modal = document.createElement("div");
+	modal.classList.add("modal", "fade");
+	modal.id = "nextMatch";
+	modal.style.display = "block";
+	modal.style.backgroundColor = "rgba(0, 0, 0, 0.5)";
 
-  const modal = new bootstrap.Modal(document.getElementById("nextMatch"));
-  modal.show();
+
+	modal.innerHTML = `
+		<div class="modal-dialog modal-dialog-centered modal-md" role="document">
+			<div class="card modal-card shadow-lg position-relative">
+				<button type="button" class="btn-close btn-close-white close-btn position-absolute top-0 end-0 m-2"
+					onclick="closeModal('nextMatch')" aria-label="Close"></button>
+				<div class="card-body text-center">
+					<h3 class="modal-title" id="modalTitle2"> Next Match </h3>
+					<p class="modal-text winner-text mt-3"> Miguel vs John Doe </p>
+					<button class="btn btn-secondary btn-sm modal-continue mt-4" onclick="closeModal('nextMatch')">CONTINUE</button>
+				</div>
+			</div>
+		</div>
+	`;
+
+	document.body.appendChild(modal);
+	const modalInstance = new bootstrap.Modal(document.getElementById("nextMatch"));
+	modalInstance.show();
 }
 
 // Call this function before every match to display the player names
