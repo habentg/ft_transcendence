@@ -61,6 +61,11 @@ class ChatRoomsView(APIView, BaseView):
 	""" get method to get all the chatrooms that the user is a participant in """
 	def handle_exception(self, exception):
 		if isinstance(exception, AuthenticationFailed):
+			if 'access token is invalid but refresh token is valid' in str(exception):
+				print(f'refresh token is valid to {self.request.path}', flush=True)
+				response = HttpResponseRedirect(self.request.path)
+				response.set_cookie('access_token', generate_access_token(self.request.COOKIES.get('refresh_token')), httponly=True, samesite='Lax')
+				return response
 			signin_url = reverse('signin_page')
 			params = urllib.parse.urlencode({'next': self.request.path})
 			response = HttpResponseRedirect(f'{signin_url}?{params}')

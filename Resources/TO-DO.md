@@ -1,5 +1,7 @@
 
 
+# ****=============================================************ TODO lists ***********=======================================*******
+
 ## ******************************* UI related TODO list **************************
 1. chat notification - toast : ................................................................................DONE!
 2. show error - toast..........................................................................................DONE!
@@ -29,3 +31,7 @@
   #? another issue - browser back/forward is resulting 404 for nested routes like /profile/haben............................................->
 4. When a localgame is selected (either 1 v 1 or AI), then home is clicked and then again localgame is selected, Error is happening for both AI and 1 V 1 : Error=> global variable has already been declared
 
+
+# ****=============================================************ Testing case ***********=======================================*******
+1. input length limiting in ALL input fields ------------------------- NOT TESTED!
+2. 

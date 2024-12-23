@@ -10,7 +10,7 @@ https://samagra.me/wtf/2024/09/27/gateway-interfaces.html
 https://medium.com/@sakhawy/multilingual-support-in-django-5706e1e144a8
 
 
-* password hasshing:
+* password hashing:
 https://nishothan-17.medium.com/pbkdf2-hashing-algorithm-841d5cc9178d
 
 

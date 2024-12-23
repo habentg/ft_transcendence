@@ -59,7 +59,7 @@ async function loadContent(route) {
         handleLocationChange();
         return;
       }
-      if (response.status === 401) {
+      else if (response.status === 401) {
         // removing any css js if there is any
         showErrorMessage("Unauthorized access, please login to continue", 3000, 'Unauthorized');
         console.log("Unauthorized, asdf asdf asfd");
@@ -70,7 +70,7 @@ async function loadContent(route) {
     // history.replaceState(null, "", response.url);
     let data = await response.json();
     loadCssandJS(data, true); // load the css and js of the page - remove the previous ones(true)
-    document.title = data.title;
+    document.title = `${data.title} | PONG`;
     document.getElementById("content").innerHTML = data.html;
   } catch (error) {
     showErrorMessage(`${error.status} : Error loading '${route}' - ${error.statusText}`, 3000, 'Error');
@@ -88,6 +88,10 @@ async function loadContent(route) {
 async function initApp() {
   // browser back/forward buttons
   window.addEventListener("popstate", async () => {
+    const all_modals = document.querySelectorAll('.modal');
+    for (let i = 0; i < all_modals.length; i++) {
+      all_modals[i].classList.add('d-none');
+    }
     const route = window.location.pathname;
     console.log("Handling popstate for route:", route);
     await loadContent(route);

@@ -31,17 +31,17 @@ async function updatePlayerPassword() {
       body: JSON.stringify(formData),
     });
 
-    if (!response.ok) {
+    const responseData = await response.json();
+    console.log("this is the response data", responseData);
+    if (response.status !== 200) {
       console.error("400 Error - bad :", response);
-      const responseData = await response.json();
       displayError(responseData);
       return;
     }
-
     // Success - close modal and show success message
     closeModal("password-change-modal");
-    showSuccessMessage("Password updated successfully. Please log in again with your new password.", 4000);
-    updateUI("/settings");
+    showSuccessMessage("Password updated successfully. Please log in again with your new password.", 2000);
+    // await updateUI(`/profile/${responseData.username}`);
   } catch (error) {
     console.error("Error:", error);
     displayError({ error_msg: "An error occurred while updating password" });

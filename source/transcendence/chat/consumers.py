@@ -81,6 +81,8 @@ class chatConsumer(AsyncWebsocketConsumer):
                         'message': message
                     }
                 )
+                # updating the last conversed time
+                await database_sync_to_async(priv_room.update_last_conversed)()
             except Exception as e:
                 print("Private MSG error: ", e, flush=True)
                 await self.send(text_data=json.dumps({

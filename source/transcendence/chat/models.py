@@ -1,5 +1,6 @@
 from django.db import models
 from account.models import Player
+from django.utils import timezone
 
 """ we will use this chatroom as a container to manage messages between players """
 class ChatRoom(models.Model):
@@ -26,6 +27,10 @@ class ChatRoom(models.Model):
         if len(participants) > 1:
             return participants[1]
         return None
+    
+    def update_last_conversed(self):
+        self.conversed_at = timezone.now()
+        self.save()
 
 
 """ each message is associated with a chatroom and a sender """
