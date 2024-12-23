@@ -196,72 +196,73 @@ h3,
 h4,
 h5,
 h6 {
-	color: #84ddfc;
+  color: #84ddfc;
 }
 
 .tournamentWrapper {
-	background: linear-gradient(140deg,
-			rgba(255, 255, 255, 0.12) -1.82%,
-			rgba(255, 255, 255, 0.04) 68.19%,
-			rgba(255, 255, 255, 0.03) 80.14%);
-	backdrop-filter: blur(10px);
-	border: 1px solid rgba(255, 255, 255, 0.1);
-	border-radius: 15px;
-	transition: all 0.3s ease;
-	padding:1rem;
-	width: 1000px;
+  background: linear-gradient(
+    140deg,
+    rgba(255, 255, 255, 0.12) -1.82%,
+    rgba(255, 255, 255, 0.04) 68.19%,
+    rgba(255, 255, 255, 0.03) 80.14%
+  );
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 15px;
+  transition: all 0.3s ease;
+  padding: 1rem;
+  width: 1000px;
 }
 
-
 .card {
-	background: black;
-	border: 1px solid rgba(255, 255, 255, 0.1);
-	border-radius: 10px;
-	color: white;
-	/* border: 1px solid #ddd; */
-	transition: all 0.3s ease;
+  background: black;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+  color: white;
+  /* border: 1px solid #ddd; */
+  transition: all 0.3s ease;
 }
 
 .card:hover {
-	transform: translateY(-5px);
-	box-shadow: 0 4px 15px rgba(132, 221, 252, 0.3);
+  transform: translateY(-5px);
+  box-shadow: 0 4px 15px rgba(132, 221, 252, 0.3);
 }
 
 .card-title {
-	display: flex;
-	justify-content: center;
-	color: #b02c98;
+  display: flex;
+  justify-content: center;
+  color: #b02c98;
 }
 
 .profileIcon {
-	font-size: 1.5rem;
-	margin-right: 8px;
+  font-size: 1.5rem;
+  margin-right: 8px;
 }
 
 .team {
-	display: flex;
-	justify-content: center;
-	align-items: center;
-	color: #84ddfc;
-	/* margin: 0 10px; */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: #84ddfc;
+  /* margin: 0 10px; */
 }
 
 .card-body-custom {
-	width: max-content;
-	height: 80px;
+  width: max-content;
+  height: 80px;
 }
 
 .team span {
-	margin: 0 5px 0 0;
+  margin: 0 5px 0 0;
 }
 
 span.score-value {
-	margin: 0 0;
+  margin: 0 0;
 }
 
 .score {
-	margin: 0 10px;
-	color: #b02c98;
+  margin: 0 10px;
+  color: #b02c98;
 }
 
 /* .vertical-line {
@@ -281,258 +282,254 @@ span.score-value {
 	z-index: 0;
 } */
 
-
 .game5 {
-	position: absolute;
-	top: 30%;
-	/* left: 0%; */
+  position: absolute;
+  top: 30%;
+  /* left: 0%; */
 }
 
 .game6 {
-	position: absolute;
-	top: 80%;
-	/* left: 0%; */ 
+  position: absolute;
+  top: 80%;
+  /* left: 0%; */
 }
 
 .game7 {
-	position: absolute;
-	top:35%;
-	/* left: 0%; */
+  position: absolute;
+  top: 35%;
+  /* left: 0%; */
 }
 
-
 .round {
-	display: flex;
-	flex-direction: column;
-	align-items: center;
-	/* position: relative; */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  /* position: relative; */
 }
 
 .game {
-	margin-bottom: 40px;
-	position: relative;
+  margin-bottom: 40px;
+  position: relative;
 }
 
 .connection-line {
-	position: absolute;
-	background-color: #b02c98;
-	z-index: 0;
+  position: absolute;
+  background-color: #b02c98;
+  z-index: 0;
 }
 
 .connection-1-5 {
-	width: 35px;
-	height: 2px;
-	top: 50%;
-	left: 100%;
+  width: 35px;
+  height: 2px;
+  top: 50%;
+  left: 100%;
 }
 
 .connection-1-5::after {
-	content: '';
-	position: absolute;
-	width: 2px;
-	height: 130px;
-	top: 50%;
-	left: 100%;
-	background-color: #b02c98;
-	z-index: 0;
+  content: "";
+  position: absolute;
+  width: 2px;
+  height: 130px;
+  top: 50%;
+  left: 100%;
+  background-color: #b02c98;
+  z-index: 0;
 }
 
 .connection-1-5::before {
-	content: '';
-	position: absolute;
-	width: 80px;
-	height: 2px;
-	top: 100%;
-	left: 100%;
-	background-color: #b02c98;
-	transform: translateY(3000%);
+  content: "";
+  position: absolute;
+  width: 80px;
+  height: 2px;
+  top: 100%;
+  left: 100%;
+  background-color: #b02c98;
+  transform: translateY(3000%);
 
-	z-index: 0;
+  z-index: 0;
 }
 
 .connection-2-5 {
-	width: 35px;
-	height: 2px;
-	top: 50%;
-	left: 100%;
+  width: 35px;
+  height: 2px;
+  top: 50%;
+  left: 100%;
 }
 
 .connection-4-6::after {
-	content: '';
-	position: absolute;
-	width: 2px;
-	height: 130px;
-	top: 50%;
-	left: 100%;
-	background-color: #b02c98;
-	transform: translateY(-100%);
-	z-index: 0;
+  content: "";
+  position: absolute;
+  width: 2px;
+  height: 130px;
+  top: 50%;
+  left: 100%;
+  background-color: #b02c98;
+  transform: translateY(-100%);
+  z-index: 0;
 }
 
 .connection-3-6::before {
-	content: '';
-	position: absolute;
-	width: 80px;
-	height: 2px;
-	top: 100%;
-	left: 100%;
-	background-color: #b02c98;
-	transform: translateY(3000%);
+  content: "";
+  position: absolute;
+  width: 80px;
+  height: 2px;
+  top: 100%;
+  left: 100%;
+  background-color: #b02c98;
+  transform: translateY(3000%);
 
-	z-index: 0;
+  z-index: 0;
 }
 
 .connection-3-6 {
-	width: 34px;
-	height: 2px;
-	top: 50%;
-	left: 100%;
+  width: 34px;
+  height: 2px;
+  top: 50%;
+  left: 100%;
 }
 
 .connection-4-6 {
-	width: 34px;
-	height: 2px;
-	top: 50%;
-	left: 100%;
+  width: 34px;
+  height: 2px;
+  top: 50%;
+  left: 100%;
 }
 
 /* Second Round to Final Connection */
 .connection-5-7 {
-	width: 30px;
-	height: 2px;
-	top: 50%;
-	left: 100%;
+  width: 30px;
+  height: 2px;
+  top: 50%;
+  left: 100%;
 }
 
 .connection-5-7::after {
-	content: '';
-	position: absolute;
-	width: 2px;
-	height: 224px;
-	top: 50%;
-	left: 100%;
-	background-color: #b02c98;
-	z-index: 0;
+  content: "";
+  position: absolute;
+  width: 2px;
+  height: 224px;
+  top: 50%;
+  left: 100%;
+  background-color: #b02c98;
+  z-index: 0;
 }
 
 .connection-5-7::before {
-	content: '';
-	position: absolute;
-	width: 80px;
-	height: 2px;
-	top: 100%;
-	left: 100%;
-	background-color: #b02c98;
-	transform: translateY(6000%);
+  content: "";
+  position: absolute;
+  width: 80px;
+  height: 2px;
+  top: 100%;
+  left: 100%;
+  background-color: #b02c98;
+  transform: translateY(6000%);
 
-	z-index: 0;
+  z-index: 0;
 }
 
 .connection-6-7 {
-	width: 30px;
-	height: 2px;
-	top: 20%;
-	left: 100%;
+  width: 30px;
+  height: 2px;
+  top: 20%;
+  left: 100%;
 }
 
 /* Modal Styling */
 .modal-card {
-    background-color: #2c3e50; 
-    border-radius: 15px;
-    padding: 20px;
-    color: #ecf0f1; 
-    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+  background-color: #2c3e50;
+  border-radius: 15px;
+  padding: 20px;
+  color: #ecf0f1;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
 }
 
 .modal-title {
-    font-size: 2rem;
-    color: #f1c40f; /* Golden color for winners */
-    text-shadow: 2px 2px 3px rgba(0, 0, 0, 0.5);
+  font-size: 2rem;
+  color: #f1c40f; /* Golden color for winners */
+  text-shadow: 2px 2px 3px rgba(0, 0, 0, 0.5);
 }
 
 .winner-text {
-    font-size: 1.2rem;
-    color: #84ddfc;
+  font-size: 1.2rem;
+  color: #84ddfc;
 }
 
 .btn-secondary {
-    background-color: #27ae60; /* Bright green button may change later*/
-    color: #fff;
-    border-radius: 8px;
-    padding: 10px 10px;
-    font-size: 1rem;
-    transition: background-color 0.3s ease;
+  background-color: #27ae60; /* Bright green button may change later*/
+  color: #fff;
+  border-radius: 8px;
+  padding: 10px 10px;
+  font-size: 1rem;
+  transition: background-color 0.3s ease;
 }
 
 .btn-secondary:hover {
-	background-color: #2c3e50;
-	cursor: pointer;
+  background-color: #2c3e50;
+  cursor: pointer;
 }
 
 #modalTitle2 {
-	color:#b02c98;
-	font-size: 2rem;
+  color: #b02c98;
+  font-size: 2rem;
 }
-
 
 /* Center the Modal on Page */
 .modal-dialog-centered {
-    display: flex;
-    align-items: center;
-    justify-content: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 /* Responsive Design */
 @media (max-width: 850px) {
+  .profileIcon {
+    display: none;
+  }
 
-	.profileIcon {
-		display: none;
-	}
+  .card-title {
+    font-size: 18px;
+  }
 
-	.card-title {
-		font-size: 18px;
-	}
+  .team,
+  .score {
+    font-size: 14px;
+  }
 
-	.team,
-	.score {
-		font-size: 14px;
-	}
+  .round {
+    margin-bottom: 50px;
+  }
 
-	.round {
-		margin-bottom: 50px;
-	}
-
-	.connection-1-5::before, .connection-3-6::before {
-		width: 120px;
-	}
+  .connection-1-5::before,
+  .connection-3-6::before {
+    width: 120px;
+  }
 }
 
-
 @media (max-width: 600px) {
+  .tournamentWrapper {
+    width: 100%;
+    padding: 0;
+  }
 
-	.tournamentWrapper {
-		width: 100%;
-		padding: 0;
-	}
+  .card {
+    width: 100%;
+  }
 
-	.card {
-		width: 100%;
-	}
+  .card-title {
+    font-size: 16px;
+  }
 
-	.card-title {
-		font-size: 16px;
-	}
+  .team,
+  .score {
+    font-size: 12px;
+  }
 
-	.team,
-	.score {
-		font-size: 12px;
-	}
+  .round {
+    margin-bottom: 50px;
+  }
 
-	.round {
-		margin-bottom: 50px;
-	}
-
-	.connection-1-5::before, .connection-3-6::before {
-		width: 100px;
-	}
+  .connection-1-5::before,
+  .connection-3-6::before {
+    width: 100px;
+  }
 }

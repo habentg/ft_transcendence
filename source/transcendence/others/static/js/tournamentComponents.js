@@ -1,3 +1,5 @@
+
+//Returns a tournament map html
 function createTournamentMap() {
   const tournamentWrapper = document.createElement("div");
   tournamentWrapper.className = "tournamentWrapper";
@@ -201,6 +203,7 @@ function createTournamentMap() {
   return tournamentWrapper;
 }
 
+//this returns canvas for the ping-pong game
 function gameCanvas() {
   const gameBoard = document.createElement("div");
   gameBoard.id = "tableBoard";
@@ -223,8 +226,8 @@ function gameCanvas() {
   return gameBoard;
 }
 
+//Displays modal displaying who is going to play next in upcoming match
 function nextMatchModal(player1, player2) {
-  // Create the modal structure
   console.log(player1, player2);
   const existingModal = document.getElementById("nextMatch");
   if (existingModal) existingModal.remove();
@@ -253,6 +256,7 @@ function nextMatchModal(player1, player2) {
   modal.show();
 }
 
+//displays after every game to show who won and who moves on the next round
 function gameWinnerModal(playerName) {
   // Create the modal structure
   console.log(playerName);
@@ -286,6 +290,7 @@ function gameWinnerModal(playerName) {
   modal.show();
 }
 
+//This is for the final end of the tournament to display the winner and second place 
 function tournamentClosingModal(winner, secondplace) {
   // Create the modal structure
   const existingModal = document.getElementById("congratsModal");
