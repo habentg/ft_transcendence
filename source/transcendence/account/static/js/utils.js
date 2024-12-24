@@ -124,7 +124,7 @@ const loadCssandJS = (data, remove_prev_resources) => {
     console.log("removing previous resources");
     removeResource();
   }
-  
+
   // loading new css
   if (css_file_paths) {
     for (let i = 0; i < css_file_paths.length; i++) {
@@ -153,7 +153,7 @@ const loadCssandJS = (data, remove_prev_resources) => {
 };
 
 // update the Navbar for authenticated users && for signout and deleted users
-async function updateNavBar(isAuthenticated) {
+function updateNavBar(isAuthenticated) {
   const navbar = document.getElementById("navbarNavDropdown");
   if (isAuthenticated) {
     let profilePic = "/static/images/default_profile_pic.jpeg";

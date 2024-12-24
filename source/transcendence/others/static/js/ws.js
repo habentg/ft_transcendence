@@ -196,7 +196,7 @@ function initChatWebsocket() {
     console.error("Chat WebSocket error:", error);
   };
 
-  window.ws_chat.onmessage = (e) => {
+  window.ws_chat.onmessage = async (e) => {
     const data = JSON.parse(e.data);
     if (data.type === "chat_message") {
       addMessageToChat(data);
@@ -227,7 +227,7 @@ function initChatWebsocket() {
           messageInput.classList.remove("d-none");
         if (sendButton)
           sendButton.classList.remove("d-none");
-        showSuccessMessage(`You have unblocked ${data['recipient']}!`, 2000, "Unblocked!");
+        await showSuccessMessage(`You have unblocked ${data['recipient']}!`, 2000, "Unblocked!");
       }
     }
     else if (data.type === "room_deleted_notification") {

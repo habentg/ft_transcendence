@@ -82,25 +82,22 @@ class SignInView(APIView, BaseView):
 	def get(self, request):
 		if isUserisAuthenticated(request):
 			return HttpResponseRedirect(reverse('home_page'))
-		next_url = request.GET.get('next', '/')
-		context = self.get_context_data(request)
-		context['next'] = next_url
 		return super().get(request)
 
 	def post(self, request):
 		serializer = PlayerSigninSerializer(data=request.data)
 		if serializer.is_valid():
 			player = serializer.validated_data['player']
+			if player.tfa:
+				if send_2fa_code(player):
+					return Response({'redirect_url': '/2fa'}, status=status.HTTP_302_FOUND)
+				else:
+					return Response({'error_msg': 'Couldn\'t send OTP to the given Email'}, 
+								status=status.HTTP_422_UNPROCESSABLE_ENTITY)
 			refresh = RefreshToken.for_user(player)
 			response = Response(status=status.HTTP_200_OK)
 			response.set_cookie('access_token', str(refresh.access_token), httponly=True)
 			response.set_cookie('refresh_token', str(refresh), httponly=True)
-			if player.tfa:
-				if send_2fa_code(player):
-					response.status_code = 302  # or 301 for a permanent redirect
-				else:
-					return Response({'error_msg': 'Couldn\'t send OTP to the given Email'}, 
-								status=status.HTTP_422_UNPROCESSABLE_ENTITY)
 			player.is_logged_in = True
 			player.save()
 			return response

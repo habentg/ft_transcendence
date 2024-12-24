@@ -581,7 +581,7 @@ function closeModal(modalId) {
 }
 
 // ShowSuccessMessage Function
-function showSuccessMessage(message, timeout = 3000, successHeader=`Success`) {
+async function showSuccessMessage(message, timeout = 3000, successHeader=`Success`) {
   // create and show success modal
   const existingModal = document.getElementById("success-modal");
   if (existingModal) existingModal.remove();
@@ -632,6 +632,7 @@ function showSuccessMessage(message, timeout = 3000, successHeader=`Success`) {
   setTimeout(() => {
     closeModal("success-modal");
   }, timeout);
+  await new Promise((resolve) => setTimeout(resolve, timeout + 100));
 }
 
 // Create a modal for displaying error messages

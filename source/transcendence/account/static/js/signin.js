@@ -2,9 +2,9 @@ console.log("signin.js loaded");
 
 // Function to handle password visibility toggle
 function showPasswordToggle() {
-        const togglePassword = document.querySelector('.toggle-password');
+    const togglePassword = document.querySelector('.toggle-password');
     if (togglePassword) {
-        togglePassword.addEventListener('click', function() {
+        togglePassword.addEventListener('click', function () {
             const targetId = this.getAttribute('data-target');
             const passwordInput = document.getElementById(targetId);
             const icon = this.querySelector('i');
@@ -26,12 +26,17 @@ function showPasswordToggle() {
 showPasswordToggle();
 
 async function handleSignInSubmit(e) {
-  e.preventDefault();
+    e.preventDefault();
 
-  const formData = {
-    username: document.getElementById("username").value,
-    password: document.getElementById("password").value,
-  };
+    const formData = {
+        username: document.getElementById("username").value,
+        password: document.getElementById("password").value,
+    };
+    // INPUT VALIDATION
+    // // Get the next parameter from the URL
+    // const urlParams = new URLSearchParams(window.location.search);
+    // const nextUrl = urlParams.get('next') || '/';
+    // console.log("Next URL:", nextUrl);
 
     try {
         const m_csrf_token = await getCSRFToken();
@@ -44,24 +49,17 @@ async function handleSignInSubmit(e) {
             },
             body: JSON.stringify(formData)
         });
-        
-        console.log("response:", response);
+
         if (!response.ok) {
-            if (response.status === 302) {
-                // Redirect to the two factor authentication page
-                await updateUI(`/2fa`);
-            }
-            else
-            {
-                const responseData = await response.json();
-                console.error('Error:', responseData);
+            const responseData = await response.json();
+            if (response.status === 302)
+                await updateUI(`${responseData['redirect_url']}`);
+            else 
                 displayError(responseData);
-            }
             return;
         }
         // redirect to the protected page
-
-        await updateUI(`/home`);
+        await updateUI(`/`);
         updateNavBar(true); // update the navbar for authenticated users
         /* websocket - for real-time updates and chat*/
         createWebSockets();

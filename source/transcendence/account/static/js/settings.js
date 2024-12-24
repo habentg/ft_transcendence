@@ -30,18 +30,17 @@ async function updatePlayerPassword() {
       },
       body: JSON.stringify(formData),
     });
-
     const responseData = await response.json();
     console.log("this is the response data", responseData);
-    if (response.status !== 200) {
+    if (!response.ok) {
       console.error("400 Error - bad :", response);
       displayError(responseData);
       return;
     }
     // Success - close modal and show success message
     closeModal("password-change-modal");
-    showSuccessMessage("Password updated successfully. Please log in again with your new password.", 2000);
-    // await updateUI(`/profile/${responseData.username}`);
+    await showSuccessMessage("Password updated successfully. Please log in again with your new password.", 3000);
+    await updateUI(`/signin?next=/profile/${responseData.username}`);
   } catch (error) {
     console.error("Error:", error);
     displayError({ error_msg: "An error occurred while updating password" });
@@ -75,12 +74,12 @@ async function handleEnableDisable2FA() {
         button.id = "disable-2fa";
         button.className = "btn btn-warning w-100";
         button.textContent = "Disable 2FA";
-        showSuccessMessage("Two-Factor Authentication enabled successfully!", 2000);
+        await showSuccessMessage("Two-Factor Authentication enabled successfully!", 2000);
       } else {
         button.id = "enable-2fa";
         button.className = "btn btn-success w-100";
         button.textContent = "Enable 2FA";
-        showSuccessMessage("Two-Factor Authentication disabled successfully!", 2000);
+        await showSuccessMessage("Two-Factor Authentication disabled successfully!", 2000);
       }
       updateUI("/settings");
     } else {
@@ -174,7 +173,7 @@ function deleteAccountCheck() {
   deleteModal
     .querySelector("#delete-acc-confirm")
     .addEventListener("click", deleteAccount);
-  
+
   // Close modal when clicking outside
   deleteModal.addEventListener("click", (e) => {
     if (e.target === deleteModal) closeModal("delete-account-modal");
@@ -288,7 +287,7 @@ async function anonAccount() {
       throw new Error("Failed to anonymize account");
     }
     const responseData = await response.json();
-    showSuccessMessage("Account anonymized successfully!", 2000);
+    await showSuccessMessage("Account anonymized successfully!", 2000);
     updateNavBar(true); // updating navbar
     await updateUI(`/profile/${responseData['anon_username']}`, false);
   } catch (error) {
@@ -310,7 +309,7 @@ function displayError(errorData) {
 
 // A generic modal for closing modals passed as an arguments
 function closeModal(modalId) { // Currently only working for modals in the setting only., If taken to modal.js or utils.js, it requires refresh to work if gone from page profile to settings.
-	// console.log("closing modal");
+  // console.log("closing modal");
   const modal = document.getElementById(modalId);
   if (modal) {
     modal.remove(); // Remove the modal from the DOM
