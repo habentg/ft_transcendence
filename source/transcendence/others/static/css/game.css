@@ -47,7 +47,7 @@ html {
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
-    padding: 1.5rem 0;
+    /* padding: 1.5rem 0; */
 
     min-height: fit-content;
     height: 100vh;
@@ -61,6 +61,11 @@ html {
 
     background-color: linear;
 } */
+
+#gameContent {
+    position: absolute;
+    top: 5%;
+}
 
 
 #board {

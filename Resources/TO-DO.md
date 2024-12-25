@@ -24,6 +24,7 @@
 ## ******************************* Everything Backend related TODO list **************************
 1. token revocation after user after password change and forget password ............................................................................................DONE!
 2. utilizing refresh token............................................................................................->
+3. When url is altered for user profiles (i.e http://localhost/profile/mhaile9), Page instead of returning 404, it is showing empty profile.
 
 ## ******************************* SPA related TODO list ************************** NOT FIXED YET
 1. accepting multiple js/css files from one endpoint............................................................DONE!
@@ -32,6 +33,7 @@
   -> partial fix: now he is bieng redirected back to the home page, but the url is still /signin
   #? another issue - browser back/forward is resulting 404 for nested routes like /profile/haben............................................->
 4. When a localgame is selected (either 1 v 1 or AI), then home is clicked and then again localgame is selected, Error is happening for both AI and 1 V 1 : Error=> global variable has already been declared
+5. When modals are being displayed and the back | forward page of the browser is clicked. MUST resolve.
 
 
 # ****=============================================************ Testing case ***********=======================================*******
