@@ -110,7 +110,7 @@ async function initApp() {
   });
   
 
-  window.baseUrl = "http://localhost";
+  window.baseUrl = "https://localhost";
 }
 
 initApp();

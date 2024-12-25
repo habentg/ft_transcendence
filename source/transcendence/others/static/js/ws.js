@@ -1,11 +1,18 @@
 /* all buttons creator to reduce repetion */
-function createButton(text, class_list, id, onclick) {
+function createButton(text, class_list, id, onclick, iconClassList = null) {
   const friendshipBtn = document.createElement('button');
   friendshipBtn.type = 'button';
   friendshipBtn.classList.add(...class_list);
   friendshipBtn.id = id;
-  friendshipBtn.textContent = text;
   friendshipBtn.setAttribute('onclick', onclick);
+  if (iconClassList !== null) {
+    const iconElement = document.createElement('i');
+    iconElement.classList.add('fas', ...iconClassList);
+    friendshipBtn.appendChild(iconElement);
+  }
+  const textContent = document.createElement('span');
+  textContent.textContent = text;
+  friendshipBtn.appendChild(textContent);
 
   return friendshipBtn;
 }
@@ -38,11 +45,11 @@ function handleFriendRequestRecieved(data) {
   if (!sendFriendRequestBtn)
     return;
   sendFriendRequestBtn.remove();
-  const acceptButton = createButton('Accept', ['btn', 'btn-success', 'friendship_btn', 'me-1', 'mb-2'], 'accept_request_btn', `acceptOrDeclineFriendRequest('accept', '${data.sender}')`);
-  const declineButton = createButton('Decline', ['btn', 'btn-danger', 'friendship_btn', 'mb-2'], 'decline_request_btn', `acceptOrDeclineFriendRequest('decline', '${data.sender}')`);
+  const acceptButton = createButton('Accept', ['btn', 'btn-success', 'friendship_btn', 'me-1', 'mb-2'], 'accept_request_btn', `acceptOrDeclineFriendRequest('accept', '${data.sender}')`, ['fa-check', 'me-2']);
+  const declineButton = createButton('Decline', ['btn', 'btn-danger', 'friendship_btn', 'mb-2'], 'decline_request_btn', `acceptOrDeclineFriendRequest('decline', '${data.sender}')`, ['fa-times', 'me-2']);
   const profile_info_container = document.getElementsByClassName("profile_info_container")[0];
-  profile_info_container.appendChild(declineButton);
   profile_info_container.appendChild(acceptButton);
+  profile_info_container.appendChild(declineButton);
 }
 
 function handleFriendRequestAccept(data) {

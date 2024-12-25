@@ -64,7 +64,7 @@ class ChatRoomsView(APIView, BaseView):
 			if 'access token is invalid but refresh token is valid' in str(exception):
 				print(f'refresh token is valid to {self.request.path}', flush=True)
 				response = HttpResponseRedirect(self.request.path)
-				response.set_cookie('access_token', generate_access_token(self.request.COOKIES.get('refresh_token')), httponly=True, samesite='Lax')
+				response.set_cookie('access_token', generate_access_token(self.request.COOKIES.get('refresh_token')), httponly=True, samesite='Lax', secure=True)
 				return response
 			signin_url = reverse('signin_page')
 			params = urllib.parse.urlencode({'next': self.request.path})

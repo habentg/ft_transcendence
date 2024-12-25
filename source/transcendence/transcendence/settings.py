@@ -82,11 +82,11 @@ MIDDLEWARE = [
 
 CORS_ALLOW_CREDENTIALS = True
 CORS_ALLOWED_ORIGINS = [
-    "http://localhost",  # Add trusted urls here
+    "https://localhost",  # Add trusted urls here
 ]
 
 CSRF_TRUSTED_ORIGINS = [
-    "http://localhost",  # Add trusted urls here
+    "https://localhost",  # Add trusted urls here
 ]
 
 

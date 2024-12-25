@@ -21,3 +21,6 @@ source/transcendence/profile_pics/
 
 # Ignore the pfp directory
 **/profile_pics/
+
+# ignore secret dir
+secrets/*

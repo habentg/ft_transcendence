@@ -57,8 +57,8 @@ class SignUpView(APIView, BaseView):
 				new_player.save()
 				refresh = RefreshToken.for_user(new_player)
 				response = Response(status=status.HTTP_201_CREATED)
-				response.set_cookie('access_token', str(refresh.access_token), httponly=True)
-				response.set_cookie('refresh_token', str(refresh), httponly=True)
+				response.set_cookie('access_token', str(refresh.access_token), httponly=True, samesite='Lax', secure=True)
+				response.set_cookie('refresh_token', str(refresh), httponly=True, samesite='Lax', secure=True)
 				# create a friend list for the new player
 				FriendList.objects.create(player=new_player)
 				return response
@@ -96,8 +96,8 @@ class SignInView(APIView, BaseView):
 								status=status.HTTP_422_UNPROCESSABLE_ENTITY)
 			refresh = RefreshToken.for_user(player)
 			response = Response(status=status.HTTP_200_OK)
-			response.set_cookie('access_token', str(refresh.access_token), httponly=True)
-			response.set_cookie('refresh_token', str(refresh), httponly=True)
+			response.set_cookie('access_token', str(refresh.access_token), httponly=True, samesite='Lax', secure=True)
+			response.set_cookie('refresh_token', str(refresh), httponly=True, samesite='Lax', secure=True)
 			player.is_logged_in = True
 			player.save()
 			return response
@@ -138,7 +138,7 @@ class Auth_42(View):
 	permission_classes = []
 
 	def get(self, request):
-		redirect_uri = settings.DOMAIN_NAME + '/oauth/'
+		redirect_uri = settings.DOMAIN_NAME + '/oauth'
 		client_id =settings.FOURTYTWO_OAUTH_CLIENT_ID
 		# Construct the 42 OAuth authorization URL
 		authorization_url = f'https://api.intra.42.fr/oauth/authorize?' \
@@ -155,14 +155,14 @@ class OauthCallback(View):
 	permission_classes = []
 
 	def get(self, request):
-		code = request.GET.get('code')
+		code = request.GET.get('code', None)
 		if not code:
 			return render(request, 'others/base.html', {'css':['css/404.css'],'html': render_to_string('others/404.html', {'status_code': '400', 'error_msg_header': 'Bad Request', 'error_msg': 'No code abtained from 42!'})})
 		# Exchange code for access token
 		token_response = requests.post('https://api.intra.42.fr/oauth/token', data= {
 			'grant_type': 'authorization_code',
 			'code': code,
-			'redirect_uri': settings.DOMAIN_NAME + '/oauth/',
+			'redirect_uri': settings.DOMAIN_NAME + '/oauth',
 			'client_id': settings.FOURTYTWO_OAUTH_CLIENT_ID,
 			'client_secret': settings.FOURTYTWO_OAUTH_CLIENT_SECRET,
 		})
@@ -200,8 +200,8 @@ class OauthCallback(View):
 		refresh = RefreshToken.for_user(ft_player)
 		response = HttpResponseRedirect(reverse('home_page'))
 		# secure=True
-		response.set_cookie('access_token', str(refresh.access_token), httponly=True, samesite='Lax')
-		response.set_cookie('refresh_token', str(refresh), httponly=True, samesite='Lax')
+		response.set_cookie('access_token', str(refresh.access_token), httponly=True, samesite='Lax', secure=True)
+		response.set_cookie('refresh_token', str(refresh), httponly=True, samesite='Lax', secure=True)
 		return response
 
 	
@@ -308,7 +308,7 @@ class TwoFactorAuth(APIView, BaseView):
 			if 'access token is invalid but refresh token is valid' in str(exception):
 				print(f'refresh token is valid to {self.request.path}', flush=True)
 				response = HttpResponseRedirect(self.request.path)
-				response.set_cookie('access_token', generate_access_token(self.request.COOKIES.get('refresh_token')), httponly=True, samesite='Lax')
+				response.set_cookie('access_token', generate_access_token(self.request.COOKIES.get('refresh_token')), httponly=True, samesite='Lax', secure=True)
 				return response
 			signin_url = reverse('signin_page')
 			params = urllib.parse.urlencode({'next': self.request.path})
@@ -362,7 +362,7 @@ class PlayerProfileView(APIView, BaseView):
 			if 'access token is invalid but refresh token is valid' in str(exception):
 				print(f'refresh token is valid to {self.request.path}', flush=True)
 				response = HttpResponseRedirect(self.request.path)
-				response.set_cookie('access_token', generate_access_token(self.request.COOKIES.get('refresh_token')), httponly=True, samesite='Lax')
+				response.set_cookie('access_token', generate_access_token(self.request.COOKIES.get('refresh_token')), httponly=True, samesite='Lax', secure=True)
 				return response
 			signin_url = reverse('signin_page')
 			params = urllib.parse.urlencode({'next': self.request.path})
@@ -408,7 +408,7 @@ class PlayerProfileUpdatingView(APIView, BaseView):
 			if 'access token is invalid but refresh token is valid' in str(exception):
 				print(f'refresh token is valid to {self.request.path}', flush=True)
 				response = HttpResponseRedirect(self.request.path)
-				response.set_cookie('access_token', generate_access_token(self.request.COOKIES.get('refresh_token')), httponly=True, samesite='Lax')
+				response.set_cookie('access_token', generate_access_token(self.request.COOKIES.get('refresh_token')), httponly=True, samesite='Lax', secure=True)
 				return response
 			signin_url = reverse('signin_page')
 			params = urllib.parse.urlencode({'next': self.request.path})
@@ -472,7 +472,7 @@ class PlayerSettings(APIView, BaseView):
 			if 'access token is invalid but refresh token is valid' in str(exception):
 				print(f'refresh token is valid to {self.request.path}', flush=True)
 				response = HttpResponseRedirect(self.request.path)
-				response.set_cookie('access_token', generate_access_token(self.request.COOKIES.get('refresh_token')), httponly=True, samesite='Lax')
+				response.set_cookie('access_token', generate_access_token(self.request.COOKIES.get('refresh_token')), httponly=True, samesite='Lax', secure=True)
 				return response
 			signin_url = reverse('signin_page')
 			params = urllib.parse.urlencode({'next': self.request.path})
@@ -501,8 +501,8 @@ class TempPlayer(APIView):
 		temp_player.save()
 		new_jwts = RefreshToken.for_user(temp_player)
 		response = HttpResponseRedirect(reverse('home_page'))
-		response.set_cookie('access_token', str(new_jwts.access_token), httponly=True)
-		response.set_cookie('refresh_token', str(new_jwts), httponly=True)
+		response.set_cookie('access_token', str(new_jwts.access_token), httponly=True, samesite='Lax', secure=True)
+		response.set_cookie('refresh_token', str(new_jwts), httponly=True, samesite='Lax', secure=True)
 		return response
 
 """ player anonymization view """
@@ -524,7 +524,7 @@ class AnonymizePlayer(APIView):
 		anon = createGuestPlayer()
 		new_jwts = RefreshToken.for_user(anon)
 		response = Response({'anon_username': anon.username}, status=status.HTTP_200_OK)
-		response.set_cookie('access_token', str(new_jwts.access_token), httponly=True)
-		response.set_cookie('refresh_token', str(new_jwts), httponly=True)
+		response.set_cookie('access_token', str(new_jwts.access_token), httponly=True, samesite='Lax', secure=True)
+		response.set_cookie('refresh_token', str(new_jwts), httponly=True, samesite='Lax', secure=True)
 		anon.save()
 		return response
