@@ -54,6 +54,10 @@ h6,
 	letter-spacing: 0.5px;
 }
 
+.navbar-background {
+	box-shadow: 10px 10px 50px 10px rgba(22, 193, 156, 0.5);
+}
+
 /* Form Labels and Inputs */
 .form-label {
 	font-family: var(--font-heading);
