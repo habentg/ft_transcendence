@@ -1,5 +1,4 @@
 
-
 # ****=============================================************ TODO lists ***********=======================================*******
 
 ## ******************************* UI related TODO list **************************
@@ -8,13 +7,14 @@
 3. chat UI (three dot & small-screens ) .....................................................................................................DONE!
 4. loading screen..........................................................................................->
 5. styling 'no chat found' in chat page ..................................................................->
+6. game history rows styling...................................................................................................................->
 
 ## ******************************* UX related TODO list **************************
 1. UX: after password change, prompt user to 'login again' ............................................................DONE!
-2. add icons to all friendship buttons --------------- NOT DONE - started tho
+2. add icons to all friendship buttons --------------- DONE
 
 ## ******************************* Game related TODO list **************************
-1. 
+1. player names should be displayed before clicking start............................................................-> 
 
 ## ******************************* Real-Time (chat, notification, friendship) TODO list **************************
 1. blocking/unblocking, game invitation through chat .................................................................DONE!
@@ -23,16 +23,16 @@
 
 ## ******************************* Everything Backend related TODO list **************************
 1. token revocation after user after password change and forget password ............................................................................................DONE!
-2. utilizing refresh token............................................................................................->
-3. When url is altered for user profiles (i.e http://localhost/profile/mhaile9), Page instead of returning 404, it is showing empty profile.
+2. utilizing refresh token............................................................................................DONE
+3. When url is altered for user profiles (i.e http://localhost/profile/mhaile9), Page instead of returning 404, it is showing empty profile. --------- FIXED
 
 ## ******************************* SPA related TODO list ************************** NOT FIXED YET
 1. accepting multiple js/css files from one endpoint............................................................DONE!
-2. when token expired, clicked on the profile (in dropdown)... singin loaded but the URL was still /profile/'player'. .................->
+2. when token expired, clicked on the profile (in dropdown)... singin loaded but the URL was still /profile/'player'. .................FIXED
 3. after login/signup and redirected to homepage, if you click on the browser back button, it will take you to sign in page (eventhogh he is authenticated)!
   -> partial fix: now he is bieng redirected back to the home page, but the url is still /signin
   #? another issue - browser back/forward is resulting 404 for nested routes like /profile/haben............................................->
-4. When a localgame is selected (either 1 v 1 or AI), then home is clicked and then again localgame is selected, Error is happening for both AI and 1 V 1 : Error=> global variable has already been declared
+4. When a localgame is selected (either 1 v 1 or AI), then home is clicked and then again localgame is selected, Error is happening for both AI and 1 V 1 : Error=> global variable has already been declared---- FIXED
 5. When modals are being displayed and the back | forward page of the browser is clicked. MUST resolve.
 
 

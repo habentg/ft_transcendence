@@ -5,7 +5,7 @@ from account.models import Player
 class Game(models.Model):
     GAME_TYPE = [
         ('AI', 'Against AI'),
-        ('LOCAL', 'Locally Played'),
+        ('VERSUS', 'Player vs. Player'),
         ('TOURNAMENT', 'Played in Tournament')
     ]
     END_RESULT = [

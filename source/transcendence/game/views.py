@@ -15,6 +15,7 @@ from django.template.loader import render_to_string
 from rest_framework.response import Response
 from rest_framework import viewsets
 from rest_framework import status
+from django.shortcuts import render
 
 class GameViewSet(viewsets.ModelViewSet):
     authentication_classes = [JWTCookieAuthentication]
@@ -72,3 +73,49 @@ class LeaderBoardView(BaseView):
 
     def get(self, request):
         return render(request, self.template_name)
+    
+""" game view """
+class GameView(APIView, BaseView):
+	authentication_classes = [JWTCookieAuthentication]
+	permission_classes = [IsAuthenticated]
+	template_name = 'game/game.html'
+	title = 'Game Page'
+	css = ['css/game.css']
+	js = ['js/game.js']
+
+	# def get(self, request):
+	# 	return super().get(request)
+	def get_context_data(self, request, **kwargs):
+		# print request.GET params
+		is_ai = request.GET.get('isAI', 'false').lower() == 'true'
+		return {
+			'isAI': is_ai,
+			'current_username': request.user.username
+		}
+	
+class TournamentView(BaseView):
+	authentication_classes = []
+	permission_classes = []
+	template_name = 'game/tournament.html'
+	title = 'Tournament Page'
+	css = ['css/tournament.css']
+	js = ['js/tournament.js']
+
+	def get(self, request):
+		return super().get(request)
+
+
+
+
+
+
+# class GameAIView(BaseView):
+# 	authentication_classes = []
+# 	permission_classes = []
+# 	template_name = 'others/game.html'
+# 	title = 'Game AI Page'
+# 	css = ['css/game.css']
+# 	js = ['js/gameai.js']
+
+# 	def get(self, request):
+# 		return super().get(request)

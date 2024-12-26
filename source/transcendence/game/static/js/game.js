@@ -1,145 +1,61 @@
 
-class Game {
-  constructor() {
-    // game flags
-    this.aiFlag = false;
-    this.versusFlag = false;
-    this.tournamentFlag = false;
-
-    this.drawFlag = false // flag for stopping drawing
-
-    //board values
-    this.board = null;
-    this.context = null;
-    this.boardWidth = 800;
-    this.boardHeight = 500;
-    this.playerWidth = 15;
-    this.playerHeight = 80;
-
-    //players
-    this.players = [];
-    this.defp1Name = ""; //use for storing player names
-    this.defp2Name = "";
-
-
-    this.lastTime = 0; // for fps
-    this.activeKeys = []; // for key inputs
-
-    //setting variables
-    this.defballSpeed = 4;
-    this.paddleSpeed = 5;
-    this.maxScore = 5;
-    this.slowServe = false;
-
-    // Parry variables
-    this.cooldownTime = 0;
-    this.parryFlag = false;
-
-    this.ball = {
-      x: this.boardWidth / 2,
-      y: this.boardHeight / 2,
-      velocityX: this.defballSpeed,
-      velocityY: this.defballSpeed,
-      ballRadius: 7
-    };
-  }
-
-  getboardWidth() {
-    return this.boardWidth;
-  }
-
-  getboardHeight() {
-    return this.boardHeight;
-  }
-
-  getplayerHeight() {
-    return this.playerHeight;
-  }
-
-  getplayerWidth() {
-    return this.playerWidth;
-  }
-
-  setupeventListeners() {
-    document.addEventListener("keydown", this.move);
-    document.addEventListener("keyup", this.stopMovement);
-  }
-
-  resetBall(direction) {
-    this.ball.x = this.boardWidth / 2;
-    this.ball.y = this.boardHeight / 2;
-    // console.log("Ball values after reset = ", this.ball);
-    if (this.slowServe) {
-      // Apply reduced speed if slow serve is enabled
-      this.ball.velocityX = direction * Math.abs(this.defballSpeed) * 0.5;
-      this.ball.velocityY = 2 * (Math.random() > 0.5 ? 1 : -1) * 0.5;
-    } else {
-      // Use normal initial speed
-      this.ball.velocityX = direction * Math.abs(this.defballSpeed);
-      this.ball.velocityY = 2 * (Math.random() > 0.5 ? 1 : -1);
+async function createGameInDB(game) {
+  const startgame_data = {
+    player_one: game.players[0].playerName,
+    player_two: game.players[1].playerName,
+    type: game.aiFlag ? "AI" : "VERSUS",
+  };
+  console.table(startgame_data);
+  try {
+    const response = await fetch("/game_api/", {
+      method: "POST",
+      headers: {
+        "X-Requested-With": "XMLHttpRequest",
+        "X-CSRFToken": await getCSRFToken(),
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(startgame_data),
+    });
+    if (response.ok) {
+      const responseData = await response.json();
+      console.log("Game ID: ", responseData.game_id);
+      game.game_id = responseData.game_id;
+      if (game.aiFlag)
+        startaiGame(game);
+      else
+        startGame(game);
+      return;
     }
-  }
-
-  initializeBoard(boardElementId) {
-    this.board = document.getElementById(boardElementId);
-    this.board.width = this.getboardWidth();
-    this.board.height = this.getboardHeight();
-    this.context = this.board.getContext("2d");
-  }
-
-  createPlayer(name, position) {
-    const player = new Player(name, position, this);
-    this.players.push(player);
-    return player;
-  }
-
-  updateParryFlag() {
-    this.parryFlag = document.getElementById("slowServe").checked;
-    return this.parryFlag;
-  }
-
-  move = (event) => {
-    this.activeKeys[event.code] = true;
-    console.log(`Key Down: ${event.code}`); // Debugging
-  }
-
-  stopMovement = (event) => {
-    this.activeKeys[event.code] = false;
-    console.log(`Key Up: ${event.code}`);
+    throw new Error("Failed to load gameApiPOSTFunction");
+  } catch (error) {
+    console.error("ERROR: ", error);
   }
 }
 
-// need to convert everything to a class so it we could easily handle multiple players when tryin to play tournament mode
-class Player {
-  constructor(name, position, game) {
-    this.playerName = name;
-    this.width = game.getplayerWidth();
-    this.height = game.getplayerHeight();
-    this.cooldownFlag = false;
-    this.parryCooldown = 0;
-    this.velocityY = 0;
-    this.score = 0;
-    this.finalScore = 0; // final score after match
-    this.gameWon = 0;
-    this.position = "";
-    if (position === "left") {
-      this.x = 10;
-      this.y = 500 / 2 - this.width / 2;
-      this.parryKey = "KeyA";
-      this.moveUp = "KeyW";
-      this.moveDown = "KeyS";
-    } else if (position === "right") {
-      this.x = 800 - this.width - 10;
-      this.y = 500 / 2 - this.height / 2;
-      this.parryKey = "Numpad0";
-      this.moveUp = "ArrowUp";
-      this.moveDown = "ArrowDown";
+async function updateGameInDB(endgame_data, game_id) {
+  console.log("is it comming here --- Endgame data: ", endgame_data);
+  try {
+    const response = await fetch(`/game_api/${game_id}/`, {
+      method: "PATCH",
+      headers: {
+        "X-Requested-With": "XMLHttpRequest",
+        "X-CSRFToken": await getCSRFToken(),
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(endgame_data),
+    });
+    if (response.ok) {
+      const responseData = await response.json();
+      console.log(responseData);
+      return;
     }
+    throw new Error("Failed to load gameApiPATCHFunction");
+  } catch (error) {
+    console.error("ERROR: ", error);
   }
 }
 
-
-function loadGame() {
+async function loadGame() {
   //starting the game by getting game settings and intializingthe struct.
   // make game obj. 
   // window.game = new Game();
@@ -157,17 +73,20 @@ function loadGame() {
   }
 
   if (document.getElementById("startButton")) {
-    document.getElementById("startButton").addEventListener("click", () => {
+    document.getElementById("startButton").addEventListener("click", async () => {
       console.log("Game values before starting the game", game);
-      startGame(game);
+      // console.table(game.players);
+
+      await createGameInDB(game);
     });
   }
-
+  
   if (document.getElementById("aiButton")) {
-    document.getElementById("aiButton").addEventListener("click", () => {
-      document
-        .getElementById("aiButton")
-      startaiGame(game);
+    document.getElementById("aiButton").addEventListener("click", async () => {
+      // document.getElementById("aiButton")
+      await createGameInDB(game);
+      // console.table(game);
+      // startaiGame(game);
     });
   }
 }
@@ -179,9 +98,7 @@ function startGame(game) {
   game.setupeventListeners();
   document.getElementById("player1").classList.remove("d-none");
   document.getElementById("player2").classList.remove("d-none");
-  document.getElementById("startButton").disabled = true; //disable start button when the game starts
-  document.getElementById("settingButton").disabled = true;
-  document.getElementById("startButton").disabled = true; //disable start button when the game starts
+  document.getElementById("startButton").classList.add("disabled"); //disable start button when the game starts
   document.getElementById("settingButton").disabled = true;
 
   requestAnimationFrame((timestamp) => gameLoop(game, timestamp));
@@ -356,9 +273,9 @@ function initPlayers(game) {
     game.createPlayer(game.defp1Name, "left");
     game.createPlayer("Artificial Stupidity", "right");
   } else if (game.versusFlag) {
-    initializeModal(game);
     game.createPlayer(game.defp1Name, "left");
-    game.createPlayer(game.defp2Name, "right");
+    initializeModal(game);
+    // game.createPlayer(game.defp2Name, "right");
   }
 }
 
@@ -394,11 +311,11 @@ function initializeModal(game) {
     modal.querySelector("#submitSecondPlayerNameBtn").click();
   });
 
-  modal.addEventListener("click", (event) => {
-    if (event.target === modal) {
-      modal.querySelector("#submitSecondPlayerNameBtn").click();
-    }
-  });
+  // modal.addEventListener("click", (event) => {
+  //   if (event.target === modal) {
+  //     modal.querySelector("#submitSecondPlayerNameBtn").click();
+  //   }
+  // });
 }
 
 function updatePaddleVelocities(player1, player2, game) {
@@ -435,7 +352,7 @@ function updatePaddleVelocities(player1, player2, game) {
         ball.velocityY = 0;
         console.log("Good Parry");
       } else
-      console.log("Wrong parry");
+        console.log("Wrong parry");
       parryCoolDown(player2, game);
     }
   }
@@ -539,7 +456,7 @@ function ballCollision(ball, player, position) {
 }
 
 
-function resetGame(player1, player2, direction, game) {
+async function resetGame(player1, player2, direction, game) {
   //bring back ball to the middle
   game.resetBall(direction);
   //resets cooldown of the parry
@@ -563,8 +480,13 @@ function resetGame(player1, player2, direction, game) {
   if (isGameOver(player1, player2, game)) {
     game.drawFlag = false;
     game.aiFlag = false;
+    const endgame_stuff = {
+      final_score: `${player1.finalScore} - ${player2.finalScore}`,
+      outcome: player1.finalScore > player2.finalScore ? "WIN" : "LOSE",
+    }
+    await updateGameInDB(endgame_stuff, game.game_id);
     console.log("Game Over: SHOULD RETURN SETTINGS MENU");
-
+    
     if (document.getElementById("aiButton")) {
       document.getElementById("aiButton").disabled = false;
     }
@@ -816,17 +738,17 @@ function changeSetting(game) {
   modal
     .querySelector("#applyButton")
     .addEventListener("click", () => {
-      if ( applySetting(game) === 0) {
+      if (applySetting(game) === 0) {
         closeModal("gameSettingsModal");
       }
     });
-    
-    modal.addEventListener("keydown", (e) => {
-      console.log("keydown log for enter");
-      if (e.key === "Enter") {
-        if (applySetting(game) === 0) {
-          closeModal("gameSettingsModal");
-        }
+
+  modal.addEventListener("keydown", (e) => {
+    console.log("keydown log for enter");
+    if (e.key === "Enter") {
+      if (applySetting(game) === 0) {
+        closeModal("gameSettingsModal");
+      }
     }
   });
 
@@ -885,7 +807,7 @@ function applySetting(game) {
 
   console.log("PaddleSpeedInput values from parseINT", paddleSpeedInput);
   if (paddleSpeedInput < MIN_PADDLE_SPEED || paddleSpeedInput > MAX_PADDLE_SPEED) {
-    displayError({ error_msg:`Paddle Speed must be between ${MIN_PADDLE_SPEED} and ${MAX_PADDLE_SPEED}.` });
+    displayError({ error_msg: `Paddle Speed must be between ${MIN_PADDLE_SPEED} and ${MAX_PADDLE_SPEED}.` });
     // errorContainer.innerHTML = 'Invalid Values ....';
     return 1;
     // console.log("Inside the if statement of paddleSpeed error");

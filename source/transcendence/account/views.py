@@ -33,6 +33,8 @@ from tempfile import NamedTemporaryFile
 from others.views import BaseView
 from friendship.models import *
 from account.utils import *
+from game.models import Game
+from game.serializers import GameSerializer
 
 # view for the sign up page
 @method_decorator(csrf_protect, name='dispatch')
@@ -395,6 +397,7 @@ class PlayerProfileView(APIView, BaseView):
 				'am_i_requested': request.user.received_requests.filter(sender=queried_user).exists(),
 				'is_self': queried_user == request.user,
 				'num_of_friends': queried_user.friend_list.friends.count(),
+				'games': GameSerializer(Game.objects.filter(player_one=queried_user), many=True).data,
 			}
 		return data
 

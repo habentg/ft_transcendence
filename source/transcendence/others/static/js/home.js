@@ -375,9 +375,9 @@ async function GameApiTester() {
     outcome: "CANCELLED",
   };
 
-  // await gameApiGETFunction();
+  await gameApiGETFunction();
   
-  await gameApiPOSTFunction(data);
+  // await gameApiPOSTFunction(data);
   
   // await gameApiPATCHFunction(endgame_data, 5);
 

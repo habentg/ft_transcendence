@@ -83,62 +83,22 @@
                   </tr>
                 </thead>
                 <tbody>
+                  {% for game in games %}
                   <tr>
                     <td>
                       <div class="d-flex align-items-center">
-                        <span class="player-name">You vs Player2</span>
+                        <span class="player-name"> vs {{game.player_two}}</span>
                       </div>
                     </td>
                     <td>
-                      <span class="badge bg-success">Won</span>
+                      <span class="badge bg-success">{{game.outcome}}</span>
                     </td>
-                    <td>5 - 3</td>
-                    <td>+25</td>
-                    <td>Today</td>
-                    <td>Local</td>
+                    <td>{{game.final_score}}</td>
+                    <td>+5</td>
+                    <td>{{game.start_time}}</td>
+                    <td>{{game.type}}</td>
                   </tr>
-                  <tr>
-                    <td>
-                      <div class="d-flex align-items-center">
-                        <span class="player-name">You vs Player2</span>
-                      </div>
-                    </td>
-                    <td>
-                      <span class="badge bg-success">Won</span>
-                    </td>
-                    <td>5 - 2</td>
-                    <td>+25</td>
-                    <td>Today</td>
-                    <td>AI</td>
-                  </tr>
-                  <tr>
-                    <td>
-                      <div class="d-flex align-items-center">
-                        <span class="player-name">You vs Player3</span>
-                      </div>
-                    </td>
-                    <td>
-                      <span class="badge bg-danger">Lost</span>
-                    </td>
-                    <td>3 - 5</td>
-                    <td>-15</td>
-                    <td>Yesterday</td>
-                    <td>Tournament</td>
-                  </tr>
-                  <tr>
-                    <td>
-                      <div class="d-flex align-items-center">
-                        <span class="player-name">You vs Player3</span>
-                      </div>
-                    </td>
-                    <td>
-                      <span class="badge bg-danger">Lost</span>
-                    </td>
-                    <td>2 - 5</td>
-                    <td>-15</td>
-                    <td>Yesterday</td>
-                    <td>Tournament</td>
-                  </tr>
+                  {%endfor%}
                 </tbody>
               </table>
             </div>
