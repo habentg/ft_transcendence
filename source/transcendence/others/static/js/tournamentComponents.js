@@ -284,7 +284,8 @@ function gameWinnerModal(playerName) {
   const body = document.querySelector("body");
   const modalContainer = document.createElement("div");
   modalContainer.innerHTML = modalHTML;
-  body.appendChild(modalContainer);
+  if(body)
+	body.appendChild(modalContainer);
 
   const modal = new bootstrap.Modal(document.getElementById("gameClosing"));
   modal.show();
@@ -319,6 +320,7 @@ function tournamentClosingModal(winner, secondplace) {
   const body = document.querySelector("body");
   const modalContainer = document.createElement("div");
   modalContainer.innerHTML = modalHTML;
+  if(body)
   body.appendChild(modalContainer);
 
   // Show the modal (requires Bootstrap JS to work)
