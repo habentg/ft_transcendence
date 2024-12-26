@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title id="title">
       {% if title %}
-        {{ title }} - PONG
+        {{ title }} | PONG
       {% else %}
         PING-PONG
       {% endif %}
@@ -29,6 +29,9 @@
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700&display=swap" rel="stylesheet" />
     <link href="https://fonts.googleapis.com/css2?family=Exo+2:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
 
+    <!-- chart.js for profile stats -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous" defer></script>
     <!-- Main css and js file - will have our general styling, routing -->
     <link rel="stylesheet" href="{% static 'css/base.css' %}" />
@@ -48,75 +51,74 @@
       {% endfor %}
     {% endif %}
   </head>
-
+ 
   <body>
     <header>
-      <nav class="navbar navbar-expand-lg navbar-dark custom-navbar">
-        <div class="container-fluid px-4">
-          <a onclick="appRouter()" class="navbar-brand d-flex align-items-center" href="/home">
-            <i class="fas fa-table-tennis-paddle-ball me-2"></i>
-            Beer Pong
-          </a>
+      <div class="navbar-background">
+        <nav class="navbar navbar-expand-lg navbar-dark custom-navbar">
+          <div class="container-fluid px-4">
+            <a onclick="appRouter()" class="navbar-brand d-flex align-items-center" href="/home">
+              <i class="fas fa-table-tennis-paddle-ball me-2"></i>
+              Beer Pong
+            </a>
 
-          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation"><span class="navbar-toggler-icon"></span></button>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation"><span class="navbar-toggler-icon"></span></button>
 
-          {% block navbar_content %}
-            <div class="collapse navbar-collapse" id="navbarNavDropdown">
-              <ul class="navbar-nav ms-auto align-items-center">
-                {% if is_authenticated %}
-                  <li class="nav-item">
-                    <a href="#" class="nav-link"><i class="fas fa-trophy me-2"></i>Leaderboard</a>
-                  </li>
-                  <li class="nav-item">
-                    <a href="#" class="nav-link"><i class="fas fa-users me-2"></i>Friends</a>
-                  </li>
-                  <li class="nav-item">
-                    <a href="/chat" class="nav-link" onclick="appRouter()"><i class="fas fa-comments me-2"></i>Chat</a>
-                  </li>
-                  <li id="notification_dropdown_list" class="nav-item ms-lg-2 dropdown">
-                    <a onclick="handleNotificationBellClick()" class="nav-link position-relative notification-badge" role="button" id="notificationDropdown" data-bs-toggle="dropdown" aria-expanded="false"><i class="fas fa-bell"></i></a>
-                    <ul id="notification_ul" class="dropdown-menu dropdown-menu-end" aria-labelledby="notificationDropdown" style="width: 300px;"></ul>
-                  </li>
+            {% block navbar_content %}
+              <div class="collapse navbar-collapse" id="navbarNavDropdown">
+                <ul class="navbar-nav ms-auto align-items-center">
+                  {% if is_authenticated %}
+                    <li class="nav-item">
+                      <a href="#" class="nav-link"><i class="fas fa-trophy me-2"></i>Leaderboard</a>
+                    </li>
+                    <li class="nav-item">
+                      <a href="/chat" class="nav-link" onclick="appRouter()"><i class="fas fa-comments me-2"></i>Chat</a>
+                    </li>
+                    <li id="notification_dropdown_list" class="nav-item dropdown">
+                      <a onclick="handleNotificationBellClick()" class="nav-link position-relative notification-badge" role="button" id="notificationDropdown" data-bs-toggle="dropdown" aria-expanded="false"><i class="fas fa-bell"></i></a>
+                      <ul id="notification_ul" class="dropdown-menu dropdown-menu-end" aria-labelledby="notificationDropdown" style="width: 300px;"></ul>
+                    </li>
 
-                  <li class="nav-item ms-lg-2 dropdown">
-                    <a class="nav-link profile-link" href="#" role="button" id="profileDropdown" data-bs-toggle="dropdown" aria-expanded="false">
-                      {% if user.profile_picture %}
-                        <img src="{{ user.profile_picture.url }}" alt="Profile Picture" class="profile-pic-nav rounded-circle" style="width: 32px; height: 32px" />
-                      {% else %}
-                        <img src="{% static 'images/default_profile_pic.jpeg' %}" alt="Default Profile Picture" class="profile-pic-nav rounded-circle" style="width: 32px; height: 32px" />
-                      {% endif %}
-                    </a>
-                    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="profileDropdown">
-                      <li>
-                        <a onclick="appRouter()" class="dropdown-item" href="/profile/{{ user.username }}"><i class="fas fa-user-circle me-2"></i>Profile</a>
-                      </li>
-                      <li>
-                        <a onclick="appRouter()" class="dropdown-item" href="/settings"><i class="fas fa-cog me-2"></i>Settings</a>
-                      </li>
-                      <li>
-                        <hr class="dropdown-divider" />
-                      </li>
-                      <li>
-                        <a class="dropdown-item" href="#" onclick="showSignOutModal()"><i class="fas fa-sign-out-alt me-2"></i>Sign Out</a>
-                      </li>
-                    </ul>
-                  </li>
-                {% else %}
-                  <li class="nav-item">
-                    <a href="/temp_player" class="nav-link"><i class="fas fa-gamepad me-2"></i>Quick game</a>
-                  </li>
-                  <li class="nav-item">
-                    <a onclick="appRouter()" class="nav-link btn btn-outline-primary ms-lg-2" href="/signin">Sign in</a>
-                  </li>
-                  <li class="nav-item">
-                    <a onclick="appRouter()" class="nav-link btn btn-primary ms-lg-2" href="/signup">Sign up</a>
-                  </li>
-                {% endif %}
-              </ul>
-            </div>
-          {% endblock %}
-        </div>
-      </nav>
+                    <li class="nav-item ms-lg-2 dropdown">
+                      <a class="nav-link profile-link" href="#" role="button" id="profileDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                        {% if user.profile_picture %}
+                          <img src="{{ user.profile_picture.url }}" alt="Profile Picture" class="profile-pic-nav rounded-circle" style="width: 32px; height: 32px" />
+                        {% else %}
+                          <img src="{% static 'images/default_profile_pic.jpeg' %}" alt="Default Profile Picture" class="profile-pic-nav rounded-circle" style="width: 32px; height: 32px" />
+                        {% endif %}
+                      </a>
+                      <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="profileDropdown">
+                        <li>
+                          <a onclick="appRouter()" class="dropdown-item" href="/profile/{{ user.username }}"><i class="fas fa-user-circle me-2"></i>Profile</a>
+                        </li>
+                        <li>
+                          <a onclick="appRouter()" class="dropdown-item" href="/settings"><i class="fas fa-cog me-2"></i>Settings</a>
+                        </li>
+                        <li>
+                          <hr class="dropdown-divider" />
+                        </li>
+                        <li>
+                          <a class="dropdown-item" href="#" onclick="showSignOutModal()"><i class="fas fa-sign-out-alt me-2"></i>Sign Out</a>
+                        </li>
+                      </ul>
+                    </li>
+                  {% else %}
+                    <li class="nav-item">
+                      <a href="/temp_player" class="nav-link"><i class="fas fa-gamepad me-2"></i>Quick game</a>
+                    </li>
+                    <li class="nav-item">
+                      <a onclick="appRouter()" class="nav-link btn btn-outline-primary ms-lg-2" href="/signin">Sign in</a>
+                    </li>
+                    <li class="nav-item">
+                      <a onclick="appRouter()" class="nav-link btn btn-primary ms-lg-2" href="/signup">Sign up</a>
+                    </li>
+                  {% endif %}
+                </ul>
+              </div>
+            {% endblock %}
+          </div>
+        </nav>
+      </div>
     </header>
     <main id="content">{{ html|safe }}</main>
     <footer class="footer mt-auto py-4">
@@ -124,9 +126,9 @@
         <div class="row g-4">
           <!-- Brand Column -->
           <div class="col-lg-4 text-center text-lg-start">
-            <div class="footer-brand mb-3 g-0">
-              <i class="fas fa-table-tennis-paddle-ball me-2">Beer Pong</i>
-              <!-- <h5>Beer Pong</h5> -->
+            <div class="footer-brand mb-2 g-0 d-flex align-items-center">
+              <i class="fas fa-table-tennis-paddle-ball fs-4"></i>
+              <span class="ms-2 fw-bold fs-5">Beer Pong</span>
             </div>
             <p class="footer-tagline mb-3">Play, Compete, & Have Fun!</p>
             <div class="social-links">

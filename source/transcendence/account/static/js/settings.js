@@ -30,18 +30,17 @@ async function updatePlayerPassword() {
       },
       body: JSON.stringify(formData),
     });
-
+    const responseData = await response.json();
+    console.log("this is the response data", responseData);
     if (!response.ok) {
       console.error("400 Error - bad :", response);
-      const responseData = await response.json();
       displayError(responseData);
       return;
     }
-
     // Success - close modal and show success message
     closeModal("password-change-modal");
-    showSuccessMessage("Password updated successfully!");
-    updateUI("/settings", false);
+    await showSuccessMessage("Password updated successfully. Please log in again with your new password.", 3000);
+    await updateUI(`/signin?next=/profile/${responseData.username}`);
   } catch (error) {
     console.error("Error:", error);
     displayError({ error_msg: "An error occurred while updating password" });
@@ -75,14 +74,14 @@ async function handleEnableDisable2FA() {
         button.id = "disable-2fa";
         button.className = "btn btn-warning w-100";
         button.textContent = "Disable 2FA";
-        showSuccessMessage("Two-Factor Authentication enabled successfully!", 2000);
+        await showSuccessMessage("Two-Factor Authentication enabled successfully!", 2000);
       } else {
         button.id = "enable-2fa";
         button.className = "btn btn-success w-100";
         button.textContent = "Enable 2FA";
-        showSuccessMessage("Two-Factor Authentication disabled successfully!", 2000);
+        await showSuccessMessage("Two-Factor Authentication disabled successfully!", 2000);
       }
-      updateUI("/settings", false);
+      updateUI("/settings");
     } else {
       throw new Error("Failed to update 2FA status");
     }
@@ -174,7 +173,7 @@ function deleteAccountCheck() {
   deleteModal
     .querySelector("#delete-acc-confirm")
     .addEventListener("click", deleteAccount);
-  
+
   // Close modal when clicking outside
   deleteModal.addEventListener("click", (e) => {
     if (e.target === deleteModal) closeModal("delete-account-modal");
@@ -195,7 +194,7 @@ async function deleteAccount() {
     if (response.status === 200) {
       closeModal("delete-account-modal");
       updateNavBar(false);
-      updateUI("", false);
+      updateUI("");
     } else {
       throw new Error("Failed to delete account");
     }
@@ -287,10 +286,10 @@ async function anonAccount() {
     if (!response.ok) {
       throw new Error("Failed to anonymize account");
     }
-    console.log("Account anonymized");
-    showSuccessMessage("Account anonymized successfully!", 2000);
+    const responseData = await response.json();
+    await showSuccessMessage("Account anonymized successfully!", 2000);
     updateNavBar(true); // updating navbar
-    updateUI("/profile", false);
+    await updateUI(`/profile/${responseData['anon_username']}`, false);
   } catch (error) {
     console.error("Error:", error);
   }
@@ -310,7 +309,7 @@ function displayError(errorData) {
 
 // A generic modal for closing modals passed as an arguments
 function closeModal(modalId) { // Currently only working for modals in the setting only., If taken to modal.js or utils.js, it requires refresh to work if gone from page profile to settings.
-	// console.log("closing modal");
+  // console.log("closing modal");
   const modal = document.getElementById(modalId);
   if (modal) {
     modal.remove(); // Remove the modal from the DOM

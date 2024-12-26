@@ -5,7 +5,10 @@ COMPOSE 		= cd ./source && docker-compose
 # ----------------------- creating services --------------------------
 all: build up
 
-up:
+keygen:
+	@sh ./source/nginx_server/tools/self_signed_keygen.sh
+
+up: keygen
 	$(COMPOSE) -f docker-compose.yaml up -d --remove-orphans
 
 create_users:
@@ -100,6 +103,7 @@ help:
 	@echo "Targets:"
 	@echo "  all:          Build and start the services"
 	@echo "  up:           Start the services"
+	@echo "  keygen:       Generate self-signed SSL certificate"
 	@echo "  build:        Build the services"
 	@echo "  down:         Stop the services"
 	@echo "  start:        Start the services"

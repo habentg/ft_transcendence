@@ -5,8 +5,8 @@
     <div class="container">
       <div class="error-content text-center">
         <div class="note-container">
-          <h1 class="note" data-text="404">404</h1>
-          <h2 class="error-message ">Page Not Found</h2>
+          <h1 class="note" data-text="404">{{ status_code }}</h1>
+          <h2 class="error-message ">{{ error_msg_header }}</h2>
         </div>
         
         <div class="game-element">
@@ -15,7 +15,7 @@
             <div class="paddle right"></div>
         </div>
         <p class="error-description mb-4">
-          Oops! Looks like this page got lost in the game.
+          {{ error_msg }}
         </p>
 
         <a onclick="appRouter()" href="/home" class="btn btn-primary btn-lg">

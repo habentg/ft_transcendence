@@ -6,7 +6,7 @@ from django.template.loader import render_to_string
 from django.shortcuts import render
 from django.urls import reverse
 from rest_framework.permissions import IsAuthenticated
-from account.auth_middleware import JWTCookieAuthentication
+from account.auth_middleware import JWTCookieAuthentication, generate_access_token
 from rest_framework.exceptions import AuthenticationFailed
 from django.db import connection
 from rest_framework.response import Response
@@ -33,6 +33,13 @@ class BaseView(View):
 	
 	def get(self, request, *args, **kwargs):
 		context = self.get_context_data(request, **kwargs)
+		if context.get('error_msg_404') is not None:
+			self.title = '404 Page'
+			self.css = ['css/404.css']
+			self.template_name = 'others/404.html'
+			context['status_code'] = 404
+			context['error_msg_header'] = 'Page Not Found'
+			context['error_msg'] = context.get('error_msg_404')
 		html_content = render_to_string(self.template_name, context)
 		resources = {
 			'title': self.title,
@@ -60,6 +67,15 @@ class Catch_All(BaseView):
 
 	def get(self, request, path=None, *args, **kwargs):
 		return super().get(request)
+	
+	def get_context_data(self, request, **kwargs):
+		code_param = request.GET.get('code', 404)
+
+		return {
+			'status_code': code_param,
+			'error_msg_header': 'Page Not Found',
+			'error_msg': ' Oops! Looks like this page got lost in the game.'
+			}
 
 # view for the home page
 class HomeView(APIView, BaseView):
@@ -72,6 +88,12 @@ class HomeView(APIView, BaseView):
 	
 	def handle_exception(self, exception):
 		if isinstance(exception, AuthenticationFailed):
+			""" is refresh token not expired """
+			if 'access token is invalid but refresh token is valid' in str(exception):
+				print(f'refresh token is valid to {self.request.path}', flush=True)
+				response = HttpResponseRedirect(self.request.path)
+				response.set_cookie('access_token', generate_access_token(self.request.COOKIES.get('refresh_token')), httponly=True, samesite='Lax', secure=True)
+				return response
 			response = HttpResponseRedirect(reverse('landing'))
 			response.delete_cookie('access_token')
 			response.delete_cookie('refresh_token')
@@ -160,6 +182,11 @@ class PaginatedSearch(APIView, BaseView):
 
 	def handle_exception(self, exception):
 		if isinstance(exception, AuthenticationFailed):
+			if 'access token is invalid but refresh token is valid' in str(exception):
+				print(f'refresh token is valid to {self.request.path}', flush=True)
+				response = HttpResponseRedirect(self.request.path)
+				response.set_cookie('access_token', generate_access_token(self.request.COOKIES.get('refresh_token')), httponly=True, samesite='Lax', secure=True)
+				return response
 			signin_url = reverse('signin_page')
 			params = urllib.parse.urlencode({'next': self.request.path})
 			response = HttpResponseRedirect(f'{signin_url}?{params}')
@@ -228,8 +255,8 @@ class GameView(APIView, BaseView):
 	# def get(self, request):
 	# 	return super().get(request)
 	def get_context_data(self, request, **kwargs):
+		# print request.GET params
 		is_ai = request.GET.get('isAI', 'false').lower() == 'true'
-		print(f"####### isAI : {is_ai}", flush=True)
 		return {
 			'isAI': is_ai,
 			'current_username': request.user.username

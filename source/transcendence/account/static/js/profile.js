@@ -1,20 +1,20 @@
 createWebSockets();
 
 // editing user info
-function makeFieldEditable(fieldId) {
-  console.log(`Make ${fieldId} editable`);
-  const fieldInput = document.getElementById(fieldId);
-  fieldInput.disabled = false;
-  fieldInput.focus();
-}
+// function makeFieldEditable(fieldId) {
+//   console.log(`Make ${fieldId} editable`);
+//   const fieldInput = document.getElementById(fieldId);
+//   fieldInput.disabled = false;
+//   fieldInput.focus();
+// }
 
 // updating user info
 async function UpdateUserInfo() {
   try {
     const formData = {
-      full_name: document.getElementById('new-fullname').value.trim(),
-      username: document.getElementById('new-username').value.trim(),
-      email: document.getElementById('new-email').value.trim(),
+      full_name: document.getElementById("new-fullname").value.trim(),
+      username: document.getElementById("new-username").value.trim(),
+      email: document.getElementById("new-email").value.trim(),
     };
 
     // Basic validation
@@ -30,13 +30,13 @@ async function UpdateUserInfo() {
       return;
     }
 
-    const response = await fetch('/update_profile/', {
-      method: 'PATCH',
+    const response = await fetch("/update_profile/", {
+      method: "PATCH",
       headers: {
-        'Content-Type': 'application/json',
-        'X-CSRFToken': await getCSRFToken()
+        "Content-Type": "application/json",
+        "X-CSRFToken": await getCSRFToken(),
       },
-      body: JSON.stringify(formData)
+      body: JSON.stringify(formData),
     });
 
     if (!response.ok) {
@@ -48,10 +48,11 @@ async function UpdateUserInfo() {
     // Success - close modal and update UI
     const responseData = await response.json();
     // closeUsernameModal();
-    closeModal('username-modal');
-    await updateUI(`/profile/${responseData.username}`, false);
+    closeModal("username-modal");
+    await updateUI(`/profile/${responseData.username}`);
+    showSuccessMessage("Profile Information updated successfully");
   } catch (error) {
-    console.error('Error:', error);
+    console.error("Error:", error);
   }
 }
 
@@ -113,9 +114,9 @@ async function handleUpload() {
 
     // using FormData to send the file - browser will set the correct headers
     const formData = new FormData();
-    formData.append('profile_picture', profilePicFile);
-    const response = await fetch('/update_profile/', {
-      method: 'PATCH',
+    formData.append("profile_picture", profilePicFile);
+    const response = await fetch("/update_profile/", {
+      method: "PATCH",
       headers: {
         "X-CSRFToken": await getCSRFToken(),
       },
@@ -128,25 +129,17 @@ async function handleUpload() {
       closeModal("profile-pic-modal");
       // update the user info in the DOM
       const responseData = await response.json();
-      await updateUI(`/profile/${responseData.username}`, false);
-      closeModal();
+      await updateUI(`/profile/${responseData.username}`);
       updateNavBar(true);
+      showSuccessMessage("Profile Picture updated successfully");
     } else {
       throw new Error("Failed to update profile pic");
     }
   } catch (error) {
-    console.error('Error:', error);
-    const errorMsg = document.getElementById('error-msg');
-    errorMsg.textContent = 'Image is too large or invalid format';
-    errorMsg.style.display = 'block';
-  }
-}
-
-function closeModal() {
-  const modal = document.getElementById("profile-pic-modal");
-  if (modal) {
-    modal.remove();
-    document.body.classList.remove('modal-open');
+    console.error("Error:", error);
+    const errorMsg = document.getElementById("error-msg");
+    errorMsg.textContent = "Image is too large or invalid format";
+    errorMsg.style.display = "block";
   }
 }
 
@@ -163,6 +156,7 @@ function closeModal(modalId) {
 
 // Update User Info Modal
 function updateProfileInfo() {
+  console.log("Update user info =====");
   const existingModal = document.getElementById("username-modal");
   if (existingModal) existingModal.remove();
 
@@ -215,13 +209,18 @@ async function addFriendRequest() {
     console.log("Response status:", response.status); // Log the response status
 
     if (response.status === 201) {
-      // await updateUI(`/profile/${toBeFriend}`, false);
-      // attachFriendEventListners();
       const sendFriendRequestBtn = document.getElementById("add_friend_btn");
       sendFriendRequestBtn.remove();
 
-      const cancelFRBtn = createButton('Cancel Request', ['btn', 'btn-danger', 'friendship_btn'], 'cancel_request_btn', 'cancelFriendRequest()')
-      const profile_info_container = document.getElementsByClassName("profile_info_container")[0];
+      const cancelFRBtn = createButton(
+        "Cancel Request",
+        ["btn", "btn-danger", "friendship_btn"],
+        "cancel_request_btn",
+        "cancelFriendRequest()"
+      );
+      const profile_info_container = document.getElementsByClassName(
+        "profile_info_container"
+      )[0];
       profile_info_container.appendChild(cancelFRBtn);
       return;
     }
@@ -249,14 +248,18 @@ async function cancelFriendRequest() {
     console.log("Response status:", response.status); // Log the response status
 
     if (response.status === 200) {
-      // await updateUI(`/profile/${toBeFriend}`, false);
-      // attachFriendEventListners();
-      // console.log("Cancelled friend request");
       const cancelFRBtn = document.getElementById("cancel_request_btn");
       cancelFRBtn.remove();
 
-      const sendFriendRequestBtn = createButton('Send Request', ['btn', 'btn-primary', 'friendship_btn'], 'add_friend_btn', 'addFriendRequest()');
-      const profile_info_container = document.getElementsByClassName("profile_info_container")[0];
+      const sendFriendRequestBtn = createButton(
+        "Send Request",
+        ["btn", "btn-primary", "friendship_btn"],
+        "add_friend_btn",
+        "addFriendRequest()"
+      );
+      const profile_info_container = document.getElementsByClassName(
+        "profile_info_container"
+      )[0];
       profile_info_container.appendChild(sendFriendRequestBtn);
       return;
     }
@@ -267,10 +270,7 @@ async function cancelFriendRequest() {
   }
 }
 
-async function acceptOrDeclineFriendRequest(
-  action,
-  toBeFriend,
-) {
+async function acceptOrDeclineFriendRequest(action, toBeFriend) {
   console.log("acceptOrDeclineFriendRequest");
 
   try {
@@ -286,21 +286,41 @@ async function acceptOrDeclineFriendRequest(
 
     if (response.status === 200) {
       const accept_request_btn = document.getElementById("accept_request_btn");
-      const decline_request_btn = document.getElementById("decline_request_btn");
+      const decline_request_btn = document.getElementById(
+        "decline_request_btn"
+      );
 
       accept_request_btn.remove();
       decline_request_btn.remove();
-      if (action === 'accept') {
-        const unfriendBtn = createButton('Unfriend', ['btn', 'btn-danger', 'friendship_btn', 'me-1', 'mb-2'], 'unfriend_btn', 'removeFriend()');
-        const chatBtn = createButton('Chat', ['btn', 'btn-dark', 'friendship_btn', 'mb-2'], 'chat_btn', `create_chatroom('${toBeFriend}')`);
+      if (action === "accept") {
+        const unfriendBtn = createButton(
+          "Unfriend",
+          ["btn", "btn-danger", "friendship_btn", "me-1", "mb-2"],
+          "unfriend_btn",
+          "removeFriend()"
+        );
+        const chatBtn = createButton(
+          "Chat",
+          ["btn", "btn-dark", "friendship_btn", "mb-2"],
+          "chat_btn",
+          `create_chatroom('${toBeFriend}')`
+        );
 
-        const profile_info_container = document.getElementsByClassName("profile_info_container")[0];
+        const profile_info_container = document.getElementsByClassName(
+          "profile_info_container"
+        )[0];
         profile_info_container.appendChild(unfriendBtn);
         profile_info_container.appendChild(chatBtn);
-      }
-      else {
-        const sendFriendRequestBtn = createButton('Send Request', ['btn', 'btn-primary', 'friendship_btn'], 'add_friend_btn', 'addFriendRequest()');
-        const profile_info_container = document.getElementsByClassName("profile_info_container")[0];
+      } else {
+        const sendFriendRequestBtn = createButton(
+          "Send Request",
+          ["btn", "btn-primary", "friendship_btn"],
+          "add_friend_btn",
+          "addFriendRequest()"
+        );
+        const profile_info_container = document.getElementsByClassName(
+          "profile_info_container"
+        )[0];
         profile_info_container.appendChild(sendFriendRequestBtn);
       }
       return;
@@ -333,8 +353,15 @@ async function removeFriend() {
       unfriendBtn.remove();
       chatBtn.remove();
 
-      const sendFriendRequestBtn = createButton('Send Request', ['btn', 'btn-primary', 'friendship_btn'], 'add_friend_btn', 'addFriendRequest()');
-      const profile_info_container = document.getElementsByClassName("profile_info_container")[0];
+      const sendFriendRequestBtn = createButton(
+        "Send Request",
+        ["btn", "btn-primary", "friendship_btn"],
+        "add_friend_btn",
+        "addFriendRequest()"
+      );
+      const profile_info_container = document.getElementsByClassName(
+        "profile_info_container"
+      )[0];
       profile_info_container.appendChild(sendFriendRequestBtn);
       return;
     }
@@ -346,21 +373,21 @@ async function removeFriend() {
 }
 
 // Function to initialize the profile page and add event listeners
-function initProfilePage() {
-  const updateProfilePicBtn = document.getElementById("change-profile-pic");
-  if (updateProfilePicBtn) {
-    updateProfilePicBtn.addEventListener("click", updateProfilePic);
-  }
+// function initProfilePage() {
+  // const updateProfilePicBtn = document.getElementById("change-profile-pic");
+  // if (updateProfilePicBtn) {
+  //   updateProfilePicBtn.addEventListener("click", updateProfilePic);
+  // }
 
-  const updateUserInfoBtn = document.getElementById("update-user-info");
+  // const updateUserInfoBtn = document.getElementById("update-user-info");
 
-  if (updateUserInfoBtn) {
-    updateUserInfoBtn.addEventListener("click", () => {
-      console.log("Update user info");
-      updateProfileInfo();
-    });
-  }
-}
+  // if (updateUserInfoBtn) {
+  //   updateUserInfoBtn.addEventListener("click", () => {
+  //     console.log("Update user info");
+  //     updateProfileInfo();
+  //   });
+  // }
+// }
 
 /* sending request to create chat room between current user and a friend */
 async function create_chatroom(friend_username) {
@@ -372,23 +399,106 @@ async function create_chatroom(friend_username) {
         "Content-Type": "application/json",
         "X-CSRFToken": await getCSRFToken(),
       },
-      body: JSON.stringify({ 'recipient': friend_username }),
+      body: JSON.stringify({ recipient: friend_username }),
     });
-
-    if (response.ok) {
-      const responseData = await response.json();
-      console.log("Chatroom created: ", responseData);
-      await updateUI(`/chat`, false);
-    } else {
-      const error = await response.json();
-      throw new Error(error.error);
-    }
-
+    await updateUI(`/chat`);
   } catch (error) {
     console.error("Failed to create chatroom: ", error);
   }
 }
 
 // initialize the profile page
-initProfilePage();
+// initProfilePage();
 
+// Stat charts
+// const gamesPlayed = 10;
+// const wins = 6; // Number of wins
+// const losses = gamesPlayed - wins; // Number of losses
+
+// const rankHistory = [10, 8, 7, 6, 5, 4];
+// const timePoints = ["Day 1", "Day 2", "Day 3", "Day 4", "Day 5", "Day 6"]; // Corresponding time points
+
+// // Pie Chart - Percentage of Wins and Losses
+// const pieCtx = document.getElementById("game-stats-pie-chart").getContext("2d");
+// new Chart(pieCtx, {
+//   type: "pie",
+//   data: {
+//     labels: ["Wins", "Losses"],
+//     datasets: [
+//       {
+//         data: [wins, losses],
+//         backgroundColor: ["green", "red"],
+//         borderColor: ["rgba(75, 192, 192, 1)", "rgba(255, 99, 132, 1)"],
+//         borderWidth: 2,
+//       },
+//     ],
+//   },
+//   options: {
+//     responsive: true,
+//     maintainAspectRatio: true, // Ensure proper scaling
+//     aspectRatio: 1.2, // Adjust aspect ratio for smaller height
+//     plugins: {
+//       legend: {
+//         position: "bottom",
+//       },
+//       tooltip: {
+//         callbacks: {
+//           label: function (context) {
+//             const total = wins + losses;
+//             const percentage = ((context.raw / total) * 100).toFixed(1);
+//             return `${context.label}: ${percentage}% (${context.raw})`;
+//           },
+//         },
+//       },
+//     },
+//   },
+// });
+
+// // Line Chart - Rank Leaderboard Over Time
+// const lineCtx = document
+//   .getElementById("game-stats-line-chart")
+//   .getContext("2d");
+// new Chart(lineCtx, {
+//   type: "line",
+//   data: {
+//     labels: timePoints, // Time points
+//     datasets: [
+//       {
+//         label: "Player Rank",
+//         data: rankHistory,
+//         backgroundColor: "rgba(54, 162, 235, 0.2)",
+//         borderColor: "rgba(54, 162, 235, 1)",
+//         borderWidth: 2,
+//         tension: 0.4, // Smooth curves
+//         fill: true,
+//         pointBackgroundColor: "rgba(255, 99, 132, 1)", // Highlight points
+//         pointRadius: 5,
+//         pointHoverRadius: 8,
+//       },
+//     ],
+//   },
+//   options: {
+//     responsive: true,
+//     plugins: {
+//       legend: {
+//         position: "bottom",
+//       },
+//       tooltip: {
+//         callbacks: {
+//           label: function (context) {
+//             return `Rank: ${context.raw}`;
+//           },
+//         },
+//       },
+//     },
+//     scales: {
+//       y: {
+//         reverse: true, // Lower ranks are better
+//         ticks: {
+//           stepSize: 1,
+//           precision: 0,
+//         },
+//       },
+//     },
+//   },
+// });

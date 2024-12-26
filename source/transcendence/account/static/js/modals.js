@@ -2,6 +2,12 @@
 
 // update profile picture modal
 function updateProfilePictureModal() {
+  // check if the modal already exists
+  const existingModal = document.getElementById("profile-pic-modal");
+  if (existingModal) {
+    existingModal.remove();
+  }
+
   const modal = document.createElement("div");
   modal.id = "profile-pic-modal";
   modal.className = "modal fade show";
@@ -38,6 +44,11 @@ function updateProfilePictureModal() {
 
 // update userprofile modal
 function updateProfileModal() {
+  const existingModal = document.getElementById("username-modal");
+  if (existingModal) {
+    existingModal.remove();
+  }
+
   // Get the text content from spans inside the profile details
   const full_name = document
     .querySelector(".profile-info h3")
@@ -64,6 +75,10 @@ function updateProfileModal() {
           <button type="button" class="btn-close btn-close-white" id="close-username-modal"></button>
         </div>
         <div class="modal-body">
+          <div class="alert alert-warning small">
+            <i class="fas fa-exclamation-triangle me-2"></i> If you signed up using 42 account, changing your username or email may result in permanent loss of access.
+          </div>
+
           <div class="mb-3">
             <label for="new-fullname" class="form-label">Full Name</label>
             <input type="text" id="new-fullname" class="form-control bg-transparent text-white" value="${full_name}">
@@ -95,6 +110,11 @@ function updateProfileModal() {
 // ----------------- Modals from the settings page ----------------- //
 // Change password modal
 function changePasswordModal() {
+  const existingModal = document.getElementById("password-change-modal");
+  if (existingModal) {
+    existingModal.remove();
+  }
+
   const modal = document.createElement("div");
   modal.id = "password-change-modal";
   modal.className = "modal fade show";
@@ -164,6 +184,11 @@ function changePasswordModal() {
 
 // Enable/disable 2FA modal
 function twoFactorModal(button) {
+  const existingModal = document.getElementById("2fa-modal");
+  if (existingModal) {
+    existingModal.remove();
+  }
+
   const is2FAEnabled = button.id === "disable-2fa";
   const modalTitle = is2FAEnabled ? "Disable 2FA" : "Enable 2FA";
   const modalIcon = "fa-shield-alt";
@@ -208,6 +233,11 @@ function twoFactorModal(button) {
 
 /* anon modal */
 function anonymizeModal() {
+  const existingModal = document.getElementById("anon-account-modal");
+  if (existingModal) {
+    existingModal.remove();
+  }
+
   const anon_confirmation_modal = document.createElement("div");
   anon_confirmation_modal.id = "anon-account-modal";
   anon_confirmation_modal.className = "modal fade show";
@@ -298,6 +328,11 @@ function showSignOutModal(event) {
 
 // Delete account modal
 function deleteAccountModal() {
+  const existingModal = document.getElementById("delete-account-modal");
+  if (existingModal) {
+    existingModal.remove();
+  }
+
   const modal = document.createElement("div");
   modal.id = "delete-account-modal";
   modal.className = "modal fade show";
@@ -334,6 +369,11 @@ function deleteAccountModal() {
 
 // Reset password confirmation modal
 function resetPasswordConfirmModal() {
+  const existingModal = document.getElementById("reset-password-confirm-modal");
+  if (existingModal) {
+    existingModal.remove();
+  }
+
   // Show the reset password confirmation modal
   const otpModal = document.createElement("div");
   otpModal.className = "modal fade show";
@@ -370,6 +410,11 @@ function resetPasswordConfirmModal() {
 
 // Get Number of player for tournament
 function getPlayerNumberModal() {
+  const existingModal = document.getElementById("tournamentModal");
+  if (existingModal) {
+    existingModal.remove();
+  }
+
   const modal = document.createElement("div");
   modal.classList.add("modal");
   modal.id = "tournamentModal";
@@ -403,6 +448,11 @@ function getPlayerNumberModal() {
 
 // Modal for AI or localgame selection
 function optionLocalGameModal() {
+  const existingModal = document.getElementById("localGameModal");
+  if (existingModal) {
+    existingModal.remove();
+  }
+
   const modal = document.createElement("div");
   modal.classList.add("modal");
   modal.id = "localGameModal";
@@ -422,21 +472,55 @@ function optionLocalGameModal() {
         <p class="text-white mb-0">Choose who you'd like to play:</p>
       </div>
       <div class="modal-footer border-0 py-3 d-flex justify-content-start">
-        <button type="button" class="btn btn-primary btn-sm me-2" id="aiGameBtn">
+        <a class="btn btn-primary btn-sm me-2" id="aiGameBtn" onclick="appRouter()" href="/game?isAI=true">
           <i class="fas fa-robot me-2"></i> Play with AI
-        </button>
-        <button type="button" class="btn btn-outline-light btn-sm me-2" id="playFriends">
+        </a>
+        <a class="btn btn-outline-light btn-sm me-2" id="playFriends" onclick="appRouter()" href="/game?isAI=false">
           <i class="fas fa-user-friends me-2"></i> Play with a friend
-        </button>
+        </a>
       </div>
     </div>
   </div>
   `;
-  return modal;
+  // return modal;
+
+  document.body.appendChild(modal);
+
+  // Event Listeners
+  document.getElementById("aiGameBtn").addEventListener("click", () => {
+    //  Send to AI game page (1 vs AI)
+    console.log("Creating AI game");
+    closeModal("localGameModal");
+    // For now, page is refreshing. Need to fix.
+    // window.location.href = "/game/?isAI=true";
+
+  });
+  document.getElementById("playFriends").addEventListener("click", () => {
+    // Send to localgame game page (1 vs 1)
+    console.log("Creating local game");
+    closeModal("localGameModal");
+  });
+
+  // close the modal when the close button is clicked
+  document.querySelector("#localGameModal .btn-close").addEventListener("click", () => {
+    closeModal("localGameModal");
+  });
+
+  // close the modal when the modal is clicked outside
+  modal.addEventListener("click", (event) => {
+    if (event.target === modal) {
+      closeModal("localGameModal");
+    }
+  });
 }
 
 // functin to ask for second player name before starting the game
 function secondPlayerNameModal() {
+  const existingModal = document.getElementById("secondPlayerNameModal");
+  if (existingModal) {
+    existingModal.remove();
+  }
+
   const modal = document.createElement("div");
   modal.classList.add("modal");
   modal.id = "secondPlayerNameModal";
@@ -470,7 +554,11 @@ function secondPlayerNameModal() {
 
 // game settings modal for game settings
 function gameSettingsModal() {
-  console.log("##################1");
+  const existingModal = document.getElementById("gameSettingsModal");
+  if (existingModal) {
+    existingModal.remove();
+  }
+  
   const modal = document.createElement("div");
   modal.classList.add("modal");
   modal.id = "gameSettingsModal";
@@ -490,10 +578,6 @@ function gameSettingsModal() {
             <div class="mb-3">
                 <label for="paddleSpeed" class="form-label text-light">Paddle Speed:</label>
                 <input type="number" class="form-control" id="paddleSpeed" min="1" value="6">
-            </div>
-            <div class="mb-3">
-                <label for="ballSpeed" class="form-label text-light">Ball Speed:</label>
-                <input type="number" class="form-control" id="ballSpeed" min="1" value="4.5">
             </div>
             <div class="mb-3">
                 <label for="maxScore" class="form-label text-light">Score to Win:</label>
@@ -546,13 +630,14 @@ function closeModal(modalId) {
   if (modal) {
     modal.remove(); // Remove the modal from the DOM
     document.body.classList.remove("modal-open"); // Remove the modal-open class from body
-  } else {
-    console.warn(`Modal with id "${modalId}" not found.`);
-  }
+  } 
+  // else {
+  //   console.warn(`Modal with id "${modalId}" not found.`);
+  // }
 }
 
 // ShowSuccessMessage Function
-function showSuccessMessage(message, timeout = 3000) {
+async function showSuccessMessage(message, timeout = 3000, successHeader=`Success`) {
   // create and show success modal
   const existingModal = document.getElementById("success-modal");
   if (existingModal) existingModal.remove();
@@ -568,7 +653,7 @@ function showSuccessMessage(message, timeout = 3000) {
       <div class="content modal-content">
         <div class="modal-header border-0 py-3">
           <h5 class="modal-title text-success">
-            <i class="fas fa-check-circle me-2"></i>Success
+            <i class="fas fa-check-circle me-2"></i>${successHeader}
           </h5>
           <button type="button" class="btn-close btn-close-white" id="close-success-modal"></button>
         </div>
@@ -591,22 +676,33 @@ function showSuccessMessage(message, timeout = 3000) {
   // Event Listeners
   modal
     .querySelector("#close-success-modal")
-    .addEventListener("click", () => closeModal("success-modal"));
+    .addEventListener("click", () => {
+      closeModal("success-modal")
+      return ;
+    });
   modal
     .querySelector("#success-modal-close")
-    .addEventListener("click", () => closeModal("success-modal"));
+    .addEventListener("click", () => {
+      closeModal("success-modal")
+      return ;
+    });
   modal.addEventListener("click", (e) => {
-    if (e.target === modal) closeModal("success-modal");
+    if (e.target === modal) {
+      closeModal("success-modal")
+      return ;
+    };
   });
 
   // Close modal after 3 seconds
   setTimeout(() => {
+    console.log("closing modal after timeout");
     closeModal("success-modal");
   }, timeout);
+  await new Promise((resolve) => setTimeout(resolve, timeout + 100));
 }
 
 // Create a modal for displaying error messages
-function showErrorMessage(message) {
+function showErrorMessage(message, timeout = 3000, errorHeader=`Error`) {
   // create and show error modal
   const existingModal = document.getElementById("error-modal");
   if (existingModal) existingModal.remove();
@@ -622,7 +718,7 @@ function showErrorMessage(message) {
       <div class="content modal-content">
         <div class="modal-header border-0 py-3">
           <h5 class="modal-title text-danger">
-            <i class="fas fa-exclamation-triangle me-2"></i>Error
+            <i class="fas fa-exclamation-triangle me-2"></i>${errorHeader}
           </h5>
           <button type="button" class="btn-close btn-close-white" id="close-error-modal"></button>
         </div>
@@ -652,6 +748,10 @@ function showErrorMessage(message) {
     if (e.target === modal) closeModal("error-modal");
   }
   );
+  // Close modal after 3 seconds
+  setTimeout(() => {
+    closeModal("error-modal");
+  }, timeout);
 }
 
 // call the function to show the error message: TEST

@@ -13,6 +13,7 @@ from rest_framework.exceptions import AuthenticationFailed
 from account.auth_middleware import JWTCookieAuthentication
 from django.template.loader import render_to_string
 from rest_framework.response import Response
+from .serializers import ChatRoomSerializer, MessageSerializer
 
 """ chat message related enpoints """
 class chatMessagesView(APIView):
@@ -21,18 +22,26 @@ class chatMessagesView(APIView):
 	template_name = 'chat/chat_messages.html'
 
 	def get(self, request):
-		# recipeint_username = request.GET.get('room', '')
 		room_name = request.GET.get('room', '')
+		recipeint_username = request.GET.get('recipient', '')
+		print(f"room_name: {room_name}, recipient: {recipeint_username}")
 		try:
-			# recipeint = Player.objects.get(username=recipeint_username)
-			# room_name = f"{min(request.user.id, recipeint.id)}_{max(request.user.id, recipeint.id)}"
 			chatroom = ChatRoom.objects.get(name=room_name)
 			messages = Message.objects.filter(room=chatroom).order_by('timestamp')
 			context = {
 				'messages': messages,
 				'current_user': PlayerSerializer(request.user).data
 			}
-			return Response({'messages': render_to_string(self.template_name, context)}, status=200)
+			return_json = {
+				'messages': render_to_string(self.template_name, context),
+				'is_blocked': False,
+			}
+			print("returning messages: ", return_json, flush=True)
+			if recipeint_username != 'deleted_player':
+				recipeint = Player.objects.get(username=recipeint_username)
+				return_json['is_blocked'] = request.user.is_blocked(recipeint)
+			print("returning messages: ", return_json, flush=True)
+			return Response(return_json, status=200)
 		except ChatRoom.DoesNotExist:
 			print("Error: ", e)
 			return Response({'error': "No active chatroom for with this player!"}, status=404)
@@ -52,6 +61,11 @@ class ChatRoomsView(APIView, BaseView):
 	""" get method to get all the chatrooms that the user is a participant in """
 	def handle_exception(self, exception):
 		if isinstance(exception, AuthenticationFailed):
+			if 'access token is invalid but refresh token is valid' in str(exception):
+				print(f'refresh token is valid to {self.request.path}', flush=True)
+				response = HttpResponseRedirect(self.request.path)
+				response.set_cookie('access_token', generate_access_token(self.request.COOKIES.get('refresh_token')), httponly=True, samesite='Lax', secure=True)
+				return response
 			signin_url = reverse('signin_page')
 			params = urllib.parse.urlencode({'next': self.request.path})
 			response = HttpResponseRedirect(f'{signin_url}?{params}')
@@ -66,7 +80,7 @@ class ChatRoomsView(APIView, BaseView):
 
 	def get_context_data(self, request):
 		""" get all the chatrooms that the user is a participant in """
-		chatrooms = ChatRoom.objects.filter(participants=request.user)
+		chatrooms = ChatRoom.objects.filter(participants=request.user).order_by('-conversed_at')
 		print(f"chatrooms {request.user.username} is involved in: ", chatrooms)
 		return {'chatrooms': chatrooms, 'user': PlayerSerializer(request.user).data}
 	
@@ -90,21 +104,5 @@ class ChatRoomsView(APIView, BaseView):
 					'participants_usernames': [sender.username, recipient.username]
 				}, status=201)
 		except Exception as e:
-			return Response({'error': e}, status=400)
-
-
-"""  block/unblock a player checker """
-class IsBlocked(APIView):
-	authentication_classes = [JWTCookieAuthentication]
-	permission_classes = [IsAuthenticated]
-
-	def get(self, request):
-		try:
-			recipient_username =request.GET.get('recipient', '')
-			print(f" we hitting the endpoint {recipient_username}", flush=True)
-			recipient = Player.objects.get(username=recipient_username)
-			if request.user.is_blocked(recipient):
-				return Response({'status': 'blocked'}, status=200)
-			return Response({'status': 'not_blocked'}, status=200)
-		except Exception as e:
-			return Response({'error': 'something happened while checking if user is blocked'}, status=400)
+			print("Error: ", e)
+			return Response({'error': "some shit happened!"}, status=400)

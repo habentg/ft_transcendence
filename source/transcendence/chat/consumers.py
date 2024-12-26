@@ -30,6 +30,22 @@ class chatConsumer(AsyncWebsocketConsumer):
     
     async def receive(self, text_data):
         data = json.loads(text_data)
+        if data['type'] == 'clear_chat':
+            room_id = data['room']
+            success = await self.clear_chat_in_chatroom(room_id)
+            if success:
+                await self.send(text_data=json.dumps({
+                    'type': 'room_deleted_notification',
+                    'message': 'Chatroom has been deleted',
+                    'room': room_id,
+                }))
+            else:
+                await self.send(text_data=json.dumps({
+                    'type': 'room_deleted_notification',
+                    'message': 'Chatroom could not be deleted',
+                    'room': room_id,
+                }))
+            return
         recipient_username = data['recipient']
         recipient = await database_sync_to_async(Player.objects.get)(username=recipient_username)
         if not recipient:
@@ -45,6 +61,10 @@ class chatConsumer(AsyncWebsocketConsumer):
             try:
                 priv_room = await database_sync_to_async(ChatRoom.objects.get)(name=room_id)
                 if await database_sync_to_async(recipient.is_blocked)(self.sender):
+                    print(f"{recipient.username} has blocked you", flush=True)
+                    return 
+                if await database_sync_to_async(self.sender.is_blocked)(recipient):
+                    print(f"you have blocked {recipient.username}", flush=True)
                     return 
                 await database_sync_to_async(Message.objects.create)(
                     room=priv_room,
@@ -61,6 +81,8 @@ class chatConsumer(AsyncWebsocketConsumer):
                         'message': message
                     }
                 )
+                # updating the last conversed time
+                await database_sync_to_async(priv_room.update_last_conversed)()
             except Exception as e:
                 print("Private MSG error: ", e, flush=True)
                 await self.send(text_data=json.dumps({
@@ -75,7 +97,7 @@ class chatConsumer(AsyncWebsocketConsumer):
                     print(f"{self.sender.username} blocked {recipient.username}", flush=True)
                     await self.send(text_data=json.dumps({
                         'type': 'block_unblock_player',
-                        'message': f'Unblocked {recipient_username}',
+                        'message': f'blocked {recipient_username}',
                         'action': 'blocked',
                         'recipient': recipient_username
                     }))
@@ -93,7 +115,7 @@ class chatConsumer(AsyncWebsocketConsumer):
                     await self.send(text_data=json.dumps({
                         'type': 'block_unblock_player',
                         'message': f'Unblocked {recipient_username}',
-                        'action': 'unblocked',
+                        'action': 'not_blocked',
                         'recipient': recipient_username
                     }))
                 except Exception as e:
@@ -103,6 +125,7 @@ class chatConsumer(AsyncWebsocketConsumer):
                         'message': f'Error unblocking user {recipient_username}'
                     }))
                     return
+
 
     """ message sending handler """
     async def chat_message_handler(self, event):
@@ -126,11 +149,13 @@ class chatConsumer(AsyncWebsocketConsumer):
     
     """ ------------------------- Helper functions -------------------------"""
     @database_sync_to_async
-    def delete_chatroom(self, room_name):
+    def clear_chat_in_chatroom(self, room_name):
         try:
             room = ChatRoom.objects.get(name=room_name)
-            room.participants.clear()
-            room.delete()
+            convos = Message.objects.filter(room=room)
+            convos.delete()
+            # room.participants.clear()
+            # room.delete()
             return True
         except Exception as e:
             print(f"Error during deletion of chatroom '{room_name}': {e}", flush=True)
@@ -168,25 +193,5 @@ class chatConsumer(AsyncWebsocketConsumer):
         except Exception as e:
             print("Exeption in validating token in FriendshipNotificationConsumer: ", e, flush=True)
             return None
-        #     if data['type'] == 'delete_chatroom':
-        #     success = await self.delete_chatroom(room_name)
-        #     if success:
-        #         await self.channel_layer.group_send(
-        #             room_group_name,
-        #             {
-        #                 'type': 'room_deleted_notification',
-        #                 'message': 'Chatroom has been deleted',
-        #                 'room': room_name
-        #             }
-        #         )
-        #         await self.channel_layer.group_discard(
-        #             room_group_name,
-        #             self.channel_name
-        #         )
-        #     else:
-        #         await self.send(text_data=json.dumps({
-        #             'type': 'room_deleted_notification_error',
-        #             'message': 'Chatroom could not be deleted',
-        #         }))
 
         # el

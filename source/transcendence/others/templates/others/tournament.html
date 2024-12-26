@@ -1,5 +1,197 @@
 {% load static %}
 
-	<div class="text-center">
-		<canvas id="board" class="mt-2 shadow"></canvas>
+<div class="tournamentPage">	
+	<div class="background-image w-100">
+		<div class="tournamentWrapper">
+			<!-- <div class="content p-5"> -->
+				<h1 class="text-center mb-5">Tournament Map</h1>
+				<div class="row d-flex position-relative ">
+					<!-- First Round -->
+					<div class="col-4 d-flex justify-content-center align-items-end">
+						<div class="round first-round mb-5">
+							<!-- <h6 class="text-center">First Round</h6> -->
+							<div class="vertical-line">
+								<!-- Game 1 -->
+								<div class="game game1 mb-5">
+									<div class="card">
+										<div class="card-body-custom">
+											<h5 class="card-title">Game 1</h5>
+											<div class="d-flex justify-content-between align-items-center">
+												<div class="team">
+													<i class="profileIcon fas fa-user-circle "></i>
+													<span class="">Miguel</span>
+												</div>
+												<div class="score">
+													<span class="score-value">5</span> : <span class="score-value ">1</span>
+												</div>
+												<div class="team">
+													<span>Tom</span>
+													<i class="profileIcon fas fa-user-circle "></i>
+												</div>
+											</div>
+										</div>
+										<div class="connection-line connection-1-5"></div>
+									</div>
+								</div>
+								<!-- Game 2 -->
+								<div class="game game2 mb-5">
+									<div class="card">
+										<div class="card-body-custom">
+											<h5 class="card-title">Game 2</h5>
+											<div class="d-flex justify-content-between align-items-center">
+												<div class="team">
+													<i class="profileIcon fas fa-user-circle "></i>
+													<span class="">Haben</span>
+												</div>
+												<div class="score">
+													<span class="score-value">5</span> : <span class="score-value ">3</span>
+												</div>
+												<div class="team">
+													<span >Nick</span>
+													<i class="profileIcon fas fa-user-circle "></i>
+												</div>
+											</div>
+										</div>
+									</div>
+									<div class="connection-line connection-2-5"></div>
+								</div>
+								<!-- Game 3 -->
+								<div class="game game3 mb-5">
+									<div class="card">
+										<div class="card-body-custom">
+											<h5 class="card-title">Game 3</h5>
+											<div class="d-flex justify-content-between align-items-center">
+												<div class="team">
+													<i class="profileIcon fas fa-user-circle "></i>
+													<span class="">Tim</span>
+												</div>
+												<div class="score">
+													<span class="score-value">2</span> : <span class="score-value ">5</span>
+												</div>
+												<div class="team">
+													<span class="">Martin</span>
+													<i class="profileIcon fas fa-user-circle "></i>
+												</div>
+											</div>
+										</div>
+									</div>
+									<div class="connection-line connection-3-6"></div>
+								</div>
+								<!-- Game 4 -->
+								<div class="game game4 mb-5">
+									<div class="card">
+										<div class="card-body-custom">
+											<h5 class="card-title">Game 4</h5>
+											<div class="d-flex justify-content-between align-items-center">
+												<div class="team">
+													<i class="profileIcon fas fa-user-circle "></i>
+													<span class="">Alex</span>
+												</div>
+												<div class="score">
+													<span class="score-value">4</span> : <span class="score-value ">5</span>
+												</div>
+												<div class="team">
+													<span class >Tofara</span>
+													<i class="profileIcon fas fa-user-circle "></i>
+												</div>
+											</div>
+										</div>
+									</div>
+									<div class="connection-line connection-4-6"></div>
+								</div>
+							</div>
+						</div>
+					</div>
+
+					<!-- Second Round -->
+					<div class="col-4 d-flex justify-content-center final4 ">
+						<div class="round second-round mb-5">
+							<!-- <h6 class="text-center">Second Round</h6> -->
+							<div class="vertical-line ">
+								<!-- Game 5 -->
+								<div class="game game5 ">
+									<div class="card">
+										<div class="card-body-custom">
+											<h5 class="card-title">Game 5</h5>
+											<div class="d-flex justify-content-between align-items-center">
+												<div class="team">
+													<i class="profileIcon fas fa-user-circle "></i>
+													<span class=" ">Miguel</span>
+												</div>
+												<div class="score">
+													<span class="score-value">5</span> : <span class="score-value ">4</span>
+												</div>
+												<div class="team">
+													<span class="">Haben</span>
+													<i class="profileIcon fas fa-user-circle "></i>
+												</div>
+											</div>
+										</div>
+									</div>
+									<div class="connection-line connection-5-7"></div>
+								</div>
+								<!-- Game 6 -->
+								<div class="game game6 mb-5">
+									<div class="card">
+										<div class="card-body-custom">
+											<h5 class="card-title">Game 6</h5>
+											<div class="d-flex justify-content-between align-items-center">
+												<div class="team">
+													<i class="profileIcon fas fa-user-circle "></i>
+													<span class=" ">Martin</span>
+												</div>
+												<div class="score">
+													<span class="score-value">5</span> : <span class="score-value ">4</span>
+												</div>
+												<div class="team">
+													<span>Tofara</span>
+													<i class="profileIcon fas fa-user-circle "></i>
+												</div>
+											</div>
+										</div>
+									</div>
+									<div class="connection-line connection-6-7"></div>
+								</div>
+							</div>
+						</div>
+					</div>
+
+					<!-- Final Round -->
+					<div class="col-4 d-flex justify-content-center last">
+						<div class="round final-round">
+							<!-- <h6 class="text-center">Final Round</h6> -->
+							<!-- <div class="vertical-line"> -->
+								<!-- Game 7 -->
+								<div class="game game7 mb-5">
+									<div class="card">
+										<div class="card-body-custom">
+											<h5 class="card-title">Game 7</h5>
+											<div class="d-flex justify-content-between align-items-center">
+												<div class="team">
+													<i class="profileIcon fas fa-user-circle "></i>
+													<span class=" ">Miguel</span>
+												</div>
+												<div class="score">
+													<span class="score-value">5</span> : <span class="score-value ">0</span>
+												</div>
+												<div class="team">
+													<span class="">Martin</span>
+													<i class="profileIcon fas fa-user-circle "></i>
+												</div>
+											</div>
+										</div>
+									</div>
+									<div class="connection-line connection-7-8"></div>
+								</div>
+							<!-- </div> -->
+						</div>
+					</div>
+				</div>
+			<!-- </div> -->
+			<!-- Continue Button-->
+			<div class="d-flex justify-content-center">
+				<button class="btn btn-primary">Continue</button>
+			</div>	
+		</div>
 	</div>
+</div>
