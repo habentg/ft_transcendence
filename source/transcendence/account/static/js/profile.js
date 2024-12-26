@@ -216,7 +216,8 @@ async function addFriendRequest() {
         "Cancel Request",
         ["btn", "btn-danger", "friendship_btn"],
         "cancel_request_btn",
-        "cancelFriendRequest()"
+        "cancelFriendRequest()",
+        ['fa-user-times', 'me-2']
       );
       const profile_info_container = document.getElementsByClassName(
         "profile_info_container"
@@ -255,7 +256,8 @@ async function cancelFriendRequest() {
         "Send Request",
         ["btn", "btn-primary", "friendship_btn"],
         "add_friend_btn",
-        "addFriendRequest()"
+        "addFriendRequest()",
+        ['fa-user-plus', 'me-2']
       );
       const profile_info_container = document.getElementsByClassName(
         "profile_info_container"
@@ -297,13 +299,15 @@ async function acceptOrDeclineFriendRequest(action, toBeFriend) {
           "Unfriend",
           ["btn", "btn-danger", "friendship_btn", "me-1", "mb-2"],
           "unfriend_btn",
-          "removeFriend()"
+          "removeFriend()",
+          ['fa-user-minus', 'me-2']
         );
         const chatBtn = createButton(
           "Chat",
           ["btn", "btn-dark", "friendship_btn", "mb-2"],
           "chat_btn",
-          `create_chatroom('${toBeFriend}')`
+          `create_chatroom('${toBeFriend}')`,
+          ['fa-comment-alt', 'me-2']
         );
 
         const profile_info_container = document.getElementsByClassName(
@@ -311,12 +315,16 @@ async function acceptOrDeclineFriendRequest(action, toBeFriend) {
         )[0];
         profile_info_container.appendChild(unfriendBtn);
         profile_info_container.appendChild(chatBtn);
+        // updating friend count
+        const friendCount = document.getElementById("nums_of_friends");
+        friendCount.textContent = parseInt(friendCount.textContent) + 1;
       } else {
         const sendFriendRequestBtn = createButton(
           "Send Request",
           ["btn", "btn-primary", "friendship_btn"],
           "add_friend_btn",
-          "addFriendRequest()"
+          "addFriendRequest()",
+          ['fa-user-plus', 'me-2']
         );
         const profile_info_container = document.getElementsByClassName(
           "profile_info_container"
@@ -357,12 +365,16 @@ async function removeFriend() {
         "Send Request",
         ["btn", "btn-primary", "friendship_btn"],
         "add_friend_btn",
-        "addFriendRequest()"
+        "addFriendRequest()",
+        ['fa-user-plus', 'me-2']
       );
       const profile_info_container = document.getElementsByClassName(
         "profile_info_container"
       )[0];
       profile_info_container.appendChild(sendFriendRequestBtn);
+      // updating friend count
+      const friendCount = document.getElementById("nums_of_friends");
+      friendCount.textContent = parseInt(friendCount.textContent) - 1;
       return;
     }
 
@@ -374,19 +386,19 @@ async function removeFriend() {
 
 // Function to initialize the profile page and add event listeners
 // function initProfilePage() {
-  // const updateProfilePicBtn = document.getElementById("change-profile-pic");
-  // if (updateProfilePicBtn) {
-  //   updateProfilePicBtn.addEventListener("click", updateProfilePic);
-  // }
+// const updateProfilePicBtn = document.getElementById("change-profile-pic");
+// if (updateProfilePicBtn) {
+//   updateProfilePicBtn.addEventListener("click", updateProfilePic);
+// }
 
-  // const updateUserInfoBtn = document.getElementById("update-user-info");
+// const updateUserInfoBtn = document.getElementById("update-user-info");
 
-  // if (updateUserInfoBtn) {
-  //   updateUserInfoBtn.addEventListener("click", () => {
-  //     console.log("Update user info");
-  //     updateProfileInfo();
-  //   });
-  // }
+// if (updateUserInfoBtn) {
+//   updateUserInfoBtn.addEventListener("click", () => {
+//     console.log("Update user info");
+//     updateProfileInfo();
+//   });
+// }
 // }
 
 /* sending request to create chat room between current user and a friend */

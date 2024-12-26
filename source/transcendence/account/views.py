@@ -8,6 +8,7 @@ from account.serializers import *
 from rest_framework_simplejwt.tokens import RefreshToken
 from django.views.decorators.csrf import csrf_protect
 import json
+import os
 from django.conf import settings
 import requests
 from .models import Player
@@ -59,11 +60,9 @@ class SignUpView(APIView, BaseView):
 				response = Response(status=status.HTTP_201_CREATED)
 				response.set_cookie('access_token', str(refresh.access_token), httponly=True, samesite='Lax', secure=True)
 				response.set_cookie('refresh_token', str(refresh), httponly=True, samesite='Lax', secure=True)
-				# create a friend list for the new player
 				FriendList.objects.create(player=new_player)
 				return response
 			return Response({'error_msg': 'Couldn\'t create the player'}, status=status.HTTP_422_UNPROCESSABLE_ENTITY)
-		print(serializer.errors, flush=True)
 		return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 	def get_context_data(self, request):
@@ -191,7 +190,7 @@ class OauthCallback(View):
 				img_temp.write(urlopen(image_url).read())
 				img_temp.flush()
 				ft_player.profile_picture.save(f"{ft_player.username}_pfp.jpg", File(img_temp))
-				ft_player.set_unusable_password()  # User can't login with password
+				ft_player.set_unusable_password()  # Player can't login with password
 				FriendList.objects.create(player=ft_player)
 		except Exception as e:
 			return render(request, 'others/base.html', {'css':['css/404.css'],'html': render_to_string('others/404.html', {'status_code': '500', 'error_msg_header': 'Internal Server Error', 'error_msg': 'Failed to create 42 user account. Either username/email is already in use!'})})
@@ -395,6 +394,7 @@ class PlayerProfileView(APIView, BaseView):
 				'is_requested_by_me': request.user.sent_requests.filter(receiver=queried_user).exists(),
 				'am_i_requested': request.user.received_requests.filter(sender=queried_user).exists(),
 				'is_self': queried_user == request.user,
+				'num_of_friends': queried_user.friend_list.friends.count(),
 			}
 		return data
 
@@ -417,13 +417,17 @@ class PlayerProfileUpdatingView(APIView, BaseView):
 			response.delete_cookie('refresh_token')
 			return response
 		response = HttpResponseRedirect(reverse('player_profile', kwargs={'username': self.request.user.username}))
-		print('Redirecting to player profile', flush=True)
 		return response
 
 	def delete(self, request):
 		player = request.user
+		access_token_string = request.COOKIES.get('access_token')
+		refresh_token_string = request.COOKIES.get('refresh_token')
+		if access_token_string:
+			add_token_to_blacklist(access_token_string)
+		if refresh_token_string:
+			add_token_to_blacklist(refresh_token_string)
 		player.delete()
-		
 		response = HttpResponseRedirect(reverse('landing'))
 		response.delete_cookie('access_token')
 		response.delete_cookie('refresh_token')

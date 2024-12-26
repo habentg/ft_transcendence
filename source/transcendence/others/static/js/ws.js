@@ -35,15 +35,26 @@ function handleFriendRequestUnfriend(data) {
   unfriendBtn.remove();
   chatBtn.remove();
 
-  const sendFriendRequestBtn = createButton('Send Request', ['btn', 'btn-primary', 'friendship_btn'], 'add_friend_btn', 'addFriendRequest()');
+  const sendFriendRequestBtn = createButton('Send Request', ['btn', 'btn-primary', 'friendship_btn'], 'add_friend_btn', 'addFriendRequest()', ['fa-user-plus', 'me-2']);
   const profile_info_container = document.getElementsByClassName("profile_info_container")[0];
   profile_info_container.appendChild(sendFriendRequestBtn);
+  // updating friend count
+  const friendCount = document.getElementById("nums_of_friends");
+  friendCount.textContent = parseInt(friendCount.textContent) - 1;
 }
 
 function handleFriendRequestRecieved(data) {
   const sendFriendRequestBtn = document.getElementById("add_friend_btn");
-  if (!sendFriendRequestBtn)
+  if (!sendFriendRequestBtn) {
+    const content = {
+      type: 'friend_request',
+      title: 'Friend Request',
+      message: `You have a friend request from ${data.sender}`,
+      sender: data.sender,
+    }
+    createToast(content);
     return;
+  }
   sendFriendRequestBtn.remove();
   const acceptButton = createButton('Accept', ['btn', 'btn-success', 'friendship_btn', 'me-1', 'mb-2'], 'accept_request_btn', `acceptOrDeclineFriendRequest('accept', '${data.sender}')`, ['fa-check', 'me-2']);
   const declineButton = createButton('Decline', ['btn', 'btn-danger', 'friendship_btn', 'mb-2'], 'decline_request_btn', `acceptOrDeclineFriendRequest('decline', '${data.sender}')`, ['fa-times', 'me-2']);
@@ -58,12 +69,15 @@ function handleFriendRequestAccept(data) {
     return;
   cancelFriendRequestBtn.remove();
 
-  const unfriendBtn = createButton('Unfriend', ['btn', 'btn-danger', 'friendship_btn', 'me-1', 'mb-2'], 'unfriend_btn', 'removeFriend()');
-  const chatBtn = createButton('Chat', ['btn', 'btn-dark', 'friendship_btn', 'mb-2'], 'chat_btn', `create_chatroom('${data.sender}')`);
+  const unfriendBtn = createButton('Unfriend', ['btn', 'btn-danger', 'friendship_btn', 'me-1', 'mb-2'], 'unfriend_btn', 'removeFriend()', ['fa-user-minus', 'me-2']);
+  const chatBtn = createButton('Chat', ['btn', 'btn-dark', 'friendship_btn', 'mb-2'], 'chat_btn', `create_chatroom('${data.sender}')`, ['fa-comment-alt', 'me-2']);
 
   const profile_info_container = document.getElementsByClassName("profile_info_container")[0];
   profile_info_container.appendChild(unfriendBtn);
   profile_info_container.appendChild(chatBtn);
+  // updating friend count
+  const friendCount = document.getElementById("nums_of_friends");
+  friendCount.textContent = parseInt(friendCount.textContent) + 1;
 }
 
 function handleFriendRequestDecline(data) {
@@ -71,7 +85,7 @@ function handleFriendRequestDecline(data) {
   if (!cancelFriendRequestBtn)
     return;
   cancelFriendRequestBtn.remove();
-  const sendFriendRequestBtn = createButton('Send Request', ['btn', 'btn-primary', 'friendship_btn'], 'add_friend_btn', 'addFriendRequest()');
+  const sendFriendRequestBtn = createButton('Send Request', ['btn', 'btn-primary', 'friendship_btn'], 'add_friend_btn', 'addFriendRequest()', ['fa-user-plus', 'me-2']);
   const profile_info_container = document.getElementsByClassName("profile_info_container")[0];
   profile_info_container.appendChild(sendFriendRequestBtn);
 }
@@ -85,7 +99,7 @@ function handleCancelFriendRequest(data) {
   accept_request_btn.remove();
   decline_request_btn.remove();
 
-  const sendFriendRequestBtn = createButton('Send Request', ['btn', 'btn-primary', 'friendship_btn'], 'add_friend_btn', 'addFriendRequest()');
+  const sendFriendRequestBtn = createButton('Send Request', ['btn', 'btn-primary', 'friendship_btn'], 'add_friend_btn', 'addFriendRequest()', ['fa-user-plus', 'me-2']);
   const profile_info_container = document.getElementsByClassName("profile_info_container")[0];
   profile_info_container.appendChild(sendFriendRequestBtn);
 }
@@ -145,9 +159,9 @@ async function addMessageToChat(data) {
       msg_indicator.textContent = "!";
       recipient_chatroom.appendChild(msg_indicator);
     }
-    else {
-      createToast("chat", `${data.sender} sent you a msg!`, `${data.message.slice(0, 50)}...`);
-    }
+    else
+      createToast(data);
+
     return;
   }
   const message = document.createElement("div");

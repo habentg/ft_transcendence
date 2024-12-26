@@ -403,6 +403,7 @@ td {
 	border-radius: 8px;
 	overflow: hidden;
 	border: none;
+	cursor: pointer;
 }
 
 #toast-header {

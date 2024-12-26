@@ -36,18 +36,14 @@ class chatMessagesView(APIView):
 				'messages': render_to_string(self.template_name, context),
 				'is_blocked': False,
 			}
-			print("returning messages: ", return_json, flush=True)
 			if recipeint_username != 'deleted_player':
 				recipeint = Player.objects.get(username=recipeint_username)
 				return_json['is_blocked'] = request.user.is_blocked(recipeint)
-			print("returning messages: ", return_json, flush=True)
 			return Response(return_json, status=200)
 		except ChatRoom.DoesNotExist:
-			print("Error: ", e)
 			return Response({'error': "No active chatroom for with this player!"}, status=404)
 		except Exception as e:
-			print("Error: ", e)
-			return Response({'error': "some shit happend"}, status=400)
+			return Response({'error': "some shit happend getting chatrooms"}, status=400)
 
 # everything about chatrooms - get, post, delete, patch
 class ChatRoomsView(APIView, BaseView):

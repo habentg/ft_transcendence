@@ -362,13 +362,14 @@ async function handleNotificationBellClick(action) {
 // }
 
 // Create a function to create a toast div and append it to the body
-function createToast(type, title, message) {
+function createToast(content) {
   const toast = document.createElement("div");
   toast.id = "toast";
   toast.classList.add("toast");
   toast.setAttribute("role", "alert");
   toast.setAttribute("aria-live", "assertive");
   toast.setAttribute("aria-atomic", "true");
+  toast.setAttribute("onclick", `messageToastClick('${JSON.stringify(content)}')`);
 
   // Create the toast-header div
   const toastHeader = document.createElement("div");
@@ -407,26 +408,43 @@ function createToast(type, title, message) {
   toast.appendChild(toastBody);
   document.body.appendChild(toast);
 
-  toastBody.textContent = message;
-  toastTitle.textContent = title;
-
-  if (type === "error") {
-    toastHeader.classList.remove("bg-primary", "text-light");
+  
+  if (`${content.type}` === "error") {
+    toastBody.textContent = `${content.error_message}`;
+    toastTitle.textContent = `${content.title} - Error`;
     toastHeader.classList.add("bg-danger", "text-white");
     toastIcon.className = "fas fa-exclamation-circle text-warning";
-  } else if (type === "chat") {
-    toastHeader.classList.remove("bg-danger", "text-white");
+  } else if (`${content.type}` === "chat_message") {
+    toastTitle.textContent = `${content.sender} has sent you a message`;
+    toastBody.textContent = `${content.message}`;
     toastHeader.classList.add("#84ddfc", "text-light");
-    toastIcon.className = "fas fa-comment-dots text-info";
-    // make the color of the icon red
+    toastIcon.className = "fas fa-comment-alt text-info mt-2";
     toastIcon.style.color = "red";
+  } else if (`${content.type}` === "friend_request") {
+    toastBody.textContent = `${content.message}`;
+    toastTitle.textContent = `${content.title}`;
+    toastHeader.classList.add("bg-secondary", "text-light");
+    toastIcon.className = "fas fa-user-plus";
   } else {
+    toastBody.textContent = `Some kind of notification`;
+    toastTitle.textContent = `Dont know what this is`;
     console.warn("Unknown toast type, defaulting to chat.");
-    toastHeader.classList.remove("bg-danger", "text-white");
     toastHeader.classList.add("bg-secondary", "text-light");
     toastIcon.className = "fas fa-info-circle";
   }
 
   const bsToast = new bootstrap.Toast(toast);
   bsToast.show();
+}
+
+// message toast onclick
+function messageToastClick(contentStr) {
+  const content = JSON.parse(contentStr);
+  console.log("content:", content);
+  if (`${content.type}` === 'chat_message') {
+    updateUI('/chat');
+  }
+  if (`${content.type}` === 'friend_request') {
+    updateUI(`/profile/${content.sender}`);
+  }
 }
