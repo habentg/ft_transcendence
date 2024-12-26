@@ -554,11 +554,7 @@ function secondPlayerNameModal() {
 
 // game settings modal for game settings
 function gameSettingsModal() {
-  const existingModal = document.getElementById("gameSettingsModal");
-  if (existingModal) {
-    existingModal.remove();
-  }
-  
+  console.log("##################1");
   const modal = document.createElement("div");
   modal.classList.add("modal");
   modal.id = "gameSettingsModal";
@@ -591,7 +587,8 @@ function gameSettingsModal() {
                 <input type="checkbox" class="form-check-input" id="parryMode">
                 <label class="form-check-label text-light" for="parryMode">Parry Mode</label>
             </div>
-            <div id="errorMessages" class="text-danger mb-3"></div>
+            <div id="error-msg" class="text-danger mb-3">
+            </div>
             <button id="applyButton" type="button" class="btn btn-primary w-100">Apply Settings</button>
           </form>
         </div>
@@ -600,25 +597,34 @@ function gameSettingsModal() {
   `;
 
   // show the modal
-  document.body.appendChild(modal);
-  document.body.classList.add("modal-open");
+  // if (document.body.appendChild(modal))
+  //   console.log("Child appended");
+  // if (document.body.classList.add("modal-open"))
+  //   console.log("modal open");
   
-  // Event Listeners
-  modal
-    .querySelector("#applyButton")
-    .addEventListener("click", changeSetting);
+  // console.log("Modal values", modal);
 
-  modal.addEventListener("keydown", (e) => {
-      if (e.key === "Enter") changeSetting();
-    });
+  // // Event Listeners
+  // modal
+  //   .querySelector("#applyButton")
+  //   .addEventListener("click", () => changeSetting(game));
+
+  // modal.addEventListener("keydown", (e) => {
+  //     console.log("keydown log for enter");
+  //     if (e.key === "Enter") changeSetting();
+  //   });
   
-  modal // close the modal
-    .querySelector(".btn-close")
-    .addEventListener("click", () => closeModal("gameSettingsModal"));
+  // modal // close the modal
+  //   .querySelector(".btn-close")
+  //   .addEventListener("click", () => {
+  //     console.log("keydown log for enter");
+  //     closeModal("gameSettingsModal")});
   
-  modal.addEventListener("click", (e) => {
-    if (e.target === modal) closeModal("gameSettingsModal");
-  });
+  // modal.addEventListener("click", (e) => {
+  //   console.log("keydown log for enter");
+  //   if (e.target === modal) closeModal("gameSettingsModal");
+  // });
+  return modal;
 }
 
 // ----------------- Modals for general purpose ----------------- //
