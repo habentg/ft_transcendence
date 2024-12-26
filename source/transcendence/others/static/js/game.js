@@ -1,429 +1,448 @@
-/*
-   todos
-	Need to work on AI logic. If the ball is too fast it wont be able to follow the ball.
-	keyinputs are working fine.
-*/
 
-//Game settings
-let paddleSpeed = 6;
-let ballSpeed = 2;
-let maxScore = 3;
-let slowServe = false;
+class Game {
+  constructor() {
+    // game flags
+    this.aiFlag = false;
+    this.versusFlag = false;
+    this.tournamentFlag = false;
 
-//this flags would determine which game mode we are playing
-let aiFlag = false;
-let parryFlag = false;
-let tournamentFlag = false;
-let versusFlag = false;
+    this.drawFlag = false // flag for stopping drawing
+  
+    //board values
+    this.board = null;
+    this.context = null;
+    this.boardWidth = 800;
+    this.boardHeight = 500;
+    this.playerWidth = 15;
+    this.playerHeight = 80;
+    
+    //players
+    this.players = [];
+    this.defp1Name = ""; //use for storing player names
+    this.defp2Name = "";
 
-// Board setup
-let board;
-let boardWidth = 800;
-let boardHeight = 500;
-let context;
 
-// Player setup
-let playerWidth = 15;
-let playerHeight = 80;
-let playerVelocityY = 0;
-let activeKeys = {};
-const cooldownTime = 3000; // cooldown for parry power up
+    this.lastTime = 0; // for fps
+    this.activeKeys = []; // for key inputs
+    
+    //setting variables
+    this.defballSpeed = 4;
+    this.paddleSpeed = 3;
+    this.maxScore = 5;
+    this.slowServe = false;
+    
+    // Parry variables
+    this.cooldownTime = 3000;
+    this.parryFlag = false;
 
-let players = [];
+    this.ball = {
+      x: this.boardWidth / 2,
+      y: this.boardHeight / 2,
+      velocityX: this.defballSpeed,
+      velocityY: this.defballSpeed,
+      ballRadius: 5
+    };
+  }
+
+  getboardWidth() {
+    return this.boardWidth;
+  }
+
+  getboardHeight() {
+    return this.boardHeight;
+  }
+
+  getplayerHeight() {
+    return this.playerHeight;
+  }
+
+  getplayerWidth() {
+    return this.playerWidth;
+  }
+
+  setupeventListeners() {
+    document.addEventListener("keydown", this.move);
+    document.addEventListener("keyup", this.stopMovement);
+  }
+
+  resetBall(direction) {
+    this.ball.x = this.boardWidth / 2;
+    this.ball.y = this.boardHeight / 2;
+    console.log("Ball values after reset = ", this.ball);
+    if (this.slowServe) {
+      // Apply reduced speed if slow serve is enabled
+      this.ball.velocityX = direction * Math.abs(this.defballSpeed) * 0.5;
+      this.ball.velocityY = 2 * (Math.random() > 0.5 ? 1 : -1) * 0.5;
+    } else {
+      // Use normal initial speed
+      this.ball.velocityX = direction * Math.abs(this.defballSpeed);
+      this.ball.velocityY = 2 * (Math.random() > 0.5 ? 1 : -1);
+    }
+  }
+
+  initializeBoard(boardElementId) {
+    this.board = document.getElementById(boardElementId);
+    this.board.width = this.getboardWidth();
+    this.board.height = this.getboardHeight();
+    this.context = this.board.getContext("2d");
+  }
+
+  createPlayer(name, position) {
+    const player = new Player(name, position, this);
+    this.players.push(player);
+    return player;
+  }
+  
+  updateParryFlag() {
+    this.parryFlag = document.getElementById("slowServe").checked;
+    return this.parryFlag;
+  }
+
+  move = (event) => {
+    this.activeKeys[event.code] = true;
+    console.log(`Key Down: ${event.code}`); // Debugging
+  }
+
+  stopMovement = (event) => {
+    this.activeKeys[event.code] = false;
+    console.log(`Key Up: ${event.code}`);
+  }
+}
 
 // need to convert everything to a class so it we could easily handle multiple players when tryin to play tournament mode
 class Player {
-  constructor(name, position) {
+  constructor(name, position, game) {
     this.playerName = name;
-    this.width = playerWidth;
-    this.height = playerHeight;
+    this.width = game.getplayerWidth();
+    this.height = game.getplayerHeight();
     this.cooldownFlag = false;
     this.parryCooldown = 0;
-    this.velocityY = playerVelocityY;
+    this.velocityY = 0;
     this.score = 0;
-    this.seed = 0; // this part is for randomizing brackets for the tournament
+    this.seed = 0; // this part is for randomizing brackets forthe tournament
     this.gameWon = 0;
     this.position = "";
     if (position === "left") {
       this.x = 10;
-      this.y = boardHeight / 2 - playerHeight / 2;
+      this.y = 500 / 2 - this.width / 2;
       this.parryKey = "KeyA";
+      this.moveUp = "KeyW";
+      this.moveDown = "KeyS";
     } else if (position === "right") {
-      this.x = boardWidth - playerWidth - 10;
-      this.y = boardHeight / 2 - playerHeight / 2;
+      this.x = 800 - this.width - 10;
+      this.y = 500 / 2 - this.height / 2;
       this.parryKey = "Numpad0";
-    }
-  }
-
-  setplayPos(position){
-    if (position === "left") {
-      this.x = 10;
-      this.y = boardHeight / 2 - playerHeight / 2;
-      this.parryKey = "KeyA";
-    } else if (position === "right") {
-      this.x = boardWidth - playerWidth - 10;
-      this.y = boardHeight / 2 - playerHeight / 2;
-      this.parryKey = "Numpad0";
+      this.moveUp = "ArrowUp";
+      this.moveDown = "ArrowDown";
     }
   }
 }
 
-// Ball setup
-let ballRadius = 7.5;
-let defballSpeed = 4.5;
-let ball = {
-  x: boardWidth / 2,
-  y: boardHeight / 2,
-  velocityX: defballSpeed,
-  velocityY: defballSpeed,
-};
 
-let drawFlag = false;
-let defp1Name = "";
-let defp2Name = "";
+function loadGame(){
+  //starting the game by getting game settings and intializingthe struct.
+  // make game obj. 
+  // window.game = new Game();
+  // const game = window.game;
+  const game = new Game();
+  game.initializeBoard("board"); //initialize the board
+  setgameMode(game); // set flags for which game mode
+  initPlayers(game);
+  
+  if (document.getElementById("settingButton")) {
+    document.getElementById("settingButton").addEventListener("click", () => {
+      console.log("Setting button ");
+      changeSetting(game);
+    });
+  }
 
-function loadGame() {
-  board = document.getElementById("board");
-  board.height = boardHeight;
-  board.width = boardWidth;
-  context = board.getContext("2d");
-
-  defp1Name = document.getElementById("player1Name").textContent;
-
-  // requestAnimationFrame(draw);
   if (document.getElementById("startButton")) {
-    // get Player 2 name and display it from secondPlayerNameModal modal
-    const modal = secondPlayerNameModal();
-    document.body.appendChild(modal);
-    // Event Listeners
-    modal
-      .querySelector("#submitSecondPlayerNameBtn")
-      .addEventListener("click", () => {
-        // get the submitted name
-        defp2Name = modal.querySelector("#secondPlayerName").value;
-        if (defp2Name) {
-          // close the modal and return the second player name
-          console.log("Second Player Name: ", defp2Name);
-
-          // replace player 2 with second player name
-          document.getElementById("player2Name").textContent = "@ " + defp2Name;
-          document.getElementById("player2Name").style.display = "block";
-
-          closeModal("secondPlayerNameModal");
-        } else {
-          // show error message if the input is empty and prevent the modal from closing
-          const errorMsg = document.getElementById("local-game-error-msg");
-          errorMsg.textContent = "Please enter the name of the second player.";
-          errorMsg.style.display = "block";
-        }
-      });
-
-    // submit when Enter key is pressed
-    modal
-      .querySelector("#secondPlayerName")
-      .addEventListener("keypress", (event) => {
-        if (event.key === "Enter") {
-          modal.querySelector("#submitSecondPlayerNameBtn").click();
-        }
-      });
-
-    // Close & submit the modal when the close button is clicked
-    modal.querySelector(".btn-close").addEventListener("click", () => {
-      modal.querySelector("#submitSecondPlayerNameBtn").click();
-      // closeModal("secondPlayerNameModal");
-    });
-
-    // Close & the modal when the modal is clicked outside
-    modal.addEventListener("click", (event) => {
-      if (event.target === modal) {
-        modal.querySelector("#submitSecondPlayerNameBtn").click();
-        // closeModal("secondPlayerNameModal");
-      }
-    });
-
-    initGame(); //initializing the game flags and adding players etc.
-    console.log("Player 1 values:", players[0]);
-    console.log("Player 2 values:", players[1]);
     document.getElementById("startButton").addEventListener("click", () => {
-      // send to backend to create the game -
-      /* 
-			
-			const resp = await fetch("/game", {
-				method: "POST",
-				headers:{},
-				body: json.stringfy({
-				name: player_two,
-				game_type:ai/local/tourna
-			})
-			})
-			
-			*/
-      /* return id */
-      startGame(players[0], players[1]);
+      console.log("Game values before starting the game", game);
+      startGame(game);
     });
   }
 
   if (document.getElementById("aiButton")) {
     document.getElementById("aiButton").addEventListener("click", () => {
-      initGame();
       document
         .getElementById("aiButton")
-        .addEventListener("click", startaiGame(players[0], players[1]));
+        startaiGame(game);
     });
   }
-
-  document.addEventListener("keydown", move);
-  document.addEventListener("keyup", stopMovement);
-  //   displayStartMessage();
 }
 
-// function for getting game mode (ai , 1v1, tournament)w
-function getgameMode() {
-  if (document.getElementById("aiButton")) return "ai";
-  else if (document.getElementById("startButton")) return "versus";
-  // return document.getElementById("gameType").textContent;
-}
 
-function isparryFlag() {
-  return document.getElementById("slowServe").checked;
-}
+function startGame(game) {
+  game.drawFlag = true;
 
-//function to initialize game based on the game mode
-function initGame() {
-  const gameMode = getgameMode();
-
-  if (gameMode === "versus") {
-    players.push(new Player(defp1Name, "left"));
-    players.push(new Player(defp2Name, "right"));
-    versusFlag = true;
-  } else if (gameMode === "ai") {
-    players.push(new Player(defp1Name, "left"));
-    players.push(new Player("AI - HARD", "right"));
-    aiFlag = true;
-  } else if (gameMode === "tournament") {
-    /* 
-			// run tournament logic, create players etc.
-			// tournamentFlag = true;
-			// tournamentLogic();
- 		*/
-  }
-}
-
-function changeSetting() {
-  // valid ranges for the settings
-  const MIN_PADDLE_SPEED = 1,
-    MAX_PADDLE_SPEED = 10;
-  const MIN_BALL_SPEED = 1,
-    MAX_BALL_SPEED = 10;
-  const MIN_MAX_SCORE = 1,
-    MAX_MAX_SCORE = 20;
-
-  const paddleSpeedInput = parseInt(
-    document.getElementById("paddleSpeed").value
-  );
-
-  // const ballSpeedInput = parseFloat(document.getElementById("ballSpeed").value);
-  const maxScoreInput = parseInt(document.getElementById("maxScore").value);
-  const slowServeInput = document.getElementById("slowServe").checked;
-  const parryInput = document.getElementById("parryMode").checked;
-
-  let errors = [];
-
-  if (
-    paddleSpeedInput < MIN_PADDLE_SPEED ||
-    paddleSpeedInput > MAX_PADDLE_SPEED
-  ) {
-    errors.push(
-      `Paddle Speed must be between ${MIN_PADDLE_SPEED} and ${MAX_PADDLE_SPEED}.`
-    );
-  }
-  // if (ballSpeedInput < MIN_BALL_SPEED || ballSpeedInput > MAX_BALL_SPEED) {
-  //   errors.push(
-  //     `Ball Speed must be between ${MIN_BALL_SPEED} and ${MAX_BALL_SPEED}.`
-  //   );
-  // }
-  if (maxScoreInput < MIN_MAX_SCORE || maxScoreInput > MAX_MAX_SCORE) {
-    errors.push(
-      `Winning Score must be between ${MIN_MAX_SCORE} and ${MAX_MAX_SCORE}.`
-    );
-  }
-  const errorContainer = document.getElementById("errorMessages");
-  errorContainer.innerHTML = ""; // Clear existing messages
-  if (errors.length > 0) {
-    errors.forEach((error) => {
-      const errorElement = document.createElement("p");
-      errorElement.textContent = error;
-      errorElement.style.color = "red";
-      errorContainer.appendChild(errorElement);
-    });
-    return; // Stop applying settings if there are errors
-  }
-
-  paddleSpeed = paddleSpeedInput;
-  defballSpeed = ballSpeedInput;
-  maxScore = maxScoreInput;
-  slowServe = slowServeInput;
-  parryFlag = parryInput;
-
-  // document.getElementById("settingsMenu").style.display = "none";
-  console.log("Settings Applied: ", {
-    paddleSpeed,
-    defballSpeed,
-    maxScore,
-    slowServe,
-    parryFlag,
-  });
-
-  ball.velocityX = ball.velocityX > 0 ? defballSpeed : -defballSpeed;
-  ball.velocityY = ball.velocityY > 0 ? defballSpeed : -defballSpeed;
-
-  // document.getElementById("settingsMenu").style.display = "none";
-  console.log("Settings Applied: ", { paddleSpeed, defballSpeed, maxScore });
-  closeModal("gameSettingsModal");
-}
-
-function startGame(player1, player2) {
-  drawFlag = true;
-
+  game.setupeventListeners();
   document.getElementById("player1").classList.remove("d-none");
   document.getElementById("player2").classList.remove("d-none");
-
+  document.getElementById("startButton").disabled = true; //disable start button when the game starts
+  document.getElementById("settingButton").disabled = true;
   document.getElementById("startButton").disabled = true; //disable start button when the game starts
   document.getElementById("settingButton").disabled = true;
 
-  document.getElementById("startButton").disabled = true; //disable start button when the game starts
-  document.getElementById("settingButton").disabled = true;
-  requestAnimationFrame(() => draw(player1, player2));
+  requestAnimationFrame((timestamp) => gameLoop(game, timestamp));
 }
 
-function drawLine() {
-  // Draw dotted line in the middle
-  context.setLineDash([10, 20]); // Pattern: 5px dash, 15px space
-  context.strokeStyle = "white"; // Line color
-  context.lineWidth = 5; // Line thickness
-  context.beginPath();
-  context.moveTo(boardWidth / 2, 0); // Start at the top middle
-  context.lineTo(boardWidth / 2, boardHeight); // Draw to the bottom middle
-  context.stroke();
-  context.setLineDash([]); // Reset line dash to solid
-}
+function gameLoop(game, timestamp) {
+  const fps = 60;
+  const interval = 1000 / fps;
 
-function draw(player1, player2) {
-  if (!drawFlag) {
-    return;
+  // console.log("GameLoop playerHeight", game.playerHeight);
+  if (timestamp - game.lastTime >= interval) {
+    game.lastTime = timestamp;
+    // Update game values
+    updategameValues(game.players[0], game.players[1], game);
+    // Draw the game
+    draw(game.players[0], game.players[1], game);
   }
-  // Clear board
-  context.clearRect(0, 0, board.width, board.height);
-  // requestAnimationFrame(draw(player1, player2));
-  // til this part
-  updatePaddleVelocities(player1, player2);
-  
-  // if (aiFlag) aiLogic();
-  drawLine(); //draw line in the middle
-  drawPlayers(player1, player2); //draw players
-  drawBall();
-  
-  // Checks if the position will be inside the map and adjusts its movement speed
+
+  // Continue the loop if drawFlag is true
+  if (game.drawFlag) {
+    requestAnimationFrame((newTimestamp) => gameLoop(game, newTimestamp));
+  }
+}
+
+function updategameValues(player1, player2, game) {
   if (!oob(player1.y + player1.velocityY)) player1.y += player1.velocityY;
   if (!oob(player2.y + player2.velocityY)) player2.y += player2.velocityY;
-  
+
+  updatePaddleVelocities(player1, player2, game);
+
   // Update ball position
-  ball.x += ball.velocityX;
-  ball.y += ball.velocityY;
-  
-  // Check ball collision with walls(top and bottom wall)
-  if (ball.y - ballRadius <= 0 || ball.y + ballRadius >= boardHeight)
-    ball.velocityY *= -1;
-  
+  game.ball.x += game.ball.velocityX;
+  game.ball.y += game.ball.velocityY;
+
+  if ((game.ball.y - game.ball.ballRadius <= 0) || (game.ball.y + game.ball.ballRadius >= game.boardHeight))
+    game.ball.velocityY *= -1;
+
   // Check ball collision with players
-  ballCollision(ball, player1, "left");
-  ballCollision(ball, player2, "right");
-  
-  displayScores(player1, player2);
-  // Check for goals
-  if (ball.x - ballRadius < 0) {
+  ballCollision(game.ball, player1, "left", game);
+  ballCollision(game.ball, player2, "right", game);
+
+  if (game.ball.x - game.ball.ballRadius < 0) {
     player2.score++;
-    resetGame(player1, player2, 1);
-  } else if (ball.x + ballRadius > boardWidth) {
+    resetGame(player1, player2, 1, game);
+  } else if (game.ball.x + game.ball.ballRadius > game.boardWidth) {
     player1.score++;
-    resetGame(player1, player2, -1);
+    resetGame(player1, player2, -1, game);
   }
+
+}
+
+function draw(player1, player2, game) {
+  if (!game.drawFlag) return;
+
+  // Clear board
+  game.context.clearRect(0, 0, game.board.width, game.board.height);
+  drawLine(game); //draw line in the middle
+  drawPlayers(player1, player2, game); //draw players
+  drawBall(game); // draw the ball obviously
+  displayScores(player1, player2, game);
+}
+
+function drawPlayers(player1, player2, game) {
+  if (!player1.cooldownFlag && game.parryFlag)
+    drawCapsulePaddle(
+      player1.x,
+      player1.y,
+      player1.width,
+      player1.height,
+      player1.width / 2,
+      "#84ddfc",
+      "green",
+      game
+    );
+  else
+    drawCapsulePaddle(
+      player1.x,
+      player1.y,
+      player1.width,
+      player1.height,
+      player1.width / 2,
+      "#84ddfc",
+      "black",
+      game
+    );
+  if (!player2.cooldownFlag && game.parryFlag)
+    drawCapsulePaddle(
+      player2.x,
+      player2.y,
+      player2.width,
+      player2.height,
+      player2.width / 2,
+      "#84ddfc",
+      "green",
+      game
+    );
+  else
+    drawCapsulePaddle(
+      player2.x,
+      player2.y,
+      player2.width,
+      player2.height,
+      player2.width / 2,
+      "#84ddfc",
+      "black",
+      game
+    );
+}
+
+function drawCapsulePaddle(
+  x,
+  y,
+  width,
+  height,
+  radius,
+  fillColor,
+  borderColor,
+  game
+) {
+  game.context.beginPath();
+  game.context.arc(x + width / 2, y + radius, radius, Math.PI, 0); // Top cap
+  game.context.lineTo(x + width, y + height - radius); // Right edge
+  game.context.arc(x + width / 2, y + height - radius, radius, 0, Math.PI); // Bottom cap
+  game.context.lineTo(x, y + radius); // Left edge
+  game.context.closePath();
+
+  game.context.fillStyle = fillColor; // Fill color
+  game.context.fill();
+  if (borderColor) {
+    game.context.strokeStyle = borderColor; // Border color
+    game.context.stroke();
+  }
+}
+
+function drawBall(game) {
+  game.context.beginPath();
+  game.context.arc(game.ball.x, game.ball.y, game.ball.ballRadius, 0, Math.PI * 2);
+  game.context.fillStyle = "#b02c98";
+  game.context.fill();
+  game.context.closePath();
+}
+
+function displayScores(player1, player2, game) {
+  game.context.fillStyle = "#ffffff";
+  game.context.font = "40px Orbitron";
+  game.context.fillText(player1.score, game.boardWidth / 5, 45);
+  game.context.fillText(player2.score, (game.boardWidth * 4) / 5, 45);
+}
+
+/// sets flag based on the button clicked
+function setgameMode(game) {
+  if (document.getElementById("aiButton")) {
+      game.aiFlag = true;
+      game.versusFlag = false;
+      game.tournamentFlag = false;
+  } else if (document.getElementById("startButton")) {
+      game.aiFlag = false;
+      game.versusFlag = true;
+      game.tournamentFlag = false;
+  } 
+}
+
+function initPlayers(game) {
+  game.defp1Name = document.getElementById("player1Name").textContent;
+  if (game.aiFlag) {
+    game.createPlayer(game.defp1Name, "left");
+    game.createPlayer("Artificial Stupidity", "right");
+  } else if (game.versusFlag) {
+    initializeModal(game);
+    game.createPlayer(game.defp1Name, "left");
+    game.createPlayer(game.defp2Name, "right");
+  }
+}
+
+
+// modal to get 2nd player name, need for versus(1v1) game mode.
+function initializeModal(game) {
   
-  // requestAnimationFrame(() => draw(player1, player2));
-}
-      
-// Display scores
-function displayScores(player1, player2) {
-  context.fillStyle = "#ffffff";
-  context.font = "40px Orbitron";
-  context.fillText(player1.score, boardWidth / 5, 45);
-  context.fillText(player2.score, (boardWidth * 4) / 5, 45);
+  const modal = secondPlayerNameModal();
+
+  document.body.appendChild(modal);
+    modal.querySelector("#submitSecondPlayerNameBtn").addEventListener("click", () => {
+      const secondPlayerName = modal.querySelector("#secondPlayerName").value;
+      if (secondPlayerName) {
+        game.defp2Name = secondPlayerName;
+        document.getElementById("player2Name").textContent = `@ ${secondPlayerName}`;
+        document.getElementById("player2Name").style.display = "block";
+        game.createPlayer(secondPlayerName, "right");
+        modal.remove();
+      } else {
+        const errorMsg = document.getElementById("local-game-error-msg");
+        errorMsg.textContent = "Please enter the name of the second player.";
+        errorMsg.style.display = "block";
+      }
+    });
+
+    modal.querySelector("#secondPlayerName").addEventListener("keypress", (event) => {
+      if (event.key === "Enter") {
+        modal.querySelector("#submitSecondPlayerNameBtn").click();
+      }
+    });
+
+    modal.querySelector(".btn-close").addEventListener("click", () => {
+      modal.querySelector("#submitSecondPlayerNameBtn").click();
+    });
+
+    modal.addEventListener("click", (event) => {
+      if (event.target === modal) {
+        modal.querySelector("#submitSecondPlayerNameBtn").click();
+      }
+    });
 }
 
-function drawBall() {
-  context.beginPath();
-  context.arc(ball.x, ball.y, ballRadius, 0, Math.PI * 2);
-  context.fillStyle = "#b02c98";
-  context.fill();
-  context.closePath();
-}
-
-function updatePaddleVelocities(player1, player2) {
-  // Player 1 movement
-  // console.log("Player 1 values:", player1);
-  // console.log("Player 2 values:", player2);
-  if (activeKeys["KeyW"]) {
-    player1.velocityY = -paddleSpeed;
-  } else if (activeKeys["KeyS"]) {
-    player1.velocityY = paddleSpeed;
+function updatePaddleVelocities(player1, player2 , game) {
+  if (game.activeKeys["KeyW"]) {
+    player1.velocityY = -game.paddleSpeed;
+  } else if (game.activeKeys["KeyS"]) {
+    player1.velocityY = game.paddleSpeed;
   } else {
     player1.velocityY = 0;
   }
 
   // Player 2 movement
-  if (activeKeys["ArrowUp"]) {
-    player2.velocityY = -paddleSpeed;
-  } else if (activeKeys["ArrowDown"]) {
-    player2.velocityY = paddleSpeed;
+  if (game.activeKeys["ArrowUp"]) {
+    player2.velocityY = -game.paddleSpeed;
+  } else if (game.activeKeys["ArrowDown"]) {
+    player2.velocityY = game.paddleSpeed;
   } else {
     player2.velocityY = 0;
   }
-  
-  if (parryFlag) {
-    if (activeKeys["KeyA"] && !player1.cooldownFlag) {
-      if (isParry(player1)) {
-        ball.velocityX *= 2;
-        ball.velocityY = 0;
+
+  if (game.parryFlag) {
+    if (game.activeKeys["KeyA"] && !player1.cooldownFlag) {
+      if (isParry(player1, game)) {
+        game.ball.velocityX *= 2;
+        game.ball.velocityY = 0;
       }
-      parryCoolDown(player1);
+      parryCoolDown(player1, game);
     }
-    if (activeKeys["Numpad0"] && !player2.cooldownFlag) {
-      if (isParry(player2)) {
+    if (game.activeKeys["Numpad0"] && !player2.cooldownFlag) {
+      if (isParry(player2, game)) {
         ball.velocityX *= -2;
         ball.velocityY = 0;
       }
-      parryCoolDown(player2);
+      parryCoolDown(player2, game);
     }
     parryRefresh(player1);
     parryRefresh(player2);
   }
 }
 
-function isParry(player) {
+function isParry(player, game) {
   const parryRange = 10; // Adjust as needed
   const ballNearPlayer =
-    player.x < boardWidth / 2 // Check which side the player is on
-      ? ball.x - ballRadius <= player.x + player.width + parryRange // Near Player 1
-      : ball.x + ballRadius >= player.x - parryRange; // Near Player 2
+    player.x < game.boardWidth / 2 // Check which side the player is on
+      ? game.ball.x - game.ball.ballRadius <= player.x + player.width + parryRange // Near Player 1
+      : game.ball.x + game.ball.ballRadius >= player.x - parryRange; // Near Player 2
   const withinVerticalRange =
-    ball.y + ballRadius > player.y &&
-    ball.y - ballRadius < player.y + player.height;
+    game.ball.y + game.ballRadius > player.y &&
+    game.ball.y - game.ballRadius < player.y + player.height;
   return ballNearPlayer && withinVerticalRange;
-}
-
-function parryCoolDown(player) {
-  player.cooldownFlag = true;
-  player.parryCooldown = Date.now() + cooldownTime;
 }
 
 function parryRefresh(player) {
@@ -432,93 +451,75 @@ function parryRefresh(player) {
   }
 }
 
-function move(e) {
-  activeKeys[e.code] = true;
-  console.log(`Key Down: ${e.code}`); // Debugging
+function parryCoolDown(player, game) {
+  player.cooldownFlag = true;
+  player.parryCooldown = Date.now() + game.cooldownTime;
 }
 
-function stopMovement(e) {
-  activeKeys[e.code] = false;
-  console.log(`Key Up: ${e.code}`);
-}
-
-// function to check if the paddle is inside the walls, by walls the top and bottom part of the board.
 function oob(yPosition) {
-  return yPosition < 0 || yPosition + playerHeight > boardHeight;
+  return yPosition < 0 || yPosition + 80 > 500;
 }
+
 
 function ballCollision(ball, player, position) {
   // Define the maximum speed for the ball
   const MAX_SPEED_X = 8; // Maximum horizontal speed (velocityX)
   const MAX_SPEED_Y = 10; // Maximum vertical speed (velocityY)
 
-  let isCollision =
-    ball.x - ballRadius < player.x + player.width && // Right side of the ball is past the left side of the player
-    ball.x + ballRadius > player.x && // Left side of the ball is past the right side of the player
-    ball.y + ballRadius > player.y && // Bottom side of the ball is past the top of the player
-    ball.y - ballRadius < player.y + player.height; // Top side of the ball is past the bottom of the player
+  // Predict the ball's previous position
+  const prevX = ball.x - ball.velocityX;
+  const prevY = ball.y - ball.velocityY;
 
-  if (isCollision) {
-    // Reverse the horizontal direction based on which side of the paddle the ball hits
+  // Check for a collision using both the current and previous positions
+  let isCollision =
+    ball.x - ball.ballRadius < player.x + player.width && // Current position: Right side of the ball is past the left side of the player
+    ball.x + ball.ballRadius > player.x && // Current position: Left side of the ball is past the right side of the player
+    ball.y + ball.ballRadius > player.y && // Current position: Bottom side of the ball is past the top of the player
+    ball.y - ball.ballRadius < player.y + player.height; // Current position: Top side of the ball is past the bottom of the player
+
+  let wasCollision =
+    prevX - ball.ballRadius < player.x + player.width && // Previous position: Right side of the ball is past the left side of the player
+    prevX + ball.ballRadius > player.x && // Previous position: Left side of the ball is past the right side of the player
+    prevY + ball.ballRadius > player.y && // Previous position: Bottom side of the ball is past the top of the player
+    prevY - ball.ballRadius < player.y + player.height; // Previous position: Top side of the ball is past the bottom of the player
+
+  // If either current or previous position indicates a collision, handle it
+  if (isCollision || wasCollision) {
     let hitPosition = (ball.y - player.y) / player.height; // Normalize hit position between 0 and 1
     let section = Math.floor(hitPosition * 4); // Section index (0, 1, 2, 3)
 
     if (position === "left") {
-      // Ball hit the left player's paddle, reverse the horizontal velocity
+      // Ball hit the left player's paddle
       ball.velocityX = Math.abs(ball.velocityX); // Ensure velocityX is positive (moving right)
-
-      switch (section) {
-        case 0: // Top section (first 1/4th of the paddle)
-          ball.velocityY = 2.5; // Strong upwards angle
-          break;
-        case 1: // Upper middle section (second 1/4th of the paddle)
-          ball.velocityY = -1.5; // Slightly upwards
-          break;
-        case 2: // Lower middle section (third 1/4th of the paddle)
-          ball.velocityY = 1.5; // Slightly downwards
-          break;
-        case 3: // Bottom section (last 1/4th of the paddle)
-          ball.velocityY = -2.5; // Strong downward angle
-          break;
-      }
     } else if (position === "right") {
-      // Ball hit the right player's paddle, reverse the horizontal velocity
+      // Ball hit the right player's paddle
       ball.velocityX = -Math.abs(ball.velocityX); // Ensure velocityX is negative (moving left)
-
-      switch (section) {
-        case 0: // Top section (first 1/4th of the paddle)
-          ball.velocityY = -2.5; // Strong upwards angle
-          break;
-        case 1: // Upper middle section (second 1/4th of the paddle)
-          ball.velocityY = -1.5; // Slightly upwards
-          break;
-        case 2: // Lower middle section (third 1/4th of the paddle)
-          ball.velocityY = 1.5; // Slightly downwards
-          break;
-        case 3: // Bottom section (last 1/4th of the paddle)
-          ball.velocityY = 2.5; // Strong downward angle
-          break;
-      }
     }
 
-    // Optional: Increase the ball's speed based on where it hits the paddle
-    if (section === 0 || section === 3) {
-      if (ball.velocityX * 1.2 > MAX_SPEED_X)
-          ball.velocityX = MAX_SPEED_X;
-      else
-        ball.velocityX *= 1.2; // Slightly increase the horizontal speed for top/bottom hits (more challenge)
+    // Adjust vertical velocity based on the section of the paddle hit
+    switch (section) {
+      case 0:
+        ball.velocityY = -1.5; // Strong upwards angle
+        break;
+      case 1:
+        ball.velocityY = -1.0; // Slightly upwards
+        break;
+      case 2:
+        ball.velocityY = 1.0; // Slightly downwards
+        break;
+      case 3:
+        ball.velocityY = 1.5; // Strong downward angle
+        break;
     }
 
-    // Resolve collision by moving the ball just outside the paddle (avoid sticking or going through the paddle)
+    // Resolve collision by moving the ball outside the paddle
     if (position === "left") {
-      // Ball hit the left player's paddle, so move it just to the right of the paddle
-      ball.x = player.x + player.width + ballRadius;
+      ball.x = player.x + player.width + ball.ballRadius;
     } else if (position === "right") {
-      // Ball hit the right player's paddle, so move it just to the left of the paddle
-      ball.x = player.x - ballRadius;
+      ball.x = player.x - ball.ballRadius;
     }
 
-    // Clamp the velocities to ensure they do not exceed the maximum speed
+    // Clamp velocities to the maximum allowed speeds
     ball.velocityX = Math.min(
       Math.max(ball.velocityX, -MAX_SPEED_X),
       MAX_SPEED_X
@@ -527,37 +528,38 @@ function ballCollision(ball, player, position) {
       Math.max(ball.velocityY, -MAX_SPEED_Y),
       MAX_SPEED_Y
     );
+
+    return true; // Indicate a collision occurred
   }
 
-  return isCollision;
+  return false; // No collision detected
 }
 
-function resetGame(player1, player2, direction) {
+
+function resetGame(player1, player2, direction, game) {
   //bring back ball to the middle
-  ball.x = boardWidth / 2;
-  ball.y = boardHeight / 2;
+  game.resetBall(direction);
   //resets cooldown of the parry
-  if (parryFlag) {
+  if (game.parryFlag) {
     player1.cooldownFlag = false;
     player2.cooldownFlag = false;
     player1.parryCooldown = 0;
     player2.parryCooldown = 0;
   }
 
-  if (slowServe) {
+  if (game.slowServe) {
     // Apply reduced speed if slow serve is enabled
-    ball.velocityX = direction * Math.abs(defballSpeed) * 0.5;
-    ball.velocityY = 2 * (Math.random() > 0.5 ? 1 : -1) * 0.5;
+    game.ball.velocityX = direction * Math.abs(game.defballSpeed) * 0.5;
+    game.ball.velocityY = 2 * (Math.random() > 0.5 ? 1 : -1) * 0.5;
   } else {
     // Use normal initial speed
-    ball.velocityX = direction * Math.abs(defballSpeed);
-    ball.velocityY = 2 * (Math.random() > 0.5 ? 1 : -1);
+    game.ball.velocityX = direction * Math.abs(game.defballSpeed);
+    game.ball.velocityY = 2 * (Math.random() > 0.5 ? 1 : -1);
   }
 
-  // drawFlag = !isGameOver();
-  if (isGameOver(player1, player2)) {
-    drawFlag = false;
-    aiFlag = false;
+  if (isGameOver(player1, player2, game)) {
+    game.drawFlag = false;
+    game.aiFlag = false;
     console.log("Game Over: SHOULD RETURN SETTINGS MENU");
 
     if (document.getElementById("aiButton")) {
@@ -572,124 +574,63 @@ function resetGame(player1, player2, direction) {
   }
 }
 
-function isGameOver(player1, player2) {
-  if (player1.score >= maxScore || player2.score >= maxScore) {
-    displayGameOver(player1, player2);
-    displayScores(player1, player2);
-    resetScores(player1, player2);
+function isGameOver(player1, player2, game) {
+  if (player1.score >= game.maxScore || player2.score >= game.maxScore) {
+    displayGameOver(player1, player2, game);
+    displayScores(player1, player2, game);
+    resetScores(player1, player2, game);
     return true;
   }
   return false;
 }
 
-function resetScores(player1, player2) {
+function resetScores(player1, player2,game) {
   if (player1) {
-    if (player1.score === maxScore)
+    if (player1.score === game.maxScore)
         player1.gamesWon += 1;
     player1.score = 0;
   }
   if (player2) {
-    if (player2.score === maxScore)
+    if (player2.score === game.maxScore)
       player2.gamesWon += 1;
     player2.score = 0;
   }
 }
 
-// this display sucks need a better one
-function displayGameOver(player1, player2) {
-  context.clearRect(0, 0, board.width, board.height);
+function displayGameOver(player1, player2, game) {
+  game.context.clearRect(0, 0, game.board.width, game.board.height);
 
-  context.font = "45px Orbitron";
-  context.fillStyle = "84ddfc";
+  game.context.font = "45px Orbitron";
+  game.context.fillStyle = "84ddfc";
   let winner =
-    player1.score >= maxScore ? player1.playerName : player2.playerName;
-  context.textAlign = "center"; // Aligns the text horizontally to the center
-  context.textBaseline = "middle"; // Aligns the text vertically to the center
-  context.fillText(`${winner} Wins!`, boardWidth / 2, boardHeight / 2);
+    player1.score >= game.maxScore ? player1.playerName : player2.playerName;
+  game.context.textAlign = "center"; // Aligns the text horizontally to the center
+  game.context.textBaseline = "middle"; // Aligns the text vertically to the center
+  game.context.fillText(`${winner} Wins!`, game.boardWidth / 2, game.boardHeight / 2);
 
-  context.fillText(`${winner} Wins!`, boardWidth / 2, boardHeight / 2);
+  game.context.fillText(`${winner} Wins!`, game.boardWidth / 2, game.boardHeight / 2);
 }
 
-//Draw players
-function drawPlayers(player1, player2) {
-  if (!player1.cooldownFlag && parryFlag)
-    drawCapsulePaddle(
-      player1.x,
-      player1.y,
-      player1.width,
-      player1.height,
-      player1.width / 2,
-      "#84ddfc",
-      "green"
-    );
-  else
-    drawCapsulePaddle(
-      player1.x,
-      player1.y,
-      player1.width,
-      player1.height,
-      player1.width / 2,
-      "#84ddfc",
-      "black"
-    );
-  if (!player2.cooldownFlag && parryFlag)
-    drawCapsulePaddle(
-      player2.x,
-      player2.y,
-      player2.width,
-      player2.height,
-      player2.width / 2,
-      "#84ddfc",
-      "green"
-    );
-  else
-    drawCapsulePaddle(
-      player2.x,
-      player2.y,
-      player2.width,
-      player2.height,
-      player2.width / 2,
-      "#84ddfc",
-      "black"
-    );
+function drawLine(game) {
+  // Draw dotted line in the middle
+  game.context.setLineDash([10, 20]); // Pattern: 5px dash, 15px space
+  game.context.strokeStyle = "white"; // Line color
+  game.context.lineWidth = 5; // Line thickness
+  game.context.beginPath();
+  game.context.moveTo(game.boardWidth / 2, 0); // Start at the top middle
+  game.context.lineTo(game.boardWidth / 2, game.boardHeight); // Draw to the bottom middle
+  game.context.stroke();
+  game.context.setLineDash([]); // Reset line dash to solid
 }
 
-function drawCapsulePaddle(
-  x,
-  y,
-  width,
-  height,
-  radius,
-  fillColor,
-  borderColor
-) {
-  context.beginPath();
-  context.arc(x + width / 2, y + radius, radius, Math.PI, 0); // Top cap
-  context.lineTo(x + width, y + height - radius); // Right edge
-  context.arc(x + width / 2, y + height - radius, radius, 0, Math.PI); // Bottom cap
-  context.lineTo(x, y + radius); // Left edge
-  context.closePath();
 
-  context.fillStyle = fillColor; // Fill color
-  context.fill();
-  if (borderColor) {
-    context.strokeStyle = borderColor; // Border color
-    context.stroke();
-  }
-}
+//Start of AI
 
-// ----------------- gameai.js ----------------- //
-// look for last ball position every one second. >>trans rules.
+function startaiGame(game) {
+  game.aiFlag = true; // Enable AI
+  game.drawFlag = true;
 
-//ai view
-let lastballPosition = { x: 0, y: 0, velocityX: 0, velocityY: 0};
-const fpsLimit = 60;
-const interval = 1000 / fpsLimit;
-
-function startaiGame(player1, player2) {
-  aiFlag = true; // Enable AI
-  drawFlag = true;
-
+  game.setupeventListeners();
   // make player 2 name as AI
   document.getElementById("player2Name").textContent = "@ AI";
   document.getElementById("player2Name").style.display = "block";
@@ -699,92 +640,69 @@ function startaiGame(player1, player2) {
 
   document.getElementById("aiButton").disabled = true;
   document.getElementById("settingButton").disabled = true;
-  setInterval(aiView, 1000);
-  setInterval(()=> aiLogic(player2), 50);
+  
+  let aiHelper = { x: 0, y: 0, velocityX: 0, velocityY: 0,  aiMovingUp: false, aiMovingDown: false};
+
+  setInterval(()=> aiView(game, aiHelper), 1000);
+  setInterval(()=> aiLogic(game.players[1], game, aiHelper), 50);
   // aiLogic(player2);
-  
-  let lastTime = 0;
-  function gameLoop(timestamp) {
-    if (timestamp - lastTime >= interval) {
-      lastTime = timestamp;
-      draw(player1, player2); // Draw the game at the desired FPS limit
-    }
-    requestAnimationFrame(gameLoop); // Request the next frame
-  }
-  
-  // Start the animation loop
-  requestAnimationFrame(gameLoop);
+
+  requestAnimationFrame((timestamp) => {
+    gameLoop(game, timestamp);
+  });
 }
 
-
-/*
-  Since the ai is only able to see the ball every 1 second interval we gotta calculate ball path depending on the balls position and velocity every second.
-
-  as of now we can calculate the actual path if the last recorded velocity for the ball is going towards the AI.
-
-  The tricky part is when the last recorded position of the ball is going towards the player.
-
-  We can do a guesstimate based on the balls distance and velocity. We cant accurately predict it since the paddle has four parts so it would go four different ways depending on that.
-
-
-
-*/
-function aiLogic(player2) {
-  if (!aiFlag)
+function aiLogic(player2, game, aiHelper) {
+  if (!game.aiFlag)
     return;
-  const tolerance = 5; // Allow a small margin of error
+  console.log("Inside AI logic");
+  const tolerance = 10; // Allow a small margin of error
 
-  const time = (player2.x - ball.x - player2.width) / ball.velocityX;
-  const yChange = ball.velocityY * time;
-  let yHit = ball.y + yChange;
+  const time = (player2.x - game.ball.x - player2.width) / game.ball.velocityX;
+  const yChange = game.ball.velocityY * time;
+  let yHit = game.ball.y + yChange;
 
-  if (parryFlag && lastballPosition.velocityX > 0) {
+  if (game.parryFlag && aiHelper.velocityX > 0 && player2.cooldownFlag) {
     setTimeout(() => {
-      console.log("Parry yeah");
-      aikeyEvents("parry");
+      aikeyEvents("parry", aiHelper);
     }, time*60);
   }
+  
   if (yHit < 0){
     yHit *= -1;
-  } else if (yHit > boardHeight) {
-    yHit -= boardHeight;
+  } else if (yHit > 500) {
+    yHit -= 500;
   }
 
   let target = Math.abs(yHit - player2.height / 2);
-  console.log("Target Value: ", target);
   if (target > player2.y - tolerance && target < player2.y + 40) {
     // If the AI is close enough to the target Y position, stop moving
-    aikeyEvents("stop");
+    aikeyEvents("stop", aiHelper);
     return;
   }
   if (player2.y + tolerance < target) {
-    aikeyEvents("down"); // Keep moving down until target is reached
+    aikeyEvents("down", aiHelper); // Keep moving down until target is reached
   } else if (player2.y - tolerance > target) {
-    aikeyEvents("up"); // Keep moving up until target is reached
+    aikeyEvents("up", aiHelper); // Keep moving up until target is reached
   }
 }
-
-
 
 // function to check/store balls last position every 1 second.
-function aiView() {
-  if (aiFlag) {
-    console.log("Lastball values:", lastballPosition);
-    lastballPosition.x = ball.x;
-    lastballPosition.y = ball.y;
-    lastballPosition.velocityX = ball.velocityX;
-    lastballPosition.velocityY= ball.velocityY;
+function aiView(game, aiHelper) {
+  if (game.aiFlag) {
+    // console.log("Inside AI view settings values for aiHelper = ", aiHelper);
+    aiHelper.x = game.ball.x;
+    aiHelper.y = game.ball.y;
+    aiHelper.velocityX = game.ball.velocityX;
+    aiHelper.velocityY= game.ball.velocityY;
   }
 }
 
-let aiMovingUp = false;
-let aiMovingDown = false;
-
-function aikeyEvents(moveDirection) {
+function aikeyEvents(moveDirection, aiHelper) {
   let event;
 
   // Simulate 'keydown' for up, down, or parry based on moveDirection
-  if (moveDirection === "up" && !aiMovingUp) {
+  if (moveDirection === "up" && !aiHelper.aiMovingUp) {
     event = new KeyboardEvent("keydown", {
       key: "ArrowUp",
       code: "ArrowUp",
@@ -793,8 +711,8 @@ function aikeyEvents(moveDirection) {
       cancelable: true,
     });
     document.dispatchEvent(event);
-    aiMovingUp = true; // Track that the key is being held down
-  } else if (moveDirection === "down" && !aiMovingDown) {
+    aiHelper.aiMovingUp = true; // Track that the key is being held down
+  } else if (moveDirection === "down" && !aiHelper.aiMovingDown) {
     event = new KeyboardEvent("keydown", {
       key: "ArrowDown",
       code: "ArrowDown",
@@ -803,10 +721,10 @@ function aikeyEvents(moveDirection) {
       cancelable: true,
     });
     document.dispatchEvent(event);
-    aiMovingDown = true; // Track that the key is being held down
+    aiHelper.aiMovingDown = true; // Track that the key is being held down
   } else if (moveDirection === "stop") {
     // Simulate 'keyup' for stopping movement
-    if (aiMovingUp) {
+    if (aiHelper.aiMovingUp) {
       event = new KeyboardEvent("keyup", {
         key: "ArrowUp",
         code: "ArrowUp",
@@ -815,9 +733,9 @@ function aikeyEvents(moveDirection) {
         cancelable: true,
       });
       document.dispatchEvent(event);
-      aiMovingUp = false; // Stop holding up
+      aiHelper.aiMovingUp = false; // Stop holding up
     }
-    if (aiMovingDown) {
+    if (aiHelper.aiMovingDown) {
       event = new KeyboardEvent("keyup", {
         key: "ArrowDown",
         code: "ArrowDown",
@@ -826,7 +744,7 @@ function aikeyEvents(moveDirection) {
         cancelable: true,
       });
       document.dispatchEvent(event);
-      aiMovingDown = false; // Stop holding down
+      aiHelper.aiMovingDown = false; // Stop holding down
     }
   } else if (moveDirection === "parry") {
     // Simulate 'keydown' for the Numpad 0 key
@@ -853,6 +771,8 @@ function aikeyEvents(moveDirection) {
   }
 }
 
+// settings
+
 function checkScreenSize() {
   const MIN_WINDOW_WIDTH = 820;
   const MIN_WINDOW_HEIGHT = 700;
@@ -876,9 +796,116 @@ function checkScreenSize() {
   }
 }
 
+function changeSetting(game) {
+
+  const modal = gameSettingsModal();
+
+  if (document.body.appendChild(modal))
+    console.log("Child appended");
+  // if (document.body.classList.add("modal-open"))
+  //   console.log("modal open");
+  
+  console.log("Modal values", modal);
+
+  // Event Listeners
+  modal
+    .querySelector("#applyButton")
+    .addEventListener("click", () => {
+      applySetting(game);
+      closeModal("gameSettingsModal");
+    });
+
+  modal.addEventListener("keydown", (e) => {
+      console.log("keydown log for enter");
+      if (e.key === "Enter"){
+        applySetting(game);
+        closeModal("gameSettingsModal");
+      }
+    });
+  
+  modal // close the modal
+    .querySelector(".btn-close")
+    .addEventListener("click", () => {
+      console.log("keydown log for button close");
+      closeModal("gameSettingsModal")});
+  
+  modal.addEventListener("click", (e) => {
+    console.log("click for modal");
+    if (e.target === modal) closeModal("gameSettingsModal");
+  });
+
+  // document.body.appendChild(modal);
+  // document.body.classList.add("modal-open");
+  // document.body.appendChild(modal);
+  // document.body.classList.add("modal-open");
+
+  console.log("Game values: ", game);
+  
+  // const paddleSpeedInput = parseInt(document.getElementById("paddleSpeed").value);
+  
+
+  // document.getElementById("settingsMenu").style.display = "none";
+  // console.log("Settings Applied: ", {
+  //   paddleSpeed,
+  //   defballSpeed,
+  //   maxScore,
+  //   slowServe,
+  //   parryFlag,
+  // });
+
+  // document.getElementById("settingsMenu").style.display = "none";
+  // console.log("Settings Applied: ", { this:paddleSpeed, this:defballSpeed, this:maxScore });
+  // closeModal("gameSettingsModal");
+}
+
+function applySetting(game) {
+
+  console.log("Game values inside apply Setting", game);
+  const MIN_PADDLE_SPEED = 1,
+  MAX_PADDLE_SPEED = 10;
+  const MIN_MAX_SCORE = 1,
+  MAX_MAX_SCORE = 20;
+
+  const paddleSpeedInput = parseInt(document.getElementById("paddleSpeed").value);
+  const maxScoreInput = parseInt(document.getElementById("maxScore").value);
+  const slowServeInput = document.getElementById("slowServe").checked;
+  const parryInput = document.getElementById("parryMode").checked;
+
+  let errors = [];
+
+  console.log("PaddleSpeedInput values from parseINT", paddleSpeedInput);
+  if (paddleSpeedInput < MIN_PADDLE_SPEED || paddleSpeedInput > MAX_PADDLE_SPEED) {
+    console.log("Inside the if statement of paddleSpeed error");
+    errors.push(
+      `Paddle Speed must be between ${MIN_PADDLE_SPEED} and ${MAX_PADDLE_SPEED}.`);
+  }
+  if (maxScoreInput < MIN_MAX_SCORE || maxScoreInput > MAX_MAX_SCORE) {
+    errors.push(
+      `Winning Score must be between ${MIN_MAX_SCORE} and ${MAX_MAX_SCORE}.`
+    );
+  }
+  const errorContainer = document.getElementById("errorMessages");
+  errorContainer.innerHTML = ""; // Clear existing messages
+  if (errors.length > 0) {
+    console.log("Inside if statement errors");
+    errors.forEach((error) => {
+      const errorElement = document.createElement("p");
+      errorElement.textContent = error;
+      errorElement.style.color = "red";
+      errorContainer.appendChild(errorElement);
+    });
+    return ; // Stop applying settings if there are errors
+  }
+  game.paddleSpeed = paddleSpeedInput;
+  game.maxScore = maxScoreInput;
+  game.slowServe = slowServeInput;
+  game.parryFlag = parryInput;
+
+  console.log("Game values after update", game);
+}
+
 loadGame();
-// Run check on page load
+
 checkScreenSize();
 
-// Listen for screen resize
 window.addEventListener("resize", checkScreenSize);
