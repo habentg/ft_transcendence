@@ -222,7 +222,7 @@ function changeSetting() {
     document.getElementById("paddleSpeed").value
   );
 
-  // const ballSpeedInput = parseFloat(document.getElementById("ballSpeed").value);
+  const ballSpeedInput = parseFloat(document.getElementById("ballSpeed").value);
   const maxScoreInput = parseInt(document.getElementById("maxScore").value);
   const slowServeInput = document.getElementById("slowServe").checked;
   const parryInput = document.getElementById("parryMode").checked;
@@ -237,11 +237,11 @@ function changeSetting() {
       `Paddle Speed must be between ${MIN_PADDLE_SPEED} and ${MAX_PADDLE_SPEED}.`
     );
   }
-  // if (ballSpeedInput < MIN_BALL_SPEED || ballSpeedInput > MAX_BALL_SPEED) {
-  //   errors.push(
-  //     `Ball Speed must be between ${MIN_BALL_SPEED} and ${MAX_BALL_SPEED}.`
-  //   );
-  // }
+  if (ballSpeedInput < MIN_BALL_SPEED || ballSpeedInput > MAX_BALL_SPEED) {
+    errors.push(
+      `Ball Speed must be between ${MIN_BALL_SPEED} and ${MAX_BALL_SPEED}.`
+    );
+  }
   if (maxScoreInput < MIN_MAX_SCORE || maxScoreInput > MAX_MAX_SCORE) {
     errors.push(
       `Winning Score must be between ${MIN_MAX_SCORE} and ${MAX_MAX_SCORE}.`
@@ -315,30 +315,31 @@ function draw(player1, player2) {
   // Clear board
   context.clearRect(0, 0, board.width, board.height);
   // requestAnimationFrame(draw(player1, player2));
+  requestAnimationFrame(() => draw(player1, player2));
   // til this part
   updatePaddleVelocities(player1, player2);
-  
+
   // if (aiFlag) aiLogic();
   drawLine(); //draw line in the middle
   drawPlayers(player1, player2); //draw players
   drawBall();
-  
+
   // Checks if the position will be inside the map and adjusts its movement speed
   if (!oob(player1.y + player1.velocityY)) player1.y += player1.velocityY;
   if (!oob(player2.y + player2.velocityY)) player2.y += player2.velocityY;
-  
+
   // Update ball position
   ball.x += ball.velocityX;
   ball.y += ball.velocityY;
-  
+
   // Check ball collision with walls(top and bottom wall)
   if (ball.y - ballRadius <= 0 || ball.y + ballRadius >= boardHeight)
     ball.velocityY *= -1;
-  
+
   // Check ball collision with players
   ballCollision(ball, player1, "left");
   ballCollision(ball, player2, "right");
-  
+
   displayScores(player1, player2);
   // Check for goals
   if (ball.x - ballRadius < 0) {
@@ -348,10 +349,23 @@ function draw(player1, player2) {
     player1.score++;
     resetGame(player1, player2, -1);
   }
-  
-  // requestAnimationFrame(() => draw(player1, player2));
+
+  // if (isGameOver(player1, player2)) {
+  // 	drawFlag = false;
+  // 	aiFlag = false;
+  // 	console.log("Game Over: SHOULD RETURN SETTINGS MENU");
+  // 	if (document.getElementById("aiButton")) {
+  // 		document.getElementById("aiButton").disabled = false;
+  // 	}
+  // 	if (document.getElementById("startButton")) {
+  // 		document.getElementById("startButton").disabled = false;
+  // 	}
+
+  // 	//This is the part where we could collect everything for the match history
+  // 	// players names, player scores aside from game mode. maybe add another function throw players and return it from there.
+  // }
 }
-      
+
 // Display scores
 function displayScores(player1, player2) {
   context.fillStyle = "#ffffff";
@@ -388,7 +402,7 @@ function updatePaddleVelocities(player1, player2) {
   } else {
     player2.velocityY = 0;
   }
-  
+  // change this one so it works like if it uses it and failed it would still go cooldown instead of cannot be used if cannot be parried. // to work on
   if (parryFlag) {
     if (activeKeys["KeyA"] && !player1.cooldownFlag) {
       if (isParry(player1)) {
@@ -449,7 +463,7 @@ function oob(yPosition) {
 
 function ballCollision(ball, player, position) {
   // Define the maximum speed for the ball
-  const MAX_SPEED_X = 8; // Maximum horizontal speed (velocityX)
+  const MAX_SPEED_X = 10; // Maximum horizontal speed (velocityX)
   const MAX_SPEED_Y = 10; // Maximum vertical speed (velocityY)
 
   let isCollision =
@@ -503,10 +517,7 @@ function ballCollision(ball, player, position) {
 
     // Optional: Increase the ball's speed based on where it hits the paddle
     if (section === 0 || section === 3) {
-      if (ball.velocityX * 1.2 > MAX_SPEED_X)
-          ball.velocityX = MAX_SPEED_X;
-      else
-        ball.velocityX *= 1.2; // Slightly increase the horizontal speed for top/bottom hits (more challenge)
+      ball.velocityX *= 1.2; // Slightly increase the horizontal speed for top/bottom hits (more challenge)
     }
 
     // Resolve collision by moving the ball just outside the paddle (avoid sticking or going through the paddle)
@@ -682,9 +693,7 @@ function drawCapsulePaddle(
 // look for last ball position every one second. >>trans rules.
 
 //ai view
-let lastballPosition = { x: 0, y: 0, velocityX: 0, velocityY: 0};
-const fpsLimit = 60;
-const interval = 1000 / fpsLimit;
+let lastballPosition = { x: 0, y: 0 };
 
 function startaiGame(player1, player2) {
   aiFlag = true; // Enable AI
@@ -699,81 +708,32 @@ function startaiGame(player1, player2) {
 
   document.getElementById("aiButton").disabled = true;
   document.getElementById("settingButton").disabled = true;
-  setInterval(aiView, 1000);
-  setInterval(()=> aiLogic(player2), 50);
-  // aiLogic(player2);
-  
-  let lastTime = 0;
-  function gameLoop(timestamp) {
-    if (timestamp - lastTime >= interval) {
-      lastTime = timestamp;
-      draw(player1, player2); // Draw the game at the desired FPS limit
-    }
-    requestAnimationFrame(gameLoop); // Request the next frame
-  }
-  
-  // Start the animation loop
-  requestAnimationFrame(gameLoop);
+
+  setInterval(aiView, 100);
+  setInterval(() => aiLogic(player2), 50);
+
+  requestAnimationFrame(() => draw(player1, player2));
 }
 
-
-/*
-  Since the ai is only able to see the ball every 1 second interval we gotta calculate ball path depending on the balls position and velocity every second.
-
-  as of now we can calculate the actual path if the last recorded velocity for the ball is going towards the AI.
-
-  The tricky part is when the last recorded position of the ball is going towards the player.
-
-  We can do a guesstimate based on the balls distance and velocity. We cant accurately predict it since the paddle has four parts so it would go four different ways depending on that.
-
-
-
-*/
 function aiLogic(player2) {
-  if (!aiFlag)
-    return;
   const tolerance = 5; // Allow a small margin of error
+  const currentBallY = ball.y; // Current ball Y position
+  const previousBallY = lastballPosition.y; // Last recorded ball Y position
+  const direction = currentBallY - previousBallY; // Determine ball movement direction
 
-  const time = (player2.x - ball.x - player2.width) / ball.velocityX;
-  const yChange = ball.velocityY * time;
-  let yHit = ball.y + yChange;
+  // Calculate predicted target position based on the direction and speed of the ball
+  const targetY = currentBallY + direction - player2.height / 2;
 
-  if (parryFlag && lastballPosition.velocityX > 0) {
-    setTimeout(() => {
-      console.log("Parry yeah");
-      aikeyEvents("parry");
-    }, time*60);
-  }
-  if (yHit < 0){
-    yHit *= -1;
-  } else if (yHit > boardHeight) {
-    yHit -= boardHeight;
-  }
-
-  let target = Math.abs(yHit - player2.height / 2);
-  console.log("Target Value: ", target);
-  if (target > player2.y - tolerance && target < player2.y + 40) {
+  if (targetY > player2.y - 40 && targetY < player2.y + 40) {
     // If the AI is close enough to the target Y position, stop moving
     aikeyEvents("stop");
     return;
   }
-  if (player2.y + tolerance < target) {
+
+  if (player2.y + tolerance < targetY) {
     aikeyEvents("down"); // Keep moving down until target is reached
-  } else if (player2.y - tolerance > target) {
+  } else if (player2.y - tolerance > targetY) {
     aikeyEvents("up"); // Keep moving up until target is reached
-  }
-}
-
-
-
-// function to check/store balls last position every 1 second.
-function aiView() {
-  if (aiFlag) {
-    console.log("Lastball values:", lastballPosition);
-    lastballPosition.x = ball.x;
-    lastballPosition.y = ball.y;
-    lastballPosition.velocityX = ball.velocityX;
-    lastballPosition.velocityY= ball.velocityY;
   }
 }
 
@@ -783,7 +743,7 @@ let aiMovingDown = false;
 function aikeyEvents(moveDirection) {
   let event;
 
-  // Simulate 'keydown' for up, down, or parry based on moveDirection
+  // Simulate 'keydown' for up or down based on moveDirection
   if (moveDirection === "up" && !aiMovingUp) {
     event = new KeyboardEvent("keydown", {
       key: "ArrowUp",
@@ -828,57 +788,175 @@ function aikeyEvents(moveDirection) {
       document.dispatchEvent(event);
       aiMovingDown = false; // Stop holding down
     }
-  } else if (moveDirection === "parry") {
-    // Simulate 'keydown' for the Numpad 0 key
-    event = new KeyboardEvent("keydown", {
-      key: "Numpad0",
-      code: "Numpad0",
-      keyCode: 96,
-      bubbles: true,
-      cancelable: true,
-    });
-    document.dispatchEvent(event);
-
-    // Simulate 'keyup' immediately after for a quick press
-    setTimeout(() => {
-      const releaseEvent = new KeyboardEvent("keyup", {
-        key: "Numpad0",
-        code: "Numpad0",
-        keyCode: 96,
-        bubbles: true,
-        cancelable: true,
-      });
-      document.dispatchEvent(releaseEvent);
-    }, 50); // Small delay to simulate a quick tap
   }
 }
 
-function checkScreenSize() {
-  const MIN_WINDOW_WIDTH = 820;
-  const MIN_WINDOW_HEIGHT = 700;
-
-  const warningMessage = document.getElementById("warningMessage");
-  const gameContent = document.getElementById("gameContent");
-
-  if (
-    window.innerWidth < MIN_WINDOW_WIDTH ||
-    window.innerHeight < MIN_WINDOW_HEIGHT
-  ) {
-    warningMessage.classList.remove("d-none");
-    gameContent.classList.add("d-none");
-  } else {
-    if (warningMessage) {
-      warningMessage.classList.add("d-none");
-    }
-    if (gameContent) {
-      gameContent.classList.remove("d-none");
-    }
+// function to check/store balls last position every 1 second.
+function aiView() {
+  console.log("Lastball values:", lastballPosition);
+  if (aiFlag) {
+    lastballPosition.x = ball.x;
+    lastballPosition.y = ball.y;
   }
 }
 
-loadGame();
-// Run check on page load
-checkScreenSize();
+// function checkScreenSize() {
+//   const MIN_WINDOW_WIDTH = 820;
+//   const MIN_WINDOW_HEIGHT = 700;
+
+//   const warningMessage = document.getElementById("warningMessage");
+//   const gameContent = document.getElementById("gameContent");
+
+//   if (
+//     window.innerWidth < MIN_WINDOW_WIDTH ||
+//     window.innerHeight < MIN_WINDOW_HEIGHT
+//   ) {
+//     warningMessage.classList.remove("d-none");
+//     gameContent.classList.add("d-none");
+//   } else {
+//     warningMessage.classList.add("d-none");
+//     gameContent.classList.remove("d-none");
+//   }
+// }
+
+// // loadGame();
+// // Run check on page load
+// checkScreenSize();
 
 // Listen for screen resize
-window.addEventListener("resize", checkScreenSize);
+// window.addEventListener("resize", checkScreenSize);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+//what I made 
+
+
+/* Things needed for tournament
+
+    playerCount // How many players are playing in the tournament 4 or 8 players.
+    players[] // to store all of the players
+    function for a pause state(A state where both players supposed to ready up before they start the game);
+*/
+
+let playerCount = 8;
+
+/* 
+    this function will simulate getting all of the values needed for running a tournament such as
+    grabbing players count
+    grabbing players name
+
+
+    In the game js make sure everything is removed from players[] everytime it finishes a 1v1/ai game. (situations like you play ai/versus then goes to tournament but I guess everything is removed when we move through another page.)
+*/
+
+async function simulateModal(playerCount) { 
+    if (playerCount === 4) {
+        //push 4 players
+        players.push(new Player("random1", "left"));
+        players.push(new Player("random2", "left"));
+        players.push(new Player("random3", "left"));
+        players.push(new Player("random4", "left"));
+    } else if (playerCount === 8) {
+        //push 8 players
+        players.push(new Player("random1", "left"));
+        players.push(new Player("random2", "left"));
+        players.push(new Player("random3", "left"));
+        players.push(new Player("random4", "left"));
+        players.push(new Player("random5", "left"));
+        players.push(new Player("random6", "left"));
+        players.push(new Player("random7", "left"));
+        players.push(new Player("random8", "left"));
+    }
+}
+
+function randomizeSeeds(players) {
+    players.forEach(player => {
+        player.seed = Math.random(); // Assign a random number between 0 and 1 as the seed
+    });
+
+    /* 
+    sorts the randomized seed so we could easily pair them, this would change the whole postion of the players in the array. so by this logic 0-1,2-3 will be paired, and who ever won on those 2 pairs will be paired after that.
+    */
+    players.sort((a, b) => a.seed - b.seed); 
+}
+
+async function startTournament(playerCount) {
+  board = document.getElementById("board");
+  board.height = boardHeight;
+  board.width = boardWidth;
+  context = board.getContext("2d");
+  console.log("playerCount", playerCount);
+
+  await simulateModal(playerCount); // Await the asynchronous setup
+  randomizeSeeds(players);
+
+  let currentRoundPlayers = [...players];
+  let round = 1;
+
+  console.log("Players", currentRoundPlayers);
+  while (currentRoundPlayers.length > 1) {
+      console.log(`Starting Round ${round}`);
+      currentRoundPlayers = await playRound(currentRoundPlayers); // Await the round to finish
+      round++;
+  }
+
+  console.log(`Winner: ${currentRoundPlayers[0]?.playerName || "No Winner"}`); // Safe access
+}
+
+async function playRound(players) {
+  const winners = [];
+  
+  for (let i = 0; i < players.length; i += 2) {
+      const player1 = players[i];
+      const player2 = players[i + 1];
+      
+      player1.setplayPos("left");
+      player2.setplayPos("right");
+
+      console.log(`Match: ${player1.playerName} vs ${player2.playerName}`);
+      
+      const winner = await startgameTournament(player1, player2); // Await the match to finish
+      console.log(`Winner: ${winner.playerName}`);
+      winners.push(winner);
+  }
+  console.log("Round winners:", winners);
+  return winners;
+}
+
+async function startgameTournament(player1, player2) {
+  drawFlag = true;
+
+  console.log(`Game started between ${player1.playerName} and ${player2.playerName}`);
+
+  return new Promise(resolve => {
+      // Simulate the game with a timeout
+      requestAnimationFrame(() => draw(player1, player2));
+      
+      const gameDuration = 10000; // Simulate a 10-second match
+      setTimeout(() => {
+          const winner = Math.random() > 0.5 ? player1 : player2;
+          resolve(winner); // Resolve after the simulated delay
+      }, gameDuration); // Use the 10-second duration here
+  });
+}
+
+startTournament(playerCount);
