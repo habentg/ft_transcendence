@@ -68,30 +68,57 @@ class LeaderBoardView(BaseView):
     authentication_classes = [JWTCookieAuthentication]
     permission_classes = [IsAuthenticated]
     template_name = 'game/leaderboard.html'
-    css = ['game/leaderboard.css']
-    js = ['game/leaderboard.js']
+    css = ['css/leaderboard.css']
+    js = ['ks/leaderboard.js']
 
-    def get(self, request):
-        return render(request, self.template_name)
+    def handle_exception(self, exception):
+        if isinstance(exception, AuthenticationFailed):
+            """ is refresh token not expired """
+            if 'access token is invalid but refresh token is valid' in str(exception):
+                print(f'refresh token is valid to {self.request.path}', flush=True)
+                response = HttpResponseRedirect(self.request.path)
+                response.set_cookie('access_token', generate_access_token(self.request.COOKIES.get('refresh_token')), httponly=True, samesite='Lax', secure=True)
+                return response
+            response = HttpResponseRedirect(reverse('landing'))
+            response.delete_cookie('access_token')
+            response.delete_cookie('refresh_token')
+            response.delete_cookie('csrftoken')
+            response.status_code = 302
+            return response
+        return super().handle_exception(exception)
     
 """ game view """
 class GameView(APIView, BaseView):
-	authentication_classes = [JWTCookieAuthentication]
-	permission_classes = [IsAuthenticated]
-	template_name = 'game/game.html'
-	title = 'Game Page'
-	css = ['css/game.css']
-	js = ['js/game.js']
+    authentication_classes = [JWTCookieAuthentication]
+    permission_classes = [IsAuthenticated]
+    template_name = 'game/game.html'
+    title = 'Game Page'
+    css = ['css/game.css']
+    js = ['js/game.js']
 
-	# def get(self, request):
-	# 	return super().get(request)
-	def get_context_data(self, request, **kwargs):
-		# print request.GET params
-		is_ai = request.GET.get('isAI', 'false').lower() == 'true'
-		return {
-			'isAI': is_ai,
-			'current_username': request.user.username
-		}
+    def handle_exception(self, exception):
+        if isinstance(exception, AuthenticationFailed):
+            """ is refresh token not expired """
+            if 'access token is invalid but refresh token is valid' in str(exception):
+                print(f'refresh token is valid to {self.request.path}', flush=True)
+                response = HttpResponseRedirect(self.request.path)
+                response.set_cookie('access_token', generate_access_token(self.request.COOKIES.get('refresh_token')), httponly=True, samesite='Lax', secure=True)
+                return response
+            response = HttpResponseRedirect(reverse('landing'))
+            response.delete_cookie('access_token')
+            response.delete_cookie('refresh_token')
+            response.delete_cookie('csrftoken')
+            response.status_code = 302
+            return response
+        return super().handle_exception(exception)
+
+    def get_context_data(self, request, **kwargs):
+        # print request.GET params
+        is_ai = request.GET.get('isAI', 'false').lower() == 'true'
+        return {
+            'isAI': is_ai,
+            'current_username': request.user.username
+        }
 	
 class TournamentView(BaseView):
 	authentication_classes = []
