@@ -10,24 +10,27 @@
             <div class="text-center mb-4 profile_info_container">
               <div class="profile-pic-container position-relative d-inline-block">
                 {% if player.profile_picture %}
-                  <img src="{{ player.profile_picture }}" alt="Profile Picture" class="profile-pic rounded-circle"/>
+                <img src="{{ player.profile_picture }}" alt="Profile Picture" class="profile-pic rounded-circle" />
                 {% else %}
-                  <img src="{% static 'images/default_profile_pic.jpeg' %}" alt="Default Profile Picture" class="profile-pic rounded-circle" />
+                <img src="{% static 'images/default_profile_pic.jpeg' %}" alt="Default Profile Picture"
+                  class="profile-pic rounded-circle" />
                 {% endif %}
                 {% if is_self %}
-                  <button id="change-profile-pic" class="btn btn-light btn-sm position-absolute bottom-0 end-0" onclick="updateProfilePic()"><i class="fa-solid fa-pen"></i></button>
+                <button id="change-profile-pic" class="btn btn-light btn-sm position-absolute bottom-0 end-0"
+                  onclick="updateProfilePic()"><i class="fa-solid fa-pen"></i></button>
                 {% else %}
-                  {% if player.is_logged_in %}
-                    <i class="fa-solid fa-globe position-absolute globe-icon" style="color:green;"></i>
-                  {% else %}
-                    <i class="fa-solid fa-globe position-absolute globe-icon" style="color:red;"></i>
-                  {% endif %}
+                {% if player.is_logged_in %}
+                <i class="fa-solid fa-globe position-absolute globe-icon" style="color:green;"></i>
+                {% else %}
+                <i class="fa-solid fa-globe position-absolute globe-icon" style="color:red;"></i>
+                {% endif %}
                 {% endif %}
               </div>
 
               <div id="pfp_from_profile" class="profile-info mt-3" data-pfp="{{ player.profile_picture }}">
                 <h3 id="full_name" class="mb-1 nav_profile_pic">{{ player.full_name }}</h3>
-                <p id="username" class="text-muted mb-1" data-username="{{ player.username }}">@{{ player.username }}</p>
+                <p id="username" class="text-muted mb-1" data-username="{{ player.username }}">@{{ player.username }}
+                </p>
                 <p class="text-muted small mb-3">
                   <i class="fas fa-envelope me-2"></i>{{ player.email }}
                 </p>
@@ -44,22 +47,32 @@
                 </div>
               </div>
               {% if player.is_guest %}
-                <h6>temp account</h6>
+              <h6>temp account</h6>
               {% elif is_self %}
-                <button type="button" id="update-user-info" class="btn btn-primary mb-2" onclick="updateProfileInfo()"><i class="fas fa-edit me-2"></i>Update Info</button>
-                <a onclick="appRouter()" href="/settings" id="profile-settings" class="btn btn-secondary mb-2"><i class="fas fa-cog me-2"></i>Settings</a>
+              <button type="button" id="update-user-info" class="btn btn-primary mb-2" onclick="updateProfileInfo()"><i
+                  class="fas fa-edit me-2"></i>Update Info</button>
+              <a onclick="appRouter()" href="/settings" id="profile-settings" class="btn btn-secondary mb-2"><i
+                  class="fas fa-cog me-2"></i>Settings</a>
               {% else %}
-                {% if is_friend %}
-                  <button onclick="removeFriend()" id="unfriend_btn" type="button" class="btn btn-danger friendship_btn"><i class="fas fa-user-minus me-2"></i>Unfriend</button>
-                  <button onclick="create_chatroom('{{ player.username }}')" id="chat_btn" type="button" class="btn btn-secondary chat_btn friendship_btn"> <i class="fas fa-comment-alt me-2"></i> chat</button>
-                {% elif is_requested_by_me %}
-                  <button onclick="cancelFriendRequest()" id="cancel_request_btn" type="button" class="btn btn-danger friendship_btn"><i class="fas fa-user-times me-2"></i>Cancel Request</button>
-                {% elif am_i_requested %}
-                  <button onclick="acceptOrDeclineFriendRequest(`accept`, `{{ player.username }}`)" id="accept_request_btn" type="button" class="btn btn-success friendship_btn me-1 mb-2"><i class="fas fa-check me-2"></i>Accept</button>
-                  <button onclick="acceptOrDeclineFriendRequest(`decline`, `{{ player.username }}`)" id="decline_request_btn" type="button" class="btn btn-danger friendship_btn mb-2"><i class="fas fa-times me-2"></i>Decline</button>
-                {% else %}
-                  <button onclick="addFriendRequest()" id="add_friend_btn" type="button" class="btn btn-primary friendship_btn"><i class="fas fa-user-plus me-2"></i>Send Request</button>
-                {% endif %}
+              {% if is_friend %}
+              <button onclick="removeFriend()" id="unfriend_btn" type="button" class="btn btn-danger friendship_btn"><i
+                  class="fas fa-user-minus me-2"></i>Unfriend</button>
+              <button onclick="create_chatroom('{{ player.username }}')" id="chat_btn" type="button"
+                class="btn btn-secondary chat_btn friendship_btn"> <i class="fas fa-comment-alt me-2"></i> chat</button>
+              {% elif is_requested_by_me %}
+              <button onclick="cancelFriendRequest()" id="cancel_request_btn" type="button"
+                class="btn btn-danger friendship_btn"><i class="fas fa-user-times me-2"></i>Cancel Request</button>
+              {% elif am_i_requested %}
+              <button onclick="acceptOrDeclineFriendRequest(`accept`, `{{ player.username }}`)" id="accept_request_btn"
+                type="button" class="btn btn-success friendship_btn me-1 mb-2"><i
+                  class="fas fa-check me-2"></i>Accept</button>
+              <button onclick="acceptOrDeclineFriendRequest(`decline`, `{{ player.username }}`)"
+                id="decline_request_btn" type="button" class="btn btn-danger friendship_btn mb-2"><i
+                  class="fas fa-times me-2"></i>Decline</button>
+              {% else %}
+              <button onclick="addFriendRequest()" id="add_friend_btn" type="button"
+                class="btn btn-primary friendship_btn"><i class="fas fa-user-plus me-2"></i>Send Request</button>
+              {% endif %}
               {% endif %}
             </div>
           </div>
@@ -74,45 +87,76 @@
               <table class="table table-hover">
                 <thead>
                   <tr>
-                    <th>Match</th>
-                    <th>Result</th>
-                    <th>Score</th>
-                    <th>Points</th>
-                    <th>Date</th>
-                    <th>Type</th>
+                    <div>
+                      <th>Match</th>
+                      <th>Result</th>
+                      <th>Score</th>
+                      <th>Points</th>
+                      <th>Date</th>
+                      <th>Type</th>
+                    </div>
                   </tr>
                 </thead>
                 <tbody>
                   {% for game in games %}
                   <tr>
                     <td>
-                      <div class="d-flex align-items-center">
-                        <span class="player-name"> vs {{game.player_two}}</span>
+                      <div>
+                        <span class="player-name">VS {{ game.player_two }}</span>
                       </div>
                     </td>
                     <td>
-                      <span class="badge bg-success">{{game.outcome}}</span>
+                      <div class="results">
+                        {% if game.outcome == 'WIN' %}
+                        <span class="text-success">Win</span>
+                        {% elif game.outcome == 'LOSE' %}
+                        <span class="text-danger">Lose</span>
+                        {% else %}
+                        <span class="text-warning">Cancelled</span>
+                        {% endif %}
+                      </div>
                     </td>
-                    <td>{{game.final_score}}</td>
-                    <td>+5</td>
-                    <td>{{game.start_time}}</td>
-                    <td>{{game.type}}</td>
+                    <td>
+                      <div>
+                        <span class="score-res">{{ game.final_score }}</span>
+                      </div>
+                    </td>
+                    <td>
+                      <div>
+                        <span class="points-badge">+5</span>
+                      </div>
+                    </td>
+                    <td>
+                      <div>
+                        <span class="date">{{ game.start_time }}</span>
+                      </div>
+                    </td>
+                    <td>
+                      <div>
+                        <span class="game-type">{{ game.type }}</span>
+                      </div>
+                    </td>
                   </tr>
-                  {%endfor%}
+                  {% endfor %}
                 </tbody>
               </table>
             </div>
 
             <!-- Pagination -->
-            <div class="d-flex justify-content-center gap-2 mt-4">
-              <button id="prev-page" class="btn btn-outline-light" disabled><i class="fas fa-chevron-left"></i></button>
+            <div class="pagination-size d-flex justify-content-center gap-2 mt-4">
+              <button id="prev-page" class="btn btn-outline-light btn-sm" disabled>
+                <i class="fas fa-chevron-left"></i>
+              </button>
               <span id="page-numbers" class="d-flex gap-2">
-                <button class="btn btn-primary">1</button>
-                <button class="btn btn-outline-light">2</button>
-                <button class="btn btn-outline-light">3</button>
+                <button class="btn btn-primary btn-sm">1</button>
+                <button class="btn btn-outline-light btn-sm">2</button>
+                <button class="btn btn-outline-light btn-sm">3</button>
               </span>
-              <button id="next-page" class="btn btn-outline-light"><i class="fas fa-chevron-right"></i></button>
+              <button id="next-page" class="btn btn-outline-light btn-sm">
+                <i class="fas fa-chevron-right"></i>
+              </button>
             </div>
+
           </div>
         </div>
       </div>
@@ -120,22 +164,22 @@
       <!-- new div for game stats with a pie chart and line graph in it side by side -->
       <div class="row justify-content-center g-4 mt-2">
         <div class="col-lg-4">
-          <div class="content game-stats-card p-4">
+          <div id="win_lose_stats" class="content game-stats-card p-4" data-numsOfGames="{{num_of_games}}" data-numsOfWins="{{games_won}}" data-numsOfLoses="{{games_lost}}">
             <h3 class="text-center mb-4"> Win-Loss Stats </h3>
             <div class="d-flex justify-content-center">
-              <canvas id="game-stats-pie-chart" ></canvas>
+              <canvas id="game-stats-pie-chart"></canvas>
             </div>
           </div>
         </div>
         <div class="col-lg-8">
           <div class="content game-stats-card p-4">
-            <h3 class="text-center mb-4"> Leaderboard ranking </h3> 
+            <h3 class="text-center mb-4"> Leaderboard ranking </h3>
             <div class="d-flex justify-content-center">
               <canvas id="game-stats-line-chart" canvas>
             </div>
           </div>
         </div>
-      </div>  
+      </div>
     </div>
   </div>
 </div>

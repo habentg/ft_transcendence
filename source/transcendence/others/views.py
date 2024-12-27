@@ -14,6 +14,7 @@ from django.middleware.csrf import get_token
 from rest_framework import status
 import urllib.parse
 from account.utils import *
+from account.utils import isUserisAuthenticated, getPlayerFromToken
 
 
 # base view for basic pages in our SPA
@@ -46,11 +47,15 @@ class BaseView(View):
 			'css': self.css,
 			'js': self.js,
 			'html': html_content,
-			'is_authenticated': isUserisAuthenticated(request)
 		}
 		if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
 			return JsonResponse(resources)
 		else:
+			resources['is_authenticated'] =  isUserisAuthenticated(request)
+			if resources['is_authenticated'] == True and not request.user.is_authenticated:
+				resources['user'] = PlayerSerializer(getPlayerFromToken(request.COOKIES.get('refresh_token'))).data
+			if request.user.is_authenticated:
+				resources['user'] = PlayerSerializer(request.user).data
 			return render(request, 'others/base.html', resources)
 
 	def get_context_data(self, request, **kwargs):

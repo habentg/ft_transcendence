@@ -398,6 +398,9 @@ class PlayerProfileView(APIView, BaseView):
 				'is_self': queried_user == request.user,
 				'num_of_friends': queried_user.friend_list.friends.count(),
 				'games': GameSerializer(Game.objects.filter(player_one=queried_user), many=True).data,
+				'num_of_games': Game.objects.filter(player_one=queried_user).count(),
+				'games_won': Game.objects.filter(player_one=queried_user, outcome='WIN').count(),
+				'games_lost': Game.objects.filter(player_one=queried_user, outcome='LOSE').count(),
 			}
 		return data
 

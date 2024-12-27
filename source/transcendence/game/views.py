@@ -69,7 +69,7 @@ class LeaderBoardView(BaseView):
     permission_classes = [IsAuthenticated]
     template_name = 'game/leaderboard.html'
     css = ['css/leaderboard.css']
-    js = ['ks/leaderboard.js']
+    js = ['js/leaderboard.js']
 
     def handle_exception(self, exception):
         if isinstance(exception, AuthenticationFailed):
@@ -130,6 +130,18 @@ class TournamentView(BaseView):
 
 	def get(self, request):
 		return super().get(request)
+
+
+# class LeaderBoardView(BaseView):
+#     authentication_classes = []
+#     permission_classes = []
+#     template_name = 'game/leaderboard.html'
+#     title = 'Leaderboard Page'
+#     css = ['css/leaderboard.css']
+#     js = ['js/leaderboard.js']
+
+#     def get(self, request):
+#         return super().get(request)
 
 
 
