@@ -15,7 +15,7 @@
 2. add icons to all friendship buttons --------------- DONE
 
 ## ******************************* Game related TODO list **************************
-1. player names should be displayed before clicking start............................................................-> 
+1. player names should be displayed before clicking start............................................................-> DONE!
 
 ## ******************************* Real-Time (chat, notification, friendship) TODO list **************************
 1. blocking/unblocking, game invitation through chat .................................................................DONE!

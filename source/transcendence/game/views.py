@@ -100,7 +100,7 @@ class GameView(APIView, BaseView):
         if isinstance(exception, AuthenticationFailed):
             """ is refresh token not expired """
             if 'access token is invalid but refresh token is valid' in str(exception):
-                print(f'refresh token is valid to {self.request.path}', flush=True)
+                print(f'IN GAME - refresh token is valid to {self.request.path}', flush=True)
                 response = HttpResponseRedirect(self.request.path)
                 response.set_cookie('access_token', generate_access_token(self.request.COOKIES.get('refresh_token')), httponly=True, samesite='Lax', secure=True)
                 return response
