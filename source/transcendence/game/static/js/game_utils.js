@@ -33,7 +33,7 @@ class Game {
       this.slowServe = false;
   
       // Parry variables
-      this.cooldownTime = 0;
+      this.cooldownTime = 5000;
       this.parryFlag = false;
   
       this.ball = {
@@ -64,6 +64,11 @@ class Game {
     setupeventListeners() {
       document.addEventListener("keydown", this.move);
       document.addEventListener("keyup", this.stopMovement);
+    }
+
+    stopeventListeners() {
+      document.removeEventListener("keydown", this.move);
+      document.removeEventListener("keyup", this.stopMovement);
     }
   
     resetBall(direction) {
