@@ -6,90 +6,187 @@
 			<div class="row">
 				<div class="col-md-12">
 					<h1 class="d-flex justify-content-center mb-3">Leaderboard</h1>
-					<table class="table table-striped">
-						<thead>
-							<tr>
-								<th>Rank</th>
-								<th>Username</th>
-								<th>Games Played</th>
-								<th>Win percentage</th>
-								<th>Points</th>
-							</tr>
-						</thead>
-						<tbody>
-							<tr>
-								<td>1</td>
-								<td>Daniel</td>
-								<td>70</td>
-								<td>90%</td>
-								<td>1600</td>
-							</tr>
-							<tr>
-								<td>2</td>
-								<td>Sophia</td>
-								<td>60</td>
-								<td>85%</td>
-								<td>1400</td>
-							</tr>
-							<tr>
-								<td>3</td>
-								<td>Isabella</td>
-								<td>50</td>
-								<td>80%</td>
-								<td>1250</td>
-							</tr>
-							<tr>
-								<td>4</td>
-								<td>Oliver</td>
-								<td>55</td>
-								<td>78%</td>
-								<td>1150</td>
-							</tr>
-							<tr>
-								<td>5</td>
-								<td>Alex</td>
-								<td>45</td>
-								<td>75%</td>
-								<td>1100</td>
-							</tr>
-							<tr>
-								<td>6</td>
-								<td>Noah</td>
-								<td>45</td>
-								<td>72%</td>
-								<td>1080</td>
-							</tr>
-							<tr>
-								<td>7</td>
-								<td>Ava</td>
-								<td>40</td>
-								<td>65%</td>
-								<td>980</td>
-							</tr>
-							<tr>
-								<td>8</td>
-								<td>Emma</td>
-								<td>30</td>
-								<td>60%</td>
-								<td>900</td>
-							</tr>
-							<tr>
-								<td>9</td>
-								<td>Liam</td>
-								<td>35</td>
-								<td>62%</td>
-								<td>920</td>
-							</tr>
-							<tr>
-								<td>10</td>
-								<td>Miguel</td>
-								<td>50</td>
-								<td>80%</td>
-								<td>1200</td>
-							</tr>
+					<div class="table-responsive">
+						<table class="table table-striped">
+							<thead>
+								<tr>
+									<th >Rank</th>
+									<th>Username</th>
+									<th>Games Played</th>
+									<th>Win percentage</th>
+									<th>Points</th>
+								</tr>
+							</thead>
+							<tbody>
+								<tr>
+									<td>
+										<div>
+											<i class="fas fa-crown me-2" style="color: gold;"></i>
+											<span>1</span>
+										</div>
+									</td>
+									<td>
+										<div>
+											<img src="{% static 'images/default_profile_pic.jpeg' %}"
+												alt="Default Profile Picture"
+												class="profile-pic-nav rounded-circle me-2"
+												style="width: 30px; height: 30px" />
+											<span> Daniel </span>
+										</div>
+									</td>
+									<td>70</td>
+									<td>90%</td>
+									<td>1600</td>
+								</tr>
+								<tr>
+									<td>
+										<div>
+											<i class="fas fa-medal me-2" style="color: silver;"></i>
+											<span>2</span>
+										</div>
+									</td>
+									<td>
+										<div>
+											<img src="{% static 'images/default_profile_pic.jpeg' %}"
+												alt="Default Profile Picture"
+												class="profile-pic-nav rounded-circle me-2"
+												style="width: 30px; height: 30px" />
+											<span> Sophia </span>
+										</div>
+									</td>
+									<td>60</td>
+									<td>85%</td>
+									<td>1400</td>
+								</tr>
+								<tr>
+									<td>
+										<div>
+											<i class="fas fa-medal me-2" style="color: burlywood;"></i>
+											<span>3</span>
+										</div>
+									</td>
+									<td>
+										<div>
+											<img src="{% static 'images/default_profile_pic.jpeg' %}"
+												alt="Default Profile Picture"
+												class="profile-pic-nav rounded-circle me-2"
+												style="width: 30px; height: 30px" />
+											<span> Isabella </span>
+										</div>
+									</td>
+									<td>50</td>
+									<td>80%</td>
+									<td>1250</td>
+								</tr>
+								<tr>
+									<td>4</td>
+									<td>
+										<div>
+											<img src="{% static 'images/default_profile_pic.jpeg' %}"
+												alt="Default Profile Picture"
+												class="profile-pic-nav rounded-circle me-2"
+												style="width: 30px; height: 30px" />
+											<span>Oliver </span>
+										</div>
+									</td>
+									<td>55</td>
+									<td>78%</td>
+									<td>1150</td>
+								</tr>
+								<tr>
+									<td>5</td>
+									<td>
+										<div>
+											<img src="{% static 'images/default_profile_pic.jpeg' %}"
+												alt="Default Profile Picture"
+												class="profile-pic-nav rounded-circle me-2"
+												style="width: 30px; height: 30px" />
+											<span>Alex </span>
+										</div>
+									</td>
+									<td>45</td>
+									<td>75%</td>
+									<td>1100</td>
+								</tr>
+								<tr>
+									<td>6</td>
+									<td>
+										<div>
+											<img src="{% static 'images/default_profile_pic.jpeg' %}"
+												alt="Default Profile Picture"
+												class="profile-pic-nav rounded-circle me-2"
+												style="width: 30px; height: 30px" />
+											<span>Noah </span>
+										</div>
+									</td>
+									<td>45</td>
+									<td>72%</td>
+									<td>1080</td>
+								</tr>
+								<tr>
+									<td>7</td>
+									<td>
+										<div>
+											<img src="{% static 'images/default_profile_pic.jpeg' %}"
+												alt="Default Profile Picture"
+												class="profile-pic-nav rounded-circle me-2"
+												style="width: 30px; height: 30px" />
+											<span>Ava </span>
+										</div>
+									</td>
+									<td>40</td>
+									<td>65%</td>
+									<td>980</td>
+								</tr>
+								<tr>
+									<td>8</td>
+									<td>
+										<div>
+											<img src="{% static 'images/default_profile_pic.jpeg' %}"
+												alt="Default Profile Picture"
+												class="profile-pic-nav rounded-circle me-2"
+												style="width: 30px; height: 30px" />
+											<span> Emma</span>
+										</div>
+									</td>
+									<td>30</td>
+									<td>60%</td>
+									<td>900</td>
+								</tr>
+								<tr>
+									<td>9</td>
+									<td>
+										<div>
+											<img src="{% static 'images/default_profile_pic.jpeg' %}"
+												alt="Default Profile Picture"
+												class="profile-pic-nav rounded-circle me-2"
+												style="width: 30px; height: 30px" />
+											<span>Liam</span>
+										</div>
+									</td>
+									<td>35</td>
+									<td>62%</td>
+									<td>920</td>
+								</tr>
+								<tr>
+									<td>10</td>
+									<td>
+										<div>
+											<img src="{% static 'images/default_profile_pic.jpeg' %}"
+												alt="Default Profile Picture"
+												class="profile-pic-nav rounded-circle me-2"
+												style="width: 30px; height: 30px" />
+											<span> Miguel </span>
+										</div>
+									</td>
+									<td>50</td>
+									<td>80%</td>
+									<td>1200</td>
+								</tr>
 
-						</tbody>
-					</table>
+							</tbody>
+						</table>
+					</div>
 				</div>
 			</div>
 			<div class="pagination-size d-flex justify-content-center gap-2 mt-4">

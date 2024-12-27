@@ -9,6 +9,14 @@ window.isInitialLoad = true;
         - calls a function to load the content of the page;
 */
 
+function showLoadingAnimation() {
+  const overlay = document.getElementById("loading-overlay").classList.remove("d-none");
+}
+
+function hideLoadingAnimation() {
+  const overlay = document.getElementById("loading-overlay").classList.add("d-none");
+}
+
 async function updateUI(path) {
   if (isInitialLoad) {
     isInitialLoad = false;
@@ -18,7 +26,16 @@ async function updateUI(path) {
   if (!path.includes(`${window.location.origin}`))
     path = `${window.location.origin}${path}`;
   history.pushState(null, "", `${path}`);
-  await loadContent(`${path}`);
+  try {
+    showLoadingAnimation(); // Show animation
+    await loadContent(`${path}`);
+    console.log("try ===");
+  } catch (error) {
+    console.error("Error loading page:", error);
+  } finally {
+    console.log("finally ===");
+    hideLoadingAnimation(); // Hide animation
+  }
 }
 
 // routing function
@@ -33,11 +50,10 @@ async function appRouter(event) {
   event = event || window.event;
   event.preventDefault();
 
-  const href = event.target.closest('a').href;
-  if (href === window.location.href)
-    return;
+  const href = event.target.closest("a").href;
+  if (href === window.location.href) return;
   await updateUI(href);
-};
+}
 
 // Load the content of the page
 async function loadContent(route) {
@@ -58,14 +74,21 @@ async function loadContent(route) {
         history.pushState(null, "", data["redirect"]);
         handleLocationChange();
         return;
-      }
-      else if (response.status === 401) {
+      } else if (response.status === 401) {
         // removing any css js if there is any
-        showErrorMessage("Unauthorized access, please login to continue", 3000, 'Unauthorized');
+        showErrorMessage(
+          "Unauthorized access, please login to continue",
+          3000,
+          "Unauthorized"
+        );
         console.log("Unauthorized, asdf asdf asfd");
         return;
       }
-      throw new Error({ status: response.status, route: route, statusText: response.statusText });
+      throw new Error({
+        status: response.status,
+        route: route,
+        statusText: response.statusText,
+      });
     }
     // history.replaceState(null, "", response.url);
     let data = await response.json();
@@ -73,7 +96,11 @@ async function loadContent(route) {
     document.title = `${data.title} | PONG`;
     document.getElementById("content").innerHTML = data.html;
   } catch (error) {
-    showErrorMessage(`${error.status} : Error loading '${route}' - ${error.statusText}`, 3000, 'Error');
+    showErrorMessage(
+      `${error.status} : Error loading '${route}' - ${error.statusText}`,
+      3000,
+      "Error"
+    );
     console.error(`Failed to load -- ${route} -- page content:`, error);
   }
 }
@@ -88,19 +115,20 @@ async function loadContent(route) {
 async function initApp() {
   // browser back/forward buttons
   window.addEventListener("popstate", async () => {
-    const all_modals = document.querySelectorAll('.modal');
+    const all_modals = document.querySelectorAll(".modal");
     for (let i = 0; i < all_modals.length; i++) {
-      all_modals[i].classList.add('d-none');
+      all_modals[i].classList.add("d-none");
     }
     const route = window.location.pathname;
     console.log("Handling popstate for route:", route);
     await loadContent(route);
   });
-  
+
   // Handling initial load
   window.addEventListener("load", async () => {
     isInitialLoad = true;
-    if (isInitialLoad) { // if its initial load ... page will come already loaded from the server
+    if (isInitialLoad) {
+      // if its initial load ... page will come already loaded from the server
       isInitialLoad = false;
       return;
     }
@@ -108,7 +136,6 @@ async function initApp() {
     console.log("Handling onload for route:", route);
     await loadContent(route);
   });
-  
 
   window.baseUrl = "https://localhost";
 }

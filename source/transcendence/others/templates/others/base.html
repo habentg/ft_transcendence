@@ -1,182 +1,215 @@
 {% load static %}
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title id="title">
-      {% if title %}
-        {{ title }} | PONG
-      {% else %}
-        PING-PONG
-      {% endif %}
-    </title>
-    <!-- Favicon -->
-    <link rel="apple-touch-icon" sizes="180x180" href="{% static 'images/favicon_package/apple-touch-icon.png' %}" />
-    <link rel="icon" type="image/png" sizes="32x32" href="{% static 'images/favicon_package/favicon-32x32.png' %}" />
-    <link rel="icon" type="image/png" sizes="32x32" href="{% static 'images/favicon_package/favicon-16x16.png' %}" />
-    <link rel="manifest" href="{% static 'images/favicon_package/site.webmanifest' %}" />
-    <link rel="mask-icon" href="{% static 'images/favicon_package/safari-pinned-tab.svg' %}" color="#5bbad5" />
-    <meta name="msapplication-TileColor" content="#da532c" />
-    <meta name="theme-color" content="#ffffff" />
-    <!-- Bootstrap CSS and JS files -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous" />
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A==" crossorigin="anonymous" referrerpolicy="no-referrer" />
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.8.1/font/bootstrap-icons.min.css" />
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
 
-    <!-- Font Variables -->
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700&display=swap" rel="stylesheet" />
-    <link href="https://fonts.googleapis.com/css2?family=Exo+2:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
-
-    <!-- chart.js for profile stats -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous" defer></script>
-    <!-- Main css and js file - will have our general styling, routing -->
-    <link rel="stylesheet" href="{% static 'css/base.css' %}" />
-    <script src="{% static 'js/game_utils.js' %}" defer></script>
-    <script src="{% static 'js/modals.js' %}" defer></script>
-    <script src="{% static 'js/utils.js' %}" defer></script>
-    <script src="{% static 'js/ws.js' %}" defer></script>
-    <script src="{% static 'js/route.js' %}" defer></script>
-    <!-- will dynamically page specific css and js files -->
-    {% if css %}
-      {% for ccs_file in css %}
-        <link rel="stylesheet" href="{% static ccs_file %}" id="{% static ccs_file %}-id" />
-      {% endfor %}
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title id="title">
+    {% if title %}
+    {{ title }} | PONG
+    {% else %}
+    PING-PONG
     {% endif %}
-    {% if js %}
-      {% for js_file in js %}
-        <script src="{% static js_file %}" id="{% static js_file %}-id" defer></script>
-      {% endfor %}
-    {% endif %}
-  </head>
- 
-  <body>
-    <header>
-      <div class="navbar-background">
-        <nav class="navbar navbar-expand-lg navbar-dark custom-navbar">
-          <div class="container-fluid px-4">
-            <a onclick="appRouter()" class="navbar-brand d-flex align-items-center" href="/home">
-              <i class="fas fa-table-tennis-paddle-ball me-2"></i>
-              Beer Pong
-            </a>
+  </title>
+  <!-- Favicon -->
+  <link rel="apple-touch-icon" sizes="180x180" href="{% static 'images/favicon_package/apple-touch-icon.png' %}" />
+  <link rel="icon" type="image/png" sizes="32x32" href="{% static 'images/favicon_package/favicon-32x32.png' %}" />
+  <link rel="icon" type="image/png" sizes="32x32" href="{% static 'images/favicon_package/favicon-16x16.png' %}" />
+  <link rel="manifest" href="{% static 'images/favicon_package/site.webmanifest' %}" />
+  <link rel="mask-icon" href="{% static 'images/favicon_package/safari-pinned-tab.svg' %}" color="#5bbad5" />
+  <meta name="msapplication-TileColor" content="#da532c" />
+  <meta name="theme-color" content="#ffffff" />
+  <!-- Bootstrap CSS and JS files -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
+    integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
+    integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A=="
+    crossorigin="anonymous" referrerpolicy="no-referrer" />
+  <link rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.8.1/font/bootstrap-icons.min.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
 
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation"><span class="navbar-toggler-icon"></span></button>
+  <!-- Font Variables -->
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Exo+2:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
 
-            {% block navbar_content %}
-              <div class="collapse navbar-collapse" id="navbarNavDropdown">
-                <ul class="navbar-nav ms-auto align-items-center">
-                  {% if is_authenticated %}
-                    <li class="nav-item">
-                      <a onclick="appRouter()" href="/leaderboard" class="nav-link"><i class="fas fa-trophy me-2"></i>Leaderboard</a>
-                    </li>
-                    <li class="nav-item">
-                      <a href="/chat" class="nav-link" onclick="appRouter()"><i class="fas fa-comments me-2"></i>Chat</a>
-                    </li>
-                    <li id="notification_dropdown_list" class="nav-item dropdown">
-                      <a onclick="handleNotificationBellClick()" class="nav-link position-relative notification-badge" role="button" id="notificationDropdown" data-bs-toggle="dropdown" aria-expanded="false"><i class="fas fa-bell"></i></a>
-                      <ul id="notification_ul" class="dropdown-menu dropdown-menu-end" aria-labelledby="notificationDropdown" style="width: 300px;"></ul>
-                    </li>
+  <!-- chart.js for profile stats -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
-                    <li class="nav-item ms-lg-2 dropdown">
-                      <a class="nav-link profile-link" href="#" role="button" id="profileDropdown" data-bs-toggle="dropdown" aria-expanded="false">
-                        {% if user.profile_picture %}
-                          <img src="{{ user.profile_picture }}" alt="Profile Picture" class="profile-pic-nav rounded-circle" style="width: 32px; height: 32px" />
-                        {% else %}
-                          <img src="{% static 'images/default_profile_pic.jpeg' %}" alt="Default Profile Picture" class="profile-pic-nav rounded-circle" style="width: 32px; height: 32px" />
-                        {% endif %}
-                      </a>
-                      <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="profileDropdown">
-                        <li>
-                          <a onclick="appRouter()" class="dropdown-item" href="/profile/{{ user.username }}"><i class="fas fa-user-circle me-2"></i>Profile</a>
-                        </li>
-                        <li>
-                          <a onclick="appRouter()" class="dropdown-item" href="/settings"><i class="fas fa-cog me-2"></i>Settings</a>
-                        </li>
-                        <li>
-                          <hr class="dropdown-divider" />
-                        </li>
-                        <li>
-                          <a class="dropdown-item" href="#" onclick="showSignOutModal()"><i class="fas fa-sign-out-alt me-2"></i>Sign Out</a>
-                        </li>
-                      </ul>
-                    </li>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+    integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"
+    defer></script>
+  <!-- Main css and js file - will have our general styling, routing -->
+  <link rel="stylesheet" href="{% static 'css/base.css' %}" />
+  <script src="{% static 'js/game_utils.js' %}" defer></script>
+  <script src="{% static 'js/modals.js' %}" defer></script>
+  <script src="{% static 'js/utils.js' %}" defer></script>
+  <script src="{% static 'js/ws.js' %}" defer></script>
+  <script src="{% static 'js/route.js' %}" defer></script>
+  <!-- will dynamically page specific css and js files -->
+  {% if css %}
+  {% for ccs_file in css %}
+  <link rel="stylesheet" href="{% static ccs_file %}" id="{% static ccs_file %}-id" />
+  {% endfor %}
+  {% endif %}
+  {% if js %}
+  {% for js_file in js %}
+  <script src="{% static js_file %}" id="{% static js_file %}-id" defer></script>
+  {% endfor %}
+  {% endif %}
+</head>
+
+<body>
+  <header>
+    <div class="navbar-background">
+      <nav class="navbar navbar-expand-lg navbar-dark custom-navbar">
+        <div class="container-fluid px-4">
+          <a onclick="appRouter()" class="navbar-brand d-flex align-items-center" href="/home">
+            <i class="fas fa-table-tennis-paddle-ball me-2"></i>
+            Beer Pong
+          </a>
+
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavDropdown"
+            aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation"><span
+              class="navbar-toggler-icon"></span></button>
+
+          {% block navbar_content %}
+          <div class="collapse navbar-collapse" id="navbarNavDropdown">
+            <ul class="navbar-nav ms-auto align-items-center">
+              {% if is_authenticated %}
+              <li class="nav-item">
+                <a onclick="appRouter()" href="/leaderboard" class="nav-link"><i
+                    class="fas fa-trophy me-2"></i>Leaderboard</a>
+              </li>
+              <li class="nav-item">
+                <a href="/chat" class="nav-link" onclick="appRouter()"><i class="fas fa-comments me-2"></i>Chat</a>
+              </li>
+              <li id="notification_dropdown_list" class="nav-item dropdown">
+                <a onclick="handleNotificationBellClick()" class="nav-link position-relative notification-badge"
+                  role="button" id="notificationDropdown" data-bs-toggle="dropdown" aria-expanded="false"><i
+                    class="fas fa-bell"></i></a>
+                <ul id="notification_ul" class="dropdown-menu dropdown-menu-end" aria-labelledby="notificationDropdown"
+                  style="width: 300px;"></ul>
+              </li>
+
+              <li class="nav-item ms-lg-2 dropdown">
+                <a class="nav-link profile-link" href="#" role="button" id="profileDropdown" data-bs-toggle="dropdown"
+                  aria-expanded="false">
+                  {% if user.profile_picture %}
+                  <img src="{{ user.profile_picture }}" alt="Profile Picture" class="profile-pic-nav rounded-circle"
+                    style="width: 32px; height: 32px" />
                   {% else %}
-                    <li class="nav-item">
-                      <a href="/temp_player" class="nav-link"><i class="fas fa-gamepad me-2"></i>Quick game</a>
-                    </li>
-                    <li class="nav-item">
-                      <a onclick="appRouter()" class="nav-link btn btn-outline-primary ms-lg-2" href="/signin">Sign in</a>
-                    </li>
-                    <li class="nav-item">
-                      <a onclick="appRouter()" class="nav-link btn btn-primary ms-lg-2" href="/signup">Sign up</a>
-                    </li>
+                  <img src="{% static 'images/default_profile_pic.jpeg' %}" alt="Default Profile Picture"
+                    class="profile-pic-nav rounded-circle" style="width: 32px; height: 32px" />
                   {% endif %}
+                </a>
+                <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="profileDropdown">
+                  <li>
+                    <a onclick="appRouter()" class="dropdown-item" href="/profile/{{ user.username }}"><i
+                        class="fas fa-user-circle me-2"></i>Profile</a>
+                  </li>
+                  <li>
+                    <a onclick="appRouter()" class="dropdown-item" href="/settings"><i
+                        class="fas fa-cog me-2"></i>Settings</a>
+                  </li>
+                  <li>
+                    <hr class="dropdown-divider" />
+                  </li>
+                  <li>
+                    <a class="dropdown-item" href="#" onclick="showSignOutModal()"><i
+                        class="fas fa-sign-out-alt me-2"></i>Sign Out</a>
+                  </li>
                 </ul>
-              </div>
-            {% endblock %}
-          </div>
-        </nav>
-      </div>
-    </header>
-    <main id="content">{{ html|safe }}</main>
-    <footer class="footer mt-auto py-4">
-      <div class="container footer-container">
-        <div class="row g-4">
-          <!-- Brand Column -->
-          <div class="col-lg-4 text-center text-lg-start">
-            <div class="footer-brand mb-2 g-0 d-flex align-items-center">
-              <i class="fas fa-table-tennis-paddle-ball fs-4"></i>
-              <span class="ms-2 fw-bold fs-5">Beer Pong</span>
-            </div>
-            <p class="footer-tagline mb-3">Play, Compete, & Have Fun!</p>
-            <div class="social-links">
-              <a href="https://github.com/habentg/ft_transcendence" class="me-3" target="_blank"><i class="fab fa-github"></i></a>
-            </div>
-          </div>
-
-          <!-- Quick Links -->
-          <div class="col-sm-6 col-lg-4">
-            <h5 class="mb-3">Quick Links</h5>
-            <ul class="list-unstyled">
-              <li class="mb-2">
-                <a onclick="appRouter()" href="/about" class="footer-link"><i class="fas fa-chevron-right me-2"></i>About Us</a>
               </li>
-              <li class="mb-2">
-                <a onclick="appRouter()" href="/privacy" class="footer-link"><i class="fas fa-chevron-right me-2"></i>Privacy Policy</a>
+              {% else %}
+              <li class="nav-item">
+                <a href="/temp_player" class="nav-link"><i class="fas fa-gamepad me-2"></i>Quick game</a>
               </li>
-              <li class="mb-2">
-                <a onclick="appRouter()" href="/terms" class="footer-link"><i class="fas fa-chevron-right me-2"></i>Terms of Service</a>
+              <li class="nav-item">
+                <a onclick="appRouter()" class="nav-link btn btn-outline-primary ms-lg-2" href="/signin">Sign in</a>
               </li>
+              <li class="nav-item">
+                <a onclick="appRouter()" class="nav-link btn btn-primary ms-lg-2" href="/signup">Sign up</a>
+              </li>
+              {% endif %}
             </ul>
           </div>
+          {% endblock %}
+        </div>
+      </nav>
+    </div>
+  </header>
+  <div id="loading-overlay" class="d-flex justify-content-center align-items-center d-none"
+    style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.8); z-index: 9999;">
+    <div class="spinner-border p-4" style="color: aqua;" role="status" style="width: 6rem; height: 6rem;">
+      <span class="visually-hidden">Loading...</span>
+    </div>
+  </div>
 
-          <!-- Contact Info -->
-          <div class="col-sm-6 col-lg-4">
-            <h5 class="mb-3">Contact Us</h5>
-            <ul class="list-unstyled">
-              <li class="mb-2">
-                <!-- make it a link -->
-                <a href="mailto:transendenceteam69@gmail.com" class="footer-link"><i class="fas fa-envelope me-2"></i>transendenceteam69@gmail.com</a>
-              </li>
-              <li class="mb-2">
-                <i class="fas fa-phone me-2"></i>+1 234 567 890
-              </li>
-              <li class="mb-2">
-                <!-- make it a link -->
-                <a href="https://maps.app.goo.gl/RKVC1xungYYny2g98" class="footer-link" target="_blank"><i class="fas fa-map-marker-alt me-2"></i>42 Abu Dhabi, UAE</a>
-              </li>
-            </ul>
+  <main id="content">{{ html|safe }}</main>
+  <footer class="footer mt-auto py-4">
+    <div class="container footer-container">
+      <div class="row g-4">
+        <!-- Brand Column -->
+        <div class="col-lg-4 text-center text-lg-start">
+          <div class="footer-brand mb-2 g-0 d-flex align-items-center">
+            <i class="fas fa-table-tennis-paddle-ball fs-4"></i>
+            <span class="ms-2 fw-bold fs-5">Beer Pong</span>
+          </div>
+          <p class="footer-tagline mb-3">Play, Compete, & Have Fun!</p>
+          <div class="social-links">
+            <a href="https://github.com/habentg/ft_transcendence" class="me-3" target="_blank"><i
+                class="fab fa-github"></i></a>
           </div>
         </div>
 
-        <!-- Copyright -->
-        <div class="border-top mt-4 pt-4 text-center">
-          <p class="mb-0">&copy; 2024 Beer Pong. All rights reserved.</p>
+        <!-- Quick Links -->
+        <div class="col-sm-6 col-lg-4">
+          <h5 class="mb-3">Quick Links</h5>
+          <ul class="list-unstyled">
+            <li class="mb-2">
+              <a onclick="appRouter()" href="/about" class="footer-link"><i class="fas fa-chevron-right me-2"></i>About
+                Us</a>
+            </li>
+            <li class="mb-2">
+              <a onclick="appRouter()" href="/privacy" class="footer-link"><i
+                  class="fas fa-chevron-right me-2"></i>Privacy Policy</a>
+            </li>
+            <li class="mb-2">
+              <a onclick="appRouter()" href="/terms" class="footer-link"><i class="fas fa-chevron-right me-2"></i>Terms
+                of Service</a>
+            </li>
+          </ul>
+        </div>
+
+        <!-- Contact Info -->
+        <div class="col-sm-6 col-lg-4">
+          <h5 class="mb-3">Contact Us</h5>
+          <ul class="list-unstyled">
+            <li class="mb-2">
+              <!-- make it a link -->
+              <a href="mailto:transendenceteam69@gmail.com" class="footer-link"><i
+                  class="fas fa-envelope me-2"></i>transendenceteam69@gmail.com</a>
+            </li>
+            <li class="mb-2">
+              <i class="fas fa-phone me-2"></i>+1 234 567 890
+            </li>
+            <li class="mb-2">
+              <!-- make it a link -->
+              <a href="https://maps.app.goo.gl/RKVC1xungYYny2g98" class="footer-link" target="_blank"><i
+                  class="fas fa-map-marker-alt me-2"></i>42 Abu Dhabi, UAE</a>
+            </li>
+          </ul>
         </div>
       </div>
-    </footer>
-  </body>
+
+      <!-- Copyright -->
+      <div class="border-top mt-4 pt-4 text-center">
+        <p class="mb-0">&copy; 2024 Beer Pong. All rights reserved.</p>
+      </div>
+    </div>
+  </footer>
+</body>
+
 </html>
