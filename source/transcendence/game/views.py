@@ -104,7 +104,13 @@ class GameView(APIView, BaseView):
             """ is refresh token not expired """
             if 'access token is invalid but refresh token is valid' in str(exception):
                 print(f'refresh token is valid to {self.request.path}', flush=True)
-                response = HttpResponseRedirect(self.request.path)
+                print(f'refresh token is valid to {self.request.path}', flush=True)
+                query_params = self.request.GET.urlencode()
+                redirect_url = self.request.path
+                if query_params:
+                    redirect_url = f"{redirect_url}?{query_params}"
+                response = HttpResponseRedirect(redirect_url)
+                # response = HttpResponseRedirect(self.request.path)
                 response.set_cookie('access_token', generate_access_token(self.request.COOKIES.get('refresh_token')), httponly=True, samesite='Lax', secure=True)
                 return response
             response = HttpResponseRedirect(reverse('landing'))
@@ -133,19 +139,3 @@ class TournamentView(BaseView):
 
 	def get(self, request):
 		return super().get(request)
-
-
-
-
-
-
-# class GameAIView(BaseView):
-# 	authentication_classes = []
-# 	throttle_classes = []
-# 	template_name = 'others/game.html'
-# 	title = 'Game AI Page'
-# 	css = ['css/game.css']
-# 	js = ['js/gameai.js']
-
-# 	def get(self, request):
-# 		return super().get(request)
