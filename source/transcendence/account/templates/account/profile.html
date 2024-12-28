@@ -71,7 +71,7 @@
             <h3 class="text-center mb-4">Game History</h3>
             {% if games %}
               <div class="table-responsive">
-                <table class="table table-hover">
+                <table class="table table-hover position-relative">
                   <thead>
                     <tr>
                       <div>
@@ -131,13 +131,15 @@
               </div>
               <!-- Pagination -->
               <div class="pagination-size d-flex justify-content-center gap-2 mt-4">
-                <button id="prev-page" class="btn btn-outline-light btn-sm" disabled><i class="fas fa-chevron-left"></i></button>
+                <button id="prev-page" class="btn btn-outline-light btn-sm" disabled>
+                  <i class="fas fa-chevron-left"></i>
+                </button>
                 <span id="page-numbers" class="d-flex gap-2">
-                  <button class="btn btn-primary btn-sm">1</button>
-                  <button class="btn btn-outline-light btn-sm">2</button>
-                  <button class="btn btn-outline-light btn-sm">3</button>
+                <span class="d-flex justify-content-center mt-1 "> <h6 style="color: #84ddfc;">1 of 1</h6> </span>
                 </span>
-                <button id="next-page" class="btn btn-outline-light btn-sm"><i class="fas fa-chevron-right"></i></button>
+                <button id="next-page" class="btn btn-outline-light btn-sm">
+                  <i class="fas fa-chevron-right"></i>
+                </button>
               </div>
             {% else %}
               <div class="text-center no-games-message d-flex flex-column">
