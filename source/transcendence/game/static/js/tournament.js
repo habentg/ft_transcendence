@@ -792,6 +792,7 @@
 		const champion = await this.tournament.runTournament(playersNames);
 		console.log("Champion:", champion);
 		console.log(this.tournament.matchHistory)
+		// const pageContainer = document.getElementById("background");
 		
 		//   console.log("Match History:", this.tournament.getMatchHistory());
 	  } catch (error) {
