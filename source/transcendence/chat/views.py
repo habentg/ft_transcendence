@@ -1,7 +1,7 @@
 from django.http import JsonResponse, HttpResponseRedirect
 from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated
-from account.auth_middleware import *
+from others.auth_middleware import *
 from django.views import View
 from .models import *
 from account.models import *
@@ -10,14 +10,16 @@ from others.views import BaseView
 import urllib.parse
 from account.serializers import PlayerSerializer
 from rest_framework.exceptions import AuthenticationFailed
-from account.auth_middleware import JWTCookieAuthentication
+from others.auth_middleware import JWTCookieAuthentication
 from django.template.loader import render_to_string
 from rest_framework.response import Response
+from .serializers import ChatRoomSerializer, MessageSerializer
 
 """ chat message related enpoints """
 class chatMessagesView(APIView):
 	authentication_classes = [JWTCookieAuthentication]
 	permission_classes = [IsAuthenticated]
+	throttle_classes = []
 	template_name = 'chat/chat_messages.html'
 
 	def get(self, request):
@@ -38,19 +40,17 @@ class chatMessagesView(APIView):
 			if recipeint_username != 'deleted_player':
 				recipeint = Player.objects.get(username=recipeint_username)
 				return_json['is_blocked'] = request.user.is_blocked(recipeint)
-			print("returning messages: ", return_json, flush=True)
 			return Response(return_json, status=200)
 		except ChatRoom.DoesNotExist:
-			print("Error: ", e)
 			return Response({'error': "No active chatroom for with this player!"}, status=404)
 		except Exception as e:
-			print("Error: ", e)
-			return Response({'error': "some shit happend"}, status=400)
+			return Response({'error': "some shit happend getting chatrooms"}, status=400)
 
 # everything about chatrooms - get, post, delete, patch
 class ChatRoomsView(APIView, BaseView):
 	authentication_classes = [JWTCookieAuthentication]
 	permission_classes = [IsAuthenticated]
+	throttle_classes = []
 	template_name = 'chat/chat.html'
 	title = 'Chat'
 	css = ['css/chat.css']
@@ -59,6 +59,11 @@ class ChatRoomsView(APIView, BaseView):
 	""" get method to get all the chatrooms that the user is a participant in """
 	def handle_exception(self, exception):
 		if isinstance(exception, AuthenticationFailed):
+			if 'access token is invalid but refresh token is valid' in str(exception):
+				print(f'refresh token is valid to {self.request.path}', flush=True)
+				response = HttpResponseRedirect(self.request.path)
+				response.set_cookie('access_token', generate_access_token(self.request.COOKIES.get('refresh_token')), httponly=True, samesite='Lax', secure=True)
+				return response
 			signin_url = reverse('signin_page')
 			params = urllib.parse.urlencode({'next': self.request.path})
 			response = HttpResponseRedirect(f'{signin_url}?{params}')
@@ -73,7 +78,7 @@ class ChatRoomsView(APIView, BaseView):
 
 	def get_context_data(self, request):
 		""" get all the chatrooms that the user is a participant in """
-		chatrooms = ChatRoom.objects.filter(participants=request.user)
+		chatrooms = ChatRoom.objects.filter(participants=request.user).order_by('-conversed_at')
 		print(f"chatrooms {request.user.username} is involved in: ", chatrooms)
 		return {'chatrooms': chatrooms, 'user': PlayerSerializer(request.user).data}
 	
@@ -97,21 +102,5 @@ class ChatRoomsView(APIView, BaseView):
 					'participants_usernames': [sender.username, recipient.username]
 				}, status=201)
 		except Exception as e:
-			return Response({'error': e}, status=400)
-
-
-"""  block/unblock a player checker """
-class IsBlocked(APIView):
-	authentication_classes = [JWTCookieAuthentication]
-	permission_classes = [IsAuthenticated]
-
-	def get(self, request):
-		try:
-			recipient_username =request.GET.get('recipient', '')
-			print(f" we hitting the endpoint {recipient_username}", flush=True)
-			recipient = Player.objects.get(username=recipient_username)
-			if request.user.is_blocked(recipient):
-				return Response({'status': 'blocked'}, status=200)
-			return Response({'status': 'not_blocked'}, status=200)
-		except Exception as e:
-			return Response({'error': 'something happened while checking if user is blocked'}, status=400)
+			print("Error: ", e)
+			return Response({'error': "some shit happened!"}, status=400)

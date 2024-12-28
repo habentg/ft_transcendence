@@ -14,9 +14,9 @@
 
 .content {
     background: linear-gradient(140deg,
-        rgba(255, 255, 255, 0.12) -1.82%,
-        rgba(255, 255, 255, 0.04) 68.19%,
-        rgba(255, 255, 255, 0.03) 80.14%);
+            rgba(255, 255, 255, 0.12) -1.82%,
+            rgba(255, 255, 255, 0.04) 68.19%,
+            rgba(255, 255, 255, 0.03) 80.14%);
     backdrop-filter: blur(10px);
     border: 1px solid rgba(255, 255, 255, 0.1);
     border-radius: 15px;
@@ -35,6 +35,11 @@
     object-fit: cover;
     border: 3px solid #84ddfc;
     padding: 3px;
+}
+
+#change-profile-pic {
+    color: whitesmoke;
+    border-radius: 10px;
 }
 
 .profile-details .detail-item {
@@ -56,7 +61,8 @@
     font-weight: 500;
 }
 
-.table td, .table th {
+.table td,
+.table th {
     background-color: rgba(45, 73, 84, 0.8);
     border-color: rgba(132, 221, 252, 0.2);
     padding: 1rem;
@@ -136,17 +142,18 @@
     .container {
         padding: 1rem;
     }
-    
+
     .profile-pic {
         width: 120px;
         height: 120px;
     }
-    
+
     .table-responsive {
         margin: 0 -1rem;
     }
-    
-    .table td, .table th {
+
+    .table td,
+    .table th {
         padding: 0.75rem;
     }
 }
@@ -157,6 +164,7 @@
         opacity: 0;
         transform: translateY(20px);
     }
+
     to {
         opacity: 1;
         transform: translateY(0);
@@ -174,14 +182,15 @@
 
 .modal-content {
     background: linear-gradient(140deg,
-        rgba(255, 255, 255, 0.12) -1.82%,
-        rgba(255, 255, 255, 0.04) 68.19%,
-        rgba(255, 255, 255, 0.03) 80.14%);
+            rgba(255, 255, 255, 0.12) -1.82%,
+            rgba(255, 255, 255, 0.04) 68.19%,
+            rgba(255, 255, 255, 0.03) 80.14%);
     border: 1px solid rgba(255, 255, 255, 0.1);
     box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
 }
 
-.modal-header, .modal-footer {
+.modal-header,
+.modal-footer {
     border-color: rgba(255, 255, 255, 0.1);
 }
 
@@ -221,18 +230,37 @@
     color: #dc3545;
 }
 
+.game-stats-card {
+    height: 400px;
+    /* Set the same height for both containers */
+}
+
+.game-stats-card canvas {
+    max-width: 600px;
+    /* Restrict the canvas width */
+    max-height: 300px;
+    /* Restrict the canvas height */
+    width: auto;
+    height: auto;
+}
+
+
 @media (max-width: 576px) {
     .modal-dialog {
         margin: 1rem;
     }
-    
+
     .modal-body {
         padding: 1rem;
     }
-    
+
     .btn {
         padding: 0.5rem 1rem;
         font-size: 0.9rem;
+    }
+
+    #change-profile-pic {
+        padding: 4px 6px;
     }
 }
 

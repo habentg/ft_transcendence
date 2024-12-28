@@ -1,7 +1,6 @@
 // Initiate the password reset process
 async function handlePassResetSubmit(e) {
   e.preventDefault();
-  loadSpinner();
 
   const formData = {
     email: document.getElementById("email").value,
@@ -34,22 +33,24 @@ async function handlePassResetSubmit(e) {
     localStorage.setItem('uidb64', uidb64);
     localStorage.setItem('token', token);
 
-    
+
     const otpModal = resetPasswordConfirmModal();
     document.body.appendChild(otpModal);
     document.body.classList.add('modal-open');
 
-    otpModal.querySelector("close-otp-modal").addEventListener("click", () => closeModal("eset-password-confirm-modal"));
-
+    otpModal.getElementById("close-otp-modal").addEventListener("click", () => {
+      closeModal("reset-password-confirm-modal")
+    });
+    
     otpModal.addEventListener("click", (e) => {
       if (e.target === otpModal) {
         closeModal("reset-password-confirm-modal");
       }
     });
 
-    document.getElementById('returnToSignIn').addEventListener('click', async function() {
+    document.getElementById('returnToSignIn').addEventListener('click', async () => {
       closeModal("reset-password-confirm-modal");
-      updateUI(`/signin`, false);
+      updateUI(`/signin`);
     });
 
   } catch (error) {
@@ -89,7 +90,7 @@ async function handlePassChangeSubmit(e) {
     }
 
     showSuccessModal("Password reset successfully! Please sign in with your new password.");
-    updateUI(`/signin`, false);
+    updateUI(`/signin`);
 
     // Clear the local storage
     localStorage.removeItem('uidb64');

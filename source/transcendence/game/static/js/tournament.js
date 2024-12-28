@@ -1,51 +1,64 @@
-class GameBoard {
+
+{
+	class GameBoard {
 	constructor() {
-		// @ts-ignore
-		this.game = new Game()
-		this.game.initializeBoard("board")
-		this.game.aiFlag = false;
-		this.game.versusFlag = true;
-		this.game.tournamentFlag = false;
+	  // @ts-ignore
+	  this.game = new Game();
+	  this.game.initializeBoard("board");
+	  this.game.aiFlag = false;
+	  this.game.versusFlag = false;
+	  this.game.tournamentFlag = true;
 	}
   
 	//this is the function that starts the game by calling draw function and displays names at the top of the canvas
-	startGame(player1Name, player2Name) {
-		this.game.createPlayer(player1Name, "left");
-		this.game.createPlayer(player2Name, "right")
-		this.game.drawFlag = true;
-		this.game.setupeventListeners();
-		const player1NameElement = document.getElementById("player1Name");
-		if (player1NameElement) {
-		  player1NameElement.textContent = "@ " + player1Name;
-		  player1NameElement.style.display = "block";
-		}
-		const player2NameElement = document.getElementById("player2Name");
-		if (player2NameElement) {
-		  player2NameElement.textContent = "@ " + player2Name;
-		  player2NameElement.style.display = "block";
-		}
-		const player1Element = document.getElementById("player1");
-		if (player1Element) {
-		  player1Element.classList.remove("d-none");
-		}
-		const player2Element = document.getElementById("player2");
-		if (player2Element) {
-		  player2Element.classList.remove("d-none");
-		}
-		// @ts-ignore
+	 async startTournamentGame(player1Name, player2Name) {
+	  this.game.createPlayer(player1Name, "left");
+	  this.game.createPlayer(player2Name, "right");
+	  this.game.drawFlag = true;
+	  // this.game.setupeventListeners();
+	  const player1NameElement = document.getElementById("player1Name");
+	  if (player1NameElement) {
+		player1NameElement.textContent = "@ " + player1Name;
+		player1NameElement.style.display = "block";
+	  }
+	  const player2NameElement = document.getElementById("player2Name");
+	  if (player2NameElement) {
+		player2NameElement.textContent = "@ " + player2Name;
+		player2NameElement.style.display = "block";
+	  }
+	  const player1Element = document.getElementById("player1");
+	  if (player1Element) {
+		player1Element.classList.remove("d-none");
+	  }
+	  const player2Element = document.getElementById("player2");
+	  if (player2Element) {
+		player2Element.classList.remove("d-none");
+	  }
+	  const gameCreated = await createGameInDB(this.game);
+	  if (gameCreated) {
 		requestAnimationFrame((timestamp) => gameLoop(this.game, timestamp));
+	  } else {
+		alert("Failed to start game. We will have to restart")
+		updateUI("/home")
 	  }
-
-	  getPlayers() 
-	  {
-		return this.game.players
-	  }
+	}
+	getPlayers() {
+	  return this.game.players;
+	}
   }
   
   class PlayerManager {
 	constructor() {
-	  this.playersNames = ["Tofara Mususa"];
+	  this.playersNames = [
+		//@ts-ignore
+		document
+		  .getElementById("playerContainer")
+		  .querySelector("button h6")
+		  .textContent.trim(),
+	  ];
 	  this.maxPlayerNumbers = 0;
+  
+	  console.log(this.playersNames[0]); // Logs "Tofara Mususa"
 	}
   
 	// This is to check is number of players is 4 or 8 and if not give an error
@@ -54,7 +67,7 @@ class GameBoard {
 	  const errorMsgDiv = document.getElementById("local-game-error-msg");
 	  let maxPlayers = null;
 	  if (playersNumberInput) {
-		  // @ts-ignore
+		// @ts-ignore
 		maxPlayers = playersNumberInput.value;
 	  }
   
@@ -96,9 +109,9 @@ class GameBoard {
   
 	  // Add the player's icon and name inside the container
 	  nameContainer.innerHTML = `
-			<i class="fas fa-user fa-1x me-2"></i>
-			<h6 class="mb-0">${playerName}</h6>
-		  `;
+			  <i class="fas fa-user fa-1x me-2"></i>
+			  <h6 class="mb-0">${playerName}</h6>
+			`;
   
 	  // Create the remove (delete) icon
 	  const deleteIcon = this.createRemovePlayerIcon(playerName);
@@ -169,7 +182,7 @@ class GameBoard {
 	  }
   
 	  // Check name length (commented out but included)
-	  //   if (playerName.length < 5 || playerName.length > 9) {
+	  //   if (playerName.length < 3 || playerName.length > 15) {
 	  //     errorMsgDiv.textContent = "Name must be between 5 and 9 characters";
 	  //     errorMsgDiv.style.display = "block";
 	  //     return;
@@ -228,46 +241,48 @@ class GameBoard {
 		  "p-3"
 		);
 		defaultPlayerButton.innerHTML = `
-			  <i class="fas fa-trophy fa-1x me-2"></i>
-			  <h6 class="mb-0">Tofara Mususa</h6>
-		  `;
+				<i class="fas fa-trophy fa-1x me-2"></i>
+				<h6 class="mb-0">Tofara Mususa</h6>
+			`;
 		playerContainer.appendChild(defaultPlayerButton);
 	  }
 	}
   
-	  // Sets up the player addition UI, handles player input, and initializes tournament actions based on max player numbers.
-	  setUpPlayerAddition(maxPlayerNumbers, tournamentObject) {
-		  maxPlayerNumbers = maxPlayerNumbers === 0 ? 4 : maxPlayerNumbers;
-	  
-		  const uiElements = this.getPlayerUiElements();
-		  if(!uiElements)
-			  return;
-		  this.createDefaultPlayer(uiElements.playerContainer);
+	// Sets up the player addition UI, handles player input, and initializes tournament actions based on max player numbers.
+	setUpPlayerAddition(maxPlayerNumbers, tournamentObject) {
+	  maxPlayerNumbers = maxPlayerNumbers === 0 ? 4 : maxPlayerNumbers;
   
-		  // @ts-ignore
-		  uiElements.playerIcon.addEventListener("click", () => {
-			this.handlePlayerInput(
-			  uiElements.playerInput,
-			  uiElements.playerContainer,
-			  maxPlayerNumbers
-			);
-		  });
-	  
-		  // @ts-ignore
-		  uiElements.playerInput.addEventListener("keypress", (e) => {
-			if (e.key === "Enter") {
-			  this.handlePlayerInput(
-				uiElements.playerInput,
-				uiElements.playerContainer,
-				maxPlayerNumbers
-			  );
-			}
-		  });
-		  // @ts-ignore
-		  uiElements.initTournamentButton.addEventListener("click", async () => {
-			await tournamentObject.startTournament(maxPlayerNumbers, this.playersNames);
-		  });
+	  const uiElements = this.getPlayerUiElements();
+	  if (!uiElements) return;
+	  this.createDefaultPlayer(uiElements.playerContainer);
+  
+	  // @ts-ignore
+	  uiElements.playerIcon.addEventListener("click", () => {
+		this.handlePlayerInput(
+		  uiElements.playerInput,
+		  uiElements.playerContainer,
+		  maxPlayerNumbers
+		);
+	  });
+  
+	  // @ts-ignore
+	  uiElements.playerInput.addEventListener("keypress", (e) => {
+		if (e.key === "Enter") {
+		  this.handlePlayerInput(
+			uiElements.playerInput,
+			uiElements.playerContainer,
+			maxPlayerNumbers
+		  );
 		}
+	  });
+	  // @ts-ignore
+	  uiElements.initTournamentButton.addEventListener("click", async () => {
+		await tournamentObject.startTournament(
+		  maxPlayerNumbers,
+		  this.playersNames
+		);
+	  });
+	}
   }
   class Tournament {
 	constructor() {
@@ -283,9 +298,12 @@ class GameBoard {
 	  let currentPlayers = [...playersNames];
 	  const tournamentContainer = document.getElementById("background");
 	  // @ts-ignore
-	  this.tournamentElement = this.fillPlayerNames(createTournamentMap(), playersNames); //this is okay cause we importing from another file
+	  this.tournamentElement = this.fillPlayerNames(
+		createTournamentMap(),
+		playersNames
+	  ); //this is okay cause we importing from another file
 	  if (tournamentContainer) {
-		  // @ts-ignore
+		// @ts-ignore
 		tournamentContainer.appendChild(this.tournamentElement);
 	  }
 	  if (playersNames.length == 4) {
@@ -312,8 +330,8 @@ class GameBoard {
 		  gameWinnerModal(winner); //this will come from OTHER FILE SO ITS OKAY
 		  await UIManager.waitForModal("gameClosing");
 		  quarterFinalWinners.push(winner);
-		  if(tournamentContainer)
-		  tournamentContainer.appendChild(this.tournamentElement);
+		  if (tournamentContainer)
+			tournamentContainer.appendChild(this.tournamentElement);
 		}
 		currentPlayers = quarterFinalWinners;
 	  }
@@ -332,8 +350,8 @@ class GameBoard {
 		// @ts-ignore
 		gameWinnerModal(winner);
 		await UIManager.waitForModal("gameClosing");
-		if(tournamentContainer)
-		tournamentContainer.appendChild(this.tournamentElement);
+		if (tournamentContainer)
+		  tournamentContainer.appendChild(this.tournamentElement);
 	  }
   
 	  await UIManager.mapContinueButton(".continueButton");
@@ -346,28 +364,58 @@ class GameBoard {
 		champion === semiFinalWinners[0]
 		  ? semiFinalWinners[1]
 		  : semiFinalWinners[0];
-		  // @ts-ignore
+	  // @ts-ignore
 	  tournamentClosingModal(champion, runnerUp); //this is okay cause its coming from the other file
 	  await UIManager.waitForModal("congratsModal");
-	  if(tournamentContainer)
-		  tournamentContainer.appendChild(this.tournamentElement);
+	  if (tournamentContainer)
+		tournamentContainer.appendChild(this.tournamentElement);
 	  return champion;
 	}
+  
+	checkGameStatus = (players, newTournamentGame, gameCanvas, playersNames) => {
+	  if (!newTournamentGame.game.drawFlag) {
+		const match = {
+		  player1: players[0].playerName,
+		  player1Score: players[0].finalScore,
+		  player2: players[1].playerName,
+		  player2Score: players[1].finalScore,
+		  winner:
+			// @ts-ignore
+			players[0].finalScore >= newTournamentGame.game.maxScore
+			  ? players[0].playerName
+			  : players[1].playerName,
+		};
+		this.matchHistory.push(match);
+		this.updateTournamentMap(match, playersNames);
+		gameCanvas.remove();
+		return match.winner;
+	  }
+	  return new Promise((resolve) => {
+		requestAnimationFrame(() => {
+		  resolve(
+			this.checkGameStatus(
+			  players,
+			  newTournamentGame,
+			  gameCanvas,
+			  playersNames
+			)
+		  );
+		});
+	  });
+	};
   
 	// Initiates and manages a game match between two players, handles game setup, tracks scoring, and returns a promise that resolves with the winner's name when the game ends
 	async playMatch(player1Name, player2Name, playersNames) {
 	  let tournamentDiv = document.querySelector("#tournamentWrapper");
-	  if(tournamentDiv)
-		  tournamentDiv.remove();
-		  // @ts-ignore
+	  if (tournamentDiv) tournamentDiv.remove();
+	  // @ts-ignore
 	  nextMatchModal(player1Name, player2Name); //this is fine comes from the other file
 	  await UIManager.waitForModal("nextMatch");
 	  console.log(`The two playing this game ${player1Name} vs. ${player2Name}`);
 	  const pageContainer = document.getElementById("background");
 	  // @ts-ignore
-	  const game = gameCanvas(); //this comes from the other file
-	  if(pageContainer)
-		  pageContainer.appendChild(game);
+	  const gameCanvas = createGameCanvas(); //Input the Game Canvas into the page
+	  if (pageContainer) pageContainer.appendChild(gameCanvas);
   
 	  return new Promise((resolve, reject) => {
 		try {
@@ -379,32 +427,18 @@ class GameBoard {
 		  // @ts-ignore
 		  canvas.style.visibility = "visible";
 		  // @ts-ignore
-		  let newGame = new GameBoard();
-		  newGame.startGame(player1Name, player2Name);
-		  let players = newGame.getPlayers()
-		  const checkGameStatus = () => {
-			if (!newGame.game.drawFlag) {
-			  const match = {
-				player1: players[0].playerName,
-				player1Score: players[0].finalScore,
-				player2: players[1].playerName,
-				player2Score: players[1].finalScore,
-				winner:
-				// @ts-ignore
-				  players[0].finalScore >= newGame.game.maxScore
-					? players[0].playerName
-					: players[1].playerName,
-			  };
-			  this.matchHistory.push(match);
-			  this.updateTournamentMap(match, playersNames);
-			  game.remove();
-			  resolve(match.winner);
-			} else {
-			  requestAnimationFrame(checkGameStatus);
-			}
-		  };
-  
-		  checkGameStatus();
+		  let newTournamentGame = new GameBoard();
+		  let players = newTournamentGame.getPlayers();
+		  //HERE IS TO CREATE THE GAME IN DB
+		  newTournamentGame.startTournamentGame(player1Name, player2Name);
+		  resolve(
+			this.checkGameStatus(
+			  players,
+			  newTournamentGame,
+			  gameCanvas,
+			  playersNames
+			)
+		  );
 		} catch (error) {
 		  reject(error);
 		}
@@ -419,7 +453,9 @@ class GameBoard {
 		this.matchCount = 5;
 	  }
   
-	  const gameToUpdate = this.tournamentElement.querySelector(`#game${this.matchCount}`);
+	  const gameToUpdate = this.tournamentElement.querySelector(
+		`#game${this.matchCount}`
+	  );
 	  // Determine which game to update based on this.matchCount
   
 	  if (gameToUpdate) {
@@ -433,7 +469,7 @@ class GameBoard {
 		  .closest(".game")
 		  .querySelector(".score");
 		scoreElement.innerHTML = `<span class="score-value">${match.player1Score}</span> :
-		  <span class="score-value">${match.player2Score}</span>`;
+			<span class="score-value">${match.player2Score}</span>`;
 		this.routeWinnerToNextRound(this.matchCount, match.winner, playersNames);
 	  }
 	}
@@ -502,26 +538,26 @@ class GameBoard {
 	  var game7 = document.getElementsByClassName("game7");
   
 	  for (var i = 0; i < game3.length; i++) {
-		  // @ts-ignore
+		// @ts-ignore
 		game3[i].style.display = "none";
 	  }
 	  for (var i = 0; i < game4.length; i++) {
-		  // @ts-ignore
+		// @ts-ignore
 		game4[i].style.display = "none";
 	  }
 	  for (var i = 0; i < game6.length; i++) {
-		  // @ts-ignore
+		// @ts-ignore
 		game6[i].style.display = "none";
 	  }
 	  for (var i = 0; i < game7.length; i++) {
-		  // @ts-ignore
+		// @ts-ignore
 		game7[i].style.display = "none";
 	  }
   
 	  // Also delete pseudo elements that start from game 5. class .connection-5-7
 	  var connection57 = document.getElementsByClassName("connection-5-7");
 	  for (var i = 0; i < connection57.length; i++) {
-		  // @ts-ignore
+		// @ts-ignore
 		connection57[i].style.display = "none";
 	  }
   
@@ -566,14 +602,14 @@ class GameBoard {
 	  // make the connection between game 1 and game 5 width to 80px
 	  var connection15 = document.getElementsByClassName("connection-1-5");
 	  for (var i = 0; i < connection15.length; i++) {
-		  // @ts-ignore
+		// @ts-ignore
 		connection15[i].style.width = "80px";
 	  }
   
 	  // make the connection between game 2 and game 5 width to 80px
 	  var connection25 = document.getElementsByClassName("connection-2-5");
 	  for (var i = 0; i < connection25.length; i++) {
-		  // @ts-ignore
+		// @ts-ignore
 		connection25[i].style.width = "80px";
 	  }
   
@@ -593,7 +629,7 @@ class GameBoard {
 	  console.log("closing modal");
 	  const modal = document.getElementById(modalId);
 	  if (modal) {
-		  // @ts-ignore
+		// @ts-ignore
 		modal.hide;
 		modal.remove(); // Remove the modal from the DOM
 		document.body.classList.remove("modal-open"); // Remove the modal-open class from body
@@ -665,7 +701,7 @@ class GameBoard {
 	  this.tournament = new Tournament();
 	  // @ts-ignore
 	  this.currentGame = null;
-	  this.maxPlayerNumbers = 0
+	  this.maxPlayerNumbers = 0;
 	}
 	// Initializes a tournament setup modal that prompts for the number of players, validates input, and triggers player addition setup when closed
 	initializeTournament() {
@@ -680,10 +716,12 @@ class GameBoard {
 	  const playersNumberInput = document.getElementById("playersNumber"); //get players number div container
 	  const submitPlayerNumBtn = document.getElementById("submitPlayerNumBtn"); //get submit player button
   
-	  if(!playersNumberInput || !submitPlayerNumBtn)
-		  return
+	  if (!playersNumberInput || !submitPlayerNumBtn) return;
 	  // Add input event listener for real-time validation
-	  playersNumberInput.addEventListener("input", PlayerManager.validatePlayerNumber); //when number is inputted check if its correct
+	  playersNumberInput.addEventListener(
+		"input",
+		PlayerManager.validatePlayerNumber
+	  ); //when number is inputted check if its correct
   
 	  // Modify existing submit button event listener
 	  submitPlayerNumBtn.addEventListener("click", () => {
@@ -692,20 +730,27 @@ class GameBoard {
 		}
 		// @ts-ignore
 		this.maxPlayerNumbers = playersNumberInput.value;
-		console.log("Creating tournament with ", this.maxPlayerNumbers, " players");
+		console.log(
+		  "Creating tournament with ",
+		  this.maxPlayerNumbers,
+		  " players"
+		);
 		UIManager.closeModal("tournamentModal"); //close the tournament modal
-		this.playerManager.setUpPlayerAddition(this.maxPlayerNumbers,this);
+		this.playerManager.setUpPlayerAddition(this.maxPlayerNumbers, this);
 	  });
 	  // close the modal when the close button is clicked
-	  if(!document)
-		  return;
-		  // @ts-ignore
+	  if (!document) return;
+	  // @ts-ignore
 	  document
 		.querySelector("#tournamentModal .btn-close")
 		.addEventListener("click", () => {
 		  // @ts-ignore
 		  this.maxPlayerNumbers = playersNumberInput.value;
-		  console.log("Creating tournament with ", this.maxPlayerNumbers, " players");
+		  console.log(
+			"Creating tournament with ",
+			this.maxPlayerNumbers,
+			" players"
+		  );
 		  UIManager.closeModal("tournamentModal");
 		  this.playerManager.setUpPlayerAddition(this.maxPlayerNumbers, this);
 		});
@@ -714,8 +759,12 @@ class GameBoard {
 	  modal.addEventListener("click", (event) => {
 		if (event.target === modal) {
 		  // @ts-ignore
-		 this.maxPlayerNumbers = playersNumberInput.value;
-		  console.log("Creating tournament with ", this.maxPlayerNumbers, " players");
+		  this.maxPlayerNumbers = playersNumberInput.value;
+		  console.log(
+			"Creating tournament with ",
+			this.maxPlayerNumbers,
+			" players"
+		  );
 		  UIManager.closeModal("tournamentModal");
 		  this.playerManager.setUpPlayerAddition(this.maxPlayerNumbers, this);
 		}
@@ -736,26 +785,27 @@ class GameBoard {
 	async startTournament(maxPlayerNumbers, playersNames) {
 	  if (playersNames.length !== parseInt(maxPlayerNumbers)) {
 		const errorMsgDiv = document.getElementById("player-name-error-msg");
-		if(errorMsgDiv)
-		{
-			errorMsgDiv.textContent = "Players do not match total number of players";
-			errorMsgDiv.style.display = "block";
+		if (errorMsgDiv) {
+		  errorMsgDiv.textContent =
+			"Players do not match total number of players";
+		  errorMsgDiv.style.display = "block";
 		}
 		return;
 	  }
-	  if(!document)
-		  return;
-		  // @ts-ignore
+	  if (!document) return;
+	  // @ts-ignore
 	  document.querySelector(".playerListContainer").remove();
 	  try {
 		const champion = await this.tournament.runTournament(playersNames);
 		console.log("Champion:", champion);
-	  //   console.log("Match History:", this.tournament.getMatchHistory());
+		//   console.log("Match History:", this.tournament.getMatchHistory());
 	  } catch (error) {
 		console.error("Tournament error:", error);
 	  }
 	}
   }
   
-const newGame = new GameController()
-newGame.initializeTournament();
+  const newTournament = new GameController();
+  newTournament.initializeTournament();
+  
+}

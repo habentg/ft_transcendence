@@ -2,7 +2,7 @@
 {% load static %}
 
 <div class="gamePage">
-  <div class="background-image">
+  <div class="background-image position-relative">
     <div
       id="warningMessage"
       class="d-none text-center text-light bg-danger p-2"
@@ -19,20 +19,19 @@
           {% if isAI %}
           <button id="aiButton" type="button" class="btn btn-primary me-3">
             Start game
+          </button>
           {% else %}
           <button id="startButton" type="button" class="btn btn-primary me-3">
             Start game
           </button>
-          </button>
           {% endif %}
           <button
             id="settingButton"
-            onclick="gameSettingsModal()"
             type="button"
             class="btn btn-secondary"
           >
             settings
-          </button>
+        </button>
         </div>
       </div>
       <div class="justify-content-center">

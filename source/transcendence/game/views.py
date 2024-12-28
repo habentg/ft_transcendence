@@ -1,7 +1,7 @@
 from django.http import JsonResponse, HttpResponseRedirect
 from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated
-from account.auth_middleware import *
+from others.auth_middleware import *
 from django.views import View
 from .models import *
 from account.models import *
@@ -10,15 +10,17 @@ from others.views import BaseView
 from account.serializers import PlayerSerializer
 from .serializers import *
 from rest_framework.exceptions import AuthenticationFailed
-from account.auth_middleware import JWTCookieAuthentication
+from others.auth_middleware import JWTCookieAuthentication
 from django.template.loader import render_to_string
 from rest_framework.response import Response
 from rest_framework import viewsets
 from rest_framework import status
+from django.shortcuts import render
 
 class GameViewSet(viewsets.ModelViewSet):
     authentication_classes = [JWTCookieAuthentication]
     permission_classes = [IsAuthenticated]
+    throttle_classes = []
     serializer_class = GameSerializer
     queryset = Game.objects.all()
     template_name = 'game/game.html'
@@ -66,9 +68,82 @@ class GameViewSet(viewsets.ModelViewSet):
 class LeaderBoardView(BaseView):
     authentication_classes = [JWTCookieAuthentication]
     permission_classes = [IsAuthenticated]
+    throttle_classes = []
     template_name = 'game/leaderboard.html'
-    css = ['game/leaderboard.css']
-    js = ['game/leaderboard.js']
+    css = ['css/leaderboard.css']
+    js = ['ks/leaderboard.js']
 
-    def get(self, request):
-        return render(request, self.template_name)
+    def handle_exception(self, exception):
+        if isinstance(exception, AuthenticationFailed):
+            """ is refresh token not expired """
+            if 'access token is invalid but refresh token is valid' in str(exception):
+                print(f'refresh token is valid to {self.request.path}', flush=True)
+                response = HttpResponseRedirect(self.request.path)
+                response.set_cookie('access_token', generate_access_token(self.request.COOKIES.get('refresh_token')), httponly=True, samesite='Lax', secure=True)
+                return response
+            response = HttpResponseRedirect(reverse('landing'))
+            response.delete_cookie('access_token')
+            response.delete_cookie('refresh_token')
+            response.delete_cookie('csrftoken')
+            response.status_code = 302
+            return response
+        return super().handle_exception(exception)
+    
+""" game view """
+class GameView(APIView, BaseView):
+    authentication_classes = [JWTCookieAuthentication]
+    permission_classes = [IsAuthenticated]
+    throttle_classes = []
+    template_name = 'game/game.html'
+    title = 'Game Page'
+    css = ['css/game.css']
+    js = ['js/game.js']
+
+    def handle_exception(self, exception):
+        if isinstance(exception, AuthenticationFailed):
+            """ is refresh token not expired """
+            if 'access token is invalid but refresh token is valid' in str(exception):
+                print(f'refresh token is valid to {self.request.path}', flush=True)
+                response = HttpResponseRedirect(self.request.path)
+                response.set_cookie('access_token', generate_access_token(self.request.COOKIES.get('refresh_token')), httponly=True, samesite='Lax', secure=True)
+                return response
+            response = HttpResponseRedirect(reverse('landing'))
+            response.delete_cookie('access_token')
+            response.delete_cookie('refresh_token')
+            response.delete_cookie('csrftoken')
+            response.status_code = 302
+            return response
+        return super().handle_exception(exception)
+
+    def get_context_data(self, request, **kwargs):
+        # print request.GET params
+        is_ai = request.GET.get('isAI', 'false').lower() == 'true'
+        return {
+            'isAI': is_ai,
+            'current_username': request.user.username
+        }
+	
+class TournamentView(BaseView):
+	authentication_classes = []
+	throttle_classes = []
+	template_name = 'game/tournament.html'
+	title = 'Tournament Page'
+	css = ['css/tournament.css']
+	js = ['js/game.js', 'js/tournamentComponents.js', 'js/tournament.js']
+
+	def get(self, request):
+		return super().get(request)
+
+
+
+
+# class GameAIView(BaseView):
+# 	authentication_classes = []
+# 	throttle_classes = []
+# 	template_name = 'others/game.html'
+# 	title = 'Game AI Page'
+# 	css = ['css/game.css']
+# 	js = ['js/gameai.js']
+
+# 	def get(self, request):
+# 		return super().get(request)

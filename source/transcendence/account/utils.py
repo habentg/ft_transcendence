@@ -3,7 +3,7 @@ import time
 from django.core.mail import send_mail
 from django.conf import settings
 from django.template.loader import render_to_string
-from .auth_middleware import is_valid_token
+from others.auth_middleware import is_valid_token
 from .models import Player
 import string
 import random

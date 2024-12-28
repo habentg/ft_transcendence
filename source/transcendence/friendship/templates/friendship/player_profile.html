@@ -15,7 +15,7 @@
                   <img src="{% static 'images/default_profile_pic.jpeg' %}" alt="Default Profile Picture" class="profile-pic rounded-circle" />
                 {% endif %}
                 {% if is_self %}
-                  <button id="change-profile-pic" class="btn btn-light btn-sm position-absolute bottom-0 end-0"><i class="fa-solid fa-pen"></i></button>
+                  <button id="change-profile-pic" class="btn btn-light btn-sm position-absolute bottom-0 end-0" onclick="updateProfilePic()"><i class="fa-solid fa-pen"></i></button>
                 {% else %}
                   {% if player.is_logged_in %}
                     <i class="fa-solid fa-globe position-absolute globe-icon" style="color:green;"></i>
@@ -35,7 +35,7 @@
 
               <div class="d-flex justify-content-center gap-4 mb-3">
                 <div class="text-center">
-                  <h5 class="mb-1">{{ player.followers_count|default:0 }}</h5>
+                  <h5 id="nums_of_friends" class="mb-1">{{ num_of_friends|default:0 }}</h5>
                   <small class="text-muted">Friends</small>
                 </div>
                 <div class="text-center">
@@ -46,21 +46,19 @@
               {% if player.is_guest %}
                 <h6>temp account</h6>
               {% elif is_self %}
-                <button id="update-user-info" class="btn btn-primary mb-2"><i class="fas fa-edit me-2"></i>Update Info</button>
-                <a onclick="appRouter()" href="/settings" id="profile-settings" class="btn btn-secondary mb-2"><i class="fas fa-cog me-2"></i> Settings</a>
-                <!-- <button id="player-anon" class="btn btn-primary mb-2"><i class="fas fa-user-secret me-2"></i>Anonymize</button> -->
-                
+                <button type="button" id="update-user-info" class="btn btn-primary mb-2" onclick="updateProfileInfo()"><i class="fas fa-edit me-2"></i>Update Info</button>
+                <a onclick="appRouter()" href="/settings" id="profile-settings" class="btn btn-secondary mb-2"><i class="fas fa-cog me-2"></i>Settings</a>
               {% else %}
                 {% if is_friend %}
-                  <button onclick="removeFriend()" id="unfriend_btn" type="button" class="btn btn-danger friendship_btn">Unfriend</button>
-                  <button onclick="create_chatroom('{{ player.username }}')" id="chat_btn" type="button" class="btn btn-dark chat_btn friendship_btn">chat</button>
+                  <button onclick="removeFriend()" id="unfriend_btn" type="button" class="btn btn-danger friendship_btn"><i class="fas fa-user-minus me-2"></i>Unfriend</button>
+                  <button onclick="create_chatroom('{{ player.username }}')" id="chat_btn" type="button" class="btn btn-secondary chat_btn friendship_btn"> <i class="fas fa-comment-alt me-2"></i> chat</button>
                 {% elif is_requested_by_me %}
-                  <button onclick="cancelFriendRequest()" id="cancel_request_btn" type="button" class="btn btn-danger friendship_btn">Cancel Request</button>
+                  <button onclick="cancelFriendRequest()" id="cancel_request_btn" type="button" class="btn btn-danger friendship_btn"><i class="fas fa-user-times me-2"></i>Cancel Request</button>
                 {% elif am_i_requested %}
-                  <button onclick="acceptOrDeclineFriendRequest(`accept`, `{{ player.username }}`)" id="accept_request_btn" type="button" class="btn btn-success friendship_btn me-1 mb-2">Accept</button>
-                  <button onclick="acceptOrDeclineFriendRequest(`decline`, `{{ player.username }}`)" id="decline_request_btn" type="button" class="btn btn-danger friendship_btn mb-2">Decline</button>
+                  <button onclick="acceptOrDeclineFriendRequest(`accept`, `{{ player.username }}`)" id="accept_request_btn" type="button" class="btn btn-success friendship_btn me-1 mb-2"><i class="fas fa-check me-2"></i>Accept</button>
+                  <button onclick="acceptOrDeclineFriendRequest(`decline`, `{{ player.username }}`)" id="decline_request_btn" type="button" class="btn btn-danger friendship_btn mb-2"><i class="fas fa-times me-2"></i>Decline</button>
                 {% else %}
-                  <button onclick="addFriendRequest()" id="add_friend_btn" type="button" class="btn btn-primary friendship_btn">Send Request</button>
+                  <button onclick="addFriendRequest()" id="add_friend_btn" type="button" class="btn btn-primary friendship_btn"><i class="fas fa-user-plus me-2"></i>Send Request</button>
                 {% endif %}
               {% endif %}
             </div>
@@ -81,61 +79,26 @@
                     <th>Score</th>
                     <th>Points</th>
                     <th>Date</th>
+                    <th>Type</th>
                   </tr>
                 </thead>
                 <tbody>
+                  {% for game in games %}
                   <tr>
                     <td>
                       <div class="d-flex align-items-center">
-                        <span class="player-name">You vs Player2</span>
+                        <span class="player-name"> vs {{game.player_two}}</span>
                       </div>
                     </td>
                     <td>
-                      <span class="badge bg-success">Won</span>
+                      <span class="badge bg-success">{{game.outcome}}</span>
                     </td>
-                    <td>5 - 3</td>
-                    <td>+25</td>
-                    <td>Today</td>
+                    <td>{{game.final_score}}</td>
+                    <td>+5</td>
+                    <td>{{game.start_time}}</td>
+                    <td>{{game.type}}</td>
                   </tr>
-                  <tr>
-                    <td>
-                      <div class="d-flex align-items-center">
-                        <span class="player-name">You vs Player2</span>
-                      </div>
-                    </td>
-                    <td>
-                      <span class="badge bg-success">Won</span>
-                    </td>
-                    <td>5 - 2</td>
-                    <td>+25</td>
-                    <td>Today</td>
-                  </tr>
-                  <tr>
-                    <td>
-                      <div class="d-flex align-items-center">
-                        <span class="player-name">You vs Player3</span>
-                      </div>
-                    </td>
-                    <td>
-                      <span class="badge bg-danger">Lost</span>
-                    </td>
-                    <td>3 - 5</td>
-                    <td>-15</td>
-                    <td>Yesterday</td>
-                  </tr>
-                  <tr>
-                    <td>
-                      <div class="d-flex align-items-center">
-                        <span class="player-name">You vs Player3</span>
-                      </div>
-                    </td>
-                    <td>
-                      <span class="badge bg-danger">Lost</span>
-                    </td>
-                    <td>2 - 5</td>
-                    <td>-15</td>
-                    <td>Yesterday</td>
-                  </tr>
+                  {%endfor%}
                 </tbody>
               </table>
             </div>
@@ -153,6 +116,26 @@
           </div>
         </div>
       </div>
+
+      <!-- new div for game stats with a pie chart and line graph in it side by side -->
+      <div class="row justify-content-center g-4 mt-2">
+        <div class="col-lg-4">
+          <div class="content game-stats-card p-4">
+            <h3 class="text-center mb-4"> Win-Loss Stats </h3>
+            <div class="d-flex justify-content-center">
+              <canvas id="game-stats-pie-chart" ></canvas>
+            </div>
+          </div>
+        </div>
+        <div class="col-lg-8">
+          <div class="content game-stats-card p-4">
+            <h3 class="text-center mb-4"> Leaderboard ranking </h3> 
+            <div class="d-flex justify-content-center">
+              <canvas id="game-stats-line-chart" canvas>
+            </div>
+          </div>
+        </div>
+      </div>  
     </div>
   </div>
 </div>

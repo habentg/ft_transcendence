@@ -22,13 +22,24 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
 
-# SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = os.environ.get('SECRET_KEY')
 DOMAIN_NAME = os.environ.get('DOMAIN_NAME')
 FOURTYTWO_OAUTH_CLIENT_ID = os.environ.get('CLIENT_ID')
 FOURTYTWO_OAUTH_CLIENT_SECRET = os.environ.get('CLIENT_SECRET')
 REDIS_URL = os.environ.get('REDIS_URL')
-
+# for email
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = os.getenv('EMAIL_PORT')
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER')  # Sender's email used for SMTP authentication
+EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD')  # Password for the sender's email
+DEFAULT_FROM_EMAIL = os.getenv('DEFAULT_FROM_EMAIL')  # Email address that appears as the sender in the email
+# redis settings
+REDIS_HOST = os.getenv('REDIS_HOST')
+REDIS_PORT = os.getenv('REDIS_PORT')
+REDIS_DB_JWT_INVAL = os.getenv('REDIS_DB_JWT_INVAL')
+REDIS_DB_CHANNELS = os.getenv('REDIS_DB_CHANNELS')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
@@ -71,11 +82,11 @@ MIDDLEWARE = [
 
 CORS_ALLOW_CREDENTIALS = True
 CORS_ALLOWED_ORIGINS = [
-    "http://localhost",  # Add trusted urls here
+    "https://localhost",  # Add trusted urls here
 ]
 
 CSRF_TRUSTED_ORIGINS = [
-    "http://localhost",  # Add trusted urls here
+    "https://localhost",  # Add trusted urls here
 ]
 
 
@@ -124,7 +135,7 @@ CHANNEL_LAYERS = {
     'default': {
         'BACKEND': 'channels_redis.core.RedisChannelLayer',
         'CONFIG': {
-            "hosts": [("redis", 6379, 0)],
+            "hosts": [(REDIS_HOST, REDIS_PORT, REDIS_DB_CHANNELS)],
         },
     },
 }
@@ -165,6 +176,18 @@ USE_I18N = True
 USE_TZ = True
 
 REST_FRAMEWORK = {
+    'DEFAULT_THROTTLE_CLASSES': [
+        'rest_framework.throttling.AnonRateThrottle',
+        'rest_framework.throttling.UserRateThrottle',
+        'others.throttles.TwoFactorSetUpThrottle',
+        'others.throttles.PasswordUpdateThrottle',
+    ],
+    'DEFAULT_THROTTLE_RATES': {
+        'anon': '10/minute',
+        'user': '1000/day',
+        '2fa_throttle': '2/min',
+        'password_updateing_throttle': '2/hour',
+    },
     'DEFAULT_AUTHENTICATION_CLASSES': [
         'rest_framework_simplejwt.authentication.JWTAuthentication',
     ],
@@ -183,7 +206,7 @@ AUTH_USER_MODEL = 'account.Player'
 
 # JWT settings
 SIMPLE_JWT = {
-    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=60),
+    'ACCESS_TOKEN_LIFETIME':  timedelta(minutes=1),
     'REFRESH_TOKEN_LIFETIME': timedelta(days=1),
     'ROTATE_REFRESH_TOKENS': False,
     'BLACKLIST_AFTER_ROTATION': False,
@@ -199,7 +222,7 @@ SIMPLE_JWT = {
 
     'AUTH_HEADER_TYPES': ('Bearer',),
     'AUTH_HEADER_NAME': 'HTTP_AUTHORIZATION',
-    'USER_ID_FIELD': 'id', # username is the primary key
+    'USER_ID_FIELD': 'id',
     'USER_ID_CLAIM': 'user_id',
     'USER_AUTHENTICATION_RULE': 'rest_framework_simplejwt.authentication.default_user_authentication_rule',
 
@@ -213,21 +236,6 @@ SIMPLE_JWT = {
     'SLIDING_TOKEN_LIFETIME': timedelta(minutes=5),
     'SLIDING_TOKEN_REFRESH_LIFETIME': timedelta(days=1),
 }
-
-# for email
-EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_HOST = 'smtp.gmail.com'
-EMAIL_PORT = 587
-EMAIL_USE_TLS = True
-EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER')  # Sender's email used for SMTP authentication
-EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD')  # Password for the sender's email
-DEFAULT_FROM_EMAIL = os.getenv('DEFAULT_FROM_EMAIL')  # Email address that appears as the sender in the email
-
-# redis settings
-REDIS_HOST = 'redis'
-REDIS_PORT = 6379
-REDIS_DB = 1
-
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
@@ -255,51 +263,51 @@ class HealthCheckFilter(logging.Filter):
             return False
         return True
 
-# LOGGING = {
-#     'version': 1,
-#     'disable_existing_loggers': False,
-#     'formatters': {
-#         'verbose': {
-#             'format': '{levelname} {asctime} {module} {process:d} {thread:d} {message}',
-#             'style': '{',
-#         },
-#         'simple': {
-#             'format': '[{asctime}] {message}',
-#             'style': '{',
-#             'datefmt': '%d/%b/%Y %H:%M:%S'
-#         },
-#     },
-#     'handlers': {
-#         'console': {
-#             'level': 'DEBUG',
-#             'class': 'logging.StreamHandler',
-#             'formatter': 'simple',
-#             'filters': [HealthCheckFilter()],  # Use the imported class here
-#         },
-#     },
-    # 'loggers': {
-    #     'django': {
-    #         'handlers': ['console'],
-    #         'level': 'INFO',
-    #         'propagate': True,
-    #     },
-    #     'django.server': {
-    #         'handlers': ['console'],
-    #         'level': 'DEBUG',
-    #         'propagate': False,
-    #     },
-    #     'django.request': {
-    #         'handlers': ['console'],
-    #         'level': 'DEBUG',
-    #         'propagate': False,
-    #     },
-    # },
-    # 'root': {
-    #     'handlers': ['console'],
-    #     'level': 'INFO',
-    # },
-    # 'django.contrib.staticfiles': {
-    #     'handlers': ['console'],
-    #     'level': 'DEBUG',
-    # },
-# }
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'formatters': {
+        'verbose': {
+            'format': '{levelname} {asctime} {module} {process:d} {thread:d} {message}',
+            'style': '{',
+        },
+        'simple': {
+            'format': '[{asctime}] {message}',
+            'style': '{',
+            'datefmt': '%d/%b/%Y %H:%M:%S'
+        },
+    },
+    'handlers': {
+        'console': {
+            'level': 'DEBUG',
+            'class': 'logging.StreamHandler',
+            'formatter': 'simple',
+            'filters': [HealthCheckFilter()],  # Use the imported class here
+        },
+    },
+    'loggers': {
+        'django': {
+            'handlers': ['console'],
+            'level': 'INFO',
+            'propagate': False,
+        },
+        'django.server': {
+            'handlers': ['console'],
+            'level': 'DEBUG',
+            'propagate': False,
+        },
+        'django.request': {
+            'handlers': ['console'],
+            'level': 'DEBUG',
+            'propagate': False,
+        },
+    },
+    'root': {
+        'handlers': ['console'],
+        'level': 'INFO',
+    },
+    'django.contrib.staticfiles': {
+        'handlers': ['console'],
+        'level': 'DEBUG',
+    },
+}

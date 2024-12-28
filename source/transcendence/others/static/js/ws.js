@@ -1,12 +1,19 @@
 /* all buttons creator to reduce repetion */
-function createButton(text, class_list, id, onclick) {
+function createButton(text, class_list, id, onclick, iconClassList = null) {
   const friendshipBtn = document.createElement('button');
   friendshipBtn.type = 'button';
   friendshipBtn.classList.add(...class_list);
   friendshipBtn.id = id;
-  friendshipBtn.textContent = text;
   friendshipBtn.setAttribute('onclick', onclick);
-  
+  if (iconClassList !== null) {
+    const iconElement = document.createElement('i');
+    iconElement.classList.add('fas', ...iconClassList);
+    friendshipBtn.appendChild(iconElement);
+  }
+  const textContent = document.createElement('span');
+  textContent.textContent = text;
+  friendshipBtn.appendChild(textContent);
+
   return friendshipBtn;
 }
 
@@ -28,21 +35,32 @@ function handleFriendRequestUnfriend(data) {
   unfriendBtn.remove();
   chatBtn.remove();
 
-  const sendFriendRequestBtn = createButton('Send Request', ['btn', 'btn-primary', 'friendship_btn'], 'add_friend_btn', 'addFriendRequest()');
+  const sendFriendRequestBtn = createButton('Send Request', ['btn', 'btn-primary', 'friendship_btn'], 'add_friend_btn', 'addFriendRequest()', ['fa-user-plus', 'me-2']);
   const profile_info_container = document.getElementsByClassName("profile_info_container")[0];
   profile_info_container.appendChild(sendFriendRequestBtn);
+  // updating friend count
+  const friendCount = document.getElementById("nums_of_friends");
+  friendCount.textContent = parseInt(friendCount.textContent) - 1;
 }
 
 function handleFriendRequestRecieved(data) {
   const sendFriendRequestBtn = document.getElementById("add_friend_btn");
-  if (!sendFriendRequestBtn)
+  if (!sendFriendRequestBtn) {
+    const content = {
+      type: 'friend_request',
+      title: 'Friend Request',
+      message: `You have a friend request from ${data.sender}`,
+      sender: data.sender,
+    }
+    createToast(content);
     return;
+  }
   sendFriendRequestBtn.remove();
-  const acceptButton = createButton('Accept', ['btn', 'btn-success', 'friendship_btn', 'me-1', 'mb-2'], 'accept_request_btn', `acceptOrDeclineFriendRequest('accept', '${data.sender}')`);
-  const declineButton = createButton('Decline', ['btn', 'btn-danger', 'friendship_btn', 'mb-2'], 'decline_request_btn', `acceptOrDeclineFriendRequest('decline', '${data.sender}')`);
+  const acceptButton = createButton('Accept', ['btn', 'btn-success', 'friendship_btn', 'me-1', 'mb-2'], 'accept_request_btn', `acceptOrDeclineFriendRequest('accept', '${data.sender}')`, ['fa-check', 'me-2']);
+  const declineButton = createButton('Decline', ['btn', 'btn-danger', 'friendship_btn', 'mb-2'], 'decline_request_btn', `acceptOrDeclineFriendRequest('decline', '${data.sender}')`, ['fa-times', 'me-2']);
   const profile_info_container = document.getElementsByClassName("profile_info_container")[0];
-  profile_info_container.appendChild(declineButton);
   profile_info_container.appendChild(acceptButton);
+  profile_info_container.appendChild(declineButton);
 }
 
 function handleFriendRequestAccept(data) {
@@ -51,12 +69,15 @@ function handleFriendRequestAccept(data) {
     return;
   cancelFriendRequestBtn.remove();
 
-  const unfriendBtn = createButton('Unfriend', ['btn', 'btn-danger', 'friendship_btn', 'me-1', 'mb-2'], 'unfriend_btn', 'removeFriend()');
-  const chatBtn = createButton('Chat', ['btn', 'btn-dark', 'friendship_btn', 'mb-2'], 'chat_btn', `create_chatroom('${data.sender}')`);
+  const unfriendBtn = createButton('Unfriend', ['btn', 'btn-danger', 'friendship_btn', 'me-1', 'mb-2'], 'unfriend_btn', 'removeFriend()', ['fa-user-minus', 'me-2']);
+  const chatBtn = createButton('Chat', ['btn', 'btn-dark', 'friendship_btn', 'mb-2'], 'chat_btn', `create_chatroom('${data.sender}')`, ['fa-comment-alt', 'me-2']);
 
   const profile_info_container = document.getElementsByClassName("profile_info_container")[0];
   profile_info_container.appendChild(unfriendBtn);
   profile_info_container.appendChild(chatBtn);
+  // updating friend count
+  const friendCount = document.getElementById("nums_of_friends");
+  friendCount.textContent = parseInt(friendCount.textContent) + 1;
 }
 
 function handleFriendRequestDecline(data) {
@@ -64,7 +85,7 @@ function handleFriendRequestDecline(data) {
   if (!cancelFriendRequestBtn)
     return;
   cancelFriendRequestBtn.remove();
-  const sendFriendRequestBtn = createButton('Send Request', ['btn', 'btn-primary', 'friendship_btn'], 'add_friend_btn', 'addFriendRequest()');
+  const sendFriendRequestBtn = createButton('Send Request', ['btn', 'btn-primary', 'friendship_btn'], 'add_friend_btn', 'addFriendRequest()', ['fa-user-plus', 'me-2']);
   const profile_info_container = document.getElementsByClassName("profile_info_container")[0];
   profile_info_container.appendChild(sendFriendRequestBtn);
 }
@@ -78,7 +99,7 @@ function handleCancelFriendRequest(data) {
   accept_request_btn.remove();
   decline_request_btn.remove();
 
-  const sendFriendRequestBtn = createButton('Send Request', ['btn', 'btn-primary', 'friendship_btn'], 'add_friend_btn', 'addFriendRequest()');
+  const sendFriendRequestBtn = createButton('Send Request', ['btn', 'btn-primary', 'friendship_btn'], 'add_friend_btn', 'addFriendRequest()', ['fa-user-plus', 'me-2']);
   const profile_info_container = document.getElementsByClassName("profile_info_container")[0];
   profile_info_container.appendChild(sendFriendRequestBtn);
 }
@@ -126,22 +147,21 @@ function initNotificationWebsocket() {
 }
 
 /* ---------------------------------------------- websocket stuff for chat ---------------------------------------------- */
-function addMessageToChat(data) {
+async function addMessageToChat(data) {
   const chatMessages = document.getElementById(`${data.chat_id}`);
   if (!chatMessages) {
     console.log("chatMessages not found");
-    createToast("chat", `${data.sender} sent you a msg!`,  `${data.message.slice(0, 50)}...`);
     recipient_chatroom = document.getElementById(`${data.sender}`);
     if (recipient_chatroom) {
-      // bootstrap toast
-      console.log(`${data.sender} chatroom found`);
       // recipient_chatroom.classList.add("unread");
       const msg_indicator = document.createElement("span");
       msg_indicator.classList.add("text-danger");
-      msg_indicator.textContent = "33";
+      msg_indicator.textContent = "!";
       recipient_chatroom.appendChild(msg_indicator);
-      console.log(`${data.sender} chatroom found`);
     }
+    else
+      createToast(data);
+
     return;
   }
   const message = document.createElement("div");
@@ -162,18 +182,19 @@ function addMessageToChat(data) {
   chatMessages.scrollTop = chatMessages.scrollHeight;
 }
 
-function deleteChatRoom(data) {
+async function clearConvoHandler(data) {
   const chatPage = document.getElementsByClassName("chatPage");
   if (!chatPage) {
     return;
   }
+  // await updateUI('/chat');
   const chatRoom = document.getElementById(data.room);
   if (chatRoom) {
-    chatRoom.remove();
-    alert("chatroom deleted: ", data.room);
-  }
-  else {
-    alert("chatroom not found");
+    // chatRoom.remove();
+    chatRoom.innerHTML = `	<div id="no_msg_found" class="d-flex flex-column justify-content-center align-items-center py-5 mt-5">
+		<h5>No messages to display yet.</h5>
+		<p>Start a conversation to see messages here.</p>
+	</div>`;
   }
 }
 
@@ -196,7 +217,7 @@ function initChatWebsocket() {
     console.error("Chat WebSocket error:", error);
   };
 
-  window.ws_chat.onmessage = (e) => {
+  window.ws_chat.onmessage = async (e) => {
     const data = JSON.parse(e.data);
     if (data.type === "chat_message") {
       addMessageToChat(data);
@@ -220,18 +241,19 @@ function initChatWebsocket() {
           sendButton.removeEventListener("click", handleMessageSend);
           sendButton.addEventListener("click", handleMessageSend);
         }
+        showErrorMessage(`You have blocked ${data['recipient']}!`, 3000, "Blocked!");
       }
       else {
         if (messageInput)
           messageInput.classList.remove("d-none");
         if (sendButton)
           sendButton.classList.remove("d-none");
+        await showSuccessMessage(`You have unblocked ${data['recipient']}!`, 2000, "Unblocked!");
       }
     }
     else if (data.type === "room_deleted_notification") {
       // remove the chatroom from the list
-      alert("room deleted --- chatroom will be removed");
-      deleteChatRoom(data);
+      clearConvoHandler(data);
     }
     else if (data.type === "room_deleted_notification_error") {
       // remove the chatroom from the list
