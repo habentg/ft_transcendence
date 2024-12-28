@@ -1,7 +1,7 @@
 from django.http import JsonResponse, HttpResponseRedirect
 from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated
-from account.auth_middleware import *
+from others.auth_middleware import *
 from django.views import View
 from .models import *
 from account.models import *
@@ -10,7 +10,7 @@ from others.views import BaseView
 import urllib.parse
 from account.serializers import PlayerSerializer
 from rest_framework.exceptions import AuthenticationFailed
-from account.auth_middleware import JWTCookieAuthentication
+from others.auth_middleware import JWTCookieAuthentication
 from django.template.loader import render_to_string
 from rest_framework.response import Response
 from .serializers import ChatRoomSerializer, MessageSerializer
@@ -19,6 +19,7 @@ from .serializers import ChatRoomSerializer, MessageSerializer
 class chatMessagesView(APIView):
 	authentication_classes = [JWTCookieAuthentication]
 	permission_classes = [IsAuthenticated]
+	throttle_classes = []
 	template_name = 'chat/chat_messages.html'
 
 	def get(self, request):
@@ -49,6 +50,7 @@ class chatMessagesView(APIView):
 class ChatRoomsView(APIView, BaseView):
 	authentication_classes = [JWTCookieAuthentication]
 	permission_classes = [IsAuthenticated]
+	throttle_classes = []
 	template_name = 'chat/chat.html'
 	title = 'Chat'
 	css = ['css/chat.css']

@@ -30,17 +30,26 @@ async function updatePlayerPassword() {
       },
       body: JSON.stringify(formData),
     });
-    const responseData = await response.json();
-    console.log("this is the response data", responseData);
+    console.log("PU this is the response", response);
     if (!response.ok) {
-      console.error("400 Error - bad :", response);
+      const responseData = await response.json();
+      if (response.status === 429) {
+        closeModal("password-change-modal");
+        const error_content = {
+          type: "error",
+          error_message: `${responseData.error_msg}. Please try again later.`,
+          title: "Failed To Change Password",
+        }
+        createToast(error_content);
+        return ;
+      }
       displayError(responseData);
       return;
     }
-    // Success - close modal and show success message
     closeModal("password-change-modal");
     await showSuccessMessage("Password updated successfully. Please log in again with your new password.", 3000);
-    await updateUI(`/signin?next=/profile/${responseData.username}`);
+    console.log("this is the response data", response);
+    await updateUI(`/signin`);
   } catch (error) {
     console.error("Error:", error);
     displayError({ error_msg: "An error occurred while updating password" });
@@ -64,8 +73,8 @@ async function handleEnableDisable2FA() {
       },
     });
 
+    closeModal("2fa-modal");
     if (response.ok) {
-      closeModal("2fa-modal");
       const button =
         document.getElementById("enable-2fa") ||
         document.getElementById("disable-2fa");
@@ -83,7 +92,17 @@ async function handleEnableDisable2FA() {
       }
       updateUI("/settings");
     } else {
-      throw new Error("Failed to update 2FA status");
+      if (response.status === 429) {
+        const error_content = {
+          type: "error",
+          error_message: "Too many requests. Please try again later.",
+          title: "Failed to update 2FA status",
+        }
+        createToast(error_content);
+      } else {
+        createToast({ title: "Unknown ERROR" });
+      }
+      throw new Error("error happed while updating 2fa");
     }
   } catch (error) {
     console.error("Error:", error);

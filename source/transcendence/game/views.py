@@ -1,7 +1,7 @@
 from django.http import JsonResponse, HttpResponseRedirect
 from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated
-from account.auth_middleware import *
+from others.auth_middleware import *
 from django.views import View
 from .models import *
 from account.models import *
@@ -10,7 +10,7 @@ from others.views import BaseView
 from account.serializers import PlayerSerializer
 from .serializers import *
 from rest_framework.exceptions import AuthenticationFailed
-from account.auth_middleware import JWTCookieAuthentication
+from others.auth_middleware import JWTCookieAuthentication
 from django.template.loader import render_to_string
 from rest_framework.response import Response
 from rest_framework import viewsets
@@ -20,6 +20,7 @@ from django.shortcuts import render
 class GameViewSet(viewsets.ModelViewSet):
     authentication_classes = [JWTCookieAuthentication]
     permission_classes = [IsAuthenticated]
+    throttle_classes = []
     serializer_class = GameSerializer
     queryset = Game.objects.all()
     template_name = 'game/game.html'
@@ -67,6 +68,7 @@ class GameViewSet(viewsets.ModelViewSet):
 class LeaderBoardView(BaseView):
     authentication_classes = [JWTCookieAuthentication]
     permission_classes = [IsAuthenticated]
+    throttle_classes = []
     template_name = 'game/leaderboard.html'
     css = ['css/leaderboard.css']
     js = ['ks/leaderboard.js']
@@ -91,6 +93,7 @@ class LeaderBoardView(BaseView):
 class GameView(APIView, BaseView):
     authentication_classes = [JWTCookieAuthentication]
     permission_classes = [IsAuthenticated]
+    throttle_classes = []
     template_name = 'game/game.html'
     title = 'Game Page'
     css = ['css/game.css']
@@ -122,7 +125,7 @@ class GameView(APIView, BaseView):
 	
 class TournamentView(BaseView):
 	authentication_classes = []
-	permission_classes = []
+	throttle_classes = []
 	template_name = 'game/tournament.html'
 	title = 'Tournament Page'
 	css = ['css/tournament.css']
@@ -138,7 +141,7 @@ class TournamentView(BaseView):
 
 # class GameAIView(BaseView):
 # 	authentication_classes = []
-# 	permission_classes = []
+# 	throttle_classes = []
 # 	template_name = 'others/game.html'
 # 	title = 'Game AI Page'
 # 	css = ['css/game.css']

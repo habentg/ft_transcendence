@@ -64,7 +64,7 @@ class Player(AbstractUser):
     is_logged_in = models.BooleanField(default=False)
     rating = models.IntegerField(default=0)
     blocked_players = models.ManyToManyField('self', symmetrical=False, blank=True, related_name="players_blocked_list")
-
+    last_password_change = models.DateTimeField(auto_now=True, blank=True, null=True)
 
     # Fields removed
     first_name = None

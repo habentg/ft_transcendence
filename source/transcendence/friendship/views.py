@@ -1,6 +1,6 @@
 from rest_framework import viewsets
 from rest_framework.permissions import IsAuthenticated
-from account.auth_middleware import JWTCookieAuthentication
+from others.auth_middleware import JWTCookieAuthentication
 from account.models import Player
 from .models import *
 from .serializers import *
@@ -18,6 +18,7 @@ from account.serializers import PlayerSerializer
 class FriendRequestView(APIView):
 	authentication_classes = [JWTCookieAuthentication]
 	permission_classes = [IsAuthenticated]
+	throttle_classes = []
 
 	def get_player(self, username):
 		return Player.objects.filter(username=username).first()
@@ -128,6 +129,7 @@ class FriendRequestView(APIView):
 class FriendRequestResponseView(APIView):
 	authentication_classes = [JWTCookieAuthentication]
 	permission_classes = [IsAuthenticated]
+	throttle_classes = []
 
 	def get_player(self, username):
 		return Player.objects.filter(username=username).first()
@@ -195,6 +197,7 @@ class FriendRequestResponseView(APIView):
 class NotificationViewSet(viewsets.ViewSet):
 	authentication_classes = [JWTCookieAuthentication]
 	permission_classes = [IsAuthenticated]
+	throttle_classes = []
 	template_name = 'friendship/notification.html'
 
 	def list(self, request):

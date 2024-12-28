@@ -6,7 +6,7 @@ from django.template.loader import render_to_string
 from django.shortcuts import render
 from django.urls import reverse
 from rest_framework.permissions import IsAuthenticated
-from account.auth_middleware import JWTCookieAuthentication, generate_access_token
+from others.auth_middleware import JWTCookieAuthentication, generate_access_token
 from rest_framework.exceptions import AuthenticationFailed
 from django.db import connection
 from rest_framework.response import Response
@@ -25,7 +25,7 @@ from account.utils import *
 
 class BaseView(View):
 	authentication_classes = []
-	permission_classes = []
+	throttle_classes = []
 	template_name = None
 	title = None
 	css = None
@@ -59,7 +59,7 @@ class BaseView(View):
 # view for the 404 page1
 class Catch_All(BaseView):
 	authentication_classes = []
-	permission_classes = []
+	throttle_classes = []
 	template_name = 'others/404.html'
 	title = 'Error Page'
 	css = ['css/404.css']
@@ -81,6 +81,7 @@ class Catch_All(BaseView):
 class HomeView(APIView, BaseView):
 	authentication_classes = [JWTCookieAuthentication]
 	permission_classes = [IsAuthenticated]
+	throttle_classes = []
 	template_name = 'others/home.html'
 	title = 'Home Page'
 	css = ['css/home.css']
@@ -111,7 +112,7 @@ class HomeView(APIView, BaseView):
 # view for the index page
 class LandingPageView(BaseView):
 	authentication_classes = []
-	permission_classes = []
+	throttle_classes = []
 	template_name = 'others/landing.html'
 	css = ['css/landing.css']
 	title = 'Index Page'
@@ -125,7 +126,7 @@ class LandingPageView(BaseView):
 # Health check view
 class HealthCheck(View):
 	authentication_classes = []
-	permission_classes = []
+	throttle_classes = []
 	def get(self, request):
 		try:
 			with connection.cursor() as cursor:
@@ -137,7 +138,7 @@ class HealthCheck(View):
 # view for the csrf token request
 class CsrfRequest(APIView):
 	authentication_classes = []
-	permission_classes = []
+	throttle_classes = []
 	def get(self, request):
 		response = Response(status=status.HTTP_200_OK)
 		response.set_cookie('csrftoken', get_token(request))
@@ -145,21 +146,21 @@ class CsrfRequest(APIView):
 
 class AboutView(BaseView):
 	authentication_classes = []
-	permission_classes = []
+	throttle_classes = []
 	template_name = 'others/about.html'
 	title = 'About Us'
 	css = ['css/static_pages.css']
 
 class PrivacyView(BaseView):
 	authentication_classes = []
-	permission_classes = []
+	throttle_classes = []
 	template_name = 'others/privacy.html'
 	title = 'Privacy Policy'
 	css = ['css/static_pages.css']
 
 class TermsView(BaseView):
 	authentication_classes = []
-	permission_classes = []
+	throttle_classes = []
 	template_name = 'others/terms.html'
 	title = 'Terms of Service'
 	css = ['css/static_pages.css']
@@ -176,6 +177,7 @@ class SearchPaginator(PageNumberPagination):
 class PaginatedSearch(APIView, BaseView):
 	authentication_classes = [JWTCookieAuthentication]
 	permission_classes = [IsAuthenticated]
+	throttle_classes = []
 	template_name = 'others/paginated_page.html'
 	css = ['css/search.css']
 	js = ['js/friend.js']
