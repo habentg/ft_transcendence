@@ -5,22 +5,22 @@
 1. chat notification - toast : ................................................................................DONE!
 2. show error - toast........................................................................................................... ............DONE!
 3. chat UI (three dot & small-screens ) .....................................................................................................DONE!
-4. loading screen..........................................................................................->
-5. styling 'no chat found' in chat page ..................................................................->
-6. game history rows styling...................................................................................................................->
-7. leaderboard page......................................................................->
+4. loading screen..........................................................................................-> DONE!
+5. styling 'no chat found' in chat page ..................................................................-> DONE!
+6. game history rows styling...................................................................................................................-> DONE!
+7. leaderboard page......................................................................-> DONE!
 
 ## ******************************* UX related TODO list **************************
 1. UX: after password change, prompt user to 'login again' ............................................................DONE!
 2. add icons to all friendship buttons --------------- DONE
 
 ## ******************************* Game related TODO list **************************
-1. player names should be displayed before clicking start............................................................-> 
+1. player names should be displayed before clicking start............................................................-> DONE!
 
 ## ******************************* Real-Time (chat, notification, friendship) TODO list **************************
 1. blocking/unblocking, game invitation through chat .................................................................DONE!
 2. duplication of notifications - ex: sending friendship notification - cancel it - send request again. there will be two notifications,
-    -> will think about it if its okay like that or just remove the older one or update the date of friend request or some....
+    -> will think about it if its okay like that or just remove the older one or update the date of friend request or some.... ----- DONE!
 
 ## ******************************* Everything Backend related TODO list **************************
 1. token revocation after user after password change and forget password ............................................................................................DONE!

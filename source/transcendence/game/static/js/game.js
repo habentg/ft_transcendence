@@ -96,9 +96,7 @@ function startGame(game) {
   game.drawFlag = true;
 
   game.setupeventListeners();
-  document.getElementById("player1").classList.remove("d-none");
-  document.getElementById("player2").classList.remove("d-none");
-  document.getElementById("startButton").classList.add("disabled"); //disable start button when the game starts
+  document.getElementById("startButton").disabled = true;
   document.getElementById("settingButton").disabled = true;
 
   requestAnimationFrame((timestamp) => gameLoop(game, timestamp));
@@ -272,6 +270,9 @@ function initPlayers(game) {
   if (game.aiFlag) {
     game.createPlayer(game.defp1Name, "left");
     game.createPlayer("Artificial Stupidity", "right");
+    document.getElementById("player2Name").textContent = "@ AI";
+    document.getElementById("player2Name").style.display = "block";
+
   } else if (game.versusFlag) {
     game.createPlayer(game.defp1Name, "left");
     initializeModal(game);
@@ -491,6 +492,7 @@ async function resetGame(player1, player2, direction, game) {
       document.getElementById("aiButton").disabled = false;
     }
     if (document.getElementById("startButton")) {
+      console.log("Start Button enabled");
       document.getElementById("startButton").disabled = false;
     }
     if (document.getElementById("settingButton")) {
@@ -562,8 +564,8 @@ function startaiGame(game) {
   document.getElementById("player2Name").textContent = "@ AI";
   document.getElementById("player2Name").style.display = "block";
 
-  document.getElementById("player1").classList.remove("d-none");
-  document.getElementById("player2").classList.remove("d-none");
+  // document.getElementById("player1").classList.remove("d-none");
+  // document.getElementById("player2").classList.remove("d-none");
 
   document.getElementById("aiButton").disabled = true;
   document.getElementById("settingButton").disabled = true;

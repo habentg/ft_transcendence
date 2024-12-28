@@ -13,12 +13,34 @@ from channels.layers import get_channel_layer
 from asgiref.sync import async_to_sync
 from django.template.loader import render_to_string 
 from account.serializers import PlayerSerializer
+from django.utils import timezone
+
+from django.http import HttpResponseRedirect
+from django.urls import reverse
+import urllib.parse
+from rest_framework.exceptions import AuthenticationFailed
+from others.auth_middleware import generate_access_token
 
 # FRIEND REQUESTS - FROM SENDER PERSPECTIVE
 class FriendRequestView(APIView):
 	authentication_classes = [JWTCookieAuthentication]
 	permission_classes = [IsAuthenticated]
 	throttle_classes = []
+
+	def handle_exception(self, exception):
+		if isinstance(exception, AuthenticationFailed):
+			if 'access token is invalid but refresh token is valid' in str(exception):
+				print(f'refresh token is valid to {self.request.path}', flush=True)
+				response = HttpResponseRedirect(self.request.path)
+				response.set_cookie('access_token', generate_access_token(self.request.COOKIES.get('refresh_token')), httponly=True, samesite='Lax', secure=True)
+				return response
+			signin_url = reverse('signin_page')
+			params = urllib.parse.urlencode({'next': self.request.path})
+			response = HttpResponseRedirect(f'{signin_url}?{params}')
+			response.delete_cookie('access_token')
+			response.delete_cookie('refresh_token')
+			return response
+		return super().handle_exception(exception)
 
 	def get_player(self, username):
 		return Player.objects.filter(username=username).first()
@@ -66,10 +88,14 @@ class FriendRequestView(APIView):
 				'sender': request.user.id,
 				'read_status': False
 			}
-			notification_serializer = NotificationSerializer(data=notification_data)
-			if not notification_serializer.is_valid():
-				return Response({'error_msg': notification_serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
-			notification_serializer.save()
+			friend_requ_sent_notice = Notification.objects.filter(player=receiver, sender=request.user.id, notification_type='friend_request_sent')
+			if friend_requ_sent_notice.exists():
+				friend_requ_sent_notice.created_at = timezone.now()
+			else:
+				notification_serializer = NotificationSerializer(data=notification_data)
+				if not notification_serializer.is_valid():
+					return Response({'error_msg': notification_serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
+				notification_serializer.save()
 			return Response(serializer.data, status=status.HTTP_201_CREATED) # 
 		# Return detailed error informatio
 		return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
@@ -130,6 +156,21 @@ class FriendRequestResponseView(APIView):
 	authentication_classes = [JWTCookieAuthentication]
 	permission_classes = [IsAuthenticated]
 	throttle_classes = []
+
+	def handle_exception(self, exception):
+		if isinstance(exception, AuthenticationFailed):
+			if 'access token is invalid but refresh token is valid' in str(exception):
+				print(f'refresh token is valid to {self.request.path}', flush=True)
+				response = HttpResponseRedirect(self.request.path)
+				response.set_cookie('access_token', generate_access_token(self.request.COOKIES.get('refresh_token')), httponly=True, samesite='Lax', secure=True)
+				return response
+			signin_url = reverse('signin_page')
+			params = urllib.parse.urlencode({'next': self.request.path})
+			response = HttpResponseRedirect(f'{signin_url}?{params}')
+			response.delete_cookie('access_token')
+			response.delete_cookie('refresh_token')
+			return response
+		return super().handle_exception(exception)
 
 	def get_player(self, username):
 		return Player.objects.filter(username=username).first()
@@ -200,18 +241,29 @@ class NotificationViewSet(viewsets.ViewSet):
 	throttle_classes = []
 	template_name = 'friendship/notification.html'
 
+	def handle_exception(self, exception):
+		if isinstance(exception, AuthenticationFailed):
+			if 'access token is invalid but refresh token is valid' in str(exception):
+				print(f'refresh token is valid to {self.request.path}', flush=True)
+				response = HttpResponseRedirect(self.request.path)
+				response.set_cookie('access_token', generate_access_token(self.request.COOKIES.get('refresh_token')), httponly=True, samesite='Lax', secure=True)
+				return response
+			signin_url = reverse('signin_page')
+			params = urllib.parse.urlencode({'next': self.request.path})
+			response = HttpResponseRedirect(f'{signin_url}?{params}')
+			response.delete_cookie('access_token')
+			response.delete_cookie('refresh_token')
+			return response
+		return super().handle_exception(exception)
+
 	def list(self, request):
-		notifications = Notification.objects.filter(player=request.user)
+		notifications = Notification.objects.filter(player=request.user).order_by('-created_at')
 		serializer = NotificationSerializer(notifications, many=True)
 		if not notifications:
 			return Response({'detail': 'No notifications found.'}, status=status.HTTP_404_NOT_FOUND)
-		if request.query_params.get('action') == 'top_3_notifications':
-			serializer = NotificationSerializer(notifications[:3], many=True)
-			return Response(serializer.data)
-		else:
-			serializer = NotificationSerializer(notifications, many=True)
-			html = render_to_string(self.template_name, {'notifications': serializer.data})
-			return Response({'html': html, 'data':serializer.data}, status=status.HTTP_200_OK)
+		serializer = NotificationSerializer(notifications, many=True)
+		html = render_to_string(self.template_name, {'notifications': serializer.data})
+		return Response({'html': html, 'data':serializer.data}, status=status.HTTP_200_OK)
 
 	# mark notification as read
 	def update(self, request, pk=None):

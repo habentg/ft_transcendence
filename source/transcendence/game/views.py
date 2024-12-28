@@ -71,7 +71,7 @@ class LeaderBoardView(BaseView):
     throttle_classes = []
     template_name = 'game/leaderboard.html'
     css = ['css/leaderboard.css']
-    js = ['ks/leaderboard.js']
+    js = ['js/leaderboard.js']
 
     def handle_exception(self, exception):
         if isinstance(exception, AuthenticationFailed):

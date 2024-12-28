@@ -99,9 +99,9 @@ async function handleEnableDisable2FA() {
           title: "Failed to update 2FA status",
         }
         createToast(error_content);
-      } else {
-        createToast({ title: "Unknown ERROR" });
-      }
+        return ;
+      } 
+      createToast({ title: "Unknown ERROR" });
       throw new Error("error happed while updating 2fa");
     }
   } catch (error) {
