@@ -72,7 +72,7 @@ async function loadContent(route) {
         const data = await response.json();
         console.log("Redirecting to:", data["redirect"]);
         history.pushState(null, "", data["redirect"]);
-        handleLocationChange();
+        await loadContent(data["redirect"]);
         return;
       } else if (response.status === 401) {
         // removing any css js if there is any

@@ -95,7 +95,7 @@ class SignInView(APIView, BaseView):
 		if serializer.is_valid():
 			player = serializer.validated_data['player']
 			if player.tfa:
-				if send_2fa_code(player):
+				if send_2fa_code(Player.objects.filter(username=request.data['username']).first()):
 					return Response({'redirect_url': '/2fa'}, status=status.HTTP_302_FOUND)
 				else:
 					return Response({'error_msg': 'Couldn\'t send OTP to the given Email'}, 
@@ -333,13 +333,46 @@ class PassResetNewPass(View):
 
 # 2FA - Two Factor Authentication
 class TwoFactorAuth(APIView, BaseView):
-	authentication_classes = [JWTCookieAuthentication]
-	permission_classes = [IsAuthenticated]
+	authentication_classes = []
+	permission_classes = []
 	throttle_classes = []
 	template_name = 'account/2fa.html'
 	title = 'Two Factor Authentication'
 	css = ['css/2fa.css']
 	js = ['js/2fa.js']
+
+	def get_context_data(self, request):
+		try:
+			username = request.GET.get('username', '')
+			player = Player.objects.filter(username=username).first()
+			return {'email': player.email}
+		except:
+			return {'email':'dummy@email.com'}
+	
+	def post(self, request):
+		data = json.loads(request.body)
+		print('data', data, flush=True)
+		player = Player.objects.filter(email=data['email']).first()
+		if player:
+			totp = pyotp.TOTP(player.secret, interval=300)
+			if totp.verify(data['otp']):
+				player.verified = True
+				refresh = RefreshToken.for_user(player)
+				pfp = player.profile_picture.url if player.profile_picture else None
+				response = Response({'username': player.username, 'pfp': pfp}, status=status.HTTP_200_OK)
+				response.set_cookie('access_token', str(refresh.access_token), httponly=True, samesite='Lax', secure=True)
+				response.set_cookie('refresh_token', str(refresh), httponly=True, samesite='Lax', secure=True)
+				player.is_logged_in = True
+				player.save()
+				return response
+			else:
+				return JsonResponse({'error_msg': 'Invalid OTP!'}, status=status.HTTP_401_UNAUTHORIZED)
+		return JsonResponse({'failure': 'no player found with that email!'}, status=status.HTTP_401_UNAUTHORIZED)
+
+class TwoFactorSetUpToggle(APIView):
+	authentication_classes = [JWTCookieAuthentication]
+	permission_classes = [IsAuthenticated]
+	throttle_classes = []
 
 	def get_throttles(self):
 		"""Apply throttling only for the PATCH method (password update)."""
@@ -366,23 +399,6 @@ class TwoFactorAuth(APIView, BaseView):
 			return response
 		return super().handle_exception(exception)
 
-
-	def get_context_data(self, request):
-		return {'email': self.request.user.email}
-	
-	def post(self, request):
-		data = json.loads(request.body)
-		player = request.user
-		if player:
-			totp = pyotp.TOTP(player.secret, interval=300)
-			if totp.verify(data['otp']):
-				player.verified = True
-				player.save()
-				return JsonResponse({'redirect': 'home'}, status=status.HTTP_200_OK)
-			else:
-				return JsonResponse({'error_msg': 'Invalid OTP!'}, status=status.HTTP_401_UNAUTHORIZED)
-		return JsonResponse({'failure': 'no player found with that email!'}, status=status.HTTP_401_UNAUTHORIZED)
-	
 	def patch(self, request):
 		player = request.user
 		if player:
@@ -445,10 +461,14 @@ class PlayerProfileView(APIView, BaseView):
 				'games_won': Game.objects.filter(player_one=queried_user, outcome='WIN').count(),
 				'games_lost': Game.objects.filter(player_one=queried_user, outcome='LOSE').count(),
 			}
+			if data['games']:
+				data['games'] = sorted(data['games'], key=lambda x: x['start_time'], reverse=True)
+
+			print('data[games][0].start_time', data['games'][0]['start_time'], flush=True)
 		return data
 
 # profile view
-class PlayerProfileUpdatingView(APIView, BaseView):
+class PlayerProfileUpdatingView(APIView):
 	authentication_classes = [JWTCookieAuthentication]
 	permission_classes = [IsAuthenticated]
 	throttle_classes = []
@@ -518,7 +538,7 @@ class PlayerProfileUpdatingView(APIView, BaseView):
 		response.delete_cookie('refresh_token')
 		return response
 
-class PlayerSettings(APIView, BaseView):
+class SettingsView(APIView, BaseView):
 	authentication_classes = [JWTCookieAuthentication]
 	permission_classes = [IsAuthenticated]
 	throttle_classes = []
