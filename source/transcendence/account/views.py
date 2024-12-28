@@ -381,7 +381,7 @@ class PlayerProfileView(APIView, BaseView):
 	authentication_classes = [JWTCookieAuthentication]
 	permission_classes = [IsAuthenticated]
 	throttle_classes = []
-	template_name = 'friendship/player_profile.html'
+	template_name = 'account/profile.html'
 	title = 'Player Profile'
 	css = ['css/profile.css']
 	js = ['js/profile.js']

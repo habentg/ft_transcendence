@@ -178,7 +178,7 @@ class PaginatedSearch(APIView, BaseView):
 	authentication_classes = [JWTCookieAuthentication]
 	permission_classes = [IsAuthenticated]
 	throttle_classes = []
-	template_name = 'others/paginated_page.html'
+	template_name = 'friendship/search_result.html'
 	css = ['css/search.css']
 	js = ['js/friend.js']
 
