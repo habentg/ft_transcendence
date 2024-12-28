@@ -106,7 +106,7 @@
 }
 
 .pagination-size .btn {
-    font-size: 0.8rem; 
+    font-size: 0.8rem;
     padding: 0.25rem 0.5rem;
 }
 
@@ -193,44 +193,6 @@
     color: #adb5bd !important;
 }
 
-/* Responsive Adjustments */
-@media (max-width: 768px) {
-    .container {
-        padding: 1rem;
-    }
-
-    .profile-pic {
-        width: 120px;
-        height: 120px;
-    }
-
-    .table-responsive {
-        margin: 0 -1rem;
-    }
-
-    .table td,
-    .table th {
-        padding: 0.75rem;
-    }
-}
-
-/* Animation */
-@keyframes fadeIn {
-    from {
-        opacity: 0;
-        transform: translateY(20px);
-    }
-
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
-.content {
-    animation: fadeIn 0.5s ease-out;
-}
-
 /* Modal Styles */
 .modal {
     backdrop-filter: blur(8px);
@@ -300,9 +262,56 @@
     height: auto;
 }
 
+.no-games-message {
+    padding: 20px;
+}
+
+.no-games-message i {
+    font-size: 2rem;
+    color: #6c757d;
+    /* Neutral gray tone */
+}
+
+.no-games-message .primary-message {
+    margin-top: 10px;
+    font-weight: bold;
+    font-size: 1.5rem;
+    color: #6c757d;
+}
+
+.no-games-message .secondary-message {
+    color: #6c757d;
+    font-size: 1rem;
+}
+
+.game-history-container {
+    padding: 5rem;
+}
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+    /* .container {
+        padding: 1rem;
+    }
+
+    .profile-pic {
+        width: 120px;
+        height: 120px;
+    }
+
+    .table-responsive {
+        margin: 0 -1rem;
+    }
+
+    .table td,
+    .table th {
+        padding: 0.75rem;
+    } */
+}
+
 
 @media (max-width: 576px) {
-    .modal-dialog {
+    /* .modal-dialog {
         margin: 1rem;
     }
 
@@ -317,7 +326,7 @@
 
     #change-profile-pic {
         padding: 4px 6px;
-    }
+    } */
 }
 
 /* Add to your modal styles section */
