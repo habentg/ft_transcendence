@@ -85,13 +85,23 @@
               <li class="nav-item">
                 <a href="/chat" class="nav-link" onclick="appRouter()"><i class="fas fa-comments me-2"></i>Chat</a>
               </li>
-              <li id="notification_dropdown_list" class="nav-item dropdown">
+              <!-- <li id="notification_dropdown_list" class="nav-item dropdown">
                 <a onclick="handleNotificationBellClick()" class="nav-link position-relative notification-badge"
                   role="button" id="notificationDropdown" data-bs-toggle="dropdown" aria-expanded="false"><i
                     class="fas fa-bell"></i></a>
                 <ul id="notification_ul" class="dropdown-menu dropdown-menu-end" aria-labelledby="notificationDropdown"
                   style="width: 300px;"></ul>
+              </li> -->
+              <li id="notification_dropdown_list" class="nav-item dropdown">
+                <a onclick="handleNotificationBellClick()" class="nav-link position-relative notification-badge"
+                  role="button" id="notificationDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                  <i class="fas fa-bell"></i>
+                </a>
+                <ul id="notification_ul" class="dropdown-menu dropdown-menu-end" aria-labelledby="notificationDropdown"
+                  style="width: 320px; max-height: 350px; overflow-y: auto;">
+                </ul>
               </li>
+
 
               <li class="nav-item ms-lg-2 dropdown">
                 <a class="nav-link profile-link" href="#" role="button" id="profileDropdown" data-bs-toggle="dropdown"

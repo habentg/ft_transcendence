@@ -50,7 +50,7 @@
       </div>
     {% else %}
       <div class="no-results text-center py-5">
-        <i class="fas fa-search fa-3x mb-3"></i>
+        <i class="fas fa-search fa-2x mb-3"></i>
         {% if search_type == 'friends' %}
           <h3>No Friends Found</h3>
           <p class="text-muted">Start connecting ...</p>
@@ -58,8 +58,8 @@
           <h3>No Friend Requests Found</h3>
           <p class="text-muted">lmao...</p>
         {% else %}
-          <h3>No Results Found for "{{ search_type }}"</h3>
-          <p class="text-muted">Try different search terms</p>
+          <h5>No Results Found for "{{ search_type }}"</h5>
+          <p >Try different search terms</p>
         {% endif %}
       </div>
     {% endif %}
