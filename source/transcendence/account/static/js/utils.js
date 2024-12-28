@@ -175,7 +175,7 @@ function updateNavBar(isAuthenticated) {
     navbar.innerHTML = `
     <ul class="navbar-nav ms-auto align-items-center">
       <li class="nav-item">
-        <a href="#" class="nav-link"><i class="fas fa-trophy me-2"></i>Leaderboard</a>
+        <a nclick="appRouter()" href="/leaderboard" class="nav-link"><i class="fas fa-trophy me-2"></i>Leaderboard</a>
       </li>
       <li class="nav-item">
       <a href="/chat" class="nav-link" onclick="appRouter()"><i class="fas fa-comments me-2"></i>Chat</a>

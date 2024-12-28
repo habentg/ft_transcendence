@@ -1,7 +1,7 @@
 from django.http import JsonResponse, HttpResponseRedirect
 from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated
-from account.auth_middleware import *
+from others.auth_middleware import *
 from django.views import View
 from .models import *
 from account.models import *
@@ -10,7 +10,7 @@ from others.views import BaseView
 from account.serializers import PlayerSerializer
 from .serializers import *
 from rest_framework.exceptions import AuthenticationFailed
-from account.auth_middleware import JWTCookieAuthentication
+from others.auth_middleware import JWTCookieAuthentication
 from django.template.loader import render_to_string
 from rest_framework.response import Response
 from rest_framework import viewsets
@@ -20,6 +20,7 @@ from django.shortcuts import render
 class GameViewSet(viewsets.ModelViewSet):
     authentication_classes = [JWTCookieAuthentication]
     permission_classes = [IsAuthenticated]
+    throttle_classes = []
     serializer_class = GameSerializer
     queryset = Game.objects.all()
     template_name = 'game/game.html'
@@ -67,9 +68,10 @@ class GameViewSet(viewsets.ModelViewSet):
 class LeaderBoardView(BaseView):
     authentication_classes = [JWTCookieAuthentication]
     permission_classes = [IsAuthenticated]
+    throttle_classes = []
     template_name = 'game/leaderboard.html'
     css = ['css/leaderboard.css']
-    js = ['ks/leaderboard.js']
+    js = ['js/leaderboard.js']
 
     def handle_exception(self, exception):
         if isinstance(exception, AuthenticationFailed):
@@ -91,6 +93,7 @@ class LeaderBoardView(BaseView):
 class GameView(APIView, BaseView):
     authentication_classes = [JWTCookieAuthentication]
     permission_classes = [IsAuthenticated]
+    throttle_classes = []
     template_name = 'game/game.html'
     title = 'Game Page'
     css = ['css/game.css']
@@ -101,7 +104,13 @@ class GameView(APIView, BaseView):
             """ is refresh token not expired """
             if 'access token is invalid but refresh token is valid' in str(exception):
                 print(f'refresh token is valid to {self.request.path}', flush=True)
-                response = HttpResponseRedirect(self.request.path)
+                print(f'refresh token is valid to {self.request.path}', flush=True)
+                query_params = self.request.GET.urlencode()
+                redirect_url = self.request.path
+                if query_params:
+                    redirect_url = f"{redirect_url}?{query_params}"
+                response = HttpResponseRedirect(redirect_url)
+                # response = HttpResponseRedirect(self.request.path)
                 response.set_cookie('access_token', generate_access_token(self.request.COOKIES.get('refresh_token')), httponly=True, samesite='Lax', secure=True)
                 return response
             response = HttpResponseRedirect(reverse('landing'))
@@ -122,7 +131,7 @@ class GameView(APIView, BaseView):
 	
 class TournamentView(BaseView):
 	authentication_classes = []
-	permission_classes = []
+	throttle_classes = []
 	template_name = 'game/tournament.html'
 	title = 'Tournament Page'
 	css = ['css/tournament.css']
@@ -130,19 +139,3 @@ class TournamentView(BaseView):
 
 	def get(self, request):
 		return super().get(request)
-
-
-
-
-
-
-# class GameAIView(BaseView):
-# 	authentication_classes = []
-# 	permission_classes = []
-# 	template_name = 'others/game.html'
-# 	title = 'Game AI Page'
-# 	css = ['css/game.css']
-# 	js = ['js/gameai.js']
-
-# 	def get(self, request):
-# 		return super().get(request)

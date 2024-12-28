@@ -66,7 +66,7 @@ def generate_access_token(refresh_token):
         new_access_token = jwt.encode({
             'token_type': 'access',
             'jti': str(uuid.uuid4()),
-            'exp': datetime.utcnow() + timedelta(minutes=15),
+            'exp': datetime.utcnow() +  timedelta(minutes=15),
             'iat': datetime.utcnow(),
             'user_id': refresh_token_data['user_id'],
         }, settings.SECRET_KEY, algorithm="HS256")

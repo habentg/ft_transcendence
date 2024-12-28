@@ -22,7 +22,7 @@ from django.shortcuts import render
 import pyotp
 from django.urls import reverse
 from rest_framework.permissions import IsAuthenticated
-from .auth_middleware import *
+from others.auth_middleware import *
 from django.middleware.csrf import get_token
 from rest_framework.response import Response
 from rest_framework.exceptions import AuthenticationFailed
@@ -35,12 +35,16 @@ from friendship.models import *
 from account.utils import *
 from game.models import Game
 from game.serializers import GameSerializer
+from others.throttles import *
+import secrets
+from django.utils import timezone
 
 # view for the sign up page
 @method_decorator(csrf_protect, name='dispatch')
 class SignUpView(APIView, BaseView):
 	authentication_classes = []
 	permission_classes = []
+	throttle_classes = []
 	template_name = 'account/signup.html'
 	title = 'Sign Up'
 	css = ['css/signup.css']
@@ -75,6 +79,7 @@ class SignUpView(APIView, BaseView):
 class SignInView(APIView, BaseView):
 	authentication_classes = []
 	permission_classes = []
+	throttle_classes = []
 	template_name = 'account/signin.html'
 	title = 'Sign In'
 	css = ['css/signin.css']
@@ -111,6 +116,22 @@ class SignInView(APIView, BaseView):
 class SignOutView(APIView, BaseView):
 	authentication_classes = [JWTCookieAuthentication]
 	permission_classes = [IsAuthenticated]
+	throttle_classes = []
+
+	def handle_exception(self, exception):
+		if isinstance(exception, AuthenticationFailed):
+			if 'access token is invalid but refresh token is valid' in str(exception):
+				print(f'refresh token is valid to {self.request.path}', flush=True)
+				response = HttpResponseRedirect(self.request.path)
+				response.set_cookie('access_token', generate_access_token(self.request.COOKIES.get('refresh_token')), httponly=True, samesite='Lax', secure=True)
+				return response
+			signin_url = reverse('signin_page')
+			params = urllib.parse.urlencode({'next': self.request.path})
+			response = HttpResponseRedirect(f'{signin_url}?{params}')
+			response.delete_cookie('access_token')
+			response.delete_cookie('refresh_token')
+			return response
+		return super().handle_exception(exception)
 
 	def get(self, request):
 		player = request.user
@@ -137,16 +158,20 @@ class SignOutView(APIView, BaseView):
 class Auth_42(View):
 	authentication_classes = []
 	permission_classes = []
+	throttle_classes = []
 
 	def get(self, request):
 		redirect_uri = settings.DOMAIN_NAME + '/oauth'
 		client_id =settings.FOURTYTWO_OAUTH_CLIENT_ID
+		state = secrets.token_urlsafe(32)
+		request.session['oauth_state'] = state
 		# Construct the 42 OAuth authorization URL
 		authorization_url = f'https://api.intra.42.fr/oauth/authorize?' \
 							f'client_id={client_id}&' \
 							f'redirect_uri={redirect_uri}&' \
 							f'response_type=code&' \
-							f'scope=public'
+							f'scope=public&' \
+							f'state={state}'
 
 		return JsonResponse({'authorization_url': authorization_url})
 
@@ -154,8 +179,11 @@ class Auth_42(View):
 class OauthCallback(View):
 	authentication_classes = []
 	permission_classes = []
+	throttle_classes = []
 
 	def get(self, request):
+		if request.GET.get('state') != request.session['oauth_state']:
+			return render(request, 'others/base.html', {'css':['css/404.css'],'html': render_to_string('others/404.html', {'status_code': '400', 'error_msg_header': 'Bad Request', 'error_msg': 'Invalid state from 42!'})})
 		code = request.GET.get('code', None)
 		if not code:
 			return render(request, 'others/base.html', {'css':['css/404.css'],'html': render_to_string('others/404.html', {'status_code': '400', 'error_msg_header': 'Bad Request', 'error_msg': 'No code abtained from 42!'})})
@@ -209,10 +237,17 @@ class OauthCallback(View):
 class PasswordReset(BaseView):
 	authentication_classes = []
 	permission_classes = []
+	throttle_classes = []
 	template_name = 'account/password_reset.html'
 	title = 'Password Reset'
 	css = ['css/password_reset.css']
 	js = ['js/password_reset.js']
+
+	def get_throttles(self):
+		"""Apply throttling only for the GET method (password update)."""
+		if self.request.method == 'GET':
+			return [PasswordUpdateThrottle()]
+		return super().get_throttles()
 
 	def get(self, request):
 		return super().get(request)
@@ -250,6 +285,7 @@ class PasswordReset(BaseView):
 class PassResetNewPass(View):
 	authentication_classes = []
 	permission_classes = []
+	throttle_classes = []
 	template_name = 'account/change_pass.html'
 	title = 'Password Reset'
 	css = ['css/password_reset.css']
@@ -299,10 +335,17 @@ class PassResetNewPass(View):
 class TwoFactorAuth(APIView, BaseView):
 	authentication_classes = [JWTCookieAuthentication]
 	permission_classes = [IsAuthenticated]
+	throttle_classes = []
 	template_name = 'account/2fa.html'
 	title = 'Two Factor Authentication'
 	css = ['css/2fa.css']
 	js = ['js/2fa.js']
+
+	def get_throttles(self):
+		"""Apply throttling only for the PATCH method (password update)."""
+		if self.request.method == 'PATCH':
+			return [TwoFactorSetUpThrottle()]
+		return super().get_throttles()
 
 	def handle_exception(self, exception):
 		if isinstance(exception, AuthenticationFailed):
@@ -352,8 +395,8 @@ class TwoFactorAuth(APIView, BaseView):
 class PlayerProfileView(APIView, BaseView):
 	authentication_classes = [JWTCookieAuthentication]
 	permission_classes = [IsAuthenticated]
-
-	template_name = 'friendship/player_profile.html'
+	throttle_classes = []
+	template_name = 'account/profile.html'
 	title = 'Player Profile'
 	css = ['css/profile.css']
 	js = ['js/profile.js']
@@ -398,6 +441,9 @@ class PlayerProfileView(APIView, BaseView):
 				'is_self': queried_user == request.user,
 				'num_of_friends': queried_user.friend_list.friends.count(),
 				'games': GameSerializer(Game.objects.filter(player_one=queried_user), many=True).data,
+				'num_of_games': Game.objects.filter(player_one=queried_user).count(),
+				'games_won': Game.objects.filter(player_one=queried_user, outcome='WIN').count(),
+				'games_lost': Game.objects.filter(player_one=queried_user, outcome='LOSE').count(),
 			}
 		return data
 
@@ -405,6 +451,7 @@ class PlayerProfileView(APIView, BaseView):
 class PlayerProfileUpdatingView(APIView, BaseView):
 	authentication_classes = [JWTCookieAuthentication]
 	permission_classes = [IsAuthenticated]
+	throttle_classes = []
 
 	def handle_exception(self, exception):
 		if isinstance(exception, AuthenticationFailed):
@@ -448,12 +495,14 @@ class PlayerProfileUpdatingView(APIView, BaseView):
 	# updating user password
 	def post(self, request):
 		player = request.user
+		if player.last_password_change and (timezone.now() - player.last_password_change).total_seconds() < 3600:
+			return Response({'error_msg': 'You can only change your password once per hour!'}, status=status.HTTP_429_TOO_MANY_REQUESTS)
 		serializer = ChangePasswordSerializer(data=request.data)
 		if serializer.is_valid():
 			if not player.check_password(serializer.validated_data['current_password']):
-				return JsonResponse({'error_msg': 'Invalid current password!'}, status=status.HTTP_400_BAD_REQUEST)
+				return Response({'error_msg': 'Invalid current password!'}, status=status.HTTP_400_BAD_REQUEST)
 			if serializer.validated_data['new_password'] != serializer.validated_data['confirm_password']:
-				return JsonResponse({'error_msg': 'Mismatch while confirming password!'}, status=status.HTTP_400_BAD_REQUEST)
+				return Response({'error_msg': 'Mismatch while confirming password!'}, status=status.HTTP_400_BAD_REQUEST)
 			""" blacklisting the old token """
 		access_token_string = request.COOKIES.get('access_token')
 		refresh_token_string = request.COOKIES.get('refresh_token')
@@ -462,13 +511,17 @@ class PlayerProfileUpdatingView(APIView, BaseView):
 		if refresh_token_string:
 			add_token_to_blacklist(refresh_token_string)
 		player.set_password(serializer.validated_data['new_password'])
+		player.last_password_change = timezone.now()
 		player.save()
-		print("password update success - POST - PlayerProfileUpdatingView", flush=True)
-		return Response({'username': player.username}, status=200)
+		response = Response({'username': player.username}, status=200)
+		response.delete_cookie('access_token')
+		response.delete_cookie('refresh_token')
+		return response
 
 class PlayerSettings(APIView, BaseView):
 	authentication_classes = [JWTCookieAuthentication]
 	permission_classes = [IsAuthenticated]
+	throttle_classes = []
 	template_name = 'account/settings.html'
 	title = 'settings'
 	css = ['css/settings.css']
@@ -501,6 +554,7 @@ class PlayerSettings(APIView, BaseView):
 class TempPlayer(APIView):
 	authentication_classes = []
 	permission_classes = []
+	throttle_classes = []
 
 	def get(self, request, *args, **kwargs):
 		temp_player = createGuestPlayer()
@@ -516,6 +570,22 @@ class TempPlayer(APIView):
 class AnonymizePlayer(APIView):
 	authentication_classes = [JWTCookieAuthentication]
 	permission_classes = [IsAuthenticated]
+	throttle_classes = []
+
+	def handle_exception(self, exception):
+		if isinstance(exception, AuthenticationFailed):
+			if 'access token is invalid but refresh token is valid' in str(exception):
+				print(f'refresh token is valid to {self.request.path}', flush=True)
+				response = HttpResponseRedirect(self.request.path)
+				response.set_cookie('access_token', generate_access_token(self.request.COOKIES.get('refresh_token')), httponly=True, samesite='Lax', secure=True)
+				return response
+			signin_url = reverse('signin_page')
+			params = urllib.parse.urlencode({'next': self.request.path})
+			response = HttpResponseRedirect(f'{signin_url}?{params}')
+			response.delete_cookie('access_token')
+			response.delete_cookie('refresh_token')
+			return response
+		return super().handle_exception(exception)
 
 	def get(self, request):
 		# sign out the player
