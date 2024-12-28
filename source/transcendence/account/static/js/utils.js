@@ -153,7 +153,7 @@ const loadCssandJS = (data, remove_prev_resources) => {
 };
 
 // update the Navbar for authenticated users && for signout and deleted users
-function updateNavBar(isAuthenticated) {
+function updateNavBar(isAuthenticated, givenUsername=null, givenProfilePic=null) {
   const navbar = document.getElementById("navbarNavDropdown");
   if (isAuthenticated) {
     let profilePic = "/static/images/default_profile_pic.jpeg";
@@ -165,6 +165,7 @@ function updateNavBar(isAuthenticated) {
     // check if profile_btn has data-username
     if (profile_btn) {
       username = profile_btn.dataset.username;
+      
     }
     if (user_profile_pic) {
       profilePic = user_profile_pic.dataset.pfp; // Same as user_profile_pic.getAttribute("data-pfp");
@@ -172,6 +173,10 @@ function updateNavBar(isAuthenticated) {
 
     console.log("profilePic:", profilePic);
     console.log("username:", username);
+    if (givenUsername)
+      username = givenUsername;
+    if (givenProfilePic)
+      profilePic = givenProfilePic;
     navbar.innerHTML = `
     <ul class="navbar-nav ms-auto align-items-center">
       <li class="nav-item">

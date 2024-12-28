@@ -38,8 +38,8 @@ async function handlePassResetSubmit(e) {
     document.body.appendChild(otpModal);
     document.body.classList.add('modal-open');
 
-    otpModal.getElementById("close-otp-modal").addEventListener("click", () => {
-      closeModal("reset-password-confirm-modal")
+    otpModal.querySelector("#close-otp-modal").addEventListener("click", () => {
+      closeModal("reset-password-confirm-modal");
     });
     
     otpModal.addEventListener("click", (e) => {
@@ -48,7 +48,7 @@ async function handlePassResetSubmit(e) {
       }
     });
 
-    document.getElementById('returnToSignIn').addEventListener('click', async () => {
+    document.querySelector('#returnToSignIn').addEventListener('click', async () => {
       closeModal("reset-password-confirm-modal");
       updateUI(`/signin`);
     });
@@ -89,7 +89,7 @@ async function handlePassChangeSubmit(e) {
       return;
     }
 
-    showSuccessModal("Password reset successfully! Please sign in with your new password.");
+    showSuccessMessage("Password reset successfully");
     updateUI(`/signin`);
 
     // Clear the local storage

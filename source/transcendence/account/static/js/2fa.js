@@ -4,6 +4,7 @@ async function handleOTPSubmit(event) {
 
   const formData = {
     otp: document.getElementById("otp").value,
+    email: document.getElementById("2fa_player_email").textContent,
   };
 
   try {
@@ -23,13 +24,14 @@ async function handleOTPSubmit(event) {
       displayError(responseData);
       return;
     }
-
-    // Update navbar to show authenticated user
-    updateNavBar(true);
-    
-    // redirect to the protected page
-    await updateUI(`/${responseData.redirect}`);
+    updateNavBar(true, responseData.username, responseData.pfp);
+    await updateUI(`/`);
   } catch (error) {
+    createToast({
+      title: "Error",
+      message: "Failed to authenticate",
+      type: "error",
+    });
     console.error("Error:", error);
   }
 }

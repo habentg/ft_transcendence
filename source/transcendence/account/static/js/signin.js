@@ -32,12 +32,6 @@ async function handleSignInSubmit(e) {
         username: document.getElementById("username").value,
         password: document.getElementById("password").value,
     };
-    // INPUT VALIDATION
-    // // Get the next parameter from the URL
-    // const urlParams = new URLSearchParams(window.location.search);
-    // const nextUrl = urlParams.get('next') || '/';
-    // console.log("Next URL:", nextUrl);
-
     try {
         const m_csrf_token = await getCSRFToken();
         console.log("CSRF Token:", m_csrf_token);
@@ -52,9 +46,12 @@ async function handleSignInSubmit(e) {
 
         if (!response.ok) {
             const responseData = await response.json();
-            if (response.status === 302)
-                await updateUI(`${responseData['redirect_url']}`);
-            else 
+            if (response.status === 302) {
+                console.log("FROM SIGNIN SUBMIT ----- Redirecting to:", responseData['redirect_url']);
+                // await updateUI(`${responseData['redirect_url']}`);
+                await getTwoFactorAuth(`${formData.username}`);
+            }
+            else
                 displayError(responseData);
             return;
         }
@@ -65,5 +62,27 @@ async function handleSignInSubmit(e) {
         createWebSockets();
     } catch (error) {
         console.error('Error:', error);
+    }
+}
+
+async function getTwoFactorAuth(username) {
+    try {
+        const response = await fetch(`/2fa?username=${username}`, {
+            method: "GET",
+            headers: {
+                "X-Requested-With": "XMLHttpRequest",
+            },
+        });
+        if (response.ok) {
+            let data = await response.json();
+            loadCssandJS(data, false);
+            document.title = `${data.title} | PONG`;
+            document.getElementById("content").innerHTML = data.html;
+            return ;
+        }
+        throw new Error("Failed to load 2FA page content");
+    }
+    catch (error) {
+        console.error('2 FA - Error:', error);
     }
 }

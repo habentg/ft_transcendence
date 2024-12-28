@@ -64,7 +64,7 @@ async function updatePlayerPassword() {
         */
 async function handleEnableDisable2FA() {
   try {
-    const response = await fetch("/2fa/", {
+    const response = await fetch("/2fa_toggle/", {
       method: "PATCH",
       headers: {
         "Content-Type": "application/json",
