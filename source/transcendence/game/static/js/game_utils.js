@@ -29,7 +29,7 @@ class Game {
       //setting variables
       this.defballSpeed = 6;
       this.paddleSpeed = 8;
-      this.maxScore = 3;
+      this.maxScore = 1;
       this.slowServe = false;
   
       // Parry variables

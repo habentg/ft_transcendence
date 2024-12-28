@@ -129,7 +129,7 @@ class TournamentView(BaseView):
 	template_name = 'game/tournament.html'
 	title = 'Tournament Page'
 	css = ['css/tournament.css']
-	js = ['js/game.js', 'js/tournamentComponents.js', 'js/tournament.js']
+	js = ['js/game.js', 'js/tournament_components.js', 'js/tournament.js']
 
 	def get(self, request):
 		return super().get(request)

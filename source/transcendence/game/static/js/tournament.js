@@ -9,13 +9,13 @@
 	  this.game.versusFlag = false;
 	  this.game.tournamentFlag = true;
 	}
-  
+
 	//this is the function that starts the game by calling draw function and displays names at the top of the canvas
 	 async startTournamentGame(player1Name, player2Name) {
 	  this.game.createPlayer(player1Name, "left");
 	  this.game.createPlayer(player2Name, "right");
 	  this.game.drawFlag = true;
-	  // this.game.setupeventListeners();
+	  this.game.setupeventListeners();
 	  const player1NameElement = document.getElementById("player1Name");
 	  if (player1NameElement) {
 		player1NameElement.textContent = "@ " + player1Name;
@@ -34,13 +34,15 @@
 	  if (player2Element) {
 		player2Element.classList.remove("d-none");
 	  }
+	  // @ts-ignore
 	  const gameCreated = await createGameInDB(this.game);
-	  if (gameCreated) {
+	//   if (gameCreated) {
+		// @ts-ignore
 		requestAnimationFrame((timestamp) => gameLoop(this.game, timestamp));
-	  } else {
-		alert("Failed to start game. We will have to restart")
-		updateUI("/home")
-	  }
+	//   } else {
+		// alert("Failed to start game. We will have to restart")
+		// updateUI("/home")
+	//   }
 	}
 	getPlayers() {
 	  return this.game.players;
@@ -229,32 +231,12 @@
 	  playerContainer.appendChild(playerButton);
 	}
   
-	//Creates the first default player that is added to the start of the list that should always be added
-	createDefaultPlayer(playerContainer) {
-	  if (!document.querySelector("#playerContainer .menu-item")) {
-		const defaultPlayerButton = document.createElement("button");
-		defaultPlayerButton.classList.add(
-		  "menu-item",
-		  "d-flex",
-		  "justify-content-center",
-		  "align-items-center",
-		  "p-3"
-		);
-		defaultPlayerButton.innerHTML = `
-				<i class="fas fa-trophy fa-1x me-2"></i>
-				<h6 class="mb-0">Tofara Mususa</h6>
-			`;
-		playerContainer.appendChild(defaultPlayerButton);
-	  }
-	}
-  
 	// Sets up the player addition UI, handles player input, and initializes tournament actions based on max player numbers.
 	setUpPlayerAddition(maxPlayerNumbers, tournamentObject) {
-	  maxPlayerNumbers = maxPlayerNumbers === 0 ? 4 : maxPlayerNumbers;
-  
+		maxPlayerNumbers = !maxPlayerNumbers || parseInt(maxPlayerNumbers) === 0 ? 4 : parseInt(maxPlayerNumbers);
 	  const uiElements = this.getPlayerUiElements();
 	  if (!uiElements) return;
-	  this.createDefaultPlayer(uiElements.playerContainer);
+	//   this.createDefaultPlayer(uiElements.playerContainer);
   
 	  // @ts-ignore
 	  uiElements.playerIcon.addEventListener("click", () => {
@@ -292,85 +274,7 @@
 	  this.matchCount = 0;
 	}
   
-	// Orchestrates a complete tournament for 4 or 8 players, managing quarter-finals, semi-finals, and finals matches sequentially, returning the tournament champion
-	async runTournament(playersNames) {
-	  playersNames = PlayerManager.randomisePlayers(playersNames); //WE NEED TO MOVE THIS FUNCTION
-	  let currentPlayers = [...playersNames];
-	  const tournamentContainer = document.getElementById("background");
-	  // @ts-ignore
-	  this.tournamentElement = this.fillPlayerNames(
-		createTournamentMap(),
-		playersNames
-	  ); //this is okay cause we importing from another file
-	  if (tournamentContainer) {
-		// @ts-ignore
-		tournamentContainer.appendChild(this.tournamentElement);
-	  }
-	  if (playersNames.length == 4) {
-		this.prepTournament4();
-	  }
-  
-	  // Validate initial number of players
-	  if (![4, 8].includes(currentPlayers.length)) {
-		alert("Tournament supports only 4, 8 players");
-	  }
-  
-	  // Quarter Finals (if applicable)
-	  if (currentPlayers.length === 8) {
-		//need to add a div saying that we are the quarter finals
-		const quarterFinalWinners = [];
-		for (let i = 0; i < currentPlayers.length; i += 2) {
-		  await UIManager.mapContinueButton(".continueButton");
-		  const winner = await this.playMatch(
-			currentPlayers[i],
-			currentPlayers[i + 1],
-			playersNames
-		  );
-		  // @ts-ignore
-		  gameWinnerModal(winner); //this will come from OTHER FILE SO ITS OKAY
-		  await UIManager.waitForModal("gameClosing");
-		  quarterFinalWinners.push(winner);
-		  if (tournamentContainer)
-			tournamentContainer.appendChild(this.tournamentElement);
-		}
-		currentPlayers = quarterFinalWinners;
-	  }
-  
-	  // Semi Finals
-	  const semiFinalWinners = [];
-	  //need to add a div saying this semifinals
-	  for (let i = 0; i < currentPlayers.length; i += 2) {
-		await UIManager.mapContinueButton(".continueButton");
-		const winner = await this.playMatch(
-		  currentPlayers[i],
-		  currentPlayers[i + 1],
-		  playersNames
-		);
-		semiFinalWinners.push(winner);
-		// @ts-ignore
-		gameWinnerModal(winner);
-		await UIManager.waitForModal("gameClosing");
-		if (tournamentContainer)
-		  tournamentContainer.appendChild(this.tournamentElement);
-	  }
-  
-	  await UIManager.mapContinueButton(".continueButton");
-	  const champion = await this.playMatch(
-		semiFinalWinners[0],
-		semiFinalWinners[1],
-		playersNames
-	  );
-	  const runnerUp =
-		champion === semiFinalWinners[0]
-		  ? semiFinalWinners[1]
-		  : semiFinalWinners[0];
-	  // @ts-ignore
-	  tournamentClosingModal(champion, runnerUp); //this is okay cause its coming from the other file
-	  await UIManager.waitForModal("congratsModal");
-	  if (tournamentContainer)
-		tournamentContainer.appendChild(this.tournamentElement);
-	  return champion;
-	}
+
   
 	checkGameStatus = (players, newTournamentGame, gameCanvas, playersNames) => {
 	  if (!newTournamentGame.game.drawFlag) {
@@ -622,6 +526,95 @@
 		);
 	  }
 	}
+
+		// Orchestrates a complete tournament for 4 or 8 players, managing quarter-finals, semi-finals, and finals matches sequentially, returning the tournament champion
+	async runTournament(playersNames) {
+		playersNames = PlayerManager.randomisePlayers(playersNames); //WE NEED TO MOVE THIS FUNCTION
+		let currentPlayers = [...playersNames];
+		const tournamentContainer = document.getElementById("background");
+		// @ts-ignore
+		this.tournamentElement = this.fillPlayerNames(
+			createTournamentMap(),
+			playersNames
+		); //this is okay cause we importing from another file
+		if (tournamentContainer) {
+			// @ts-ignore
+			tournamentContainer.appendChild(this.tournamentElement);
+		}
+		if (playersNames.length == 4) {
+			this.prepTournament4();
+		}
+		// Validate initial number of players
+		if (![4, 8].includes(currentPlayers.length)) {
+			alert("Tournament supports only 4, 8 players");
+		}
+		// Quarter Finals (if applicable)
+		if (currentPlayers.length === 8) {
+			//need to add a div saying that we are the quarter finals
+			const quarterFinalWinners = [];
+			for (let i = 0; i < currentPlayers.length; i += 2) {
+			await UIManager.mapContinueButton(".continueButton");
+			const winner = await this.playMatch(
+				currentPlayers[i],
+				currentPlayers[i + 1],
+				playersNames
+			);
+			// @ts-ignore
+			gameWinnerModal(winner); //this will come from OTHER FILE SO ITS OKAY
+			await UIManager.waitForModal("gameClosing");
+			quarterFinalWinners.push(winner);
+			if (tournamentContainer)
+				tournamentContainer.appendChild(this.tournamentElement);
+			}
+			currentPlayers = quarterFinalWinners;
+		}
+		// Semi Finals
+		const semiFinalWinners = [];
+		//need to add a div saying this semifinals
+		for (let i = 0; i < currentPlayers.length; i += 2) {
+			await UIManager.mapContinueButton(".continueButton");
+			const winner = await this.playMatch(
+			currentPlayers[i],
+			currentPlayers[i + 1],
+			playersNames
+			);
+			semiFinalWinners.push(winner);
+			// @ts-ignore
+			gameWinnerModal(winner);
+			await UIManager.waitForModal("gameClosing");
+			if (tournamentContainer)
+			tournamentContainer.appendChild(this.tournamentElement);
+		}
+		await UIManager.mapContinueButton(".continueButton");
+		const champion = await this.playMatch(
+			semiFinalWinners[0],
+			semiFinalWinners[1],
+			playersNames
+		);
+		const runnerUp = champion === semiFinalWinners[0] ? semiFinalWinners[1] : semiFinalWinners[0];
+		// @ts-ignore
+		tournamentClosingModal(champion, runnerUp); //this is okay cause its coming from the other file
+		await UIManager.waitForModal("congratsModal");
+		const continueButton = this.tournamentElement.querySelector(".continueButton");
+		continueButton.textContent = "Go to Home Page";
+		continueButton?.addEventListener("click", () => updateUI("/home"));
+		
+		// Clone the continue button
+		const restartButton = continueButton.cloneNode(true);
+		restartButton.textContent = "Restart Tournament";
+		restartButton.classList.remove("continueButton");
+		restartButton.classList.add("restartButton");
+		restartButton.style.marginLeft = "10px"; // Add space between buttons
+		restartButton.style.backgroundColor = "#007bff"; // Add blue color
+		restartButton?.addEventListener("click", () => updateUI("/tournament"));
+		// Insert restart button after continue button
+		continueButton.insertAdjacentElement('afterend', restartButton);
+		// Insert restart button after continue button
+		continueButton.insertAdjacentElement('afterend', restartButton);
+		if (tournamentContainer)
+			tournamentContainer.appendChild(this.tournamentElement);
+		return champion;
+		}
   }
   
   class UIManager {
@@ -692,7 +685,7 @@
 		continueButton.addEventListener("click", handleClick);
 	  });
 	}
-  }
+  }  
   
   // Main game controller that coordinates between other classes
   class GameController {
@@ -798,6 +791,8 @@
 	  try {
 		const champion = await this.tournament.runTournament(playersNames);
 		console.log("Champion:", champion);
+		console.log(this.tournament.matchHistory)
+		
 		//   console.log("Match History:", this.tournament.getMatchHistory());
 	  } catch (error) {
 		console.error("Tournament error:", error);
