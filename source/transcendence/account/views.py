@@ -461,10 +461,6 @@ class PlayerProfileView(APIView, BaseView):
 				'games_won': Game.objects.filter(player_one=queried_user, outcome='WIN').count(),
 				'games_lost': Game.objects.filter(player_one=queried_user, outcome='LOSE').count(),
 			}
-			if data['games']:
-				data['games'] = sorted(data['games'], key=lambda x: x['start_time'], reverse=True)
-
-			print('data[games][0].start_time', data['games'][0]['start_time'], flush=True)
 		return data
 
 # profile view
