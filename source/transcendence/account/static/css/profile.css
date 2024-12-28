@@ -105,14 +105,11 @@
     font-size: 5px;
 }
 
-.pagination-size .btn {
-    font-size: 0.8rem;
-    padding: 0.25rem 0.5rem;
-}
-
-.pagination-size .btn i {
-    font-size: 0.8rem;
-}
+/* .pagination-size {
+    position: absolute;
+    left: 45%;
+    bottom: 0;
+} */
 
 
 /* Date styling */
