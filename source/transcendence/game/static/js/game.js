@@ -121,28 +121,26 @@ function gameLoop(game, timestamp) {
 }
 
 function updategameValues(player1, player2, game) {
-  if (!oob(player1.y + player1.velocityY)) player1.y += player1.velocityY;
-  if (!oob(player2.y + player2.velocityY)) player2.y += player2.velocityY;
+  //checks if player movement is inside the board then moves it.
+  oob(player1, game);
+  oob(player2, game);
 
   updatePaddleVelocities(player1, player2, game);
 
-  // Update ball position
-  game.ball.x += game.ball.velocityX;
-  game.ball.y += game.ball.velocityY;
-
-  // makes the ball bounce from the walls
-  if ((game.ball.y - game.ball.ballRadius <= 0) || (game.ball.y + game.ball.ballRadius >= game.boardHeight))
-    game.ball.velocityY *= -1;
+  ballMovement(game); // hence the name
 
   // Check ball collision with players
   ballCollision(game.ball, player1, "left", game);
   ballCollision(game.ball, player2, "right", game);
 
+  //check for scores
   if (game.ball.x - game.ball.ballRadius < 0) {
     player2.score++;
+    game.sound.play("score");
     resetGame(player1, player2, 1, game);
   } else if (game.ball.x + game.ball.ballRadius > game.boardWidth) {
     player1.score++;
+    game.sound.play("score");
     resetGame(player1, player2, -1, game);
   }
 
@@ -150,6 +148,18 @@ function updategameValues(player1, player2, game) {
   if (game.parryFlag) {
     parryRefresh(player1);
     parryRefresh(player2);
+  }
+}
+
+function ballMovement(game) {
+  // Update ball position
+  game.ball.x += game.ball.velocityX;
+  game.ball.y += game.ball.velocityY;
+
+  // makes the ball bounce from the walls
+  if ((game.ball.y - game.ball.ballRadius <= 0) || (game.ball.y+ game.ball.ballRadius >= game.boardHeight)){
+    game.ball.velocityY *= -1;
+    game.sound.play("wallhit");
   }
 }
 
@@ -341,6 +351,7 @@ function updatePaddleVelocities(player1, player2, game) {
       if (isParry(player1, game)) {
         game.ball.velocityX *= 2;
         game.ball.velocityY = 0;
+        game.sound.play("parry");
         console.log("Good Parry");
       } else
         console.log("Wrong parry");
@@ -350,6 +361,7 @@ function updatePaddleVelocities(player1, player2, game) {
       if (isParry(player2, game)) {
         game.ball.velocityX *= -2;
         game.ball.velocityY = 0;
+        game.sound.play("parry");
         console.log("Good Parry");
       } else
         console.log("Wrong parry");
@@ -381,12 +393,33 @@ function parryCoolDown(player, game) {
   player.parryCooldown = Date.now() + game.cooldownTime;
 }
 
-// make this proper oob checks if the new y position would exceed boardsize then set it to max.
-function oob(yPosition) {
-  return yPosition < 0 || yPosition + 80 > 500;
+function topoob(yPosition) {
+  return yPosition < 0;
 }
 
-function ballCollision(ball, player, position) {
+function botoob(yPosition, game) {
+  return yPosition + game.playerHeight > game.boardHeight;
+}
+
+function oob(player, game) {
+  const newYPosition = player.y + player.velocityY;
+
+  if (player.velocityY < 0) {
+    if (topoob(newYPosition)) {
+      player.y = 0;
+    } else {
+      player.y = newYPosition;
+    }
+  } else if (player.velocityY > 0) {
+    if (botoob(newYPosition, game)) {
+      player.y = game.boardHeight - game.playerHeight;
+    } else {
+      player.y = newYPosition;
+    }
+  }
+}
+
+function ballCollision(ball, player, position, game) {
   // Define the maximum speed for the ball
   const MAX_SPEED_X = 8; // Maximum horizontal speed (velocityX)
   const MAX_SPEED_Y = 10; // Maximum vertical speed (velocityY)
@@ -453,6 +486,7 @@ function ballCollision(ball, player, position) {
       Math.max(ball.velocityY, -MAX_SPEED_Y),
       MAX_SPEED_Y
     );
+    game.sound.play("paddlehit");
   }
 }
 

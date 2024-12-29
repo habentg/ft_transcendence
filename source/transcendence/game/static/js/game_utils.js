@@ -43,6 +43,8 @@ class Game {
         velocityY: this.defballSpeed,
         ballRadius: 7
       };
+
+      this.sound = new Sound();
     }
   
     getboardWidth() {
@@ -116,30 +118,71 @@ class Game {
   }
   
   
-  class Player {
-    constructor(name, position, game) {
-      this.playerName = name;
-      this.width = game.getplayerWidth();
-      this.height = game.getplayerHeight();
-      this.cooldownFlag = false;
-      this.parryCooldown = 0;
-      this.velocityY = 0;
-      this.score = 0;
-      this.finalScore = 0; // final score after match
-      this.gameWon = 0;
-      this.position = "";
-      if (position === "left") {
-        this.x = 10;
-        this.y = 500 / 2 - this.width / 2;
-        this.parryKey = "KeyA";
-        this.moveUp = "KeyW";
-        this.moveDown = "KeyS";
-      } else if (position === "right") {
-        this.x = 800 - this.width - 10;
-        this.y = 500 / 2 - this.height / 2;
-        this.parryKey = "Numpad0";
-        this.moveUp = "ArrowUp";
-        this.moveDown = "ArrowDown";
-      }
+class Player {
+  constructor(name, position, game) {
+    this.playerName = name;
+    this.width = game.getplayerWidth();
+    this.height = game.getplayerHeight();
+    this.cooldownFlag = false;
+    this.parryCooldown = 0;
+    this.velocityY = 0;
+    this.score = 0;
+    this.finalScore = 0; // final score after match
+    this.gameWon = 0;
+    this.position = "";
+    if (position === "left") {
+      this.x = 10;
+      this.y = 500 / 2 - this.width / 2;
+      this.parryKey = "KeyA";
+      this.moveUp = "KeyW";
+      this.moveDown = "KeyS";
+    } else if (position === "right") {
+      this.x = 800 - this.width - 10;
+      this.y = 500 / 2 - this.height / 2;
+      this.parryKey = "Numpad0";
+      this.moveUp = "ArrowUp";
+      this.moveDown = "ArrowDown";
     }
   }
+}
+
+class Sound {
+  constructor () {
+    this.sounds = [];
+    this.soundPaths = [
+      { name: "score", path: "/static/sounds/score.wav" },
+      { name: "wallhit", path: "/static/sounds/wall_hit.wav" },
+      { name: "parry", path: "/static/sounds/parry.wav" },
+      { name: "paddlehit", path: "/static/sounds/paddle_hit.wav" }
+    ];
+    this.soundPaths.forEach(({ name, path }) => this.load(name, path));
+  }
+
+  load(name, path) {
+    const audio = new Audio(path);
+
+    // Event listener for successful loading
+    audio.oncanplaythrough = () => {
+      this.sounds[name] = audio;
+      console.log(`Sound "${name}" loaded successfully.`);
+    };
+
+    // Event listener for loading errors
+    audio.onerror = () => {
+      console.error(`Failed to load sound "${name}" from "${path}".`);
+    };
+
+    // Start loading the audio
+    audio.load(); // Explicitly start loading
+  }
+
+  play(name) {
+    const sound = this.sounds[name];
+    if (sound) {
+      sound.currentTime = 0; // Reset for replay
+      sound.play();
+    } else {
+      console.warn(`Sound "${name}" not found.`);
+    }
+  }
+}
