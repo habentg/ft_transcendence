@@ -13,12 +13,11 @@ async function UpdateUserInfo() {
   try {
     const formData = {
       full_name: document.getElementById("new-fullname").value.trim(),
-      username: document.getElementById("new-username").value.trim(),
       email: document.getElementById("new-email").value.trim(),
     };
 
     // Basic validation
-    if (!formData.full_name || !formData.username || !formData.email) {
+    if (!formData.full_name || !formData.email) {
       displayError({ error_msg: "All fields are required" });
       return;
     }
@@ -44,12 +43,9 @@ async function UpdateUserInfo() {
       displayError(errorData);
       return;
     }
-
-    // Success - close modal and update UI
-    const responseData = await response.json();
-    // closeUsernameModal();
     closeModal("username-modal");
-    await updateUI(`/profile/${responseData.username}`);
+    document.getElementById("full_name").textContent = formData.full_name;
+    document.getElementById("player_email").textContent = formData.email;
     showSuccessMessage("Profile Information updated successfully");
   } catch (error) {
     console.error("Error:", error);
@@ -405,6 +401,9 @@ async function create_chatroom(friend_username) {
 
 
 function drawPieChart() {
+  if (!document.getElementById("win_lose_stats")) {
+    return;
+  }
   const gamesPlayed = parseInt(document.getElementById("win_lose_stats").getAttribute("data-numsOfGames")) || 0;
   const wins = parseInt(document.getElementById("win_lose_stats").getAttribute("data-numsOfWins")) || 0;
   const losses = parseInt(document.getElementById("win_lose_stats").getAttribute("data-numsOfLoses")) || 0;

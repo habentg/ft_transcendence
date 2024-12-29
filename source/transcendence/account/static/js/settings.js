@@ -50,6 +50,7 @@ async function updatePlayerPassword() {
     await showSuccessMessage("Password updated successfully. Please log in again with your new password.", 3000);
     console.log("this is the response data", response);
     await updateUI(`/signin`);
+    updateNavBar(false);
   } catch (error) {
     console.error("Error:", error);
     displayError({ error_msg: "An error occurred while updating password" });

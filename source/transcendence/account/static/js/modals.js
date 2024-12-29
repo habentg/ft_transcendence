@@ -80,12 +80,12 @@ function updateProfileModal() {
           </div>
 
           <div class="mb-3">
-            <label for="new-fullname" class="form-label">Full Name</label>
-            <input type="text" id="new-fullname" class="form-control bg-transparent text-white" value="${full_name}">
+            <span class="form-label">Username</span>
+            <span class="form-control bg-transparent text-muted">${username}</span>
           </div>
           <div class="mb-3">
-            <label for="new-username" class="form-label">Username</label>
-            <input type="text" id="new-username" class="form-control bg-transparent text-white" value="${username}">
+            <label for="new-fullname" class="form-label">Full Name</label>
+            <input type="text" id="new-fullname" class="form-control bg-transparent text-white" value="${full_name}">
           </div>
           <div class="mb-3">
             <label for="new-email" class="form-label">Email</label>

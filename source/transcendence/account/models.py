@@ -50,7 +50,7 @@ class Player(AbstractUser):
     id = models.BigAutoField(primary_key=True)
     username = models.CharField(max_length=150, unique=True)
     full_name = models.CharField(max_length=150, blank=True)
-    email = models.EmailField(unique=True)
+    email = models.EmailField(unique=True   )
     password = models.CharField(max_length=150, validators=[MinLengthValidator(8)])
     is_staff = models.BooleanField(default=False)
     tfa = models.BooleanField(default=False)
@@ -64,7 +64,7 @@ class Player(AbstractUser):
     is_logged_in = models.BooleanField(default=False)
     rating = models.IntegerField(default=0)
     blocked_players = models.ManyToManyField('self', symmetrical=False, blank=True, related_name="players_blocked_list")
-    last_password_change = models.DateTimeField(auto_now=True, blank=True, null=True)
+    last_password_change = models.DateTimeField(blank=True, null=True)
 
     # Fields removed
     first_name = None

@@ -176,6 +176,7 @@ class Auth_42(View):
 		return JsonResponse({'authorization_url': authorization_url})
 
 # 42 Oauth2.0 callback
+import json
 class OauthCallback(View):
 	authentication_classes = []
 	permission_classes = []
@@ -205,8 +206,16 @@ class OauthCallback(View):
 		if user_info_response.status_code != 200:
 			return render(request, 'others/base.html', {'css':['css/404.css'],'html': render_to_string('others/404.html', {'status_code': '400', 'error_msg_header': 'Bad Request', 'error_msg': 'Failed to obtain 42 user information!'})})
 		
+
+		# Simulate fetching JSON data from the response
 		user_info = user_info_response.json()
-		
+
+		# Specify the file path where the data will be saved
+		file_path = "user_info.json"
+
+		# Write the JSON data to the file
+		with open(file_path, "w") as file:
+			json.dump(user_info, file, indent=4)
 		# Find or create user
 		try:
 			ft_player, created = Player.objects.get_or_create(
@@ -223,7 +232,7 @@ class OauthCallback(View):
 				ft_player.set_unusable_password()  # Player can't login with password
 				FriendList.objects.create(player=ft_player)
 		except Exception as e:
-			return render(request, 'others/base.html', {'css':['css/404.css'],'html': render_to_string('others/404.html', {'status_code': '500', 'error_msg_header': 'Internal Server Error', 'error_msg': 'Failed to create 42 user account. Either username/email is already in use!'})})
+			return render(request, 'others/base.html', {'css':['css/404.css'],'html': render_to_string('others/404.html', {'status_code': '400', 'error_msg_header': 'BAD REQUEST', 'error_msg': 'Failed to create 42 user account. Either username/email is already in use!'})})
 		ft_player.is_logged_in = True
 		ft_player.save()
 		refresh = RefreshToken.for_user(ft_player)
@@ -461,10 +470,6 @@ class PlayerProfileView(APIView, BaseView):
 				'games_won': Game.objects.filter(player_one=queried_user, outcome='WIN').count(),
 				'games_lost': Game.objects.filter(player_one=queried_user, outcome='LOSE').count(),
 			}
-			if data['games']:
-				data['games'] = sorted(data['games'], key=lambda x: x['start_time'], reverse=True)
-
-			print('data[games][0].start_time', data['games'][0]['start_time'], flush=True)
 		return data
 
 # profile view
@@ -509,7 +514,7 @@ class PlayerProfileUpdatingView(APIView):
 		serializer = PlayerProfileSerializer(request.user, data=request.data, partial=True)
 		if serializer.is_valid():
 			serializer.save()  # Use the serializer to update the player object
-			return Response({'username': request.user.username}, status=status.HTTP_200_OK)
+			return Response(status=status.HTTP_200_OK)
 		return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 	# updating user password
@@ -523,6 +528,8 @@ class PlayerProfileUpdatingView(APIView):
 				return Response({'error_msg': 'Invalid current password!'}, status=status.HTTP_400_BAD_REQUEST)
 			if serializer.validated_data['new_password'] != serializer.validated_data['confirm_password']:
 				return Response({'error_msg': 'Mismatch while confirming password!'}, status=status.HTTP_400_BAD_REQUEST)
+			if serializer.validated_data['current_password'] == serializer.validated_data['new_password']:
+				return Response({'error_msg': 'Cant use Current Password as a New Password!'}, status=status.HTTP_400_BAD_REQUEST)
 			""" blacklisting the old token """
 		access_token_string = request.COOKIES.get('access_token')
 		refresh_token_string = request.COOKIES.get('refresh_token')
