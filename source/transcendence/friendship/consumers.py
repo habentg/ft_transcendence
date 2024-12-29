@@ -13,8 +13,6 @@ class FriendshipNotificationConsumer(AsyncWebsocketConsumer):
     async def connect(self, **kwargs):
         token = self.extract_token_from_headers()
         player = await self.validate_token(token)
-        print("friendship validated - player: ", player)
-        
         if not player:
             await self.close()
             return
@@ -53,7 +51,6 @@ class FriendshipNotificationConsumer(AsyncWebsocketConsumer):
             message = f"{sender} accepted your friend request!"
         elif notification_type == 'declined' or notification_type == 'unfriended':
             message = f"{sender} declined/unfriended your friend request!"
-        print("############################## Friendship Notification: ", message, flush=True)
         await self.send(text_data=json.dumps({
             'type': notification_type,
             'sender': sender,
@@ -74,19 +71,15 @@ class FriendshipNotificationConsumer(AsyncWebsocketConsumer):
     @database_sync_to_async
     def validate_token(self, token):
         Player = get_user_model()
-        
         try:
-            # Decode the JWT token
             payload = jwt.decode(
                 token, 
                 settings.SECRET_KEY, 
                 algorithms=['HS256']
             )
-            # Retrieve user based on token payload
             return Player.objects.get(id=payload['user_id'])
         
         except Exception as e:
-                print("Exeption in validating token in FriendshipNotificationConsumer: ", e, flush=True)
                 return None
         
     async def receive(self, text_data):

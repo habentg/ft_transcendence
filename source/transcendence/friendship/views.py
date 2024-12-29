@@ -30,7 +30,7 @@ class FriendRequestView(APIView):
 	def handle_exception(self, exception):
 		if isinstance(exception, AuthenticationFailed):
 			if 'access token is invalid but refresh token is valid' in str(exception):
-				print(f'refresh token is valid to {self.request.path}', flush=True)
+				
 				response = HttpResponseRedirect(self.request.path)
 				response.set_cookie('access_token', generate_access_token(self.request.COOKIES.get('refresh_token')), httponly=True, samesite='Lax', secure=True)
 				return response
@@ -160,7 +160,7 @@ class FriendRequestResponseView(APIView):
 	def handle_exception(self, exception):
 		if isinstance(exception, AuthenticationFailed):
 			if 'access token is invalid but refresh token is valid' in str(exception):
-				print(f'refresh token is valid to {self.request.path}', flush=True)
+				
 				response = HttpResponseRedirect(self.request.path)
 				response.set_cookie('access_token', generate_access_token(self.request.COOKIES.get('refresh_token')), httponly=True, samesite='Lax', secure=True)
 				return response
@@ -244,7 +244,7 @@ class NotificationViewSet(viewsets.ViewSet):
 	def handle_exception(self, exception):
 		if isinstance(exception, AuthenticationFailed):
 			if 'access token is invalid but refresh token is valid' in str(exception):
-				print(f'refresh token is valid to {self.request.path}', flush=True)
+				
 				response = HttpResponseRedirect(self.request.path)
 				response.set_cookie('access_token', generate_access_token(self.request.COOKIES.get('refresh_token')), httponly=True, samesite='Lax', secure=True)
 				return response

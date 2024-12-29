@@ -157,22 +157,11 @@ function createAndShowPasswordModal() {
 
   // Close modal when clicking outside
   changePassModal.addEventListener("click", (e) => {
-    // console.log("clicked outside of the modal");
     if (e.target === changePassModal) {
-      // console.log("clicked outside of the modal 3333333333333");
       closeModal("password-change-modal");
     }
   });
 }
-
-// Helper Functions
-// function closePasswordModal() {
-//   const modal = document.getElementById("password-change-modal");
-//   if (modal) {
-//     modal.remove();
-//     document.body.classList.remove("modal-open");
-//   }
-// }
 
 // Delete Account Modal
 function deleteAccountCheck() {

@@ -27,7 +27,6 @@ def send_2fa_code(player):
         return True
     return False
 
-
 def isUserisAuthenticated(request):
     if request.user.is_authenticated:
         return True
@@ -35,8 +34,6 @@ def isUserisAuthenticated(request):
     if token and is_valid_token(token):
         return True
     return False
-
-
 
 def generate_username():
 	length = 7
@@ -51,7 +48,6 @@ def createGuestPlayer() -> Player:
 	)
 	guest_email = f'{anon.username}@guest_email.com'
 	anon.email = guest_email
-	print(f"Anon player created: {anon.email}", flush=True)
 	anon.set_unusable_password()
 	anon.is_guest = True
 	anon.save()

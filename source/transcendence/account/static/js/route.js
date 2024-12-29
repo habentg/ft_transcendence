@@ -29,11 +29,9 @@ async function updateUI(path) {
   try {
     showLoadingAnimation(); // Show animation
     await loadContent(`${path}`);
-    console.log("try ===");
   } catch (error) {
     console.error("Error loading page:", error);
   } finally {
-    console.log("finally ===");
     hideLoadingAnimation(); // Hide animation
   }
 }

@@ -121,7 +121,7 @@ class SignOutView(APIView, BaseView):
 	def handle_exception(self, exception):
 		if isinstance(exception, AuthenticationFailed):
 			if 'access token is invalid but refresh token is valid' in str(exception):
-				print(f'refresh token is valid to {self.request.path}', flush=True)
+				
 				response = HttpResponseRedirect(self.request.path)
 				response.set_cookie('access_token', generate_access_token(self.request.COOKIES.get('refresh_token')), httponly=True, samesite='Lax', secure=True)
 				return response
@@ -145,7 +145,6 @@ class SignOutView(APIView, BaseView):
 			add_token_to_blacklist(refresh_token_string)
 			response.delete_cookie('refresh_token')
 		response.delete_cookie('csrftoken')
-		print(f"Player {player.username} signed out", flush=True)
 		response.singed_out = True
 		if (player.is_guest):
 			player.delete()
@@ -360,7 +359,6 @@ class TwoFactorAuth(APIView, BaseView):
 	
 	def post(self, request):
 		data = json.loads(request.body)
-		print('data', data, flush=True)
 		player = Player.objects.filter(email=data['email']).first()
 		if player:
 			totp = pyotp.TOTP(player.secret, interval=300)
@@ -392,7 +390,7 @@ class TwoFactorSetUpToggle(APIView):
 	def handle_exception(self, exception):
 		if isinstance(exception, AuthenticationFailed):
 			if 'access token is invalid but refresh token is valid' in str(exception):
-				print(f'refresh token is valid to {self.request.path}', flush=True)
+				
 				response = HttpResponseRedirect(self.request.path)
 				response.set_cookie('access_token', generate_access_token(self.request.COOKIES.get('refresh_token')), httponly=True, samesite='Lax', secure=True)
 				return response
@@ -429,7 +427,7 @@ class PlayerProfileView(APIView, BaseView):
 	def handle_exception(self, exception):
 		if isinstance(exception, AuthenticationFailed):
 			if 'access token is invalid but refresh token is valid' in str(exception):
-				print(f'refresh token is valid to {self.request.path}', flush=True)
+				
 				response = HttpResponseRedirect(self.request.path)
 				response.set_cookie('access_token', generate_access_token(self.request.COOKIES.get('refresh_token')), httponly=True, samesite='Lax', secure=True)
 				return response
@@ -449,7 +447,6 @@ class PlayerProfileView(APIView, BaseView):
 		if kwargs.get('username') and kwargs.get('username') != request.user.username:
 			queried_user = self.get_player(kwargs.get('username'))
 			if not queried_user:
-				print('Player not found', flush=True)
 				return {'error_msg_404':f'Player "{kwargs.get('username')}" not found'}
 		data = {}
 		if queried_user.is_guest:
@@ -481,7 +478,7 @@ class PlayerProfileUpdatingView(APIView):
 	def handle_exception(self, exception):
 		if isinstance(exception, AuthenticationFailed):
 			if 'access token is invalid but refresh token is valid' in str(exception):
-				print(f'refresh token is valid to {self.request.path}', flush=True)
+				
 				response = HttpResponseRedirect(self.request.path)
 				response.set_cookie('access_token', generate_access_token(self.request.COOKIES.get('refresh_token')), httponly=True, samesite='Lax', secure=True)
 				return response
@@ -557,7 +554,7 @@ class SettingsView(APIView, BaseView):
 	def handle_exception(self, exception):
 		if isinstance(exception, AuthenticationFailed):
 			if 'access token is invalid but refresh token is valid' in str(exception):
-				print(f'refresh token is valid to {self.request.path}', flush=True)
+				
 				response = HttpResponseRedirect(self.request.path)
 				response.set_cookie('access_token', generate_access_token(self.request.COOKIES.get('refresh_token')), httponly=True, samesite='Lax', secure=True)
 				return response
@@ -602,7 +599,7 @@ class AnonymizePlayer(APIView):
 	def handle_exception(self, exception):
 		if isinstance(exception, AuthenticationFailed):
 			if 'access token is invalid but refresh token is valid' in str(exception):
-				print(f'refresh token is valid to {self.request.path}', flush=True)
+				
 				response = HttpResponseRedirect(self.request.path)
 				response.set_cookie('access_token', generate_access_token(self.request.COOKIES.get('refresh_token')), httponly=True, samesite='Lax', secure=True)
 				return response
@@ -615,14 +612,11 @@ class AnonymizePlayer(APIView):
 		return super().handle_exception(exception)
 
 	def get(self, request):
-		# sign out the player
 		token_string = request.COOKIES.get('access_token')
-		print("player b4 anon: ", request.user, flush=True)
 		if token_string:
 			try:
 				add_token_to_blacklist(token_string)
 			except Exception as e:
-				print(e, flush=True)
 				return HttpResponseRedirect(reverse('landing'))
 		# create a new anonymous player
 		anon = createGuestPlayer()

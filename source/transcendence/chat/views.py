@@ -25,7 +25,7 @@ class chatMessagesView(APIView):
 	def handle_exception(self, exception):
 		if isinstance(exception, AuthenticationFailed):
 			if 'access token is invalid but refresh token is valid' in str(exception):
-				print(f'refresh token is valid to {self.request.path}', flush=True)
+				
 				response = HttpResponseRedirect(self.request.path)
 				response.set_cookie('access_token', generate_access_token(self.request.COOKIES.get('refresh_token')), httponly=True, samesite='Lax', secure=True)
 				return response
@@ -40,7 +40,6 @@ class chatMessagesView(APIView):
 	def get(self, request):
 		room_name = request.GET.get('room', '')
 		recipeint_username = request.GET.get('recipient', '')
-		print(f"room_name: {room_name}, recipient: {recipeint_username}")
 		try:
 			chatroom = ChatRoom.objects.get(name=room_name)
 			messages = Message.objects.filter(room=chatroom).order_by('timestamp')
@@ -75,7 +74,7 @@ class ChatRoomsView(APIView, BaseView):
 	def handle_exception(self, exception):
 		if isinstance(exception, AuthenticationFailed):
 			if 'access token is invalid but refresh token is valid' in str(exception):
-				print(f'refresh token is valid to {self.request.path}', flush=True)
+				
 				response = HttpResponseRedirect(self.request.path)
 				response.set_cookie('access_token', generate_access_token(self.request.COOKIES.get('refresh_token')), httponly=True, samesite='Lax', secure=True)
 				return response
@@ -94,7 +93,6 @@ class ChatRoomsView(APIView, BaseView):
 	def get_context_data(self, request):
 		""" get all the chatrooms that the user is a participant in """
 		chatrooms = ChatRoom.objects.filter(participants=request.user).order_by('-conversed_at')
-		print(f"chatrooms {request.user.username} is involved in: ", chatrooms)
 		return {'chatrooms': chatrooms, 'user': PlayerSerializer(request.user).data}
 	
 	def get(self, request):
@@ -117,5 +115,4 @@ class ChatRoomsView(APIView, BaseView):
 					'participants_usernames': [sender.username, recipient.username]
 				}, status=201)
 		except Exception as e:
-			print("Error: ", e)
 			return Response({'error': "some shit happened!"}, status=400)

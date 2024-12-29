@@ -42,7 +42,6 @@ class GameViewSet(viewsets.ModelViewSet):
         return Response({'error': 'Invalid data'}, status=status.HTTP_400_BAD_REQUEST)  
 
     def retrieve(self, request, pk=None):
-        print("============== GameViewSet - RETRIEVE method ==============", flush=True)
         game = Game.objects.filter(id=pk).first()
         if game:
             game_data = GameSerializer(game).data
@@ -61,7 +60,6 @@ class GameViewSet(viewsets.ModelViewSet):
             return Response({'error': 'Game not found'}, status=status.HTTP_404_NOT_FOUND)
     
     def destroy(self, request, pk=None):
-        print("============== GameViewSet - DESTROY method =============", flush=True)
         return Response({'html': f'<h3>issa game boi -- {pk}!</h3>'})
     
 
@@ -75,9 +73,8 @@ class LeaderBoardView(BaseView):
 
     def handle_exception(self, exception):
         if isinstance(exception, AuthenticationFailed):
-            """ is refresh token not expired """
             if 'access token is invalid but refresh token is valid' in str(exception):
-                print(f'refresh token is valid to {self.request.path}', flush=True)
+                
                 response = HttpResponseRedirect(self.request.path)
                 response.set_cookie('access_token', generate_access_token(self.request.COOKIES.get('refresh_token')), httponly=True, samesite='Lax', secure=True)
                 return response
@@ -101,16 +98,12 @@ class GameView(APIView, BaseView):
 
     def handle_exception(self, exception):
         if isinstance(exception, AuthenticationFailed):
-            """ is refresh token not expired """
             if 'access token is invalid but refresh token is valid' in str(exception):
-                print(f'refresh token is valid to {self.request.path}', flush=True)
-                print(f'refresh token is valid to {self.request.path}', flush=True)
                 query_params = self.request.GET.urlencode()
                 redirect_url = self.request.path
                 if query_params:
                     redirect_url = f"{redirect_url}?{query_params}"
                 response = HttpResponseRedirect(redirect_url)
-                # response = HttpResponseRedirect(self.request.path)
                 response.set_cookie('access_token', generate_access_token(self.request.COOKIES.get('refresh_token')), httponly=True, samesite='Lax', secure=True)
                 return response
             response = HttpResponseRedirect(reverse('landing'))
@@ -122,7 +115,6 @@ class GameView(APIView, BaseView):
         return super().handle_exception(exception)
 
     def get_context_data(self, request, **kwargs):
-        # print request.GET params
         is_ai = request.GET.get('isAI', 'false').lower() == 'true'
         return {
             'isAI': is_ai,
