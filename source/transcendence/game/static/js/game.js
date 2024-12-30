@@ -3,8 +3,12 @@ async function createGameInDB(game) {
   const startgame_data = {
     player_one: game.players[0].playerName,
     player_two: game.players[1].playerName,
-    type: game.aiFlag ? "AI" : "VERSUS",
+    // type: game.aiFlag ? "AI" : "VERSUS",
   };
+  if (game.tournamentFlag)
+      startgame_data["type"] = "TOURNAMENT";
+  else
+      startgame_data["type"] = game.aiFlag ? "AI" : "VERSUS";
   console.table(startgame_data);
   try {
     const response = await fetch("/game_api/", {

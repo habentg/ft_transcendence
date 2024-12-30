@@ -15,8 +15,8 @@ class Game(models.Model):
         ('CANCELLED', 'Game Cancelled')
     ]
     id = models.BigAutoField(primary_key=True)
-    player_one = models.ForeignKey(Player, on_delete=models.CASCADE, related_name="player_one")
-    player_two = models.CharField(max_length=100, blank=False, null=False, default="AI")
+    player_one = models.CharField(max_length=100, blank=False, null=False, default="player_one")
+    player_two = models.CharField(max_length=100, blank=False, null=False, default="player_two")
     type = models.CharField(max_length=20, choices=GAME_TYPE, default='AI')
     final_score = models.CharField(max_length=20, blank=False, null=False, default="-")
     outcome = models.CharField(max_length=20, choices=END_RESULT, default='STARTED')
@@ -25,3 +25,16 @@ class Game(models.Model):
     class Meta:
         db_table = 'game_table'
         ordering = ['id']
+
+
+class Tournament(models.Model):
+    id = models.BigAutoField(primary_key=True)
+    games = models.ManyToManyField(Game)
+
+    class Meta:
+        db_table = 'tournament_table'
+        ordering = ['id']
+
+    def add_game(self, game):
+        self.games.add(game)
+        self.save()
