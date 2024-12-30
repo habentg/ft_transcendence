@@ -8,3 +8,8 @@ class GameSerializer(serializers.ModelSerializer):
         model = Game
         fields = '__all__'
         # fields = ['id', 'player_one', 'player_two']
+""" Game serializer """
+class TournamentSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Tournament
+        fields = '__all__'

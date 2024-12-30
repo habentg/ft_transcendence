@@ -150,3 +150,27 @@ class TournamentView(APIView, BaseView):
 	def get_context_data(self, request, **kwargs):
 		print("player username: ", request.user.username, flush=True)
 		return {'username': request.user.username}
+
+
+class TournamentViewSet(viewsets.ModelViewSet):
+    authentication_classes = [JWTCookieAuthentication]
+    permission_classes = [IsAuthenticated]
+    throttle_classes = []
+
+	def handle_exception(self, exception):
+		if isinstance(exception, AuthenticationFailed):
+			if 'access token is invalid but refresh token is valid' in str(exception):
+				response = HttpResponseRedirect(self.request.path)
+				response.set_cookie('access_token', generate_access_token(self.request.COOKIES.get('refresh_token')), httponly=True, samesite='Lax', secure=True)
+				return response
+			response = HttpResponseRedirect(reverse('landing'))
+			response.delete_cookie('access_token')
+			response.delete_cookie('refresh_token')
+			response.delete_cookie('csrftoken')
+			response.status_code = 302
+			return response
+		return super().handle_exception(exception)
+
+	def create(self, request):
+		tournament = TournamentSerializer()
+		

@@ -27,7 +27,7 @@ async function createGameInDB(game) {
       if (game.aiFlag)
         startaiGame(game);
 	  else if(game.tournamentFlag)
-			return true;
+		requestAnimationFrame((timestamp) => gameLoop(this.game, timestamp));
       else
         startGame(game);
 		//

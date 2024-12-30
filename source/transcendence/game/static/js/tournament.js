@@ -1,3 +1,23 @@
+async function createTournamentinDB() {
+	try {
+		const response = await fetch("/game_api/", {
+			method: "POST",
+			headers: {
+			  "X-Requested-With": "XMLHttpRequest",
+			  "X-CSRFToken": await getCSRFToken(),
+			  "Content-Type": "application/json",
+			},
+		  });
+		const responseData = await response.json();
+		if (response.ok) {
+			console.log(`tournament ${responseData.tournament_id} got created!`);
+			return responseData.tournament_id;
+		}
+		return 0;
+	} catch (error) {
+		console.error("some kinda error in tournament creation!")
+	}
+}
 
 {
 	class GameBoard {
@@ -36,9 +56,8 @@
 	  }
 	  // @ts-ignore
 	  const gameCreated = await createGameInDB(this.game);
-	//   if (gameCreated) {
+	//   if (gameCreated)
 		// @ts-ignore
-		requestAnimationFrame((timestamp) => gameLoop(this.game, timestamp));
 	//   } else {
 		// alert("Failed to start game. We will have to restart")
 		// updateUI("/home")
@@ -259,6 +278,11 @@
 	  });
 	  // @ts-ignore
 	  uiElements.initTournamentButton.addEventListener("click", async () => {
+		const tournament_id = await createTournamentinDB();
+		if (tournament_id != 0)
+			document.getElementById('background').setAttribute('data-tournamentId', tournament_id);
+		else
+			return ;
 		await tournamentObject.startTournament(
 		  maxPlayerNumbers,
 		  this.playersNames
@@ -266,6 +290,8 @@
 	  });
 	}
   }
+
+
   class Tournament {
 	constructor() {
 	  this.matchCount = 0;
