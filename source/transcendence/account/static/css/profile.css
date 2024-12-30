@@ -49,28 +49,81 @@
     color: #ccc;
 }
 
+.table-responsive {
+    border: 3px solid grey;
+    border-radius: 10px;
+}
+
 /* Game History Styles */
 .table {
     color: white;
     margin-bottom: 0;
+    border-radius: 8px;
+    overflow: hidden;
 }
 
 .table thead th {
     border-bottom: 2px solid #84ddfc;
-    color: #84ddfc;
+    color: #b02c98;
     font-weight: 500;
+    text-transform: uppercase;
+    font-size: 0.9rem;
 }
 
 .table td,
 .table th {
-    background-color: rgba(45, 73, 84, 0.8);
-    border-color: rgba(132, 221, 252, 0.2);
-    padding: 1rem;
+    background: rgba(255, 255, 255, 0);
+    padding: 0.9rem;
     vertical-align: middle;
 }
 
 .table tbody tr {
     transition: all 0.3s ease;
+}
+
+.table tbody tr:hover {
+    background-color: rgba(132, 221, 252, 0.1);
+}
+
+.text-success {
+    font-weight: bold;
+    color: #28a745 !important;
+}
+
+.text-danger {
+    font-weight: bold;
+    color: #dc3545 !important;
+}
+
+.text-warning {
+    font-weight: bold;
+    color: #ffc107 !important;
+}
+
+#page-numbers {
+    height: fit-content;
+    font-size: 5px;
+}
+
+/* .pagination-size {
+    position: absolute;
+    left: 45%;
+    bottom: 0;
+} */
+
+
+/* Date styling */
+.results,
+.date,
+.points-badge,
+.player-name,
+.game-type,
+.score-res {
+    display: flex;
+    justify-content: center;
+    font-size: 0.85rem;
+    font-style: italic;
+    color: #84ddfc;
 }
 
 .badge {
@@ -135,44 +188,6 @@
 /* Text Colors */
 .text-muted {
     color: #adb5bd !important;
-}
-
-/* Responsive Adjustments */
-@media (max-width: 768px) {
-    .container {
-        padding: 1rem;
-    }
-
-    .profile-pic {
-        width: 120px;
-        height: 120px;
-    }
-
-    .table-responsive {
-        margin: 0 -1rem;
-    }
-
-    .table td,
-    .table th {
-        padding: 0.75rem;
-    }
-}
-
-/* Animation */
-@keyframes fadeIn {
-    from {
-        opacity: 0;
-        transform: translateY(20px);
-    }
-
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
-.content {
-    animation: fadeIn 0.5s ease-out;
 }
 
 /* Modal Styles */
@@ -244,9 +259,56 @@
     height: auto;
 }
 
+.no-games-message {
+    padding: 20px;
+}
+
+.no-games-message i {
+    font-size: 2rem;
+    color: #6c757d;
+    /* Neutral gray tone */
+}
+
+.no-games-message .primary-message {
+    margin-top: 10px;
+    font-weight: bold;
+    font-size: 1.5rem;
+    color: #6c757d;
+}
+
+.no-games-message .secondary-message {
+    color: #6c757d;
+    font-size: 1rem;
+}
+
+.game-history-container {
+    padding: 5rem;
+}
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+    /* .container {
+        padding: 1rem;
+    }
+
+    .profile-pic {
+        width: 120px;
+        height: 120px;
+    }
+
+    .table-responsive {
+        margin: 0 -1rem;
+    }
+
+    .table td,
+    .table th {
+        padding: 0.75rem;
+    } */
+}
+
 
 @media (max-width: 576px) {
-    .modal-dialog {
+    /* .modal-dialog {
         margin: 1rem;
     }
 
@@ -261,7 +323,7 @@
 
     #change-profile-pic {
         padding: 4px 6px;
-    }
+    } */
 }
 
 /* Add to your modal styles section */

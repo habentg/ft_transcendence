@@ -18,13 +18,10 @@ def is_valid_token(token_string):
         jti = token['jti']
         return not redis_instance.exists(jti)  # Check if the key exists in Redis
     except jwt.ExpiredSignatureError:
-        print("Token has expired", flush=True)
         return False  # Treat expired tokens as blacklisted
     except jwt.InvalidTokenError as e:
-        print("Invalid token: ", e, flush=True)
         return False  # Treat invalid tokens as blacklisted
     except Exception as e:
-        print("Error decoding token: ", e, flush=True)
         return False  # Treat unexpected errors as blacklisted
 
 # extracts JTI (JSON Token Identifier) from token and adds it to blacklist using SETEX command - sets key with expiry time (auto deletes)
@@ -66,7 +63,7 @@ def generate_access_token(refresh_token):
         new_access_token = jwt.encode({
             'token_type': 'access',
             'jti': str(uuid.uuid4()),
-            'exp': datetime.utcnow() +  timedelta(minutes=1),
+            'exp': datetime.utcnow() +  timedelta(minutes=15),
             'iat': datetime.utcnow(),
             'user_id': refresh_token_data['user_id'],
         }, settings.SECRET_KEY, algorithm="HS256")

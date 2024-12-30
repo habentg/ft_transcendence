@@ -50,6 +50,7 @@ async function updatePlayerPassword() {
     await showSuccessMessage("Password updated successfully. Please log in again with your new password.", 3000);
     console.log("this is the response data", response);
     await updateUI(`/signin`);
+    updateNavBar(false);
   } catch (error) {
     console.error("Error:", error);
     displayError({ error_msg: "An error occurred while updating password" });
@@ -64,7 +65,7 @@ async function updatePlayerPassword() {
         */
 async function handleEnableDisable2FA() {
   try {
-    const response = await fetch("/2fa/", {
+    const response = await fetch("/2fa_toggle/", {
       method: "PATCH",
       headers: {
         "Content-Type": "application/json",
@@ -99,9 +100,9 @@ async function handleEnableDisable2FA() {
           title: "Failed to update 2FA status",
         }
         createToast(error_content);
-      } else {
-        createToast({ title: "Unknown ERROR" });
-      }
+        return ;
+      } 
+      createToast({ title: "Unknown ERROR" });
       throw new Error("error happed while updating 2fa");
     }
   } catch (error) {
@@ -156,22 +157,11 @@ function createAndShowPasswordModal() {
 
   // Close modal when clicking outside
   changePassModal.addEventListener("click", (e) => {
-    // console.log("clicked outside of the modal");
     if (e.target === changePassModal) {
-      // console.log("clicked outside of the modal 3333333333333");
       closeModal("password-change-modal");
     }
   });
 }
-
-// Helper Functions
-// function closePasswordModal() {
-//   const modal = document.getElementById("password-change-modal");
-//   if (modal) {
-//     modal.remove();
-//     document.body.classList.remove("modal-open");
-//   }
-// }
 
 // Delete Account Modal
 function deleteAccountCheck() {

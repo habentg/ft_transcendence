@@ -14,6 +14,7 @@ from django.middleware.csrf import get_token
 from rest_framework import status
 import urllib.parse
 from account.utils import *
+from account.utils import isUserisAuthenticated, getPlayerFromToken
 
 
 # base view for basic pages in our SPA
@@ -46,11 +47,15 @@ class BaseView(View):
 			'css': self.css,
 			'js': self.js,
 			'html': html_content,
-			'is_authenticated': isUserisAuthenticated(request)
 		}
 		if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
 			return JsonResponse(resources)
 		else:
+			resources['is_authenticated'] =  isUserisAuthenticated(request)
+			if resources['is_authenticated'] == True and not request.user.is_authenticated:
+				resources['user'] = PlayerSerializer(getPlayerFromToken(request.COOKIES.get('refresh_token'))).data
+			if request.user.is_authenticated:
+				resources['user'] = PlayerSerializer(request.user).data
 			return render(request, 'others/base.html', resources)
 
 	def get_context_data(self, request, **kwargs):
@@ -91,7 +96,7 @@ class HomeView(APIView, BaseView):
 		if isinstance(exception, AuthenticationFailed):
 			""" is refresh token not expired """
 			if 'access token is invalid but refresh token is valid' in str(exception):
-				print(f'refresh token is valid to {self.request.path}', flush=True)
+				
 				response = HttpResponseRedirect(self.request.path)
 				response.set_cookie('access_token', generate_access_token(self.request.COOKIES.get('refresh_token')), httponly=True, samesite='Lax', secure=True)
 				return response
@@ -178,14 +183,14 @@ class PaginatedSearch(APIView, BaseView):
 	authentication_classes = [JWTCookieAuthentication]
 	permission_classes = [IsAuthenticated]
 	throttle_classes = []
-	template_name = 'others/paginated_page.html'
+	template_name = 'friendship/search_result.html'
 	css = ['css/search.css']
 	js = ['js/friend.js']
 
 	def handle_exception(self, exception):
 		if isinstance(exception, AuthenticationFailed):
 			if 'access token is invalid but refresh token is valid' in str(exception):
-				print(f'refresh token is valid to {self.request.path}', flush=True)
+				
 				response = HttpResponseRedirect(self.request.path)
 				response.set_cookie('access_token', generate_access_token(self.request.COOKIES.get('refresh_token')), httponly=True, samesite='Lax', secure=True)
 				return response

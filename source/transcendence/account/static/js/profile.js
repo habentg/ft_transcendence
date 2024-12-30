@@ -13,12 +13,11 @@ async function UpdateUserInfo() {
   try {
     const formData = {
       full_name: document.getElementById("new-fullname").value.trim(),
-      username: document.getElementById("new-username").value.trim(),
       email: document.getElementById("new-email").value.trim(),
     };
 
     // Basic validation
-    if (!formData.full_name || !formData.username || !formData.email) {
+    if (!formData.full_name || !formData.email) {
       displayError({ error_msg: "All fields are required" });
       return;
     }
@@ -44,12 +43,9 @@ async function UpdateUserInfo() {
       displayError(errorData);
       return;
     }
-
-    // Success - close modal and update UI
-    const responseData = await response.json();
-    // closeUsernameModal();
     closeModal("username-modal");
-    await updateUI(`/profile/${responseData.username}`);
+    document.getElementById("full_name").textContent = formData.full_name;
+    document.getElementById("player_email").textContent = formData.email;
     showSuccessMessage("Profile Information updated successfully");
   } catch (error) {
     console.error("Error:", error);
@@ -384,23 +380,6 @@ async function removeFriend() {
   }
 }
 
-// Function to initialize the profile page and add event listeners
-// function initProfilePage() {
-// const updateProfilePicBtn = document.getElementById("change-profile-pic");
-// if (updateProfilePicBtn) {
-//   updateProfilePicBtn.addEventListener("click", updateProfilePic);
-// }
-
-// const updateUserInfoBtn = document.getElementById("update-user-info");
-
-// if (updateUserInfoBtn) {
-//   updateUserInfoBtn.addEventListener("click", () => {
-//     console.log("Update user info");
-//     updateProfileInfo();
-//   });
-// }
-// }
-
 /* sending request to create chat room between current user and a friend */
 async function create_chatroom(friend_username) {
   console.log("Creating chatroom with {", friend_username, "}");
@@ -419,52 +398,72 @@ async function create_chatroom(friend_username) {
   }
 }
 
-// initialize the profile page
-// initProfilePage();
+
+
+function drawPieChart() {
+  if (!document.getElementById("win_lose_stats")) {
+    return;
+  }
+  const gamesPlayed = parseInt(document.getElementById("win_lose_stats").getAttribute("data-numsOfGames")) || 0;
+  const wins = parseInt(document.getElementById("win_lose_stats").getAttribute("data-numsOfWins")) || 0;
+  const losses = parseInt(document.getElementById("win_lose_stats").getAttribute("data-numsOfLoses")) || 0;
+  const cancelled = gamesPlayed - (wins + losses);
+  
+  console.log("Games Played: ", gamesPlayed);
+  console.log("Wins: ", wins);
+  console.log("Losses: ", losses);
+  console.log("Cancelled: ", cancelled);
+
+  
+  // Pie Chart - Percentage of Wins and Losses
+  const pieCtx = document.getElementById("game-stats-pie-chart").getContext("2d");
+  new Chart(pieCtx, {
+    type: "pie",
+    data: {
+      labels: ["Wins", "Losses", "Cancelled"],
+      datasets: [
+        {
+          data: [wins, losses, cancelled],
+          backgroundColor: ["green", "red", "yellow"], // Green for wins, red for losses, grey for cancelled (may change to yellow)
+          borderColor: ["rgba(75, 192, 192, 1)", "rgba(255, 99, 132, 1)"],
+          borderWidth: 2,
+        },
+      ],
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: true, // Ensure proper scaling
+      aspectRatio: 1.2, // Adjust aspect ratio for smaller height
+      plugins: {
+        legend: {
+          position: "bottom",
+        },
+        tooltip: {
+          callbacks: {
+            label: function (context) {
+              const total = wins + losses;
+              const percentage = ((context.raw / total) * 100).toFixed(1);
+              return `${context.label}: ${percentage}% (${context.raw})`;
+            },
+          },
+        },
+      },
+    },
+  });
+}
+
+// function drawLineChart() {
+// 
+// }
+
 
 // Stat charts
-// const gamesPlayed = 10;
-// const wins = 6; // Number of wins
-// const losses = gamesPlayed - wins; // Number of losses
+drawPieChart();
+// drawLineChart();
 
-// const rankHistory = [10, 8, 7, 6, 5, 4];
-// const timePoints = ["Day 1", "Day 2", "Day 3", "Day 4", "Day 5", "Day 6"]; // Corresponding time points
-
-// // Pie Chart - Percentage of Wins and Losses
-// const pieCtx = document.getElementById("game-stats-pie-chart").getContext("2d");
-// new Chart(pieCtx, {
-//   type: "pie",
-//   data: {
-//     labels: ["Wins", "Losses"],
-//     datasets: [
-//       {
-//         data: [wins, losses],
-//         backgroundColor: ["green", "red"],
-//         borderColor: ["rgba(75, 192, 192, 1)", "rgba(255, 99, 132, 1)"],
-//         borderWidth: 2,
-//       },
-//     ],
-//   },
-//   options: {
-//     responsive: true,
-//     maintainAspectRatio: true, // Ensure proper scaling
-//     aspectRatio: 1.2, // Adjust aspect ratio for smaller height
-//     plugins: {
-//       legend: {
-//         position: "bottom",
-//       },
-//       tooltip: {
-//         callbacks: {
-//           label: function (context) {
-//             const total = wins + losses;
-//             const percentage = ((context.raw / total) * 100).toFixed(1);
-//             return `${context.label}: ${percentage}% (${context.raw})`;
-//           },
-//         },
-//       },
-//     },
-//   },
-// });
+// Line Chart Data
+// const rankHistory = [10, 8, 7, 6, 5, 4];{
+// const timePoints = ["Day 1", "Day 2", "Day 3", "Day 4", "Day 5", "Day 6"]; // Corresponding time points}
 
 // // Line Chart - Rank Leaderboard Over Time
 // const lineCtx = document

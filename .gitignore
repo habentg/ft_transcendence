@@ -13,5 +13,14 @@ source/.env
 # Ignore .git files
 .git/
 
-# Ignore the leetcode directory
-leetcode/
+# Ignore profile pictures
+source/transcendence/profile_pics/
+
+# Ignore migration files
+**/migrations/
+
+# Ignore the pfp directory
+**/profile_pics/
+
+# ignore secret dir
+secrets/*

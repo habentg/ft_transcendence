@@ -95,7 +95,7 @@ class SignInView(APIView, BaseView):
 		if serializer.is_valid():
 			player = serializer.validated_data['player']
 			if player.tfa:
-				if send_2fa_code(player):
+				if send_2fa_code(Player.objects.filter(username=request.data['username']).first()):
 					return Response({'redirect_url': '/2fa'}, status=status.HTTP_302_FOUND)
 				else:
 					return Response({'error_msg': 'Couldn\'t send OTP to the given Email'}, 
@@ -118,6 +118,23 @@ class SignOutView(APIView, BaseView):
 	permission_classes = [IsAuthenticated]
 	throttle_classes = []
 
+	def handle_exception(self, exception):
+		if isinstance(exception, AuthenticationFailed):
+			if 'access token is invalid but refresh token is valid' in str(exception):
+				
+				response = HttpResponseRedirect(self.request.path)
+				response.set_cookie('access_token', generate_access_token(self.request.COOKIES.get('refresh_token')), httponly=True, samesite='Lax', secure=True)
+				return response
+			signin_url = reverse('signin_page')
+			params = urllib.parse.urlencode({'next': self.request.path})
+			response = HttpResponseRedirect(f'{signin_url}?{params}')
+			response.delete_cookie('access_token')
+		if refresh_token_string:
+			add_token_to_blacklist(refresh_token_string)
+			response.delete_cookie('refresh_token')
+			return response
+		return super().handle_exception(exception)
+
 	def get(self, request):
 		player = request.user
 		access_token_string = request.COOKIES.get('access_token')
@@ -130,7 +147,6 @@ class SignOutView(APIView, BaseView):
 			add_token_to_blacklist(refresh_token_string)
 			response.delete_cookie('refresh_token')
 		response.delete_cookie('csrftoken')
-		print(f"Player {player.username} signed out", flush=True)
 		response.singed_out = True
 		if (player.is_guest):
 			player.delete()
@@ -161,6 +177,7 @@ class Auth_42(View):
 		return JsonResponse({'authorization_url': authorization_url})
 
 # 42 Oauth2.0 callback
+import json
 class OauthCallback(View):
 	authentication_classes = []
 	permission_classes = []
@@ -208,7 +225,7 @@ class OauthCallback(View):
 				ft_player.set_unusable_password()  # Player can't login with password
 				FriendList.objects.create(player=ft_player)
 		except Exception as e:
-			return render(request, 'others/base.html', {'css':['css/404.css'],'html': render_to_string('others/404.html', {'status_code': '500', 'error_msg_header': 'Internal Server Error', 'error_msg': 'Failed to create 42 user account. Either username/email is already in use!'})})
+			return render(request, 'others/base.html', {'css':['css/404.css'],'html': render_to_string('others/404.html', {'status_code': '400', 'error_msg_header': 'BAD REQUEST', 'error_msg': 'Failed to create 42 user account. Either username/email is already in use!'})})
 		ft_player.is_logged_in = True
 		ft_player.save()
 		refresh = RefreshToken.for_user(ft_player)
@@ -318,13 +335,45 @@ class PassResetNewPass(View):
 
 # 2FA - Two Factor Authentication
 class TwoFactorAuth(APIView, BaseView):
-	authentication_classes = [JWTCookieAuthentication]
-	permission_classes = [IsAuthenticated]
+	authentication_classes = []
+	permission_classes = []
 	throttle_classes = []
 	template_name = 'account/2fa.html'
 	title = 'Two Factor Authentication'
 	css = ['css/2fa.css']
 	js = ['js/2fa.js']
+
+	def get_context_data(self, request):
+		try:
+			username = request.GET.get('username', '')
+			player = Player.objects.filter(username=username).first()
+			return {'email': player.email}
+		except:
+			return {'email':'dummy@email.com'}
+	
+	def post(self, request):
+		data = json.loads(request.body)
+		player = Player.objects.filter(email=data['email']).first()
+		if player:
+			totp = pyotp.TOTP(player.secret, interval=300)
+			if totp.verify(data['otp']):
+				player.verified = True
+				refresh = RefreshToken.for_user(player)
+				pfp = player.profile_picture.url if player.profile_picture else None
+				response = Response({'username': player.username, 'pfp': pfp}, status=status.HTTP_200_OK)
+				response.set_cookie('access_token', str(refresh.access_token), httponly=True, samesite='Lax', secure=True)
+				response.set_cookie('refresh_token', str(refresh), httponly=True, samesite='Lax', secure=True)
+				player.is_logged_in = True
+				player.save()
+				return response
+			else:
+				return JsonResponse({'error_msg': 'Invalid OTP!'}, status=status.HTTP_401_UNAUTHORIZED)
+		return JsonResponse({'failure': 'no player found with that email!'}, status=status.HTTP_401_UNAUTHORIZED)
+
+class TwoFactorSetUpToggle(APIView):
+	authentication_classes = [JWTCookieAuthentication]
+	permission_classes = [IsAuthenticated]
+	throttle_classes = []
 
 	def get_throttles(self):
 		"""Apply throttling only for the PATCH method (password update)."""
@@ -335,7 +384,6 @@ class TwoFactorAuth(APIView, BaseView):
 	def handle_exception(self, exception):
 		if isinstance(exception, AuthenticationFailed):
 			if 'access token is invalid but refresh token is valid' in str(exception):
-				print(f'refresh token is valid to {self.request.path}', flush=True)
 				response = HttpResponseRedirect(self.request.path)
 				response.set_cookie('access_token', generate_access_token(self.request.COOKIES.get('refresh_token')), httponly=True, samesite='Lax', secure=True)
 				return response
@@ -351,23 +399,6 @@ class TwoFactorAuth(APIView, BaseView):
 			return response
 		return super().handle_exception(exception)
 
-
-	def get_context_data(self, request):
-		return {'email': self.request.user.email}
-	
-	def post(self, request):
-		data = json.loads(request.body)
-		player = request.user
-		if player:
-			totp = pyotp.TOTP(player.secret, interval=300)
-			if totp.verify(data['otp']):
-				player.verified = True
-				player.save()
-				return JsonResponse({'redirect': 'home'}, status=status.HTTP_200_OK)
-			else:
-				return JsonResponse({'error_msg': 'Invalid OTP!'}, status=status.HTTP_401_UNAUTHORIZED)
-		return JsonResponse({'failure': 'no player found with that email!'}, status=status.HTTP_401_UNAUTHORIZED)
-	
 	def patch(self, request):
 		player = request.user
 		if player:
@@ -381,7 +412,7 @@ class PlayerProfileView(APIView, BaseView):
 	authentication_classes = [JWTCookieAuthentication]
 	permission_classes = [IsAuthenticated]
 	throttle_classes = []
-	template_name = 'friendship/player_profile.html'
+	template_name = 'account/profile.html'
 	title = 'Player Profile'
 	css = ['css/profile.css']
 	js = ['js/profile.js']
@@ -389,7 +420,6 @@ class PlayerProfileView(APIView, BaseView):
 	def handle_exception(self, exception):
 		if isinstance(exception, AuthenticationFailed):
 			if 'access token is invalid but refresh token is valid' in str(exception):
-				print(f'refresh token is valid to {self.request.path}', flush=True)
 				response = HttpResponseRedirect(self.request.path)
 				response.set_cookie('access_token', generate_access_token(self.request.COOKIES.get('refresh_token')), httponly=True, samesite='Lax', secure=True)
 				return response
@@ -409,7 +439,6 @@ class PlayerProfileView(APIView, BaseView):
 		if kwargs.get('username') and kwargs.get('username') != request.user.username:
 			queried_user = self.get_player(kwargs.get('username'))
 			if not queried_user:
-				print('Player not found', flush=True)
 				return {'error_msg_404':f'Player "{kwargs.get('username')}" not found'}
 		data = {}
 		if queried_user.is_guest:
@@ -426,11 +455,14 @@ class PlayerProfileView(APIView, BaseView):
 				'is_self': queried_user == request.user,
 				'num_of_friends': queried_user.friend_list.friends.count(),
 				'games': GameSerializer(Game.objects.filter(player_one=queried_user), many=True).data,
+				'num_of_games': Game.objects.filter(player_one=queried_user).count(),
+				'games_won': Game.objects.filter(player_one=queried_user, outcome='WIN').count(),
+				'games_lost': Game.objects.filter(player_one=queried_user, outcome='LOSE').count(),
 			}
 		return data
 
 # profile view
-class PlayerProfileUpdatingView(APIView, BaseView):
+class PlayerProfileUpdatingView(APIView):
 	authentication_classes = [JWTCookieAuthentication]
 	permission_classes = [IsAuthenticated]
 	throttle_classes = []
@@ -438,7 +470,6 @@ class PlayerProfileUpdatingView(APIView, BaseView):
 	def handle_exception(self, exception):
 		if isinstance(exception, AuthenticationFailed):
 			if 'access token is invalid but refresh token is valid' in str(exception):
-				print(f'refresh token is valid to {self.request.path}', flush=True)
 				response = HttpResponseRedirect(self.request.path)
 				response.set_cookie('access_token', generate_access_token(self.request.COOKIES.get('refresh_token')), httponly=True, samesite='Lax', secure=True)
 				return response
@@ -471,7 +502,7 @@ class PlayerProfileUpdatingView(APIView, BaseView):
 		serializer = PlayerProfileSerializer(request.user, data=request.data, partial=True)
 		if serializer.is_valid():
 			serializer.save()  # Use the serializer to update the player object
-			return Response({'username': request.user.username}, status=status.HTTP_200_OK)
+			return Response(status=status.HTTP_200_OK)
 		return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 	# updating user password
@@ -485,6 +516,8 @@ class PlayerProfileUpdatingView(APIView, BaseView):
 				return Response({'error_msg': 'Invalid current password!'}, status=status.HTTP_400_BAD_REQUEST)
 			if serializer.validated_data['new_password'] != serializer.validated_data['confirm_password']:
 				return Response({'error_msg': 'Mismatch while confirming password!'}, status=status.HTTP_400_BAD_REQUEST)
+			if serializer.validated_data['current_password'] == serializer.validated_data['new_password']:
+				return Response({'error_msg': 'Cant use Current Password as a New Password!'}, status=status.HTTP_400_BAD_REQUEST)
 			""" blacklisting the old token """
 		access_token_string = request.COOKIES.get('access_token')
 		refresh_token_string = request.COOKIES.get('refresh_token')
@@ -500,7 +533,7 @@ class PlayerProfileUpdatingView(APIView, BaseView):
 		response.delete_cookie('refresh_token')
 		return response
 
-class PlayerSettings(APIView, BaseView):
+class SettingsView(APIView, BaseView):
 	authentication_classes = [JWTCookieAuthentication]
 	permission_classes = [IsAuthenticated]
 	throttle_classes = []
@@ -512,7 +545,6 @@ class PlayerSettings(APIView, BaseView):
 	def handle_exception(self, exception):
 		if isinstance(exception, AuthenticationFailed):
 			if 'access token is invalid but refresh token is valid' in str(exception):
-				print(f'refresh token is valid to {self.request.path}', flush=True)
 				response = HttpResponseRedirect(self.request.path)
 				response.set_cookie('access_token', generate_access_token(self.request.COOKIES.get('refresh_token')), httponly=True, samesite='Lax', secure=True)
 				return response
@@ -554,15 +586,26 @@ class AnonymizePlayer(APIView):
 	permission_classes = [IsAuthenticated]
 	throttle_classes = []
 
+	def handle_exception(self, exception):
+		if isinstance(exception, AuthenticationFailed):
+			if 'access token is invalid but refresh token is valid' in str(exception):
+				response = HttpResponseRedirect(self.request.path)
+				response.set_cookie('access_token', generate_access_token(self.request.COOKIES.get('refresh_token')), httponly=True, samesite='Lax', secure=True)
+				return response
+			signin_url = reverse('signin_page')
+			params = urllib.parse.urlencode({'next': self.request.path})
+			response = HttpResponseRedirect(f'{signin_url}?{params}')
+			response.delete_cookie('access_token')
+			response.delete_cookie('refresh_token')
+			return response
+		return super().handle_exception(exception)
+
 	def get(self, request):
-		# sign out the player
 		token_string = request.COOKIES.get('access_token')
-		print("player b4 anon: ", request.user, flush=True)
 		if token_string:
 			try:
 				add_token_to_blacklist(token_string)
 			except Exception as e:
-				print(e, flush=True)
 				return HttpResponseRedirect(reverse('landing'))
 		# create a new anonymous player
 		anon = createGuestPlayer()

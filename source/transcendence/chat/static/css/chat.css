@@ -215,6 +215,7 @@
 
 /* Fix dropdown menu alignment for smaller screens */
 #three_dots .dropdown-menu {
+	color: white;
 	right: 50% !important;
 	left: auto !important;
 	transform: translate(0, 0) !important;

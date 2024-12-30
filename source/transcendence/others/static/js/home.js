@@ -137,10 +137,11 @@ function searchingSystem() {
 }
 
 function triggerSearch() {
-  const query = document.getElementById("searchInput").value;
+  const query = document.getElementById("searchInput").value.trim();
   if (query) {
-    search(query.trim());
+    search(query);
   } else {
+    createToast({type:"error", title:"Empty search", error_message:"Please enter a search query"});
     document.getElementById("searchResults").classList.add("d-none")
   }
 }

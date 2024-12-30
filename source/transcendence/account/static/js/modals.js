@@ -80,12 +80,12 @@ function updateProfileModal() {
           </div>
 
           <div class="mb-3">
-            <label for="new-fullname" class="form-label">Full Name</label>
-            <input type="text" id="new-fullname" class="form-control bg-transparent text-white" value="${full_name}">
+            <span class="form-label">Username</span>
+            <span class="form-control bg-transparent text-muted">${username}</span>
           </div>
           <div class="mb-3">
-            <label for="new-username" class="form-label">Username</label>
-            <input type="text" id="new-username" class="form-control bg-transparent text-white" value="${username}">
+            <label for="new-fullname" class="form-label">Full Name</label>
+            <input type="text" id="new-fullname" class="form-control bg-transparent text-white" value="${full_name}">
           </div>
           <div class="mb-3">
             <label for="new-email" class="form-label">Email</label>
@@ -595,35 +595,6 @@ function gameSettingsModal() {
       </div>
     </div>
   `;
-
-  // show the modal
-  // if (document.body.appendChild(modal))
-  //   console.log("Child appended");
-  // if (document.body.classList.add("modal-open"))
-  //   console.log("modal open");
-  
-  // console.log("Modal values", modal);
-
-  // // Event Listeners
-  // modal
-  //   .querySelector("#applyButton")
-  //   .addEventListener("click", () => changeSetting(game));
-
-  // modal.addEventListener("keydown", (e) => {
-  //     console.log("keydown log for enter");
-  //     if (e.key === "Enter") changeSetting();
-  //   });
-  
-  // modal // close the modal
-  //   .querySelector(".btn-close")
-  //   .addEventListener("click", () => {
-  //     console.log("keydown log for enter");
-  //     closeModal("gameSettingsModal")});
-  
-  // modal.addEventListener("click", (e) => {
-  //   console.log("keydown log for enter");
-  //   if (e.target === modal) closeModal("gameSettingsModal");
-  // });
   return modal;
 }
 
@@ -637,9 +608,6 @@ function closeModal(modalId) {
     modal.remove(); // Remove the modal from the DOM
     document.body.classList.remove("modal-open"); // Remove the modal-open class from body
   } 
-  // else {
-  //   console.warn(`Modal with id "${modalId}" not found.`);
-  // }
 }
 
 // ShowSuccessMessage Function
