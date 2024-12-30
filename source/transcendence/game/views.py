@@ -75,7 +75,6 @@ class LeaderBoardView(BaseView):
     def handle_exception(self, exception):
         if isinstance(exception, AuthenticationFailed):
             if 'access token is invalid but refresh token is valid' in str(exception):
-                
                 response = HttpResponseRedirect(self.request.path)
                 response.set_cookie('access_token', generate_access_token(self.request.COOKIES.get('refresh_token')), httponly=True, samesite='Lax', secure=True)
                 return response
@@ -122,13 +121,32 @@ class GameView(APIView, BaseView):
             'current_username': request.user.username
         }
 	
-class TournamentView(BaseView):
-	authentication_classes = []
+class TournamentView(APIView, BaseView):
+	authentication_classes = [JWTCookieAuthentication]
+	permission_classes = [IsAuthenticated]
 	throttle_classes = []
 	template_name = 'game/tournament.html'
 	title = 'Tournament Page'
 	css = ['css/tournament.css']
-	js = ['js/tournament.js']
+	js = ['js/game.js', 'js/tournament_components.js', 'js/tournament.js']
+
+	def handle_exception(self, exception):
+		if isinstance(exception, AuthenticationFailed):
+			if 'access token is invalid but refresh token is valid' in str(exception):
+				response = HttpResponseRedirect(self.request.path)
+				response.set_cookie('access_token', generate_access_token(self.request.COOKIES.get('refresh_token')), httponly=True, samesite='Lax', secure=True)
+				return response
+			response = HttpResponseRedirect(reverse('landing'))
+			response.delete_cookie('access_token')
+			response.delete_cookie('refresh_token')
+			response.delete_cookie('csrftoken')
+			response.status_code = 302
+			return response
+		return super().handle_exception(exception)
 
 	def get(self, request):
 		return super().get(request)
+	
+	def get_context_data(self, request, **kwargs):
+		print("player username: ", request.user.username, flush=True)
+		return {'username': request.user.username}
