@@ -76,14 +76,14 @@ async function loadGame() {
     document.getElementById("startButton").addEventListener("click", async () => {
       console.log("Game values before starting the game", game);
       // console.table(game.players);
-
+      game.loadSettings(game.players[0].playerName);
       await createGameInDB(game);
     });
   }
   
   if (document.getElementById("aiButton")) {
     document.getElementById("aiButton").addEventListener("click", async () => {
-      // document.getElementById("aiButton")
+      game.loadSettings(game.players[0].playerName);
       await createGameInDB(game);
       // console.table(game);
       // startaiGame(game);
@@ -907,7 +907,7 @@ function applySetting(game) {
   game.slowServe = slowServeInput;
   game.parryFlag = parryInput;
 
-  console.log("Game values after update", game);
+  game.saveSettings(game.players[0].playerName);
   return 0;
 }
 

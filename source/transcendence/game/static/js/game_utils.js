@@ -115,6 +115,33 @@ class Game {
       this.activeKeys[event.code] = false;
       console.log(`Key Up: ${event.code}`);
     }
+
+    saveSettings(user) {
+      const key = `gameSetting_${user}`;
+      const settings = {
+        defballSpeed: this.defballSpeed,
+        paddleSpeed: this.paddleSpeed,
+        maxScore: this.maxScore,
+        slowServe: this.slowServe,
+      };
+      localStorage.setItem(key, JSON.stringify(settings));
+      console.log("Settings saved to localStorage:", settings);
+    }
+    
+    loadSettings(user) {
+      //load settings should check for invalid values or invalid ranges
+      const key = `gameSetting_${user}`;
+      const savedSettings = JSON.parse(localStorage.getItem(key));
+      if (savedSettings) {
+        this.defballSpeed = savedSettings.defballSpeed || this.defballSpeed;
+        this.paddleSpeed = savedSettings.paddleSpeed || this.paddleSpeed;
+        this.maxScore = savedSettings.maxScore || this.maxScore;
+        this.slowServe = savedSettings.slowServe || this.slowServe;
+        console.log("Loaded settings from localStorage:", savedSettings);
+      } else {
+        console.log("No saved settings found in localStorage.");
+      }
+    }
   }
   
   
