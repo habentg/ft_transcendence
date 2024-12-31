@@ -184,14 +184,15 @@ td {
 	font-size: 0.9rem;
 }
 
-.notification-badge::after {
-	content: '';
+
+#notification-on {
+	/*  position-absolute top-1 start-100 translate-middle */
 	position: absolute;
 	top: 2px;
-	right: 2px;
-	width: 8px;
-	height: 8px;
-	background-color: #b02c98;
+	margin-top: 0;
+	width: 10px;
+	height: 10px;
+	background-color: red;
 	border-radius: 50%;
 	border: 2px solid rgba(0, 0, 0, 0.8);
 }

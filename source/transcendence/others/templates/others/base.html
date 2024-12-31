@@ -95,14 +95,14 @@
               <li id="notification_dropdown_list" class="nav-item dropdown">
                 <a onclick="handleNotificationBellClick()" class="nav-link position-relative notification-badge"
                   role="button" id="notificationDropdown" data-bs-toggle="dropdown" aria-expanded="false">
-                  <i class="fas fa-bell"></i>
+                  <i class="fas fa-bell">
+                    <span id="notification-on" class="d-none"> </span>
+                  </i>
                 </a>
                 <ul id="notification_ul" class="dropdown-menu dropdown-menu-end" aria-labelledby="notificationDropdown"
                   style="width: 320px; max-height: 350px; overflow-y: auto;">
                 </ul>
               </li>
-
-
               <li class="nav-item ms-lg-2 dropdown">
                 <a class="nav-link profile-link" href="#" role="button" id="profileDropdown" data-bs-toggle="dropdown"
                   aria-expanded="false">
