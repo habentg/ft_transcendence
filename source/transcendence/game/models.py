@@ -16,9 +16,9 @@ class Game(models.Model):
 	]
 	id = models.BigAutoField(primary_key=True)
 	player_one = models.CharField(max_length=100, blank=False, null=False, default="player_one")
+	final_score = models.CharField(max_length=20, blank=False, null=False, default="-")
 	player_two = models.CharField(max_length=100, blank=False, null=False, default="player_two")
 	type = models.CharField(max_length=20, choices=GAME_TYPE, default='AI')
-	final_score = models.CharField(max_length=20, blank=False, null=False, default="-")
 	outcome = models.CharField(max_length=20, choices=END_RESULT, default='STARTED')
 	start_time = models.DateTimeField(auto_now_add=True)
 

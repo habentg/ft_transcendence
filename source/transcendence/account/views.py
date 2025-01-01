@@ -121,7 +121,6 @@ class SignOutView(APIView, BaseView):
 	def handle_exception(self, exception):
 		if isinstance(exception, AuthenticationFailed):
 			if 'access token is invalid but refresh token is valid' in str(exception):
-				
 				response = HttpResponseRedirect(self.request.path)
 				response.set_cookie('access_token', generate_access_token(self.request.COOKIES.get('refresh_token')), httponly=True, samesite='Lax', secure=True)
 				return response
@@ -129,8 +128,6 @@ class SignOutView(APIView, BaseView):
 			params = urllib.parse.urlencode({'next': self.request.path})
 			response = HttpResponseRedirect(f'{signin_url}?{params}')
 			response.delete_cookie('access_token')
-		if refresh_token_string:
-			add_token_to_blacklist(refresh_token_string)
 			response.delete_cookie('refresh_token')
 			return response
 		return super().handle_exception(exception)
@@ -177,7 +174,6 @@ class Auth_42(View):
 		return JsonResponse({'authorization_url': authorization_url})
 
 # 42 Oauth2.0 callback
-import json
 class OauthCallback(View):
 	authentication_classes = []
 	permission_classes = []
@@ -235,7 +231,6 @@ class OauthCallback(View):
 		response.set_cookie('refresh_token', str(refresh), httponly=True, samesite='Lax', secure=True)
 		return response
 
-	
 class PasswordReset(BaseView):
 	authentication_classes = []
 	permission_classes = []

@@ -3,15 +3,16 @@ async function createGameInDB(game) {
   const startgame_data = {
     player_one: game.players[0].playerName,
     player_two: game.players[1].playerName,
-    // type: game.aiFlag ? "AI" : "VERSUS",
   };
-  if (game.tournamentFlag)
-      startgame_data["type"] = "TOURNAMENT";
+  if (game.tournamentFlag) {
+    startgame_data["type"] = "TOURNAMENT";
+    startgame_data["tournament_id"] = `${game.tournament_id}`;
+  }
   else
-      startgame_data["type"] = game.aiFlag ? "AI" : "VERSUS";
+    startgame_data["type"] = game.aiFlag ? "AI" : "VERSUS";
   console.table(startgame_data);
   try {
-    const response = await fetch("/game_api/", {
+    const response = await fetch("/game/", {
       method: "POST",
       headers: {
         "X-Requested-With": "XMLHttpRequest",
@@ -26,24 +27,24 @@ async function createGameInDB(game) {
       game.game_id = responseData.game_id;
       if (game.aiFlag)
         startaiGame(game);
-	  else if(game.tournamentFlag)
-		requestAnimationFrame((timestamp) => gameLoop(this.game, timestamp));
+      else if (game.tournamentFlag)
+        return ;
+        // requestAnimationFrame((timestamp) => gameLoop(this.game, timestamp));
       else
         startGame(game);
-		//
       return;
     }
     throw new Error("Failed to load gameApiPOSTFunction");
   } catch (error) {
     console.error("ERROR: ", error);
-	return false
+    return false
   }
 }
 
 async function updateGameInDB(endgame_data, game_id) {
   console.log("is it comming here --- Endgame data: ", endgame_data);
   try {
-    const response = await fetch(`/game_api/${game_id}/`, {
+    const response = await fetch(`/game/?game_id=${game_id}`, {
       method: "PATCH",
       headers: {
         "X-Requested-With": "XMLHttpRequest",
@@ -88,7 +89,7 @@ async function loadGame() {
       await createGameInDB(game);
     });
   }
-  
+
   if (document.getElementById("aiButton")) {
     document.getElementById("aiButton").addEventListener("click", async () => {
       // document.getElementById("aiButton")
@@ -495,7 +496,7 @@ async function resetGame(player1, player2, direction, game) {
     }
     await updateGameInDB(endgame_stuff, game.game_id);
     console.log("Game Over: SHOULD RETURN SETTINGS MENU");
-    
+
     if (document.getElementById("aiButton")) {
       document.getElementById("aiButton").disabled = false;
     }

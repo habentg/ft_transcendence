@@ -569,7 +569,7 @@ function resetGame(player1, player2, direction) {
   if (isGameOver(player1, player2)) {
     drawFlag = false;
     aiFlag = false;
-    console.log("Game Over: SHOULD RETURN SETTINGS MENU");
+    console.log("Game Over: SHOULD RETURN SETTINGS MENU ----- ");
 
     if (document.getElementById("aiButton")) {
       document.getElementById("aiButton").disabled = false;
