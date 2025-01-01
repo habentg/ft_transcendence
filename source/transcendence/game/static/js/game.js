@@ -55,6 +55,24 @@ async function updateGameInDB(endgame_data, game_id) {
   }
 }
 
+function showGameRules() {
+	console.log("Game Rules button clicked");
+	const modal = gameRulesModal();
+	document.body.appendChild(modal);
+
+	modal.querySelector(".btn-close").addEventListener("click", () => {
+		modal.remove();
+	});
+	modal.addEventListener("click", (event) => {
+	if (event.target === modal) {
+		modal.remove();
+	}
+	});
+	modal.querySelector(".closeButton").addEventListener("click", () => {
+		modal.remove();
+	});
+}
+
 async function loadGame() {
   //starting the game by getting game settings and intializingthe struct.
   // make game obj. 
@@ -98,6 +116,7 @@ function startGame(game) {
   game.setupeventListeners();
   document.getElementById("startButton").disabled = true;
   document.getElementById("settingButton").disabled = true;
+  document.getElementById("gameRulesButton").disabled = true;
 
   requestAnimationFrame((timestamp) => gameLoop(game, timestamp));
 }
@@ -498,6 +517,9 @@ async function resetGame(player1, player2, direction, game) {
     if (document.getElementById("settingButton")) {
       document.getElementById("settingButton").disabled = false;
     }
+    if (document.getElementById("gameRulesButton")) {
+      document.getElementById("gameRulesButton").disabled = false;
+    }
   }
 }
 
@@ -569,6 +591,7 @@ function startaiGame(game) {
 
   document.getElementById("aiButton").disabled = true;
   document.getElementById("settingButton").disabled = true;
+  document.getElementById("gameRulesButton").disabled = true;
 
   let aiHelper = { x: 0, y: 0, velocityX: 0, velocityY: 0, aiMovingUp: false, aiMovingDown: false };
 
