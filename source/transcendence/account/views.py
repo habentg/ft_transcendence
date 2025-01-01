@@ -121,7 +121,6 @@ class SignOutView(APIView, BaseView):
 	def handle_exception(self, exception):
 		if isinstance(exception, AuthenticationFailed):
 			if 'access token is invalid but refresh token is valid' in str(exception):
-				print(f'refresh token is valid to {self.request.path}', flush=True)
 				response = HttpResponseRedirect(self.request.path)
 				response.set_cookie('access_token', generate_access_token(self.request.COOKIES.get('refresh_token')), httponly=True, samesite='Lax', secure=True)
 				return response
@@ -145,7 +144,6 @@ class SignOutView(APIView, BaseView):
 			add_token_to_blacklist(refresh_token_string)
 			response.delete_cookie('refresh_token')
 		response.delete_cookie('csrftoken')
-		print(f"Player {player.username} signed out", flush=True)
 		response.singed_out = True
 		if (player.is_guest):
 			player.delete()
@@ -176,7 +174,6 @@ class Auth_42(View):
 		return JsonResponse({'authorization_url': authorization_url})
 
 # 42 Oauth2.0 callback
-import json
 class OauthCallback(View):
 	authentication_classes = []
 	permission_classes = []
@@ -206,16 +203,8 @@ class OauthCallback(View):
 		if user_info_response.status_code != 200:
 			return render(request, 'others/base.html', {'css':['css/404.css'],'html': render_to_string('others/404.html', {'status_code': '400', 'error_msg_header': 'Bad Request', 'error_msg': 'Failed to obtain 42 user information!'})})
 		
-
-		# Simulate fetching JSON data from the response
 		user_info = user_info_response.json()
-
-		# Specify the file path where the data will be saved
-		file_path = "user_info.json"
-
-		# Write the JSON data to the file
-		with open(file_path, "w") as file:
-			json.dump(user_info, file, indent=4)
+		
 		# Find or create user
 		try:
 			ft_player, created = Player.objects.get_or_create(
@@ -242,7 +231,6 @@ class OauthCallback(View):
 		response.set_cookie('refresh_token', str(refresh), httponly=True, samesite='Lax', secure=True)
 		return response
 
-	
 class PasswordReset(BaseView):
 	authentication_classes = []
 	permission_classes = []
@@ -286,7 +274,7 @@ class PasswordReset(BaseView):
 			'uid': urlsafe_base64_encode(force_bytes(player.pk)),
 			'user': player,
 			'token': default_token_generator.make_token(player),
-			'protocol': 'http',
+			'protocol': 'https',
 		}
 		email_body = render_to_string(email_template_name, c)
 		send_mail(subject, email_body, from_email, recipient_list, fail_silently=False)
@@ -360,7 +348,6 @@ class TwoFactorAuth(APIView, BaseView):
 	
 	def post(self, request):
 		data = json.loads(request.body)
-		print('data', data, flush=True)
 		player = Player.objects.filter(email=data['email']).first()
 		if player:
 			totp = pyotp.TOTP(player.secret, interval=300)
@@ -392,7 +379,6 @@ class TwoFactorSetUpToggle(APIView):
 	def handle_exception(self, exception):
 		if isinstance(exception, AuthenticationFailed):
 			if 'access token is invalid but refresh token is valid' in str(exception):
-				print(f'refresh token is valid to {self.request.path}', flush=True)
 				response = HttpResponseRedirect(self.request.path)
 				response.set_cookie('access_token', generate_access_token(self.request.COOKIES.get('refresh_token')), httponly=True, samesite='Lax', secure=True)
 				return response
@@ -429,7 +415,6 @@ class PlayerProfileView(APIView, BaseView):
 	def handle_exception(self, exception):
 		if isinstance(exception, AuthenticationFailed):
 			if 'access token is invalid but refresh token is valid' in str(exception):
-				print(f'refresh token is valid to {self.request.path}', flush=True)
 				response = HttpResponseRedirect(self.request.path)
 				response.set_cookie('access_token', generate_access_token(self.request.COOKIES.get('refresh_token')), httponly=True, samesite='Lax', secure=True)
 				return response
@@ -449,7 +434,6 @@ class PlayerProfileView(APIView, BaseView):
 		if kwargs.get('username') and kwargs.get('username') != request.user.username:
 			queried_user = self.get_player(kwargs.get('username'))
 			if not queried_user:
-				print('Player not found', flush=True)
 				return {'error_msg_404':f'Player "{kwargs.get('username')}" not found'}
 		data = {}
 		if queried_user.is_guest:
@@ -481,7 +465,6 @@ class PlayerProfileUpdatingView(APIView):
 	def handle_exception(self, exception):
 		if isinstance(exception, AuthenticationFailed):
 			if 'access token is invalid but refresh token is valid' in str(exception):
-				print(f'refresh token is valid to {self.request.path}', flush=True)
 				response = HttpResponseRedirect(self.request.path)
 				response.set_cookie('access_token', generate_access_token(self.request.COOKIES.get('refresh_token')), httponly=True, samesite='Lax', secure=True)
 				return response
@@ -557,7 +540,6 @@ class SettingsView(APIView, BaseView):
 	def handle_exception(self, exception):
 		if isinstance(exception, AuthenticationFailed):
 			if 'access token is invalid but refresh token is valid' in str(exception):
-				print(f'refresh token is valid to {self.request.path}', flush=True)
 				response = HttpResponseRedirect(self.request.path)
 				response.set_cookie('access_token', generate_access_token(self.request.COOKIES.get('refresh_token')), httponly=True, samesite='Lax', secure=True)
 				return response
@@ -602,7 +584,6 @@ class AnonymizePlayer(APIView):
 	def handle_exception(self, exception):
 		if isinstance(exception, AuthenticationFailed):
 			if 'access token is invalid but refresh token is valid' in str(exception):
-				print(f'refresh token is valid to {self.request.path}', flush=True)
 				response = HttpResponseRedirect(self.request.path)
 				response.set_cookie('access_token', generate_access_token(self.request.COOKIES.get('refresh_token')), httponly=True, samesite='Lax', secure=True)
 				return response
@@ -615,14 +596,11 @@ class AnonymizePlayer(APIView):
 		return super().handle_exception(exception)
 
 	def get(self, request):
-		# sign out the player
 		token_string = request.COOKIES.get('access_token')
-		print("player b4 anon: ", request.user, flush=True)
 		if token_string:
 			try:
 				add_token_to_blacklist(token_string)
 			except Exception as e:
-				print(e, flush=True)
 				return HttpResponseRedirect(reverse('landing'))
 		# create a new anonymous player
 		anon = createGuestPlayer()

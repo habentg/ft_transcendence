@@ -6,6 +6,7 @@ class Game {
       this.aiFlag = false;
       this.versusFlag = false;
       this.tournamentFlag = false;
+	  this.tournament_id = 0;
   
       this.drawFlag = false // flag for stopping drawing
   

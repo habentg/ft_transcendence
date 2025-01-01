@@ -16,6 +16,7 @@
 
 ## ******************************* Game related TODO list **************************
 1. player names should be displayed before clicking start............................................................-> DONE!
+2. modals issues --------------- HIGH PRIORITY!!!!!!!!!!!!!!!
 
 ## ******************************* Real-Time (chat, notification, friendship) TODO list **************************
 1. blocking/unblocking, game invitation through chat .................................................................DONE!
