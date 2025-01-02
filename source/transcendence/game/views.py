@@ -112,7 +112,7 @@ class PlayerGameHistoryView(APIView):
 	
 	def get(self, request, **kwargs):
 		try:
-			games = Game.objects.filter(player_one=request.user.username)
+			games = Game.objects.filter(Q(player_one=request.user.username) | Q(player_two=request.user.username)).order_by('-start_time')
 			paginator = Paginator(games, 5)
 			page_number = request.GET.get('page', 1)
 			try:
