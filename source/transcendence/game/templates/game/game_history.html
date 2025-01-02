@@ -1,0 +1,67 @@
+{% load static %}
+
+<h4>{{ total_games }} of games found!</h4>
+<div class="table-responsive">
+  <table class="table table-hover position-relative">
+    <thead>
+      <tr>
+        <div>
+          <th>Match</th>
+          <th>Result</th>
+          <th>Score</th>
+          <th>Points</th>
+          <th>Date</th>
+          <th>Type</th>
+        </div>
+      </tr>
+    </thead>
+    <tbody>
+      {% for game in games %}
+        <tr {% if game.type == "TOURNAMENT" %} onclick="getFullTournamentView({{game.tournament_id}})"{%endif%}>
+          <td>
+            <div>
+              <span class="player-name">VS {{ game.player_two }}</span>
+            </div>
+          </td>
+          <td>
+            <div class="results">
+              {% if game.outcome == 'WIN' %}
+                <span class="text-success">Win</span>
+              {% elif game.outcome == 'LOSE' %}
+                <span class="text-danger">Lose</span>
+              {% else %}
+                <span class="text-warning">Cancelled</span>
+              {% endif %}
+            </div>
+          </td>
+          <td>
+            <div>
+              <span class="score-res">{{ game.final_score }}</span>
+            </div>
+          </td>
+          <td>
+            <div>
+              <span class="points-badge">+5</span>
+            </div>
+          </td>
+          <td>
+            <div>
+              <span class="date">{{ game.formatted_start_time }}</span>
+            </div>
+          </td>
+          <td>
+            <div>
+              <span class="game-type">{{ game.type }}</span>
+            </div>
+          </td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+<!-- Pagination -->
+<div class="pagination-size d-flex justify-content-center gap-2 mt-4">
+  <button id="prev-page" class="btn btn-outline-light btn-sm {% if previous == 0 %}disabled{% endif %}" onclick="getUserGameHistory({{ previous }})"><i class="fas fa-chevron-left"></i></button>
+  <span id="page-numbers" class="d-flex gap-2"><span class="d-flex justify-content-center mt-1"><h6 style="color: #84ddfc;">{{ current_page }} of {{ num_pages }} pages</h6></span></span>
+  <button id="next-page" class="btn btn-outline-light btn-sm {% if next == 0 %}disabled{% endif %}" onclick="getUserGameHistory({{ next }})"><i class="fas fa-chevron-right"></i></button>
+</div>

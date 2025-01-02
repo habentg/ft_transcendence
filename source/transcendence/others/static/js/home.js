@@ -19,7 +19,7 @@ async function search(query_parameter, url) {
 
     if (response.status === 205) {
       updateUI("/home");
-      return ;
+      return;
     }
     if (response.ok) {
       // history.pushState({ query_parameter }, "", route_url);
@@ -141,7 +141,7 @@ function triggerSearch() {
   if (query) {
     search(query);
   } else {
-    createToast({type:"error", title:"Empty search", error_message:"Please enter a search query"});
+    createToast({ type: "error", title: "Empty search", error_message: "Please enter a search query" });
     document.getElementById("searchResults").classList.add("d-none")
   }
 }
@@ -283,104 +283,104 @@ searchingSystem();
 
 
 
-/* Game Api tester */
-async function gameApiPATCHFunction(endgame_data, game_id) {
-  try {
-    const response = await fetch(`/game_api/${game_id}/`, {
-      method: "PATCH",
-      headers: {
-        "X-Requested-With": "XMLHttpRequest",
-        "X-CSRFToken": await getCSRFToken(),
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(endgame_data),
-    });
-    if (response.ok) {
-      const responseData = await response.json();
-      console.log(responseData);
-      return;
-    }
-    throw new Error("Failed to load gameApiPATCHFunction");
-  } catch (error) {
-    console.error("ERROR: ", error);
-  }
-}
-async function gameApiPOSTFunction(startgame_data) {
-  try {
-    const response = await fetch("/game_api/", {
-      method: "POST",
-      headers: {
-        "X-Requested-With": "XMLHttpRequest",
-        "X-CSRFToken": await getCSRFToken(),
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(startgame_data),
-    });
-    if (response.ok) {
-      const responseData = await response.json();
-      console.log(responseData);
-      return;
-    }
-    throw new Error("Failed to load gameApiPOSTFunction");
-  } catch (error) {
-    console.error("ERROR: ", error);
-  }
-}
+// /* Game Api tester */
+// async function gameApiPATCHFunction(endgame_data, game_id) {
+//   try {
+//     const response = await fetch(`/game_api/${game_id}/`, {
+//       method: "PATCH",
+//       headers: {
+//         "X-Requested-With": "XMLHttpRequest",
+//         "X-CSRFToken": await getCSRFToken(),
+//         "Content-Type": "application/json",
+//       },
+//       body: JSON.stringify(endgame_data),
+//     });
+//     if (response.ok) {
+//       const responseData = await response.json();
+//       console.log(responseData);
+//       return;
+//     }
+//     throw new Error("Failed to load gameApiPATCHFunction");
+//   } catch (error) {
+//     console.error("ERROR: ", error);
+//   }
+// }
+// async function gameApiPOSTFunction(startgame_data) {
+//   try {
+//     const response = await fetch("/game_api/", {
+//       method: "POST",
+//       headers: {
+//         "X-Requested-With": "XMLHttpRequest",
+//         "X-CSRFToken": await getCSRFToken(),
+//         "Content-Type": "application/json",
+//       },
+//       body: JSON.stringify(startgame_data),
+//     });
+//     if (response.ok) {
+//       const responseData = await response.json();
+//       console.log(responseData);
+//       return;
+//     }
+//     throw new Error("Failed to load gameApiPOSTFunction");
+//   } catch (error) {
+//     console.error("ERROR: ", error);
+//   }
+// }
 
-async function gameApiDELETEFunction(game_id) {
-  try {
-    const response = await fetch(`/game_api/${game_id}/`, {
-      method: "DELETE",
-      headers: {
-        "X-Requested-With": "XMLHttpRequest",
-        "Content-Type": "application/json",
-      },
-    });
-    if (response.ok) {
-      const responseData = await response.json();
-      console.log(responseData);
-      return;
-    }
-    throw new Error("Failed to load gameApiDELETEFunction");
-  } catch (error) {
-    console.error("ERROR: ", error);
-  }
-}
-async function gameApiGETFunction() {
-  try {
-    const response = await fetch("/game_api/", {
-      method: "GET",
-      headers: {
-        "X-Requested-With": "XMLHttpRequest",
-        "Content-Type": "application/json",
-      },
-    });
-    if (response.ok) {
-      const responseData = await response.json();
-      console.log(responseData);
-      return;
-    }
-    throw new Error("Failed to load gameApiGETFunction");
-  } catch (error) {
-    console.error("ERROR: ", error);
-  }
-}
+// async function gameApiDELETEFunction(game_id) {
+//   try {
+//     const response = await fetch(`/game_api/${game_id}/`, {
+//       method: "DELETE",
+//       headers: {
+//         "X-Requested-With": "XMLHttpRequest",
+//         "Content-Type": "application/json",
+//       },
+//     });
+//     if (response.ok) {
+//       const responseData = await response.json();
+//       console.log(responseData);
+//       return;
+//     }
+//     throw new Error("Failed to load gameApiDELETEFunction");
+//   } catch (error) {
+//     console.error("ERROR: ", error);
+//   }
+// }
+// async function gameApiGETFunction() {
+//   try {
+//     const response = await fetch("/game_api/", {
+//       method: "GET",
+//       headers: {
+//         "X-Requested-With": "XMLHttpRequest",
+//         "Content-Type": "application/json",
+//       },
+//     });
+//     if (response.ok) {
+//       const responseData = await response.json();
+//       console.log(responseData);
+//       return;
+//     }
+//     throw new Error("Failed to load gameApiGETFunction");
+//   } catch (error) {
+//     console.error("ERROR: ", error);
+//   }
+// }
 
-async function GameApiTester() {
-  /* Get request - to get all history */
-  const data = {
-    player_two: "martin",
-    type: "TOURNAMENT",
-  };
-  const endgame_data = {
-    outcome: "CANCELLED",
-  };
+// async function GameApiTester() {
+//   /* Get request - to get all history */
+//   const data = {
+//     player_two: "martin",
+//     type: "TOURNAMENT",
+//   };
+//   const endgame_data = {
+//     outcome: "CANCELLED",
+//   };
 
-  await gameApiGETFunction();
-  
-  // await gameApiPOSTFunction(data);
-  
-  // await gameApiPATCHFunction(endgame_data, 5);
+//   await gameApiGETFunction();
 
-  // await gameApiDELETEFunction(1);
-}
+//   // await gameApiPOSTFunction(data);
+
+//   // await gameApiPATCHFunction(endgame_data, 5);
+
+//   // await gameApiDELETEFunction(1);
+// }

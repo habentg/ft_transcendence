@@ -595,35 +595,6 @@ function gameSettingsModal() {
       </div>
     </div>
   `;
-
-  // show the modal
-  // if (document.body.appendChild(modal))
-  //   console.log("Child appended");
-  // if (document.body.classList.add("modal-open"))
-  //   console.log("modal open");
-  
-  // console.log("Modal values", modal);
-
-  // // Event Listeners
-  // modal
-  //   .querySelector("#applyButton")
-  //   .addEventListener("click", () => changeSetting(game));
-
-  // modal.addEventListener("keydown", (e) => {
-  //     console.log("keydown log for enter");
-  //     if (e.key === "Enter") changeSetting();
-  //   });
-  
-  // modal // close the modal
-  //   .querySelector(".btn-close")
-  //   .addEventListener("click", () => {
-  //     console.log("keydown log for enter");
-  //     closeModal("gameSettingsModal")});
-  
-  // modal.addEventListener("click", (e) => {
-  //   console.log("keydown log for enter");
-  //   if (e.target === modal) closeModal("gameSettingsModal");
-  // });
   return modal;
 }
 
@@ -637,9 +608,6 @@ function closeModal(modalId) {
     modal.remove(); // Remove the modal from the DOM
     document.body.classList.remove("modal-open"); // Remove the modal-open class from body
   } 
-  // else {
-  //   console.warn(`Modal with id "${modalId}" not found.`);
-  // }
 }
 
 // ShowSuccessMessage Function

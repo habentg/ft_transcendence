@@ -10,7 +10,7 @@
             <div class="text-center mb-4 profile_info_container">
               <div class="profile-pic-container position-relative d-inline-block">
                 {% if player.profile_picture %}
-                  <img src="{{ player.profile_picture }}" alt="Profile Picture" class="profile-pic rounded-circle" />
+                  <img src="{{ player.profile_picture }}" alt="Profile Picture" class="profile-pic rounded-circle"/>
                 {% else %}
                   <img src="{% static 'images/default_profile_pic.jpeg' %}" alt="Default Profile Picture" class="profile-pic rounded-circle" />
                 {% endif %}
@@ -29,7 +29,7 @@
                 <h3 id="full_name" class="mb-1 nav_profile_pic">{{ player.full_name }}</h3>
                 <p id="username" class="text-muted mb-1" data-username="{{ player.username }}">@{{ player.username }}</p>
                 <p class="text-muted small mb-3">
-                  <i class="fas fa-envelope me-2"></i><span id="player_email">{{ player.email }}</span>
+                  <i class="fas fa-envelope me-2"></i>{{ player.email }}
                 </p>
               </div>
 
@@ -51,7 +51,7 @@
               {% else %}
                 {% if is_friend %}
                   <button onclick="removeFriend()" id="unfriend_btn" type="button" class="btn btn-danger friendship_btn"><i class="fas fa-user-minus me-2"></i>Unfriend</button>
-                  <button onclick="create_chatroom('{{ player.username }}')" id="chat_btn" type="button" class="btn btn-secondary chat_btn friendship_btn"><i class="fas fa-comment-alt me-2"></i> chat</button>
+                  <button onclick="create_chatroom('{{ player.username }}')" id="chat_btn" type="button" class="btn btn-secondary chat_btn friendship_btn"> <i class="fas fa-comment-alt me-2"></i> chat</button>
                 {% elif is_requested_by_me %}
                   <button onclick="cancelFriendRequest()" id="cancel_request_btn" type="button" class="btn btn-danger friendship_btn"><i class="fas fa-user-times me-2"></i>Cancel Request</button>
                 {% elif am_i_requested %}
@@ -66,57 +66,76 @@
         </div>
 
         <!-- Game History Section -->
-        {% if num_of_games > 0 %}
         <div class="col-lg-8">
-          <div class="content game-history-card" style="height: 100%;">
+          <div class="content game-history-card p-4">
             <h3 class="text-center mb-4">Game History</h3>
-              <div class="text-center no-games-message d-flex flex-column">
-                <div class="d-flex flex-column align-items-center text-center px-3">
-                  <i class="fas fa-gamepad mb-3" style="font-size: 2rem; color: #6c757d;"></i>
-                  <p class="fw-bold mb-2 text-wrap" style="font-size: 1.5rem; color: #6c757d;">Fetching Game History......</p>
-                </div>
-              </div>
-              <div id="game_history" class="d-none"></div>
+
+            <div class="table-responsive">
+              <table class="table table-hover">
+                <thead>
+                  <tr>
+                    <th>Match</th>
+                    <th>Result</th>
+                    <th>Score</th>
+                    <th>Points</th>
+                    <th>Date</th>
+                    <th>Type</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {% for game in games %}
+                  <tr>
+                    <td>
+                      <div class="d-flex align-items-center">
+                        <span class="player-name"> vs {{game.player_two}}</span>
+                      </div>
+                    </td>
+                    <td>
+                      <span class="badge bg-success">{{game.outcome}}</span>
+                    </td>
+                    <td>{{game.final_score}}</td>
+                    <td>+5</td>
+                    <td>{{game.start_time}}</td>
+                    <td>{{game.type}}</td>
+                  </tr>
+                  {%endfor%}
+                </tbody>
+              </table>
+            </div>
+
+            <!-- Pagination -->
+            <div class="d-flex justify-content-center gap-2 mt-4">
+              <button id="prev-page" class="btn btn-outline-light" disabled><i class="fas fa-chevron-left"></i></button>
+              <span id="page-numbers" class="d-flex gap-2">
+                <button class="btn btn-primary">1</button>
+                <button class="btn btn-outline-light">2</button>
+                <button class="btn btn-outline-light">3</button>
+              </span>
+              <button id="next-page" class="btn btn-outline-light"><i class="fas fa-chevron-right"></i></button>
+            </div>
           </div>
         </div>
-        {% else %}
-        <div class="col-lg-8">
-          <div class="content game-history-card" style="height: 100%;">
-            <h3 class="text-center mb-4">Game History</h3>
-              <div class="text-center no-games-message d-flex flex-column">
-                <div class="d-flex flex-column align-items-center text-center px-3">
-                  <i class="fas fa-gamepad mb-3" style="font-size: 2rem; color: #6c757d;"></i>
-                  <p class="fw-bold mb-2 text-wrap" style="font-size: 1.5rem; color: #6c757d;">You have not played any games yet.</p>
-                  <p class="text-wrap" style="font-size: 1rem; color: #6c757d;">Play games to see your history here!</p>
-                </div>
-              </div>
-              <div id="game_history" class="d-none"></div>
-          </div>
-        </div>
-        {% endif %}
       </div>
 
       <!-- new div for game stats with a pie chart and line graph in it side by side -->
-      {% if num_of_games > 0 %}
-        <div class="row justify-content-center g-4 mt-2 stats-container">
-          <div class="col-lg-4">
-            <div id="win_lose_stats" class="content game-stats-card p-4" data-numsOfGames="{{ num_of_games }}" data-numsOfWins="{{ games_won }}" data-numsOfLoses="{{ games_lost }}">
-              <h3 class="text-center mb-4">Win-Loss Stats</h3>
-              <div class="d-flex justify-content-center">
-                <canvas id="game-stats-pie-chart"></canvas>
-              </div>
-            </div>
-          </div>
-          <div class="col-lg-8">
-            <div class="content game-stats-card p-4">
-              <h3 class="text-center mb-4">Leaderboard Ranking</h3>
-              <div class="d-flex justify-content-center">
-                <canvas id="game-stats-line-chart"></canvas>
-              </div>
+      <div class="row justify-content-center g-4 mt-2">
+        <div class="col-lg-4">
+          <div class="content game-stats-card p-4">
+            <h3 class="text-center mb-4"> Win-Loss Stats </h3>
+            <div class="d-flex justify-content-center">
+              <canvas id="game-stats-pie-chart" ></canvas>
             </div>
           </div>
         </div>
-      {% endif %}
+        <div class="col-lg-8">
+          <div class="content game-stats-card p-4">
+            <h3 class="text-center mb-4"> Leaderboard ranking </h3> 
+            <div class="d-flex justify-content-center">
+              <canvas id="game-stats-line-chart" canvas>
+            </div>
+          </div>
+        </div>
+      </div>  
     </div>
   </div>
 </div>

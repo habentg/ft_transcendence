@@ -398,12 +398,33 @@ async function create_chatroom(friend_username) {
   }
 }
 
+async function getUserGameHistory(page_number) {
+  try {
+    const response = await fetch(`/game_history?page=${page_number}`);
+    if (response.ok) {
+      const data = await response.json();
+      document.getElementsByClassName("no-games-message")[0].classList.add("d-none");
+      document.getElementById("game_history").classList.remove("d-none");
+      document.getElementById("game_history").innerHTML = data.history;
 
 
-function drawPieChart() {
+      // console.log("WE heree eeee ");
+      // console.table(data.history);
+      return
+    }
+    throw new Error("Failed to get game history");
+  } catch (error) {
+    console.error("Error: ", error);
+  }
+}
+
+
+async function drawPieChart() {
   if (!document.getElementById("win_lose_stats")) {
     return;
   }
+  // Hit the histrory API to get the data
+  await getUserGameHistory(1);
   const gamesPlayed = parseInt(document.getElementById("win_lose_stats").getAttribute("data-numsOfGames")) || 0;
   const wins = parseInt(document.getElementById("win_lose_stats").getAttribute("data-numsOfWins")) || 0;
   const losses = parseInt(document.getElementById("win_lose_stats").getAttribute("data-numsOfLoses")) || 0;

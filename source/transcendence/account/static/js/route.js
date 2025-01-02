@@ -29,11 +29,9 @@ async function updateUI(path) {
   try {
     showLoadingAnimation(); // Show animation
     await loadContent(`${path}`);
-    console.log("try ===");
   } catch (error) {
     console.error("Error loading page:", error);
   } finally {
-    console.log("finally ===");
     hideLoadingAnimation(); // Hide animation
   }
 }
@@ -66,24 +64,6 @@ async function loadContent(route) {
     });
 
     if (!response.ok) {
-      // may be we will handle other error codes later
-      // if the response is a redirect, then redirect the user to the new location
-      if (response.status === 302) {
-        const data = await response.json();
-        console.log("Redirecting to:", data["redirect"]);
-        history.pushState(null, "", data["redirect"]);
-        await loadContent(data["redirect"]);
-        return;
-      } else if (response.status === 401) {
-        // removing any css js if there is any
-        showErrorMessage(
-          "Unauthorized access, please login to continue",
-          3000,
-          "Unauthorized"
-        );
-        console.log("Unauthorized, asdf asdf asfd");
-        return;
-      }
       throw new Error({
         status: response.status,
         route: route,

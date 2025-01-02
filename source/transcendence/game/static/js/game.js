@@ -1,13 +1,16 @@
-
 async function createGameInDB(game) {
   const startgame_data = {
     player_one: game.players[0].playerName,
     player_two: game.players[1].playerName,
-    type: game.aiFlag ? "AI" : "VERSUS",
+    type: game.aiFlag ? "AI" : "VERSUS"
   };
+  if (game.tournamentFlag) {
+    startgame_data["type"] = "TOURNAMENT";
+    startgame_data["tournament_id"] = `${game.tournament_id}`;
+  }
   console.table(startgame_data);
   try {
-    const response = await fetch("/game_api/", {
+    const response = await fetch("/game/", {
       method: "POST",
       headers: {
         "X-Requested-With": "XMLHttpRequest",
@@ -20,22 +23,23 @@ async function createGameInDB(game) {
       const responseData = await response.json();
       console.log("Game ID: ", responseData.game_id);
       game.game_id = responseData.game_id;
-      if (game.aiFlag)
-        startaiGame(game);
-      else
-        startGame(game);
+      if (game.aiFlag) startaiGame(game);
+      else if (game.tournamentFlag) return;
+      // requestAnimationFrame((timestamp) => gameLoop(this.game, timestamp));
+      else startGame(game);
       return;
     }
     throw new Error("Failed to load gameApiPOSTFunction");
   } catch (error) {
     console.error("ERROR: ", error);
+    return false;
   }
 }
 
 async function updateGameInDB(endgame_data, game_id) {
   console.log("is it comming here --- Endgame data: ", endgame_data);
   try {
-    const response = await fetch(`/game_api/${game_id}/`, {
+    const response = await fetch(`/game/?game_id=${game_id}`, {
       method: "PATCH",
       headers: {
         "X-Requested-With": "XMLHttpRequest",
@@ -75,7 +79,7 @@ function showGameRules() {
 
 async function loadGame() {
   //starting the game by getting game settings and intializingthe struct.
-  // make game obj. 
+  // make game obj.
   // window.game = new Game();
   // const game = window.game;
   const game = new Game();
@@ -91,14 +95,16 @@ async function loadGame() {
   }
 
   if (document.getElementById("startButton")) {
-    document.getElementById("startButton").addEventListener("click", async () => {
-      console.log("Game values before starting the game", game);
-      // console.table(game.players);
+    document
+      .getElementById("startButton")
+      .addEventListener("click", async () => {
+        console.log("Game values before starting the game", game);
+        // console.table(game.players);
 
-      await createGameInDB(game);
-    });
+        await createGameInDB(game);
+      });
   }
-  
+
   if (document.getElementById("aiButton")) {
     document.getElementById("aiButton").addEventListener("click", async () => {
       // document.getElementById("aiButton")
@@ -108,7 +114,6 @@ async function loadGame() {
     });
   }
 }
-
 
 function startGame(game) {
   game.drawFlag = true;
@@ -124,7 +129,6 @@ function startGame(game) {
 function gameLoop(game, timestamp) {
   const fps = 60;
   const interval = 1000 / fps;
-
   // console.log("GameLoop playerHeight", game.playerHeight);
   if (timestamp - game.lastTime >= interval) {
     game.lastTime = timestamp;
@@ -136,7 +140,10 @@ function gameLoop(game, timestamp) {
 
   // Continue the loop if drawFlag is true
   if (game.drawFlag) {
-    requestAnimationFrame((newTimestamp) => gameLoop(game, newTimestamp));
+    requestAnimationFrame((newTimestamp) => {
+    //   checkScreenSize();
+      gameLoop(game, newTimestamp);
+    });
   }
 }
 
@@ -151,7 +158,10 @@ function updategameValues(player1, player2, game) {
   game.ball.y += game.ball.velocityY;
 
   // makes the ball bounce from the walls
-  if ((game.ball.y - game.ball.ballRadius <= 0) || (game.ball.y + game.ball.ballRadius >= game.boardHeight))
+  if (
+    game.ball.y - game.ball.ballRadius <= 0 ||
+    game.ball.y + game.ball.ballRadius >= game.boardHeight
+  )
     game.ball.velocityY *= -1;
 
   // Check ball collision with players
@@ -258,7 +268,13 @@ function drawCapsulePaddle(
 
 function drawBall(game) {
   game.context.beginPath();
-  game.context.arc(game.ball.x, game.ball.y, game.ball.ballRadius, 0, Math.PI * 2);
+  game.context.arc(
+    game.ball.x,
+    game.ball.y,
+    game.ball.ballRadius,
+    0,
+    Math.PI * 2
+  );
   game.context.fillStyle = "#b02c98";
   game.context.fill();
   game.context.closePath();
@@ -286,46 +302,48 @@ function setgameMode(game) {
 
 function initPlayers(game) {
   game.defp1Name = document.getElementById("player1Name").textContent;
+  game.defp2Name = document.getElementById("player2Name").textContent;
+  game.createPlayer(game.defp1Name.slice(1), "left");
   if (game.aiFlag) {
-    game.createPlayer(game.defp1Name, "left");
     game.createPlayer("Artificial Stupidity", "right");
     document.getElementById("player2Name").textContent = "@ AI";
     document.getElementById("player2Name").style.display = "block";
-
   } else if (game.versusFlag) {
-    game.createPlayer(game.defp1Name, "left");
     initializeModal(game);
-    // game.createPlayer(game.defp2Name, "right");
   }
 }
 
-
 // modal to get 2nd player name, need for versus(1v1) game mode.
 function initializeModal(game) {
-
   const modal = secondPlayerNameModal();
 
   document.body.appendChild(modal);
-  modal.querySelector("#submitSecondPlayerNameBtn").addEventListener("click", () => {
-    const secondPlayerName = modal.querySelector("#secondPlayerName").value;
-    if (secondPlayerName) {
-      game.defp2Name = secondPlayerName;
-      document.getElementById("player2Name").textContent = `@ ${secondPlayerName}`;
-      document.getElementById("player2Name").style.display = "block";
-      game.createPlayer(secondPlayerName, "right");
-      modal.remove();
-    } else {
-      const errorMsg = document.getElementById("local-game-error-msg");
-      errorMsg.textContent = "Please enter the name of the second player.";
-      errorMsg.style.display = "block";
-    }
-  });
+  modal
+    .querySelector("#submitSecondPlayerNameBtn")
+    .addEventListener("click", () => {
+      const secondPlayerName = modal.querySelector("#secondPlayerName").value;
+      if (secondPlayerName) {
+        game.defp2Name = secondPlayerName;
+        document.getElementById(
+          "player2Name"
+        ).textContent = `@ ${secondPlayerName}`;
+        document.getElementById("player2Name").style.display = "block";
+        game.createPlayer(secondPlayerName, "right");
+        modal.remove();
+      } else {
+        const errorMsg = document.getElementById("local-game-error-msg");
+        errorMsg.textContent = "Please enter the name of the second player.";
+        errorMsg.style.display = "block";
+      }
+    });
 
-  modal.querySelector("#secondPlayerName").addEventListener("keypress", (event) => {
-    if (event.key === "Enter") {
-      modal.querySelector("#submitSecondPlayerNameBtn").click();
-    }
-  });
+  modal
+    .querySelector("#secondPlayerName")
+    .addEventListener("keypress", (event) => {
+      if (event.key === "Enter") {
+        modal.querySelector("#submitSecondPlayerNameBtn").click();
+      }
+    });
 
   modal.querySelector(".btn-close").addEventListener("click", () => {
     modal.querySelector("#submitSecondPlayerNameBtn").click();
@@ -362,8 +380,7 @@ function updatePaddleVelocities(player1, player2, game) {
         game.ball.velocityX *= 2;
         game.ball.velocityY = 0;
         console.log("Good Parry");
-      } else
-        console.log("Wrong parry");
+      } else console.log("Wrong parry");
       parryCoolDown(player1, game);
     }
     if (game.activeKeys["Numpad0"] && !player2.cooldownFlag) {
@@ -371,8 +388,7 @@ function updatePaddleVelocities(player1, player2, game) {
         ball.velocityX *= -2;
         ball.velocityY = 0;
         console.log("Good Parry");
-      } else
-        console.log("Wrong parry");
+      } else console.log("Wrong parry");
       parryCoolDown(player2, game);
     }
   }
@@ -382,7 +398,8 @@ function isParry(player, game) {
   const parryRange = 30; // Adjust as needed
   const ballNearPlayer =
     player.x < game.boardWidth / 2 // Check which side the player is on
-      ? game.ball.x - game.ball.ballRadius <= player.x + player.width + parryRange // Near Player 1
+      ? game.ball.x - game.ball.ballRadius <=
+        player.x + player.width + parryRange // Near Player 1
       : game.ball.x + game.ball.ballRadius >= player.x - parryRange; // Near Player 2
   const withinVerticalRange =
     game.ball.y + game.ball.ballRadius > player.y &&
@@ -475,7 +492,6 @@ function ballCollision(ball, player, position) {
   }
 }
 
-
 async function resetGame(player1, player2, direction, game) {
   //bring back ball to the middle
   game.resetBall(direction);
@@ -503,10 +519,10 @@ async function resetGame(player1, player2, direction, game) {
     const endgame_stuff = {
       final_score: `${player1.finalScore} - ${player2.finalScore}`,
       outcome: player1.finalScore > player2.finalScore ? "WIN" : "LOSE",
-    }
+    };
     await updateGameInDB(endgame_stuff, game.game_id);
     console.log("Game Over: SHOULD RETURN SETTINGS MENU");
-    
+
     if (document.getElementById("aiButton")) {
       document.getElementById("aiButton").disabled = false;
     }
@@ -537,13 +553,11 @@ function isGameOver(player1, player2, game) {
 
 function resetScores(player1, player2, game) {
   if (player1) {
-    if (player1.score === game.maxScore)
-      player1.gamesWon += 1;
+    if (player1.score === game.maxScore) player1.gamesWon += 1;
     player1.score = 0;
   }
   if (player2) {
-    if (player2.score === game.maxScore)
-      player2.gamesWon += 1;
+    if (player2.score === game.maxScore) player2.gamesWon += 1;
     player2.score = 0;
   }
 }
@@ -557,9 +571,17 @@ function displayGameOver(player1, player2, game) {
     player1.score >= game.maxScore ? player1.playerName : player2.playerName;
   game.context.textAlign = "center"; // Aligns the text horizontally to the center
   game.context.textBaseline = "middle"; // Aligns the text vertically to the center
-  game.context.fillText(`${winner} Wins!`, game.boardWidth / 2, game.boardHeight / 2);
+  game.context.fillText(
+    `${winner} Wins!`,
+    game.boardWidth / 2,
+    game.boardHeight / 2
+  );
 
-  game.context.fillText(`${winner} Wins!`, game.boardWidth / 2, game.boardHeight / 2);
+  game.context.fillText(
+    `${winner} Wins!`,
+    game.boardWidth / 2,
+    game.boardHeight / 2
+  );
 }
 
 function drawLine(game) {
@@ -573,7 +595,6 @@ function drawLine(game) {
   game.context.stroke();
   game.context.setLineDash([]); // Reset line dash to solid
 }
-
 
 //Start of AI
 
@@ -593,7 +614,14 @@ function startaiGame(game) {
   document.getElementById("settingButton").disabled = true;
   document.getElementById("gameRulesButton").disabled = true;
 
-  let aiHelper = { x: 0, y: 0, velocityX: 0, velocityY: 0, aiMovingUp: false, aiMovingDown: false };
+  let aiHelper = {
+    x: 0,
+    y: 0,
+    velocityX: 0,
+    velocityY: 0,
+    aiMovingUp: false,
+    aiMovingDown: false,
+  };
 
   setInterval(() => aiView(game, aiHelper), 1000);
   setInterval(() => aiLogic(game.players[1], game, aiHelper), 50);
@@ -605,8 +633,7 @@ function startaiGame(game) {
 }
 
 function aiLogic(player2, game, aiHelper) {
-  if (!game.aiFlag)
-    return;
+  if (!game.aiFlag) return;
   console.log("Inside AI logic");
   const tolerance = 10; // Allow a small margin of error
 
@@ -749,24 +776,20 @@ function checkScreenSize() {
 }
 
 function changeSetting(game) {
-
   const modal = gameSettingsModal();
 
-  if (document.body.appendChild(modal))
-    console.log("Child appended");
+  if (document.body.appendChild(modal)) console.log("Child appended");
   // if (document.body.classList.add("modal-open"))
   //   console.log("modal open");
 
   console.log("Modal values", modal);
 
   // Event Listeners
-  modal
-    .querySelector("#applyButton")
-    .addEventListener("click", () => {
-      if (applySetting(game) === 0) {
-        closeModal("gameSettingsModal");
-      }
-    });
+  modal.querySelector("#applyButton").addEventListener("click", () => {
+    if (applySetting(game) === 0) {
+      closeModal("gameSettingsModal");
+    }
+  });
 
   modal.addEventListener("keydown", (e) => {
     console.log("keydown log for enter");
@@ -781,7 +804,7 @@ function changeSetting(game) {
     .querySelector(".btn-close")
     .addEventListener("click", () => {
       console.log("keydown log for button close");
-      closeModal("gameSettingsModal")
+      closeModal("gameSettingsModal");
     });
 
   modal.addEventListener("click", (e) => {
@@ -798,7 +821,6 @@ function changeSetting(game) {
 
   // const paddleSpeedInput = parseInt(document.getElementById("paddleSpeed").value);
 
-
   // document.getElementById("settingsMenu").style.display = "none";
   // console.log("Settings Applied: ", {
   //   paddleSpeed,
@@ -814,14 +836,15 @@ function changeSetting(game) {
 }
 
 function applySetting(game) {
-
   console.log("Game values inside apply Setting", game);
   const MIN_PADDLE_SPEED = 1,
     MAX_PADDLE_SPEED = 10;
   const MIN_MAX_SCORE = 1,
     MAX_MAX_SCORE = 20;
 
-  const paddleSpeedInput = parseInt(document.getElementById("paddleSpeed").value);
+  const paddleSpeedInput = parseInt(
+    document.getElementById("paddleSpeed").value
+  );
   const maxScoreInput = parseInt(document.getElementById("maxScore").value);
   const slowServeInput = document.getElementById("slowServe").checked;
   const parryInput = document.getElementById("parryMode").checked;
@@ -831,8 +854,13 @@ function applySetting(game) {
   // errorContainer.innerHTML = ""; // Clear existing messages
 
   console.log("PaddleSpeedInput values from parseINT", paddleSpeedInput);
-  if (paddleSpeedInput < MIN_PADDLE_SPEED || paddleSpeedInput > MAX_PADDLE_SPEED) {
-    displayError({ error_msg: `Paddle Speed must be between ${MIN_PADDLE_SPEED} and ${MAX_PADDLE_SPEED}.` });
+  if (
+    paddleSpeedInput < MIN_PADDLE_SPEED ||
+    paddleSpeedInput > MAX_PADDLE_SPEED
+  ) {
+    displayError({
+      error_msg: `Paddle Speed must be between ${MIN_PADDLE_SPEED} and ${MAX_PADDLE_SPEED}.`,
+    });
     // errorContainer.innerHTML = 'Invalid Values ....';
     return 1;
     // console.log("Inside the if statement of paddleSpeed error");
@@ -840,7 +868,9 @@ function applySetting(game) {
     //   `Paddle Speed must be between ${MIN_PADDLE_SPEED} and ${MAX_PADDLE_SPEED}.`);
   }
   if (maxScoreInput < MIN_MAX_SCORE || maxScoreInput > MAX_MAX_SCORE) {
-    displayError({ error_msg: `Winning Score must be between ${MIN_MAX_SCORE} and ${MAX_MAX_SCORE}.` });
+    displayError({
+      error_msg: `Winning Score must be between ${MIN_MAX_SCORE} and ${MAX_MAX_SCORE}.`,
+    });
     // errorContainer.innerHTML = 'Invalid Values ....';
     return 1;
     // errors.push(
@@ -865,8 +895,9 @@ function applySetting(game) {
   return 0;
 }
 
-loadGame();
+if (window.location.href.includes("/game")) {
+  loadGame();
+  window.addEventListener("resize", checkScreenSize);
+}
 
-checkScreenSize();
-
-window.addEventListener("resize", checkScreenSize);
+// checkScreenSize();

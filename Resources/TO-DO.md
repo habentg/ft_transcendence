@@ -16,6 +16,7 @@
 
 ## ******************************* Game related TODO list **************************
 1. player names should be displayed before clicking start............................................................-> DONE!
+2. modals issues --------------- HIGH PRIORITY!!!!!!!!!!!!!!!
 
 ## ******************************* Real-Time (chat, notification, friendship) TODO list **************************
 1. blocking/unblocking, game invitation through chat .................................................................DONE!
@@ -39,4 +40,4 @@
 
 # ****=============================================************ Testing case ***********=======================================*******
 1. input length limiting in ALL input fields ------------------------- NOT TESTED!
-2. 
+2. Uplading pfp is not working (Front-end Issue)--------------------------------------NOT FIXED!
