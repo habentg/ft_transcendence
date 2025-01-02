@@ -70,7 +70,7 @@ function updateProfilePic() {
     .addEventListener("click", () => closeModal("profile-pic-modal"));
   updatePfpModal
     .querySelector("#update-profile-pic-btn")
-    .addEventListener("click", handleUpload);
+    .addEventListener("click", () => handleUpload());
 
   updatePfpModal.addEventListener("click", (e) => {
     if (e.target === updatePfpModal) closeModal("profile-pic-modal");
@@ -111,7 +111,7 @@ async function handleUpload() {
     // using FormData to send the file - browser will set the correct headers
     const formData = new FormData();
     formData.append("profile_picture", profilePicFile);
-    const response = await fetch("/update_profile/", {
+    const response = await fetch("/update_profile/", { 
       method: "PATCH",
       headers: {
         "X-CSRFToken": await getCSRFToken(),
@@ -125,7 +125,7 @@ async function handleUpload() {
       closeModal("profile-pic-modal");
       // update the user info in the DOM
       const responseData = await response.json();
-      await updateUI(`/profile/${responseData.username}`);
+      await updateUI(`/profile/${responseData.username}`, false);
       updateNavBar(true);
       showSuccessMessage("Profile Picture updated successfully");
     } else {
