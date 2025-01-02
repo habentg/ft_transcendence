@@ -1,4 +1,4 @@
-async function createTournamentinDB() {
+async function createTournamentinDB(tournament_type) {
 	try {
 		const response = await fetch("/tournament/", {
 			method: "POST",
@@ -7,6 +7,7 @@ async function createTournamentinDB() {
 				"X-CSRFToken": await getCSRFToken(),
 				"Content-Type": "application/json",
 			},
+			body: JSON.stringify({type: tournament_type}),
 		});
 		const responseData = await response.json();
 		if (response.ok) {
@@ -285,7 +286,7 @@ async function createTournamentinDB() {
 				console.log("Players:", this.playersNames);
 				if (this.playersNames.length === parseInt(maxPlayerNumbers)) {
 					console.log("Good to go:", this.playersNames);
-					const tournament_id = await createTournamentinDB();
+					const tournament_id = await createTournamentinDB(this.playersNames.length);
 					if (tournament_id != 0)
 						document.getElementById('background').setAttribute('data-tournamentId', tournament_id);
 					else

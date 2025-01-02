@@ -9,7 +9,8 @@ from game.views import *
 
 urlpatterns = [
     re_path(r'^game/?$', GameView.as_view(), name='game'),
+    re_path(r'^game_history/?$', PlayerGameHistoryView.as_view(), name='game_history'),
     re_path(r'^tournament/?$', TournamentView.as_view(), name='tournament'),
-    # re_path(r'^retrieve_tournament/?$', TournamentRetrievalView.as_view(), name='tournament'),
+    re_path(r'^retrieve_tournament/?$', TournamentRetrievalView.as_view(), name='tournament_retrieval'),
     re_path(r'^leaderboard/?$', LeaderBoardView.as_view(), name='leaderboard'),
 ]

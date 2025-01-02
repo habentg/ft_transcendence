@@ -3,13 +3,12 @@ async function createGameInDB(game) {
   const startgame_data = {
     player_one: game.players[0].playerName,
     player_two: game.players[1].playerName,
+    type: game.aiFlag ? "AI" : "VERSUS"
   };
   if (game.tournamentFlag) {
     startgame_data["type"] = "TOURNAMENT";
     startgame_data["tournament_id"] = `${game.tournament_id}`;
   }
-  else
-    startgame_data["type"] = game.aiFlag ? "AI" : "VERSUS";
   console.table(startgame_data);
   try {
     const response = await fetch("/game/", {
@@ -276,16 +275,15 @@ function setgameMode(game) {
 
 function initPlayers(game) {
   game.defp1Name = document.getElementById("player1Name").textContent;
+  game.defp2Name = document.getElementById("player2Name").textContent;
+  game.createPlayer(game.defp1Name.slice(1), "left");
   if (game.aiFlag) {
-    game.createPlayer(game.defp1Name, "left");
     game.createPlayer("Artificial Stupidity", "right");
     document.getElementById("player2Name").textContent = "@ AI";
     document.getElementById("player2Name").style.display = "block";
 
   } else if (game.versusFlag) {
-    game.createPlayer(game.defp1Name, "left");
     initializeModal(game);
-    // game.createPlayer(game.defp2Name, "right");
   }
 }
 

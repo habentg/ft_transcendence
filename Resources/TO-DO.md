@@ -40,4 +40,4 @@
 
 # ****=============================================************ Testing case ***********=======================================*******
 1. input length limiting in ALL input fields ------------------------- NOT TESTED!
-2. 
+2. Uplading pfp is not working (Front-end Issue)--------------------------------------NOT FIXED!
