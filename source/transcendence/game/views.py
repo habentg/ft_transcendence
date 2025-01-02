@@ -72,18 +72,27 @@ class GameView(APIView, BaseView):
             if not game_id:
                 return Response({'error': 'Game ID is required'}, status=status.HTTP_400_BAD_REQUEST)
             game = Game.objects.get(id=game_id)
-            serializer = GameSerializer(instance=game, data=request.data, partial=True)
+            data = request.data
+            print("game data: ", data, flush=True)
+            update_data = {
+                'final_score': f"{data.get('player1_score')} - {data.get('player2_score')}",
+                'outcome': 'WIN'
+            }
+            if request.user.username == data.get('player1_username') and data.get('player1_score') < data.get('player2_score'):
+                update_data['outcome'] = 'LOSE'
+                request.user.rating -= 5
+                request.user.save()
+            elif request.user.username == data.get('player2_username') and data.get('player1_score') > data.get('player2_score'):
+                update_data['outcome'] = 'LOSE' 
+                request.user.rating -= 5
+                request.user.save()
+            elif request.user.username == data.get('player2_username') or request.user.username == data.get('player1_username'):
+                request.user.rating += 5
+                request.user.save()
+            serializer = GameSerializer(instance=game, data=update_data, partial=True)
             print("request data: ", request.data, flush=True)
             if serializer.is_valid():
-                updated_game = serializer.save()
-                if updated_game.player_one == request.user.username:
-                     if updated_game.outcome == "WIN":
-                          request.user.rating += 5
-                          request.user.save()
-                     elif updated_game.outcome == "LOSE":
-                          request.user.rating -= 5
-                          request.user.save()
-                return Response({'game_id': updated_game.id}, status=status.HTTP_200_OK)
+                return Response({'game_id': serializer.save().id}, status=status.HTTP_200_OK)
             return Response({'error': 'Invalid data'}, status=status.HTTP_400_BAD_REQUEST)
         except Game.DoesNotExist:
             return Response({'error': 'Game not found'}, status=status.HTTP_404_NOT_FOUND)
@@ -91,47 +100,53 @@ class GameView(APIView, BaseView):
             return Response({'error': 'An error occurred'}, status=status.HTTP_404_NOT_FOUND)
 
 class PlayerGameHistoryView(APIView):
-	authentication_classes = [JWTCookieAuthentication]
-	permission_classes = [IsAuthenticated]
-	throttle_classes = []
-	template_name = 'game/game_history.html'
+    authentication_classes = [JWTCookieAuthentication]
+    permission_classes = [IsAuthenticated]
+    throttle_classes = []
+    template_name = 'game/game_history.html'
 
-	def handle_exception(self, exception):
-		if isinstance(exception, AuthenticationFailed):
-			if 'access token is invalid but refresh token is valid' in str(exception):
-				response = HttpResponseRedirect(self.request.path)
-				response.set_cookie('access_token', generate_access_token(self.request.COOKIES.get('refresh_token')), httponly=True, samesite='Lax', secure=True)
-				return response
-			signin_url = reverse('signin_page')
-			params = urllib.parse.urlencode({'next': self.request.path})
-			response = HttpResponseRedirect(f'{signin_url}?{params}')
-			response.delete_cookie('access_token')
-			response.delete_cookie('refresh_token')
-			return response
-		return super().handle_exception(exception)
+    def handle_exception(self, exception):
+        if isinstance(exception, AuthenticationFailed):
+            if 'access token is invalid but refresh token is valid' in str(exception):
+                response = HttpResponseRedirect(self.request.path)
+                response.set_cookie('access_token', generate_access_token(self.request.COOKIES.get('refresh_token')), httponly=True, samesite='Lax', secure=True)
+                return response
+            signin_url = reverse('signin_page')
+            params = urllib.parse.urlencode({'next': self.request.path})
+            response = HttpResponseRedirect(f'{signin_url}?{params}')
+            response.delete_cookie('access_token')
+            response.delete_cookie('refresh_token')
+            return response
+        return super().handle_exception(exception)
 	
-	def get(self, request, **kwargs):
-		try:
-			games = Game.objects.filter(player_one=request.user.username)
-			paginator = Paginator(games, 5)
-			page_number = request.GET.get('page', 1)
-			try:
-				games_page = paginator.page(page_number)
-			except PageNotAnInteger:
-				games_page = paginator.page(1)
-			except EmptyPage:
-				games_page = paginator.page(paginator.num_pages)
-			return Response({
-				'history': render_to_string(self.template_name, {'games': GameSerializer(games_page.object_list, many=True).data,
-                'current_page': games_page.number,
-                'next':  games_page.next_page_number() if games_page.has_next() else 0,
-				'previous': games_page.previous_page_number() if games_page.has_previous() else 0,
-				'num_pages': paginator.num_pages,
-				'total_games': games.count(),
-                }),
-				})
-		except Exception as e:
-			return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
+    def get(self, request, **kwargs):
+        try:
+            player_username = request.GET.get('player', None)
+            player = Player.objects.get(username=player_username)
+            games = Game.objects.filter(Q(player_one=player.username) | Q(player_two=player.username)).order_by('-start_time')
+            paginator = Paginator(games, 5)
+            page_number = request.GET.get('page', 1)
+            try:
+                games_page = paginator.page(page_number)
+            except PageNotAnInteger:
+                games_page = paginator.page(1)
+            except EmptyPage:
+                games_page = paginator.page(paginator.num_pages)
+            return Response({
+                    'history': render_to_string(self.template_name, 
+                    {
+                        'games': GameSerializer(games_page.object_list, many=True).data,
+                        'player': player.username,
+                        'current_page': games_page.number,
+                        'next':  games_page.next_page_number() if games_page.has_next() else 0,
+                        'previous': games_page.previous_page_number() if games_page.has_previous() else 0,
+                        'num_pages': paginator.num_pages,
+                        'total_games': games.count(),
+                    }),
+                })
+        except Exception as e:
+            print("error: ", str(e), flush=True)
+            return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
 class LeaderBoardView(APIView, BaseView):
     authentication_classes = [JWTCookieAuthentication]

@@ -39,7 +39,7 @@ async function createGameInDB(game) {
 async function updateGameInDB(endgame_data, game_id) {
   console.log("is it comming here --- Endgame data: ", endgame_data);
   try {
-    const response = await fetch(`/game/?game_id=${game_id}`, {
+    const response = await fetch(`/game?game_id=${game_id}`, {
       method: "PATCH",
       headers: {
         "X-Requested-With": "XMLHttpRequest",
@@ -48,14 +48,15 @@ async function updateGameInDB(endgame_data, game_id) {
       },
       body: JSON.stringify(endgame_data),
     });
+    const responseData = await response.json();
+    console.log("responseData: ", responseData);
     if (response.ok) {
-      const responseData = await response.json();
-      console.log(responseData);
+      console.log("successfully updated the game id : ", game_id);
       return;
     }
-    throw new Error("Failed to load gameApiPATCHFunction");
+    throw new Error(`Failed to update game with id: ${game_id} : ${response.status} : ${response.error}`);
   } catch (error) {
-    console.error("ERROR: ", error);
+    console.error(error);
   }
 }
 
@@ -303,9 +304,9 @@ function setgameMode(game) {
 function initPlayers(game) {
   game.defp1Name = document.getElementById("player1Name").textContent;
   game.defp2Name = document.getElementById("player2Name").textContent;
-  game.createPlayer(game.defp1Name.slice(1), "left");
+  game.createPlayer(game.defp1Name.slice(2), "left");
   if (game.aiFlag) {
-    game.createPlayer("Artificial Stupidity", "right");
+    game.createPlayer("AI Bot", "right");
     document.getElementById("player2Name").textContent = "@ AI";
     document.getElementById("player2Name").style.display = "block";
   } else if (game.versusFlag) {
@@ -516,10 +517,16 @@ async function resetGame(player1, player2, direction, game) {
   if (isGameOver(player1, player2, game)) {
     game.drawFlag = false;
     game.aiFlag = false;
+    console.log("player1; ", player1);
     const endgame_stuff = {
-      final_score: `${player1.finalScore} - ${player2.finalScore}`,
-      outcome: player1.finalScore > player2.finalScore ? "WIN" : "LOSE",
+      player1_username: player1.playerName,
+      player2_username: player2.playerName,
+      player1_score: player1.finalScore,
+      player2_score: player2.finalScore,
     };
+    console.log("Endgame stuff##########################");
+    console.table(endgame_stuff);
+    console.log("Endgame stuff##########################");
     await updateGameInDB(endgame_stuff, game.game_id);
     console.log("Game Over: SHOULD RETURN SETTINGS MENU");
 
