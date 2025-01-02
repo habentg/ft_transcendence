@@ -23,6 +23,4 @@ source/transcendence/profile_pics/
 **/profile_pics/
 
 # ignore secret dir
-secrets/*
-secrets/transcendence_cert.crt
-secrets/transcendence_key.pem
+**/secrets/

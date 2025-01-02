@@ -53,6 +53,9 @@ function handleFriendRequestRecieved(data) {
       sender: data.sender,
     }
     createToast(content);
+    const notification_indicator = document.getElementById("notification-on");
+    if (notification_indicator)
+      notification_indicator.classList.remove("d-none");
     return;
   }
   sendFriendRequestBtn.remove();

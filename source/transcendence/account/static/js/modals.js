@@ -728,5 +728,58 @@ function showErrorMessage(message, timeout = 3000, errorHeader=`Error`) {
   }, timeout);
 }
 
-// call the function to show the error message: TEST
-// showErrorMessage("This is an error message");
+function gameRulesModal() {
+  const existingModal = document.getElementById("gameRulesModal");
+  if (existingModal) {
+    existingModal.remove();
+  }
+
+  const modal = document.createElement("div");
+  modal.id = "gameRulesModal";
+  modal.className = "modal fade show";
+  modal.style.display = "block";
+  modal.innerHTML = `
+    <div class="modal-dialog modal-dialog-centered modal-md">
+      <div class="modal-content text-white">
+        <div class="modal-header border-0 py-3">
+          <h5 class="modal-title">
+            <i class="fas fa-book me-2"></i> Game Rules
+          </h5>
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body px-4 py-3">
+          <div class="mb-3">
+            <i class="fas fa-gamepad me-2"></i>
+            <strong>Player 1 (Left):</strong>
+            <ul class="ms-4">
+              <li>Use <span class="badge bg-secondary">W</span> to move up and <span class="badge bg-secondary">S</span> to move down.</li>
+              <li>If <strong>Parry</strong> is enabled, press <span class="badge bg-secondary">Space</span> precisely when the ball hits your paddle to perform a parry.</li>
+            </ul>
+          </div>
+          <div class="mb-3">
+            <i class="fas fa-gamepad me-2"></i>
+            <strong>Player 2 (Right):</strong>
+            <ul class="ms-4">
+              <li>Use <span class="badge bg-secondary">↑</span> and <span class="badge bg-secondary">↓</span> to move up and down.</li>
+              <li>If <strong>Parry</strong> is enabled, press <span class="badge bg-secondary">0</span> precisely when the ball hits your paddle to perform a parry.</li>
+            </ul>
+          </div>
+          <div class="mb-3">
+            <i class="fas fa-gamepad me-2"></i>
+            <strong>Parry Mode ON</strong>
+            <p class="ms-4">Parry mode allows you to powershot ball back to your opponent by pressing the correct key at the right time.</p>
+          </div>
+          <div>
+            <i class="fas fa-info-circle me-2"></i>
+            <strong>Goal:</strong>
+            <p class="ms-4">Try to score points by getting the ball past your opponent! <br> The first player to reach the score limit wins the game.</p> 
+          </div>
+        </div>
+        <div class="modal-footer border-0">
+          <button type="button" class="btn btn-secondary closeButton" data-bs-dismiss="modal">Close</button>
+        </div>
+      </div>
+    </div>
+  `;
+  return modal;
+}
