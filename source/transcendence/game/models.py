@@ -1,5 +1,4 @@
 from django.db import models
-from account.models import Player
 
 """ table for game """
 class Game(models.Model):
@@ -21,14 +20,19 @@ class Game(models.Model):
 	type = models.CharField(max_length=20, choices=GAME_TYPE, default='AI')
 	outcome = models.CharField(max_length=20, choices=END_RESULT, default='STARTED')
 	start_time = models.DateTimeField(auto_now_add=True)
+	tournament_id = models.BigIntegerField(null=True, blank=True, default=None)
 
 	class Meta:
 		db_table = 'game_table'
 		ordering = ['id']
 
+	@property
+	def get_formatted_start_time(self, obj):
+		return "dsfsdfdsfsdafasdf"
 
 class Tournament(models.Model):
 	id = models.BigAutoField(primary_key=True)
+	type = models.IntegerField(default=4)
 	games = models.ManyToManyField(Game)
 
 	class Meta:

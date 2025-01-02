@@ -402,6 +402,10 @@ class TwoFactorSetUpToggle(APIView):
 			return JsonResponse({'tfa_enabled': player.tfa}, status=status.HTTP_200_OK)
 		return JsonResponse({'error': 'User not found'}, status=status.HTTP_404_NOT_FOUND)
 
+from django.core.paginator import Paginator
+from rest_framework.pagination import PageNumberPagination
+from others.views import SearchPaginator
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 # template_name for viewing player profile
 class PlayerProfileView(APIView, BaseView):
 	authentication_classes = [JWTCookieAuthentication]
@@ -442,6 +446,15 @@ class PlayerProfileView(APIView, BaseView):
 				'is_self': False,
 			}
 		else:
+			games = Game.objects.filter(player_one=queried_user.username)
+			paginator = Paginator(games, 5)  # 5 games per page
+			page_number = request.GET.get('page', 1)  # Get the page number from the request (default to 1)
+			try:
+				games_page = paginator.page(page_number)
+			except PageNotAnInteger:
+				games_page = paginator.page(1)
+			except EmptyPage:
+				games_page = paginator.page(paginator.num_pages)
 			data = {
 				'player': PlayerSerializer(queried_user).data,
 				'is_friend': request.user.friend_list.friends.filter(username=queried_user.username).exists(),
@@ -449,10 +462,10 @@ class PlayerProfileView(APIView, BaseView):
 				'am_i_requested': request.user.received_requests.filter(sender=queried_user).exists(),
 				'is_self': queried_user == request.user,
 				'num_of_friends': queried_user.friend_list.friends.count(),
-				'games': GameSerializer(Game.objects.filter(player_one=queried_user), many=True).data,
-				'num_of_games': Game.objects.filter(player_one=queried_user).count(),
-				'games_won': Game.objects.filter(player_one=queried_user, outcome='WIN').count(),
-				'games_lost': Game.objects.filter(player_one=queried_user, outcome='LOSE').count(),
+				'games': GameSerializer(games_page.object_list, many=True).data,
+				'num_of_games': games.count(),
+				'games_won': games.filter(outcome='WIN').count(),
+				'games_lost': games.filter(outcome='LOSE').count(),
 			}
 		return data
 

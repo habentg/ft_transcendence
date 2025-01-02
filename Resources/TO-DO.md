@@ -49,3 +49,4 @@
 6. Keyevent not stopping after a game...............................................................................................FIXED
 7. username should not have invalid characters such as quotes (resulting to database problems)
 8. Send OTP button doesnt work in forgot password
+2. Uplading pfp is not working (Front-end Issue)--------------------------------------NOT FIXED!

@@ -66,82 +66,23 @@
         </div>
 
         <!-- Game History Section -->
+        {% if num_of_games > 0 %}
         <div class="col-lg-8">
           <div class="content game-history-card" style="height: 100%;">
             <h3 class="text-center mb-4">Game History</h3>
-            {% if games %}
-              <div class="table-responsive">
-                <table class="table table-hover position-relative">
-                  <thead>
-                    <tr>
-                      <div>
-                        <th>Match</th>
-                        <th>Result</th>
-                        <th>Score</th>
-                        <th>Points</th>
-                        <th>Date</th>
-                        <th>Type</th>
-                      </div>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {% for game in games %}
-                      <tr>
-                        <td>
-                          <div>
-                            <span class="player-name">VS {{ game.player_two }}</span>
-                          </div>
-                        </td>
-                        <td>
-                          <div class="results">
-                            {% if game.outcome == 'WIN' %}
-                              <span class="text-success">Win</span>
-                            {% elif game.outcome == 'LOSE' %}
-                              <span class="text-danger">Lose</span>
-                            {% else %}
-                              <span class="text-warning">Cancelled</span>
-                            {% endif %}
-                          </div>
-                        </td>
-                        <td>
-                          <div>
-                            <span class="score-res">{{ game.final_score }}</span>
-                          </div>
-                        </td>
-                        <td>
-                          <div>
-                            <span class="points-badge">+5</span>
-                          </div>
-                        </td>
-                        <td>
-                          <div>
-                            <span class="date">{{ game.start_time }}</span>
-                            <!-- <span class="date">11/11/2025 19:55</span> -->
-                          </div>
-                        </td>
-                        <td>
-                          <div>
-                            <span class="game-type">{{ game.type }}</span>
-                          </div>
-                        </td>
-                      </tr>
-                    {% endfor %}
-                  </tbody>
-                </table>
+              <div class="text-center no-games-message d-flex flex-column">
+                <div class="d-flex flex-column align-items-center text-center px-3">
+                  <i class="fas fa-gamepad mb-3" style="font-size: 2rem; color: #6c757d;"></i>
+                  <p class="fw-bold mb-2 text-wrap" style="font-size: 1.5rem; color: #6c757d;">Fetching Game History......</p>
+                </div>
               </div>
-              <!-- Pagination -->
-              <div class="pagination-size d-flex justify-content-center gap-2 mt-4">
-                <button id="prev-page" class="btn btn-outline-light btn-sm" disabled>
-                  <i class="fas fa-chevron-left"></i>
-                </button>
-                <span id="page-numbers" class="d-flex gap-2">
-                <span class="d-flex justify-content-center mt-1 "> <h6 style="color: #84ddfc;">1 of 1</h6> </span>
-                </span>
-                <button id="next-page" class="btn btn-outline-light btn-sm">
-                  <i class="fas fa-chevron-right"></i>
-                </button>
-              </div>
-            {% else %}
+              <div id="game_history" class="d-none"></div>
+          </div>
+        </div>
+        {% else %}
+        <div class="col-lg-8">
+          <div class="content game-history-card" style="height: 100%;">
+            <h3 class="text-center mb-4">Game History</h3>
               <div class="text-center no-games-message d-flex flex-column">
                 <div class="d-flex flex-column align-items-center text-center px-3">
                   <i class="fas fa-gamepad mb-3" style="font-size: 2rem; color: #6c757d;"></i>
@@ -149,9 +90,10 @@
                   <p class="text-wrap" style="font-size: 1rem; color: #6c757d;">Play games to see your history here!</p>
                 </div>
               </div>
-            {% endif %}
+              <div id="game_history" class="d-none"></div>
           </div>
         </div>
+        {% endif %}
       </div>
 
       <!-- new div for game stats with a pie chart and line graph in it side by side -->

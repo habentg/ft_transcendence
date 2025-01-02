@@ -304,6 +304,10 @@ document.querySelectorAll(".navbar-nav .nav-link").forEach(function (navLink) {
 
 /* notification dropdown */
 async function handleNotificationBellClick(action) {
+  if (document.getElementById("notificationDropdown").getAttribute("aria-expanded") === "flase") {
+    console.log("notification dropdown is already expanded");
+    return;
+  }
   //check if its expanded - if its simply return
   // Fetch notifications
   const response = await fetch("/notifications/", {
@@ -313,21 +317,25 @@ async function handleNotificationBellClick(action) {
       action: `${action}`,
     },
   });
-
+  
   const notification_ul = document.getElementById("notification_ul");
   if (response.status === 404) {
     notification_ul.innerHTML = `
-      <p class="text-center my-2" style="color:white;">No notifications</p>
+    <p class="text-center my-2" style="color:white;">No notifications</p>
     `;
     return console.log("No notifications");
   }
   if (response.ok) {
     const data = await response.json();
     notification_ul.innerHTML = data.html;
-    console.log("data.html:", data.html);
+    // console.log("data.html:", data.html);
+    const notification_indicator = document.getElementById("notification-on");
+    if (notification_indicator)
+    notification_indicator.classList.add("d-none");
   } else {
     console.error("Failed to fetch notifications:", response.statusText);
   }
+
 }
 
 // Creates a toast notification that show a message passed as an argument

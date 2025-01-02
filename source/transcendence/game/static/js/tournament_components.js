@@ -1,10 +1,10 @@
 //Returns a tournament map html
 function createTournamentMap() {
-	const tournamentWrapper = document.createElement("div");
-	tournamentWrapper.className = "tournamentWrapper";
-	tournamentWrapper.id = "tournamentWrapper";
-  
-	tournamentWrapper.innerHTML = `
+  const tournamentWrapper = document.createElement("div");
+  tournamentWrapper.className = "tournamentWrapper";
+  tournamentWrapper.id = "tournamentWrapper";
+
+  tournamentWrapper.innerHTML = `
 					<h1 class="text-center mb-5">Tournament Map</h1>
 					<div class="row d-flex position-relative ">
 						<!-- First Round -->
@@ -198,17 +198,16 @@ function createTournamentMap() {
 					</button>
 				  </div>
 		`;
-  
-	return tournamentWrapper;
-  }
-  
-  //this returns canvas for the ping-pong game
-  function createGameCanvas() {
-	const gameBoard = document.createElement("div");
-	gameBoard.id = "tableBoard";
-	gameBoard.className = "justify-content-center";
-  
-	gameBoard.innerHTML = `
+
+  return tournamentWrapper;
+}
+
+//this returns canvas for the ping-pong game
+function createGameCanvas() {
+  const gameBoard = document.createElement("div");
+  gameBoard.id = "tournamentGameBoard";
+  gameBoard.className = "justify-content-center";
+  gameBoard.innerHTML = `
 		<div class="gamePlayers d-flex justify-content-between">
 			<div id="player1" class="col-12 col-md-6 text-center d-none">
 				<h3 id="player1Name" class="playerNames"></h3> 
@@ -221,16 +220,16 @@ function createTournamentMap() {
 			<canvas id="board" class="mt-2 shadow"></canvas>
 		</div>
 		`;
-  
-	return gameBoard;
-  }
-  
-  //Displays modal displaying who is going to play next in upcoming match
-  function nextMatchModal(player1, player2) {
-	console.log(player1, player2);
-	const existingModal = document.getElementById("nextMatch");
-	if (existingModal) existingModal.remove();
-	const modalHTML = `
+
+  return gameBoard;
+}
+
+//Displays modal displaying who is going to play next in upcoming match
+function nextMatchModal(player1, player2) {
+  console.log(player1, player2);
+  const existingModal = document.getElementById("nextMatch");
+  if (existingModal) existingModal.remove();
+  const modalHTML = `
 	  <div class="modal fade" id="nextMatch" tabindex="-1" role="dialog" aria-labelledby="modalTitle" aria-hidden="true">
 		<div class="modal-dialog modal-dialog-centered modal-md" role="document">
 		  <div class="card modal-card shadow-lg  position-relative">
@@ -244,59 +243,49 @@ function createTournamentMap() {
 		</div>
 	  </div>
 	  `;
-  
-	// Append the modal to the body
-	const body = document.querySelector("body");
-	const modalContainer = document.createElement("div");
-	modalContainer.innerHTML = modalHTML;
-	// @ts-ignore
-	body.appendChild(modalContainer);
-  // @ts-ignore
-	const modal = new bootstrap.Modal(document.getElementById("nextMatch"));
-	modal.show();
-  }
-  
-  //displays after every game to show who won and who moves on the next round
-  function gameWinnerModal(playerName) {
-	// Create the modal structure
-	console.log(playerName);
-	const existingModal = document.getElementById("gameClosing");
-	if (existingModal) existingModal.remove();
-	const modalHTML = `
+  // Append the modal to the body
+//   const body = document.querySelector("body");
+  const modalContainer = document.createElement("div");
+  modalContainer.innerHTML = modalHTML;
+  document.body.appendChild(modalContainer);
+  const modal = new bootstrap.Modal(document.getElementById("nextMatch"));
+  modal.show();
+}
+
+//displays after every game to show who won and who moves on the next round
+function gameWinnerModal(playerName) {
+  // Create the modal structure
+  console.log(playerName);
+  const existingModal = document.getElementById("gameClosing");
+  if (existingModal) existingModal.remove();
+  const modalHTML = `
 	  <div class="modal fade" id="gameClosing" tabindex="-1" role="dialog" aria-labelledby="modalTitle" aria-hidden="true">
 		  <div class="modal-dialog modal-dialog-centered modal-md" role="document">
 			  <div class="card modal-card shadow-lg position-relative">
-				  <button type="button" 
-						  class="btn-close btn-close-white position-absolute top-0 end-0 m-2" 
-						  onclick="closeModal('gameClosing')" 
-						  aria-label="Close"></button>
 				  <div class="card-body text-center"> 
 					  <h3 class="modal-title" id="modalTitle2"> ${playerName} wins the game! </h3>
 					  <p class="modal-text winner-text mt-3"> ${playerName} passes to the next round </p>
-					  <button class="btn btn-secondary btn-sm modal-continue mt-4" onclick="closeModal('gameClosing')">CONTINUE</button>
 				  </div>
 			  </div>
 		  </div>
 	  </div>
 	  `;
-  
-	// Append the modal to the body
-	const body = document.querySelector("body");
-	const modalContainer = document.createElement("div");
-	modalContainer.innerHTML = modalHTML;
-	if (body) body.appendChild(modalContainer);
-  
-	// @ts-ignore
-	const modal = new bootstrap.Modal(document.getElementById("gameClosing"));
-	modal.show();
-  }
-  
-  //This is for the final end of the tournament to display the winner and second place
-  function tournamentClosingModal(winner, secondplace) {
-	// Create the modal structure
-	const existingModal = document.getElementById("congratsModal");
-	if (existingModal) existingModal.remove();
-	const modalHTML = `
+
+  // Append the modal to the body
+  const body = document.querySelector("body");
+  const modalContainer = document.createElement("div");
+  modalContainer.innerHTML = modalHTML;
+  if (body) body.appendChild(modalContainer);
+  const modal = new bootstrap.Modal(document.getElementById("gameClosing"));
+  modal.show();
+
+}
+
+//This is for the final end of the tournament to display the winner and second place
+function tournamentClosingModal(winner, secondplace) {
+  const existingModal = document.getElementById("congratsModal");
+  if (existingModal) existingModal.remove();
+  const modalHTML = `
 	  <div class="modal fade" id="congratsModal" tabindex="-1" role="dialog" aria-labelledby="modalTitle" aria-hidden="true">
 		  <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
 			  <div class="card modal-card position-relative">
@@ -315,16 +304,93 @@ function createTournamentMap() {
 			  </div>
 		  </div>
 	  </div>`;
+
+  // Append the modal to the body
+  const body = document.querySelector("body");
+  const modalContainer = document.createElement("div");
+  modalContainer.innerHTML = modalHTML;
+  if (body) body.appendChild(modalContainer);
+
+  // Show the modal (requires Bootstrap JS to work)
+  const modal = new bootstrap.Modal(document.getElementById("congratsModal"));
+  modal.show();
+}
+
+function updateTournamentMapAfterFinal(tournamentContainer, tournamentElement) {
+  const continueButton = tournamentElement.querySelector(".continueButton");
+  continueButton.textContent = "Go to Home Page";
+  continueButton.addEventListener("click", () => updateUI("/home"));
+  // Clone the continue button
+  const restartButton = continueButton.cloneNode(true);
+  restartButton.textContent = "Restart Tournament";
+  restartButton.classList.remove("continueButton");
+  restartButton.classList.add("restartButton");
+  restartButton.style.marginLeft = "10px"; // Add space between buttons
+  restartButton.style.backgroundColor = "#007bff"; // Add blue color
+  restartButton.addEventListener("click", () => updateUI("/tournament"));
+  // Insert restart button after continue button
+  continueButton.insertAdjacentElement("afterend", restartButton);
+  // Insert restart button after continue button
+  continueButton.insertAdjacentElement("afterend", restartButton);
+  if (tournamentContainer) tournamentContainer.appendChild(tournamentElement);
+}
+
+// function tournamentGameScreenSize() {
+// 	const MIN_WINDOW_WIDTH = 820;
+// 	const MIN_WINDOW_HEIGHT = 700;
   
-	// Append the modal to the body
-	const body = document.querySelector("body");
-	const modalContainer = document.createElement("div");
-	modalContainer.innerHTML = modalHTML;
-	if (body) body.appendChild(modalContainer);
+// 	const warningMessage = document.getElementById("warningMessageIntournament");
+// 	const gameContent = document.getElementById("tournamentGameBoard");
+
+// 	<div id="warningMessageIntournament" class="d-none text-center text-light bg-danger p-2">
+// 	<h3>Screen too small to play</h3>
+// 	<p>
+// 		Please switch to a laptop or desktop with a larger screen for the best
+// 		experience.
+// 	</p>
+// 	</div>
   
-	// Show the modal (requires Bootstrap JS to work)
-	// @ts-ignore
-	const modal = new bootstrap.Modal(document.getElementById("congratsModal"));
-	modal.show();
-  }
-  
+// 	if (
+// 	  window.innerWidth < MIN_WINDOW_WIDTH ||
+// 	  window.innerHeight < MIN_WINDOW_HEIGHT
+// 	) {
+// 	  warningMessage.classList.remove("d-none");
+// 	  if (gameContent) gameContent.classList.add("d-none");
+// 	} else {
+// 	  if (warningMessage) {
+// 		warningMessage.classList.add("d-none");
+// 	  }
+// 	  if (gameContent) {
+// 		gameContent.classList.remove("d-none");
+// 	  }
+// 	}
+//   }
+
+function tournamentGameScreenSize() {
+    const MIN_WINDOW_WIDTH = 820;
+    const MIN_WINDOW_HEIGHT = 700;
+
+    const backgroundDiv = document.querySelector("div[name='background']");
+
+    if (
+        window.innerWidth < MIN_WINDOW_WIDTH ||
+        window.innerHeight < MIN_WINDOW_HEIGHT
+    ) {
+        // Hide the background div's content
+        if (backgroundDiv) backgroundDiv.style.visibility = 'hidden';
+
+        // Create and insert the warning message div as an overlay
+        const warningMessageDiv = document.createElement('div');
+        warningMessageDiv.id = 'warningOverlay';
+        warningMessageDiv.innerHTML = `
+            <h3>Screen too small to play</h3>
+            <p>Please switch to a laptop or desktop with a larger screen for the best experience.</p>
+        `;
+        document.body.appendChild(warningMessageDiv);
+    } else {
+        // Show the background div's content and remove the warning overlay
+        if (backgroundDiv) backgroundDiv.style.visibility = 'visible';
+        const warningOverlay = document.getElementById('warningOverlay');
+        if (warningOverlay) warningOverlay.remove();
+    }
+}

@@ -3,6 +3,8 @@ from django.core.exceptions import ValidationError
 from django.contrib.auth.models import BaseUserManager, AbstractUser
 from django.core.validators import MinLengthValidator
 from friendship.models import *
+from game.models import Game
+from django.db.models import Q
 
 """ image file size validation """
 def validate_image_size(image):
@@ -62,7 +64,7 @@ class Player(AbstractUser):
     )
     is_guest = models.BooleanField(default=False)
     is_logged_in = models.BooleanField(default=False)
-    rating = models.IntegerField(default=0)
+    rating = models.BigIntegerField(default=0)
     blocked_players = models.ManyToManyField('self', symmetrical=False, blank=True, related_name="players_blocked_list")
     last_password_change = models.DateTimeField(blank=True, null=True)
 
@@ -102,3 +104,15 @@ class Player(AbstractUser):
 
     def is_blocked(self, player):
         return self.blocked_players.filter(username=player.username).exists()
+    
+    @property
+    def friends(self):
+        return [friendship.to_friend for friendship in self.friend_set.all()]
+    @property
+    def games_played(self):
+        return Game.objects.filter(Q(player_one=self.username)).count()
+    @property
+    def win_percentage(self):
+        if self.games_played == 0:
+            return 0
+        return Game.objects.filter(Q(player_one=self.username), outcome="WIN").count() / self.games_played * 100

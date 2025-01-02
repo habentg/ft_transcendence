@@ -19,7 +19,7 @@ async function search(query_parameter, url) {
 
     if (response.status === 205) {
       updateUI("/home");
-      return ;
+      return;
     }
     if (response.ok) {
       // history.pushState({ query_parameter }, "", route_url);
@@ -141,7 +141,7 @@ function triggerSearch() {
   if (query) {
     search(query);
   } else {
-    createToast({type:"error", title:"Empty search", error_message:"Please enter a search query"});
+    createToast({ type: "error", title: "Empty search", error_message: "Please enter a search query" });
     document.getElementById("searchResults").classList.add("d-none")
   }
 }
@@ -377,34 +377,10 @@ searchingSystem();
 //   };
 
 //   await gameApiGETFunction();
-  
+
 //   // await gameApiPOSTFunction(data);
-  
+
 //   // await gameApiPATCHFunction(endgame_data, 5);
 
 //   // await gameApiDELETEFunction(1);
 // }
-
-// async function retrieveAllGamesOfaTournament(tournament_id) {
-//   try {
-//     const response = await fetch(`/retrieve_tournament/`, {
-//       method: "get",
-//       headers: {
-//         "X-Requested-With": "XMLHttpRequest",
-//         "Content-Type": "application/json",
-//       },
-//     });
-//     if (response.ok) {
-//       const responseData = await response.json();
-//       console.log(responseData);
-//       return;
-//     }
-//     throw new Error("Failed to load retrieveAllGamesOfaTournament");
-//   } catch (error) {
-//     console.error("ERROR: ", error);
-//   }
-// }
-
-// document.getElementById("tournamentTester").addEventListener("click", async () => {
-//   await retrieveAllGamesOfaTournament(1);
-// });
