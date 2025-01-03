@@ -73,7 +73,6 @@ class GameView(APIView, BaseView):
                 return Response({'error': 'Game ID is required'}, status=status.HTTP_400_BAD_REQUEST)
             game = Game.objects.get(id=game_id)
             data = request.data
-            print("game data: ", data, flush=True)
             update_data = {
                 'final_score': f"{data.get('player1_score')} - {data.get('player2_score')}",
                 'outcome': 'WIN'
@@ -90,7 +89,6 @@ class GameView(APIView, BaseView):
                 request.user.rating += 5
                 request.user.save()
             serializer = GameSerializer(instance=game, data=update_data, partial=True)
-            print("request data: ", request.data, flush=True)
             if serializer.is_valid():
                 return Response({'game_id': serializer.save().id}, status=status.HTTP_200_OK)
             return Response({'error': 'Invalid data'}, status=status.HTTP_400_BAD_REQUEST)
@@ -196,7 +194,7 @@ class TournamentView(APIView, BaseView):
     throttle_classes = []
     template_name = 'game/tournament.html'
     title = 'Tournament Page'
-    css = ['css/tournament.css']
+    css = ['css/tournament.css', 'css/game.css']
     js = ['js/game.js', 'js/tournament_components.js', 'js/tournament.js']
 
     def handle_exception(self, exception):

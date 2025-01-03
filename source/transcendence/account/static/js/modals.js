@@ -554,7 +554,6 @@ function secondPlayerNameModal() {
 
 // game settings modal for game settings
 function gameSettingsModal() {
-  console.log("##################1");
   const modal = document.createElement("div");
   modal.classList.add("modal");
   modal.id = "gameSettingsModal";
@@ -602,7 +601,6 @@ function gameSettingsModal() {
 
 // A generic modal for closing modals passed as an arguments
 function closeModal(modalId) {
-  console.log("closing modal");
   const modal = document.getElementById(modalId);
   if (modal) {
     modal.remove(); // Remove the modal from the DOM
@@ -669,7 +667,6 @@ async function showSuccessMessage(message, timeout = 3000, successHeader=`Succes
 
   // Close modal after 3 seconds
   setTimeout(() => {
-    console.log("closing modal after timeout");
     closeModal("success-modal");
   }, timeout);
   await new Promise((resolve) => setTimeout(resolve, timeout + 100));

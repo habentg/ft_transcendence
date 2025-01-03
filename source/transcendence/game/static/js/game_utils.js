@@ -70,7 +70,6 @@ class Game {
     resetBall(direction) {
       this.ball.x = this.boardWidth / 2;
       this.ball.y = this.boardHeight / 2;
-      // console.log("Ball values after reset = ", this.ball);
       if (this.slowServe) {
         // Apply reduced speed if slow serve is enabled
         this.ball.velocityX = direction * Math.abs(this.defballSpeed) * 0.5;
@@ -102,12 +101,10 @@ class Game {
   
     move = (event) => {
       this.activeKeys[event.code] = true;
-      console.log(`Key Down: ${event.code}`); // Debugging
     }
   
     stopMovement = (event) => {
       this.activeKeys[event.code] = false;
-      console.log(`Key Up: ${event.code}`);
     }
   }
   
@@ -151,18 +148,15 @@ async function getFullTournamentView(tournament_id) {
         "Content-Type": "application/json",
       },
     });
-    console.log("response: ", response);
     if (response.ok) {
       const responseData = await response.json();
       loadCssandJS(responseData, false);
       if (responseData.tournament_type === 4) {
-        console.log(responseData.tournament_games);
         const tournamentMap = createTournamentMapForFour(tournament_id, responseData.tournament_games);
         document.getElementById("content").innerHTML = "";
         document.getElementById("content").appendChild(tournamentMap);
       }
       else if (responseData.tournament_type === 8) {
-        console.log(responseData.tournament_games);
         const tournamentMap = createTournamentMapForEight(tournament_id, responseData.tournament_games);
         document.getElementById("content").innerHTML = "";
         document.getElementById("content").appendChild(tournamentMap);

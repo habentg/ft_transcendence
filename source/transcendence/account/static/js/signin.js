@@ -1,4 +1,3 @@
-console.log("signin.js loaded");
 
 // Function to handle password visibility toggle
 function showPasswordToggle() {
@@ -34,7 +33,6 @@ async function handleSignInSubmit(e) {
     };
     try {
         const m_csrf_token = await getCSRFToken();
-        console.log("CSRF Token:", m_csrf_token);
         const response = await fetch('/signin/', {
             method: 'POST',
             headers: {
@@ -47,8 +45,6 @@ async function handleSignInSubmit(e) {
         if (!response.ok) {
             const responseData = await response.json();
             if (response.status === 302) {
-                console.log("FROM SIGNIN SUBMIT ----- Redirecting to:", responseData['redirect_url']);
-                // await updateUI(`${responseData['redirect_url']}`);
                 await getTwoFactorAuth(`${formData.username}`);
             }
             else

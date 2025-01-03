@@ -30,7 +30,6 @@ async function updatePlayerPassword() {
       },
       body: JSON.stringify(formData),
     });
-    console.log("PU this is the response", response);
     if (!response.ok) {
       const responseData = await response.json();
       if (response.status === 429) {
@@ -48,7 +47,6 @@ async function updatePlayerPassword() {
     }
     closeModal("password-change-modal");
     await showSuccessMessage("Password updated successfully. Please log in again with your new password.", 3000);
-    console.log("this is the response data", response);
     await updateUI(`/signin`);
     updateNavBar(false);
   } catch (error) {
@@ -318,7 +316,6 @@ function displayError(errorData) {
 
 // A generic modal for closing modals passed as an arguments
 function closeModal(modalId) { // Currently only working for modals in the setting only., If taken to modal.js or utils.js, it requires refresh to work if gone from page profile to settings.
-  // console.log("closing modal");
   const modal = document.getElementById(modalId);
   if (modal) {
     modal.remove(); // Remove the modal from the DOM

@@ -1,29 +1,28 @@
-console.log("signup.js loaded");
 
 // Function to handle password visibility toggle
 function showPasswordToggle() {
   const togglePassword = document.querySelector('.toggle-password');
   const toggleConfirmPassword = document.querySelector('.toggle-confirm-password');
   if (togglePassword) {
-      togglePassword.addEventListener('click', function() {
-          const targetId = this.getAttribute('data-target');
-          const passwordInput = document.getElementById(targetId);
-          const icon = this.querySelector('i');
+    togglePassword.addEventListener('click', function () {
+      const targetId = this.getAttribute('data-target');
+      const passwordInput = document.getElementById(targetId);
+      const icon = this.querySelector('i');
 
-          // Toggle password visibility
-          if (passwordInput.type === 'password') {
-              passwordInput.type = 'text';
-              icon.classList.remove('fa-eye');
-              icon.classList.add('fa-eye-slash');
-          } else {
-              passwordInput.type = 'password';
-              icon.classList.remove('fa-eye-slash');
-              icon.classList.add('fa-eye');
-          }
-      });
+      // Toggle password visibility
+      if (passwordInput.type === 'password') {
+        passwordInput.type = 'text';
+        icon.classList.remove('fa-eye');
+        icon.classList.add('fa-eye-slash');
+      } else {
+        passwordInput.type = 'password';
+        icon.classList.remove('fa-eye-slash');
+        icon.classList.add('fa-eye');
+      }
+    });
   }
   if (toggleConfirmPassword) {
-    toggleConfirmPassword.addEventListener('click', function() {
+    toggleConfirmPassword.addEventListener('click', function () {
       const targetId = this.getAttribute('data-target');
       const confirmPasswordInput = document.getElementById(targetId);
       const icon = this.querySelector('i');
@@ -63,7 +62,6 @@ async function handleSignupSubmit(e) {
 
   // Validate the form data
   if (formData.confirm_password !== formData.password) {
-    console.log("Passwords do not match");
     displayError({ error_msg: "Passwords do not match" });
     return;
   }
@@ -78,19 +76,17 @@ async function handleSignupSubmit(e) {
       body: JSON.stringify(formData),
     });
 
-        console.log("response:", response);
-        if (!response.ok) {
-            const responseData = await response.json();
-            console.log("responseData:", responseData);
-            displayError(responseData);
-            return;
-        }
-        // redirect to the protected page
-        await updateUI(`/home`);
-        // update the navbar
-        updateNavBar(true);
-        createWebSockets();
-    } catch (error) {
-        console.error('Error:', error);
+    if (!response.ok) {
+      const responseData = await response.json();
+      displayError(responseData);
+      return;
     }
+    // redirect to the protected page
+    await updateUI(`/home`);
+    // update the navbar
+    updateNavBar(true);
+    createWebSockets();
+  } catch (error) {
+    console.error('Error:', error);
+  }
 }

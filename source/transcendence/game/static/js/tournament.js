@@ -57,7 +57,6 @@ async function createTournamentinDB(tournament_type) {
       const tournament_id = document
         .getElementById("background")
         .getAttribute("data-tournamentId");
-      console.log("Tournament ID:", tournament_id);
       this.game.tournament_id = tournament_id;
       await createGameInDB(this.game);
       requestAnimationFrame((timestamp) => gameLoop(this.game, timestamp));
@@ -627,9 +626,6 @@ async function createTournamentinDB(tournament_type) {
 			  !document.body.classList.contains("modal-open");
 	
 			if (isBodyClassRemoved) {
-			  console.log(
-				"Modal and modal-open class no longer exist. Resolving..."
-			  );
 			  clearInterval(checker);
 			  resolve(1);
 			} else if (elapsedTime >= timeout) {

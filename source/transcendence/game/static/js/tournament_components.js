@@ -226,7 +226,6 @@ function createGameCanvas() {
 
 //Displays modal displaying who is going to play next in upcoming match
 function nextMatchModal(player1, player2) {
-  console.log(player1, player2);
   const existingModal = document.getElementById("nextMatch");
   if (existingModal) existingModal.remove();
   const modalHTML = `
@@ -255,7 +254,6 @@ function nextMatchModal(player1, player2) {
 //displays after every game to show who won and who moves on the next round
 function gameWinnerModal(playerName) {
   // Create the modal structure
-  console.log(playerName);
   const existingModal = document.getElementById("gameClosing");
   if (existingModal) existingModal.remove();
   const modalHTML = `
