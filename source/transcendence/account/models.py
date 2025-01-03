@@ -108,11 +108,17 @@ class Player(AbstractUser):
     @property
     def friends(self):
         return [friendship.to_friend for friendship in self.friend_set.all()]
+
     @property
     def games_played(self):
-        return Game.objects.filter(Q(player_one=self.username)).count()
+        return Game.objects.filter(Q(player_one=self.username) | Q(player_two=self.username))
+
+    @property
+    def games_played_count(self):
+        return self.games_played.count()
+
     @property
     def win_percentage(self):
-        if self.games_played == 0:
+        if self.games_played_count == 0:
             return 0
-        return Game.objects.filter(Q(player_one=self.username), outcome="WIN").count() / self.games_played * 100
+        return self.games_played.filter(outcome="WIN").count() / self.games_played_count * 100

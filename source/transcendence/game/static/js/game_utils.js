@@ -68,6 +68,8 @@ class Game {
     document.addEventListener("keyup", this.stopMovement);
   }
   stopeventListeners() {
+    while (this.activeKeys.length > 0)
+        this.activeKeys.pop();
     document.removeEventListener("keydown", this.move);
     document.removeEventListener("keyup", this.stopMovement);
   }
