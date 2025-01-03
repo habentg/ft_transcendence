@@ -446,6 +446,42 @@ function getPlayerNumberModal() {
   return modal;
 }
 
+// const existingModal = document.getElementById("tournamentModal");
+// if (existingModal) {
+//   existingModal.remove();
+// }
+
+// const modal = document.createElement("div");
+// modal.classList.add("modal");
+// modal.id = "tournamentModal";
+// modal.className = "modal fade show";
+// modal.style.display = "block";
+// modal.innerHTML = `
+//   <div class="modal-dialog modal-dialog-centered modal-md">
+//     <div class="modal-content">
+//       <div class="modal-header border-0 py-3">
+//         <h5 class="modal-title">
+//           <i class="fas fa-trophy me-2"></i> Create Tournament
+//         </h5>
+//         <button type="button" class="btn-close btn-close-white" data-dismiss="modal"></button>
+//       </div>
+//       <div class="modal-body px-3 py-2">
+//         <div id="local-game-error-msg" class="alert alert-danger small py-2" style="display:none;"></div>
+//         <p class="text-white mb-0">Select the number of players in the tournament:</p>
+//         <div class="d-flex gap-2 my-4 justify-content-center">
+//           <button type="button" class="btn btn-outline-primary btn-sm" data-players="4">
+//             <h6 class="d-flex my-2 justify-content-center"> 4 Players </h6>
+//           </button>
+//           <button type="button" class="btn btn-outline-primary btn-sm" data-players="8">
+//           <h6 class="d-flex my-2 justify-content-center"> 8 Players </h6>
+//           </button>
+//         </div>
+//       </div>
+//     </div>
+//   </div>
+// `;
+// return modal;
+
 // Modal for AI or localgame selection
 function optionLocalGameModal() {
   const existingModal = document.getElementById("localGameModal");
