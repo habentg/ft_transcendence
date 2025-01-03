@@ -114,6 +114,9 @@ class Notification(models.Model):
     def sender_username(self):
         return self.sender.username
     
+    def remove(self):
+        self.delete()
+    
 
 # """ ChatMessage model """
 class ChatMessage(models.Model):

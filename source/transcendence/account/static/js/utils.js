@@ -145,7 +145,7 @@ const loadCssandJS = (data, remove_prev_resources) => {
 };
 
 // update the Navbar for authenticated users && for signout and deleted users
-function updateNavBar(isAuthenticated, givenUsername=null, givenProfilePic=null) {
+function updateNavBar(isAuthenticated, givenUsername = null, givenProfilePic = null) {
   const navbar = document.getElementById("navbarNavDropdown");
   if (isAuthenticated) {
     let profilePic = "/static/images/default_profile_pic.jpeg";
@@ -157,7 +157,7 @@ function updateNavBar(isAuthenticated, givenUsername=null, givenProfilePic=null)
     // check if profile_btn has data-username
     if (profile_btn) {
       username = profile_btn.dataset.username;
-      
+
     }
     if (user_profile_pic) {
       profilePic = user_profile_pic.dataset.pfp; // Same as user_profile_pic.getAttribute("data-pfp");
@@ -303,22 +303,16 @@ async function handleNotificationBellClick(action) {
       action: `${action}`,
     },
   });
-  
+
   const notification_ul = document.getElementById("notification_ul");
-  if (response.status === 404) {
-    notification_ul.innerHTML = `
-    <p class="text-center my-2" style="color:white;">No notifications</p>
-    `;
-    return console.log("No notifications");
-  }
-  else if (response.ok) {
+  if (response.ok) {
     const data = await response.json();
     notification_ul.innerHTML = data.html;
     const notification_indicator = document.getElementById("notification-on");
     if (notification_indicator)
-    notification_indicator.classList.add("d-none");
+      notification_indicator.classList.add("d-none");
   } else {
-    createToast({type:'error', error_message: 'Failed to Fetch Notifications List', title: "Failed to fetch Notifications!"});
+    createToast({ type: 'error', error_message: 'Failed to Fetch Notifications List', title: "Failed to fetch Notifications!" });
   }
 
 }
@@ -370,7 +364,7 @@ function createToast(content) {
   toast.appendChild(toastBody);
   document.body.appendChild(toast);
 
-  
+
   if (`${content.type}` === "error") {
     toastBody.textContent = `${content.error_message}`;
     toastTitle.textContent = `${content.title} - Error`;

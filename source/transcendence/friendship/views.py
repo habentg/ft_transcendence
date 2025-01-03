@@ -44,16 +44,6 @@ class FriendRequestView(APIView):
 	def get_player(self, username):
 		return Player.objects.filter(username=username).first()
 
-	def get(self, request, *args, **kwargs):
-		""" get all friends of the current user """
-		player = request.user
-		friend_list = FriendList.objects.get(player=player)
-		friends = friend_list.friends.all()
-		if not friends:
-			return Response({'detail': 'No friends found.'}, status=status.HTTP_404_NOT_FOUND)
-		serializer = PlayerSerializer(friends, many=True)
-		return Response(serializer.data, status=status.HTTP_200_OK)
-
 	# send friend request - PENDING
 	def post(self, request, *args, **kwargs):
 		data = request.data
@@ -80,23 +70,17 @@ class FriendRequestView(APIView):
 				f"notification_{receiver.username}",
 				notification_message
 			)
-			#! add notification to the receiver's notification list
 			notification_data = {
 				'player': receiver.id,
-				'notification_type': 'friend_request_sent',
+				'notification_type': 'Sent',
 				'sender': request.user.id,
 				'read_status': False
 			}
-			friend_requ_sent_notice = Notification.objects.filter(player=receiver, sender=request.user.id, notification_type='friend_request_sent')
-			if friend_requ_sent_notice.exists():
-				friend_requ_sent_notice.created_at = timezone.now()
-			else:
-				notification_serializer = NotificationSerializer(data=notification_data)
-				if not notification_serializer.is_valid():
-					return Response({'error_msg': notification_serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
-				notification_serializer.save()
-			return Response(serializer.data, status=status.HTTP_201_CREATED) # 
-		# Return detailed error informatio
+			notification_serializer = NotificationSerializer(data=notification_data)
+			if not notification_serializer.is_valid():
+				return Response({'error_msg': notification_serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
+			notification_serializer.save()
+			return Response(serializer.data, status=status.HTTP_201_CREATED) 
 		return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 	# Cancel friend request - CANCELLED
@@ -107,7 +91,7 @@ class FriendRequestView(APIView):
 		friend_req = FriendRequest.objects.filter(sender=request.user.id, receiver=receiver.id).first()
 		if not friend_req:
 			return Response({'error_msg': 'No friend request found'}, status=status.HTTP_404_NOT_FOUND)
-		# #! send notification to the receiver's channel group
+		#  send notification to the receiver's channel group
 		channel_layer = get_channel_layer()
 		notification_message = {
 			'type': 'friendship_notification',
@@ -119,30 +103,39 @@ class FriendRequestView(APIView):
 			f"notification_{receiver.username}",
 			notification_message
 		)
+		# delete the friend request notification
+		notif = Notification.objects.filter(player=receiver.id, sender=request.user.id, notification_type='Sent')
+		if notif.exists():
+			notif.delete()
 		friend_req.cancel()
 		friend_req.delete()
 		return Response({'success': 'Friend request CANCELLED'}, status=status.HTTP_200_OK)
 
 	# remove a Friend - un-friend
 	def delete(self, request, *args, **kwargs):
-		receiver = self.get_player(kwargs.get('username'))
-		if not receiver:
+		unfriend_victim = self.get_player(kwargs.get('username'))
+		if not unfriend_victim:
 			return {'error_msg':'Player not found - cant unfriend'}
 		current_players_list = FriendList.objects.get(player=request.user)
 		try:
-			current_players_list.remove_friend(receiver)
-			#! send notification to the receiver's channel group
+			current_players_list.remove_friend(unfriend_victim)
 			channel_layer = get_channel_layer()
 			notification_message = {
 				'type': 'friendship_notification',
 				'sender': request.user.username,
-				'receiver': receiver.username,
+				'receiver': unfriend_victim.username,
 				'notification_type': 'unfriended',
 			}
 			async_to_sync(channel_layer.group_send)(
-				f"notification_{receiver.username}",
+				f"notification_{unfriend_victim.username}",
 				notification_message
 			)
+			notif = Notification.objects.filter(player=unfriend_victim.id, sender=request.user.id, notification_type='Accepted')
+			if notif.exists():
+				notif.delete()
+			notif = Notification.objects.filter(player=request.user.id, sender=unfriend_victim.id, notification_type='Accepted')
+			if notif.exists():
+				notif.delete()
 		except Exception as e:
 			return Response({'error_msg': str(e)}, status=status.HTTP_400_BAD_REQUEST)
 		return Response({'success': 'Friend removed'}, status=status.HTTP_200_OK)
@@ -159,7 +152,6 @@ class FriendRequestResponseView(APIView):
 	def handle_exception(self, exception):
 		if isinstance(exception, AuthenticationFailed):
 			if 'access token is invalid but refresh token is valid' in str(exception):
-				
 				response = HttpResponseRedirect(self.request.path)
 				response.set_cookie('access_token', generate_access_token(self.request.COOKIES.get('refresh_token')), httponly=True, samesite='Lax', secure=True)
 				return response
@@ -185,7 +177,7 @@ class FriendRequestResponseView(APIView):
 		if not friend_req:
 			return Response({'error_msg': 'No friend request found'}, status=status.HTTP_404_NOT_FOUND)
 		if data.get('action') == 'decline':
-			#! send notification to the receiver's channel group
+			# send notification to the receiver's channel group
 			channel_layer = get_channel_layer()
 			notification_message = {
 				'type': 'friendship_notification',
@@ -197,10 +189,13 @@ class FriendRequestResponseView(APIView):
 				f"notification_{receiver.username}",
 				notification_message
 			)
+			notif = Notification.objects.filter(player=request.user.id, sender=receiver.id, notification_type='Sent')
+			if notif.exists():
+				notif.delete()
 			friend_req.decline()
 			friend_req.delete()
 		elif data.get('action') == 'accept':
-			#! send notification to the receiver's channel group
+			# send notification to the receiver's channel group
 			channel_layer = get_channel_layer()
 			notification_message = {
 				'type': 'friendship_notification',
@@ -213,12 +208,15 @@ class FriendRequestResponseView(APIView):
 				notification_message
 			)
 			# we will either update the satatus or delete it coz its fulfilled
+			notif = Notification.objects.filter(player=request.user.id, sender=receiver.id, notification_type='Sent')
+			if notif.exists():
+				notif.delete()
 			friend_req.accept()
 			friend_req.delete()
-			#! add notification to the receiver's notification list
+			# add notification to the receiver's notification list
 			notification_data = {
 				'player': receiver.id,
-				'notification_type': 'request_accepted',
+				'notification_type': 'Accepted',
 				'sender': request.user.id,
 				'read_status': False
 			}
@@ -226,12 +224,6 @@ class FriendRequestResponseView(APIView):
 			if not notification_serializer.is_valid():
 				return Response({'error_msg': notification_serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
 			notification_serializer.save()
-			# after accepting
-			""" 
-			 1. add each other to their friend list
-			 2. remove the friend request from the friend table
-			"""
-		friend_list = FriendList.objects.get(player=request.user)
 		return Response({'success': 'Friend request fulfilled'}, status=status.HTTP_200_OK)
 	
 class NotificationViewSet(viewsets.ViewSet):
@@ -243,7 +235,6 @@ class NotificationViewSet(viewsets.ViewSet):
 	def handle_exception(self, exception):
 		if isinstance(exception, AuthenticationFailed):
 			if 'access token is invalid but refresh token is valid' in str(exception):
-				
 				response = HttpResponseRedirect(self.request.path)
 				response.set_cookie('access_token', generate_access_token(self.request.COOKIES.get('refresh_token')), httponly=True, samesite='Lax', secure=True)
 				return response
@@ -256,10 +247,8 @@ class NotificationViewSet(viewsets.ViewSet):
 		return super().handle_exception(exception)
 
 	def list(self, request):
-		notifications = Notification.objects.filter(player=request.user).order_by('-created_at')
-		serializer = NotificationSerializer(notifications, many=True)
-		if not notifications:
-			return Response({'detail': 'No notifications found.'}, status=status.HTTP_404_NOT_FOUND)
+		# print('notification list for : ', request.user)
+		notifications = Notification.objects.all().filter(player=request.user).order_by('-created_at')
 		serializer = NotificationSerializer(notifications, many=True)
 		html = render_to_string(self.template_name, {'notifications': serializer.data})
 		return Response({'html': html, 'data':serializer.data}, status=status.HTTP_200_OK)
