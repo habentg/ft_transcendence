@@ -382,7 +382,7 @@ function updatePaddleVelocities(player1, player2, game) {
   }
 
   if (game.parryFlag) {
-    if (game.activeKeys["KeyA"] && !player1.cooldownFlag) {
+    if (game.activeKeys["Space"] && !player1.cooldownFlag) {
       if (isParry(player1, game)) {
         game.ball.velocityX *= 2;
         game.ball.velocityY = 0;
