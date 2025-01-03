@@ -446,7 +446,7 @@ class PlayerProfileView(APIView, BaseView):
 				'is_self': False,
 			}
 		else:
-			games = Game.objects.filter(player_one=queried_user.username)
+			games = queried_user.games_played.all().order_by('-start_time')
 			paginator = Paginator(games, 5)  # 5 games per page
 			page_number = request.GET.get('page', 1)  # Get the page number from the request (default to 1)
 			try:

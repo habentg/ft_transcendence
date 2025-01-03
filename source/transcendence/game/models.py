@@ -25,11 +25,7 @@ class Game(models.Model):
 	class Meta:
 		db_table = 'game_table'
 		ordering = ['id']
-
-	@property
-	def get_formatted_start_time(self, obj):
-		return "dsfsdfdsfsdafasdf"
-
+		
 class Tournament(models.Model):
 	id = models.BigAutoField(primary_key=True)
 	type = models.IntegerField(default=4)

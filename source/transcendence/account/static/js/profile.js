@@ -400,7 +400,8 @@ async function create_chatroom(friend_username) {
 
 async function getUserGameHistory(page_number) {
   try {
-    const response = await fetch(`/game_history?page=${page_number}`);
+    const visited_player_username = document.getElementById("username").getAttribute("data-username");
+    const response = await fetch(`/game_history?player=${visited_player_username}&page=${page_number}`);
     if (response.ok) {
       const data = await response.json();
       document.getElementsByClassName("no-games-message")[0].classList.add("d-none");
@@ -462,7 +463,7 @@ async function drawPieChart() {
         tooltip: {
           callbacks: {
             label: function (context) {
-              const total = wins + losses;
+              const total = wins + losses + cancelled;
               const percentage = ((context.raw / total) * 100).toFixed(1);
               return `${context.label}: ${percentage}% (${context.raw})`;
             },
