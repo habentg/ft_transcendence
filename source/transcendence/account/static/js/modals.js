@@ -410,6 +410,7 @@ function resetPasswordConfirmModal() {
 
 // Get Number of player for tournament
 function getPlayerNumberModal() {
+
   const existingModal = document.getElementById("tournamentModal");
   if (existingModal) {
     existingModal.remove();
@@ -421,29 +422,31 @@ function getPlayerNumberModal() {
   modal.className = "modal fade show";
   modal.style.display = "block";
   modal.innerHTML = `
-  <div class="modal-dialog modal-dialog-centered modal-md">
-    <div class="modal-content">
-      <div class="modal-header border-0 py-3">
-        <h5 class="modal-title">
-          <i class="fas fa-trophy me-2"></i> Create Tournament
-        </h5>
-        <button type="button" class="btn-close btn-close-white" data-dismiss="modal"></button>
+    <div class="modal-dialog modal-dialog-centered modal-md">
+      <div class="modal-content">
+        <div class="modal-header border-0 py-3">
+          <h5 class="modal-title">
+            <i class="fas fa-trophy me-2"></i> Create Tournament
+          </h5>
+          <button type="button" class="btn-close btn-close-white" data-dismiss="modal"></button>
+        </div>
+        <div class="modal-body px-3 py-2">
+          <div id="local-game-error-msg" class="alert alert-danger small py-2" style="display:none;"></div>
+          <p class="text-white mb-0">Select the number of players in the tournament:</p>
+          <div class="d-flex gap-2 my-4 justify-content-center">
+            <button type="button" id="tournamentOf4" class="btn btn-outline-primary btn-sm" >
+              <h6 class="d-flex my-2 justify-content-center"> 4 Players </h6>
+            </button>
+            <button type="button" id="tournamentOf8" class="btn btn-outline-primary btn-sm">
+            <h6 class="d-flex my-2 justify-content-center"> 8 Players </h6>
+            </button>
+          </div>
+        </div>
       </div>
-      <div class="modal-body px-3 py-2">
-        <div id="local-game-error-msg" class="alert alert-danger small py-2" style="display:none;"></div>
-        <p class="text-white mb-0">Enter number of player in tournament</p>
-        <input type="int" id="playersNumber" class="form-control my-2" placeholder="Enter number of players" />
-        <small class="notice mt-2 d-block">Minimum players: 4 | Max players: 8</small>
-      </div>
-      <div class="modal-footer border-0 py-3 d-flex justify-content-start">
-        <button type="button" class="btn btn-primary btn-sm" id="submitPlayerNumBtn">
-          <i class="fas fa-paper-plane me-2"></i> Submit
-      </button>
     </div>
-    </div>
-  </div>
   `;
   return modal;
+
 }
 
 // const existingModal = document.getElementById("tournamentModal");
@@ -469,7 +472,7 @@ function getPlayerNumberModal() {
 //         <div id="local-game-error-msg" class="alert alert-danger small py-2" style="display:none;"></div>
 //         <p class="text-white mb-0">Select the number of players in the tournament:</p>
 //         <div class="d-flex gap-2 my-4 justify-content-center">
-//           <button type="button" class="btn btn-outline-primary btn-sm" data-players="4">
+//           <button type="button" class="btn btn-outline-primary btn-sm" >
 //             <h6 class="d-flex my-2 justify-content-center"> 4 Players </h6>
 //           </button>
 //           <button type="button" class="btn btn-outline-primary btn-sm" data-players="8">

@@ -171,14 +171,33 @@ async function getFullTournamentView(tournament_id) {
           document.getElementById(`tournamentModal${tournament_id}`)
         );
         tournamentModal.show();
+
+        // remove the modal when clicked outside
+        document.getElementById(`tournamentModal${tournament_id}`).addEventListener("click", (e) => {
+            console.log("clicked outside");
+            closeModal(`tournamentModal${tournament_id}`);
+        });
       } else if (responseData.tournament_type === 8) {
         console.log(responseData.tournament_games);
         const tournamentMap = createTournamentMapForEight(
           tournament_id,
           responseData.tournament_games
         );
-        document.getElementById("content").innerHTML = "";
-        document.getElementById("content").appendChild(tournamentMap);
+        // document.getElementById("content").innerHTML = "";
+        // document.getElementById("content").appendChild(tournamentMap);
+
+        document.body.appendChild(tournamentMap);
+
+        const tournamentModal = new bootstrap.Modal(
+          document.getElementById(`tournamentModal${tournament_id}`)
+        );
+        tournamentModal.show();
+
+        // remove the modal when clicked outside
+        document.getElementById(`tournamentModal${tournament_id}`).addEventListener("click", (e) => {
+            console.log("clicked outside");
+            closeModal(`tournamentModal${tournament_id}`);
+        });
       }
       return;
     }
@@ -191,14 +210,15 @@ async function getFullTournamentView(tournament_id) {
 /* tournament history modal viewer modal */
 function createTournamentModalForFour(tournament_id, games) {
   const modal = document.createElement("div");
-  modal.className = "modal fade d-flex justify-content-center align-items-center";
+  modal.className =
+    "modal fade d-flex justify-content-center align-items-center tournamentModal";
   modal.id = `tournamentModal${tournament_id}`;
   modal.tabIndex = -1;
   modal.setAttribute("aria-labelledby", `tournamentModalLabel${tournament_id}`);
   modal.setAttribute("aria-hidden", "true");
 
   modal.innerHTML = `
-    <div class="modal-dialog " style="position: absolute; left:30%; top: 20%">
+    <div class="modal-dialog modal-dialog-centered">
         <div class="modal-body">
           <div class="tournamentWrapper" id="tournamentWrapper">
             <h1 class="text-center mb-5">Tournament ${tournament_id} Map</h1>
@@ -257,7 +277,7 @@ function createTournamentModalForFour(tournament_id, games) {
 
               <!-- Final Round -->
               <div class="col-6 d-flex justify-content-center" style="position: relative;">
-                <div class="round final-round " style="position: absolute; right:80%; top: 20%">
+                <div class="round final-round1 " style="position: absolute; right:80%; top: 20%">
                   <div class="game game5">
                     <div class="card">
                       <div class="card-body-custom">
@@ -291,196 +311,175 @@ function createTournamentModalForFour(tournament_id, games) {
 
 /* tournament history modal viewer modal */
 function createTournamentMapForEight(tournament_id, games) {
-  const tournamentWrapper = document.createElement("div");
-  tournamentWrapper.className = "tournamentWrapper";
-  tournamentWrapper.id = "tournamentWrapper";
+  const modal = document.createElement("div");
+  modal.className =
+    "modal fade d-flex justify-content-center align-items-center tournamentModal";
+  modal.id = `tournamentModal${tournament_id}`;
+  modal.tabIndex = -1;
+  modal.setAttribute("aria-labelledby", `tournamentModalLabel${tournament_id}`);
+  modal.setAttribute("aria-hidden", "true");
 
-  tournamentWrapper.innerHTML = `
-  <h1 class="text-center mb-5">Tournament ${tournament_id} Map</h1>
-<div class="row d-flex position-relative">
-  <!-- First Round -->
-  <div class="col-4 d-flex justify-content-center align-items-end">
-    <div class="round first-round mb-5">
-      <!-- <h6 class="text-center">First Round</h6> -->
-      <div class="vertical-line">
-        <!-- Game 1 -->
-        <div class="game game1 mb-5">
-          <div class="card">
-            <div class="card-body-custom">
-              <h5 id="game1" class="card-title game-1">Game 1</h5>
-              <div class="d-flex justify-content-between align-items-center">
-                <div class="team">
-                  <i class="profileIcon fas fa-user-circle"></i>
-                  <span class="">${games[0].player_one}</span>
-                </div>
-                <div class="score">
-                  <span class="score-value">${games[0].final_score}</span>
-                </div>
-                <div class="team">
-                  <span>${games[0].player_two}</span>
-                  <i class="profileIcon fas fa-user-circle"></i>
+  modal.innerHTML = `
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-body">
+        <div class="tournamentWrapper" id="tournamentWrapper">
+          <h1 class="text-center mb-5">Tournament ${tournament_id} Map</h1>
+          <div class="row d-flex position-relative">
+            <!-- First Round -->
+            <div class="col-4 d-flex justify-content-center align-items-end">
+              <div class="round first-round mb-5">
+                <div class="vertical-line">
+                  <!-- Game 1 -->
+                  <div class="game game1 mb-5">
+                    <div class="card">
+                      <div class="card-body-custom">
+                        <h5 id="game1" class="card-title game-1">Game 1</h5>
+                        <div class="d-flex justify-content-between align-items-center">
+                          <div class="team">
+                            <i class="profileIcon fas fa-user-circle"></i>
+                            <span class="">${games[0].player_one}</span>
+                          </div>
+                          <div class="score">
+                            <span class="score-value">${games[0].final_score}</span>
+                          </div>
+                          <div class="team">
+                            <span>${games[0].player_two}</span>
+                            <i class="profileIcon fas fa-user-circle"></i>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="connection-line connection-1-5"></div>
+                    </div>
+                  </div>
+                  <!-- Game 2 -->
+                  <div class="game game2 mb-5">
+                    <div class="card">
+                      <div class="card-body-custom">
+                        <h5 id="game2" class="card-title game-2">Game 2</h5>
+                        <div class="d-flex justify-content-between align-items-center">
+                          <div class="team">
+                            <i class="profileIcon fas fa-user-circle"></i>
+                            <span class="">${games[1].player_one}</span>
+                          </div>
+                          <div class="score">
+                            <span class="score-value">${games[1].final_score}</span>
+                          </div>
+                          <div class="team">
+                            <span>${games[1].player_two}</span>
+                            <i class="profileIcon fas fa-user-circle"></i>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="connection-line connection-2-5"></div>
+                  </div>
+                  <!-- Game 3 -->
+                  <div class="game game3 mb-5">
+                    <div class="card">
+                      <div class="card-body-custom">
+                        <h5 id="game3" class="card-title game-3">Game 3</h5>
+                        <div class="d-flex justify-content-between align-items-center">
+                          <div class="team">
+                            <i class="profileIcon fas fa-user-circle"></i>
+                            <span class="">${games[2].player_one}</span>
+                          </div>
+                          <div class="score">
+                            <span class="score-value">${games[2].final_score}</span>
+                          </div>
+                          <div class="team">
+                            <span>${games[2].player_two}</span>
+                            <i class="profileIcon fas fa-user-circle"></i>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="connection-line connection-3-6"></div>
+                  </div>
+                  <!-- Game 4 -->
+                  <div class="game game4 mb-5">
+                    <div class="card">
+                      <div class="card-body-custom">
+                        <h5 id="game4" class="card-title game-4">Game 4</h5>
+                        <div class="d-flex justify-content-between align-items-center">
+                          <div class="team">
+                            <i class="profileIcon fas fa-user-circle"></i>
+                            <span class="">${games[3].player_one}</span>
+                          </div>
+                          <div class="score">
+                            <span class="score-value">${games[3].final_score}</span>
+                          </div>
+                          <div class="team">
+                            <span>${games[3].player_two}</span>
+                            <i class="profileIcon fas fa-user-circle"></i>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="connection-line connection-4-6"></div>
+                  </div>
                 </div>
               </div>
             </div>
-            <div class="connection-line connection-1-5"></div>
-          </div>
-        </div>
-        <!-- Game 2 -->
-        <div class="game game2 mb-5">
-          <div class="card">
-            <div class="card-body-custom">
-              <h5 id="game2" class="card-title game-2">Game 2</h5>
-              <div class="d-flex justify-content-between align-items-center">
-                <div class="team">
-                  <i class="profileIcon fas fa-user-circle"></i>
-                  <span class="">${games[1].player_one}</span>
-                </div>
-                <div class="score">
-                  <span class="score-value">${games[1].final_score}</span>
-                </div>
-                <div class="team">
-                  <span>${games[1].player_two}</span>
-                  <i class="profileIcon fas fa-user-circle"></i>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div class="connection-line connection-2-5"></div>
-        </div>
-        <!-- Game 3 -->
-        <div class="game game3 mb-5">
-          <div class="card">
-            <div class="card-body-custom">
-              <h5 id="game3" class="card-title game-3">Game 3</h5>
-              <div class="d-flex justify-content-between align-items-center">
-                <div class="team">
-                  <i class="profileIcon fas fa-user-circle"></i>
-                  <span class="">${games[2].player_one}</span>
-                </div>
-                <div class="score">
-                  <span class="score-value">${games[2].final_score}</span>
-                </div>
-                <div class="team">
-                  <span>${games[2].player_two}</span>
-                  <i class="profileIcon fas fa-user-circle"></i>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div class="connection-line connection-3-6"></div>
-        </div>
-        <!-- Game 4 -->
-        <div class="game game4 mb-5">
-          <div class="card">
-            <div class="card-body-custom">
-              <h5 id="game4" class="card-title game-4">Game 4</h5>
-              <div class="d-flex justify-content-between align-items-center">
-                <div class="team">
-                  <i class="profileIcon fas fa-user-circle"></i>
-                  <span class="">${games[3].player_one}</span>
-                </div>
-                <div class="score">
-                  <span class="score-value">${games[3].final_score}</span>
-                </div>
-                <div class="team">
-                  <span>${games[3].player_two}</span>
-                  <i class="profileIcon fas fa-user-circle"></i>
+
+            <!-- Second Round -->
+            <div class="col-4 d-flex justify-content-start">
+              <div class="round second-round mb-5">
+                <div class="vertical-line">
+                  <!-- Game 5 -->
+                  <div class="game game5">
+                    <div class="card">
+                      <div class="card-body-custom">
+                        <h5 id="game5" class="card-title game-5">Game 5</h5>
+                        <div class="d-flex justify-content-between align-items-center">
+                          <div class="team">
+                            <i class="profileIcon fas fa-user-circle"></i>
+                            <span class="">${games[4].player_one}</span>
+                          </div>
+                          <div class="score">
+                            <span class="score-value">${games[4].final_score}</span>
+                          </div>
+                          <div class="team">
+                            <span>${games[4].player_two}</span>
+                            <i class="profileIcon fas fa-user-circle"></i>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="connection-line connection-5-7"></div>
+                  </div>
+                  <!-- Game 6 -->
+                  <div class="game game6 mb-5">
+                    <div class="card">
+                      <div class="card-body-custom">
+                        <h5 id="game6" class="card-title game-6">Game 6</h5>
+                        <div class="d-flex justify-content-between align-items-center">
+                          <div class="team">
+                            <i class="profileIcon fas fa-user-circle"></i>
+                            <span class="">${games[5].player_one}</span>
+                          </div>
+                          <div class="score">
+                            <span class="score-value">${games[5].final_score}</span>
+                          </div>
+                          <div class="team">
+                            <span>${games[5].player_two}</span>
+                            <i class="profileIcon fas fa-user-circle"></i>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="connection-line connection-6-7"></div>
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
-          <div class="connection-line connection-4-6"></div>
+
+            <!-- Final Round -->
+
         </div>
-      </div>
+        </div>
     </div>
-  </div>
+  `;
 
-  <!-- Second Round -->
-  <div class="col-4 d-flex justify-content-center">
-    <div class="round second-round mb-5">
-      <!-- <h6 class="text-center">Second Round</h6> -->
-      <div class="vertical-line">
-        <!-- Game 5 -->
-        <div class="game game5">
-          <div class="card">
-            <div class="card-body-custom">
-              <h5 id="game5" class="card-title game-5">Game 5</h5>
-              <div class="d-flex justify-content-between align-items-center">
-                <div class="team">
-                  <i class="profileIcon fas fa-user-circle"></i>
-                  <span class="">${games[4].player_one}</span>
-                </div>
-                <div class="score">
-                  <span class="score-value">${games[4].final_score}</span>
-                </div>
-                <div class="team">
-                  <span>${games[4].player_two}</span>
-                  <i class="profileIcon fas fa-user-circle"></i>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div class="connection-line connection-5-7"></div>
-        </div>
-        <!-- Game 6 -->
-        <div class="game game6 mb-5">
-          <div class="card">
-            <div class="card-body-custom">
-              <h5 id="game6" class="card-title game-6">Game 6</h5>
-              <div class="d-flex justify-content-between align-items-center">
-                <div class="team">
-                  <i class="profileIcon fas fa-user-circle"></i>
-                  <span class="">${games[5].player_one}</span>
-                </div>
-                <div class="score">
-                  <span class="score-value">${games[5].final_score}</span>
-                </div>
-                <div class="team">
-                  <span>${games[5].player_two}</span>
-                  <i class="profileIcon fas fa-user-circle"></i>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div class="connection-line connection-6-7"></div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Final Round -->
-  <div class="col-4 d-flex justify-content-center">
-    <div class="round final-round">
-      <!-- <h6 class="text-center">Final Round</h6> -->
-      <!-- <div class="vertical-line"> -->
-      <!-- Game 7 -->
-      <div class="game game7 mb-5">
-        <div class="card">
-          <div class="card-body-custom">
-            <h5 id="game7" class="card-title game-7">Final</h5>
-            <div class="d-flex justify-content-between align-items-center">
-                <div class="team">
-                  <i class="profileIcon fas fa-user-circle"></i>
-                  <span class="">${games[6].player_one}</span>
-                </div>
-                <div class="score">
-                  <span class="score-value">${games[6].final_score}</span>
-                </div>
-                <div class="team">
-                  <span>${games[6].player_two}</span>
-                  <i class="profileIcon fas fa-user-circle"></i>
-                </div>
-              </div>
-          </div>
-        </div>
-        <div class="connection-line connection-7-8"></div>
-      </div>
-      <!-- </div> -->
-    </div>
-  </div>
-</div>
-
-		`;
-
-  return tournamentWrapper;
+  return modal;
 }
+
