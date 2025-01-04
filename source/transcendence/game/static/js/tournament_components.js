@@ -105,7 +105,7 @@ function createTournamentMap() {
 						</div>
 	
 						<!-- Second Round -->
-						<div class="col-4 d-flex justify-content-center  ">
+						<div class="col-4 d-flex flex-start ">
 							<div class="round second-round mb-5">
 								<!-- <h6 class="text-center">Second Round</h6> -->
 								<div class="vertical-line ">
@@ -158,7 +158,7 @@ function createTournamentMap() {
 						</div>
 	
 						<!-- Final Round -->
-						<div class="col-4 d-flex justify-content-center">
+						<div class="col-4 d-flex flex-start">
 							<div class="round final-round">
 								<!-- <h6 class="text-center">Final Round</h6> -->
 								<!-- <div class="vertical-line"> -->

@@ -510,7 +510,7 @@ class PlayerProfileUpdatingView(APIView):
 		serializer = PlayerProfileSerializer(request.user, data=request.data, partial=True)
 		if serializer.is_valid():
 			serializer.save()  # Use the serializer to update the player object
-			return Response(status=status.HTTP_200_OK)
+			return Response({'username': request.user.username}, status=status.HTTP_200_OK)
 		return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 	# updating user password
