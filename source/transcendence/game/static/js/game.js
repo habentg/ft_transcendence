@@ -759,7 +759,8 @@ function checkScreenSize() {
     window.innerHeight < MIN_WINDOW_HEIGHT
   ) {
     warningMessage.classList.remove("d-none");
-    gameContent.classList.add("d-none");
+	if(gameContent)
+		gameContent.classList.add("d-none");
   } else {
     if (warningMessage) {
       warningMessage.classList.add("d-none");

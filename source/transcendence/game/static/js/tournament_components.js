@@ -206,8 +206,10 @@ function createTournamentMap() {
 function createGameCanvas() {
   const gameBoard = document.createElement("div");
   gameBoard.id = "gameContent";
-  gameBoard.className = "justify-content-center";
+  gameBoard.className = " py-5 flex-direction: column";
   gameBoard.innerHTML = `
+		<div class="justify-content-center mb-3">
+		</div>
 		<div class="gamePlayers d-flex justify-content-between">
 			<div id="player1" class="col-12 col-md-6 text-center d-none">
 				<h3 id="player1Name" class="playerNames"></h3> 
