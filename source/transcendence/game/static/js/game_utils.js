@@ -277,7 +277,7 @@ function createTournamentModalForFour(tournament_id, games) {
 
               <!-- Final Round -->
               <div class="col-6 d-flex justify-content-center" style="position: relative;">
-                <div class="round final-round1 " style="position: absolute; right:80%; top: 20%">
+                <div class="round final-round1 " style="position: absolute; right:60%; top: 20%">
                   <div class="game game5">
                     <div class="card">
                       <div class="card-body-custom">

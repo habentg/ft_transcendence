@@ -219,6 +219,7 @@ h6 {
   color: white;
   /* border: 1px solid #ddd; */
   transition: all 0.3s ease;
+  /* min-width: 200px; */
   /* padding-right: 2rem; */
 }
 

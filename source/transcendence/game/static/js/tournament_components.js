@@ -6,7 +6,7 @@ function createTournamentMap() {
 
   tournamentWrapper.innerHTML = `
 					<h1 class="text-center mb-5">Tournament Map</h1>
-					<div class="row d-flex position-relative ">
+					<div class="row d-flex position-relative " style="width: fit-content">
 						<!-- First Round -->
 						<div class="col-4 d-flex justify-content-center align-items-end">
 							<div class="round first-round mb-5">
@@ -254,7 +254,6 @@ function nextMatchModal(player1, player2) {
 
 //displays after every game to show who won and who moves on the next round
 function gameWinnerModal(playerName) {
-  // Create the modal structure
   console.log(playerName);
   const existingModal = document.getElementById("gameClosing");
   if (existingModal) existingModal.remove();

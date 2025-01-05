@@ -41,3 +41,13 @@
 # ****=============================================************ Testing case ***********=======================================*******
 1. input length limiting in ALL input fields ------------------------- NOT TESTED!
 2. Uplading pfp is not working (Front-end Issue)--------------------------------------NOT FIXED!
+
+
+<!-- NEW -->
+1. Last game is not sent to the game history tournament modal. Only 6 games are being sent to the profile page.
+2. When a tournament is not completed (i.e. refresh before the tournament ends), there is an error when trying to display on the game history tournament modal.
+3. When sending player names for the tournament modal for the game history dashboard, limit username to be from 3-6 chars. If more, list the first 4 letters and put .. (for reponsiveness).
+4. If possible, the tournament.css sent to the profile page when the tournament history is clicked should be removed when the tournament modal is closed bc It is creating some visual issues.
+5. Time (hour to be specific) is not UAE timezone.
+6. Round up the decimal value for the WIN PERCENTAGE field on the Leaderboard page.
+
