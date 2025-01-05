@@ -21,17 +21,19 @@ async function createGameInDB(game) {
     });
     if (response.ok) {
       const responseData = await response.json();
-      console.log("New Game ID: ", responseData.game_id);
       game.game_id = responseData.game_id;
-      if (game.aiFlag) startaiGame(game);
-      else if (game.tournamentFlag) return;
-      // requestAnimationFrame((timestamp) => gameLoop(this.game, timestamp));
-      else startGame(game);
+      console.log("New Game ID: ", game.game_id);
+      if (game.aiFlag)
+        startaiGame(game);
+      else if (game.tournamentFlag)
+        return;
+      else 
+        startGame(game);
       return;
     }
     throw new Error("Failed to load gameApiPOSTFunction");
   } catch (error) {
-    createToast({type: 'error', message: 'Failed to create game', title: 'Game Creating Error!'});
+    createToast({type: 'error', error_message: 'Failed to create game', title: 'Game Creating Error!'});
     return false;
   }
 }
@@ -53,7 +55,7 @@ async function updateGameInDB(endgame_data, game_id) {
     }
     throw new Error(`Failed to update game with id: ${game_id} : ${response.status} : ${response.error}`);
   } catch (error) {
-    createToast({type: 'error', message: error, title: 'Game Updating Error!'});
+    createToast({type: 'error', error_message: error, title: 'Game Updating Error!'});
     console.error(error);
   }
 }
@@ -509,7 +511,7 @@ async function resetGame(player1, player2, direction, game) {
 
   if (isGameOver(player1, player2, game)) {
     game.drawFlag = false;
-    game.aiFlag = false;
+    // game.aiFlag = false;
     const endgame_stuff = {
       player1_username: player1.playerName,
       player2_username: player2.playerName,
@@ -522,7 +524,7 @@ async function resetGame(player1, player2, direction, game) {
     if (document.getElementById("aiButton")) {
       document.getElementById("aiButton").disabled = false;
     }
-    if (document.getElementById("startButton")) {
+    else if (document.getElementById("startButton")) {
       console.log("Start Button enabled");
       document.getElementById("startButton").disabled = false;
     }
