@@ -394,12 +394,16 @@ function createToast(content) {
 }
 
 // message toast onclick
-function messageToastClick(contentStr) {
+async function messageToastClick(contentStr) {
   const content = JSON.parse(contentStr);
   if (`${content.type}` === 'chat_message') {
-    updateUI('/chat');
-  }
-  if (`${content.type}` === 'friend_request') {
-    updateUI(`/profile/${content.sender}`);
+    if (window.location.href.includes('/chat'))
+      return ;
+      await updateUI('/chat');
+    }
+    if (`${content.type}` === 'friend_request') {
+    if (window.location.href.includes(`/profile/${content.sender}`))
+      return ;
+    await updateUI(`/profile/${content.sender}`);
   }
 }
