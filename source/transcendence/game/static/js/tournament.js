@@ -550,7 +550,7 @@ async function createTournamentinDB(tournament_type) {
           gameWinnerModal(winner); //this will come from OTHER FILE SO ITS OKAY
           // Close the modal after 2 seconds
           setTimeout(() => {
-            closeModal("gameClosing");
+            UIManager.closeModal("gameClosing");
           }, 1750);
           quarterFinalWinners.push(winner);
           if (tournamentContainer)
@@ -572,7 +572,7 @@ async function createTournamentinDB(tournament_type) {
         gameWinnerModal(winner);
         // Close the modal after 2 seconds
         setTimeout(() => {
-          closeModal("gameClosing");
+          UIManager.closeModal("gameClosing");
         }, 2000);
         if (tournamentContainer)
           tournamentContainer.appendChild(this.tournamentElement);
@@ -634,7 +634,7 @@ async function createTournamentinDB(tournament_type) {
 			  clearInterval(checker);
 			  // @ts-ignore
 			  modal.hide;
-			  closeModal(modalId);
+			  UIManager.closeModal(modalId);
 			  resolve(1);
 			} else {
 			  console.log(
@@ -685,21 +685,21 @@ async function createTournamentinDB(tournament_type) {
         this.maxPlayerNumbers = 4;
         console.log( "Creating tournament with ", this.maxPlayerNumbers, " players");
         console.log(this.maxPlayerNumbers);
-        closeModal("tournamentModal");
+        UIManager.closeModal("tournamentModal");
         this.playerManager.setUpPlayerAddition(this.maxPlayerNumbers, this);
       });
       document.getElementById("tournamentOf8").addEventListener("click", () => {
         this.maxPlayerNumbers = 8;
         console.log( "Creating tournament with ", this.maxPlayerNumbers, " players");
         console.log(this.maxPlayerNumbers);
-        closeModal("tournamentModal");
+        UIManager.closeModal("tournamentModal");
         this.playerManager.setUpPlayerAddition(this.maxPlayerNumbers, this);
       });
       // set eventlisner for outside of the window clicked
       document.querySelector(".btn-close").addEventListener("click", async (e) => {
         // if (e.target.id === "tournamentModal") {
           console.log("clicked outside");
-          closeModal("tournamentModal");
+          UIManager.closeModal("tournamentModal");
           await updateUI(`/home`);
         // }
       });
