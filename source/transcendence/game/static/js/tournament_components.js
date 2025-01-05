@@ -205,7 +205,7 @@ function createTournamentMap() {
 //this returns canvas for the ping-pong game
 function createGameCanvas() {
   const gameBoard = document.createElement("div");
-  gameBoard.id = "tournamentGameBoard";
+  gameBoard.id = "gameContent";
   gameBoard.className = "justify-content-center";
   gameBoard.innerHTML = `
 		<div class="gamePlayers d-flex justify-content-between">
@@ -331,64 +331,4 @@ function updateTournamentMapAfterFinal(tournamentContainer, tournamentElement) {
   // Insert restart button after continue button
   continueButton.insertAdjacentElement("afterend", restartButton);
   if (tournamentContainer) tournamentContainer.appendChild(tournamentElement);
-}
-
-// function tournamentGameScreenSize() {
-// 	const MIN_WINDOW_WIDTH = 820;
-// 	const MIN_WINDOW_HEIGHT = 700;
-  
-// 	const warningMessage = document.getElementById("warningMessageIntournament");
-// 	const gameContent = document.getElementById("tournamentGameBoard");
-
-// 	<div id="warningMessageIntournament" class="d-none text-center text-light bg-danger p-2">
-// 	<h3>Screen too small to play</h3>
-// 	<p>
-// 		Please switch to a laptop or desktop with a larger screen for the best
-// 		experience.
-// 	</p>
-// 	</div>
-  
-// 	if (
-// 	  window.innerWidth < MIN_WINDOW_WIDTH ||
-// 	  window.innerHeight < MIN_WINDOW_HEIGHT
-// 	) {
-// 	  warningMessage.classList.remove("d-none");
-// 	  if (gameContent) gameContent.classList.add("d-none");
-// 	} else {
-// 	  if (warningMessage) {
-// 		warningMessage.classList.add("d-none");
-// 	  }
-// 	  if (gameContent) {
-// 		gameContent.classList.remove("d-none");
-// 	  }
-// 	}
-//   }
-
-function tournamentGameScreenSize() {
-    const MIN_WINDOW_WIDTH = 820;
-    const MIN_WINDOW_HEIGHT = 700;
-
-    const backgroundDiv = document.querySelector("div[name='background']");
-
-    if (
-        window.innerWidth < MIN_WINDOW_WIDTH ||
-        window.innerHeight < MIN_WINDOW_HEIGHT
-    ) {
-        // Hide the background div's content
-        if (backgroundDiv) backgroundDiv.style.visibility = 'hidden';
-
-        // Create and insert the warning message div as an overlay
-        const warningMessageDiv = document.createElement('div');
-        warningMessageDiv.id = 'warningOverlay';
-        warningMessageDiv.innerHTML = `
-            <h3>Screen too small to play</h3>
-            <p>Please switch to a laptop or desktop with a larger screen for the best experience.</p>
-        `;
-        document.body.appendChild(warningMessageDiv);
-    } else {
-        // Show the background div's content and remove the warning overlay
-        if (backgroundDiv) backgroundDiv.style.visibility = 'visible';
-        const warningOverlay = document.getElementById('warningOverlay');
-        if (warningOverlay) warningOverlay.remove();
-    }
 }

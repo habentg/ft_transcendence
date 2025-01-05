@@ -28,7 +28,6 @@ async function createTournamentinDB(tournament_type) {
       this.game.aiFlag = false;
       this.game.versusFlag = false;
       this.game.tournamentFlag = true;
-	  window.addEventListener("resize", tournamentGameScreenSize);
     }
     //this is the function that starts the game by calling draw function and displays names at the top of the canvas
     async startTournamentGame(player1Name, player2Name) {
@@ -308,7 +307,6 @@ async function createTournamentinDB(tournament_type) {
         this.matchHistory.push(match);
         this.updateTournamentMap(match, playersNames);
         gameCanvas.remove();
-		window.removeEventListener("resize", tournamentGameScreenSize);
         return match.winner;
       }
       return new Promise((resolve) => {
@@ -340,8 +338,6 @@ async function createTournamentinDB(tournament_type) {
 
       return new Promise((resolve, reject) => {
         try {
-          const gameboard = document.getElementById("tournamentGameBoard");
-          const canvas = document.getElementById("board");
           let newTournamentGame = new GameBoard();
           let players = newTournamentGame.getPlayers();
           //HERE IS TO CREATE THE GAME IN DB

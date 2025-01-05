@@ -545,27 +545,10 @@ span.score-value {
   }
 }
 
-#warningOverlay {
+#warningMessage {
     position: fixed;
     top: 0;
     left: 0;
     width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.8); /* Semi-transparent black background */
-    color: white; /* Text color */
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    z-index: 1000; /* Ensure it's on top of other content */
-}
-
-#warningOverlay h3 {
-    margin: 0;
-    font-size: 24px; /* Adjust as needed */
-}
-
-#warningOverlay p {
-    margin: 10px 0 0; /* Adjust as needed */
-    font-size: 16px; /* Adjust as needed */
+    z-index: 1000;
 }

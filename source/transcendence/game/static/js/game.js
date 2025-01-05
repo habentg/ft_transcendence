@@ -888,7 +888,7 @@ function applySetting(game) {
 
 if (window.location.href.includes("/game")) {
   loadGame();
-  window.addEventListener("resize", checkScreenSize);
 }
 
+window.addEventListener("resize", checkScreenSize);
 // checkScreenSize();
