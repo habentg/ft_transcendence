@@ -143,7 +143,6 @@ class PlayerGameHistoryView(APIView):
                     }),
                 })
         except Exception as e:
-            print("error: ", str(e), flush=True)
             return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
 class LeaderBoardView(APIView, BaseView):
@@ -151,6 +150,7 @@ class LeaderBoardView(APIView, BaseView):
     permission_classes = [IsAuthenticated]
     throttle_classes = []
     template_name = 'game/leaderboard.html'
+    title = 'Leaderboard'
     css = ['css/leaderboard.css']
     js = ['js/leaderboard.js']
 
@@ -212,12 +212,10 @@ class TournamentView(APIView, BaseView):
         return super().handle_exception(exception)
     
     def get_context_data(self, request, **kwargs):
-        print("player username: ", request.user.username, flush=True)
         return {'username': request.user.username}
 
     def patch(self, request):
         tournament_id = request.GET.get('tournament_id', None)
-        print("tournament_id: ", tournament_id, flush=True)
         if tournament_id: 
             try:
                 tournament = Tournament.objects.get(id=tournament_id)
@@ -274,12 +272,10 @@ class TournamentRetrievalView(APIView):
                 elif (tournament.type == 4):
                     return Response({'css': self.css, "tournament_id": tournament.id, "tournament_type": 4, 'tournament_games': list_of_games}, status=200)
                     # return Response({"tournament_id": tournament.id, 'tournament_games': list_of_games, "html": render_to_string(self.template_name_iv, {'game': list_of_games})}, status=200)
-                print("are we here in tournament retrieval view?")
                 return Response({"tournament_id": tournament.id, "error": 'issues with number of games in tournament'}, status=400)
             except Tournament.DoesNotExist:
                 return Response({"error": "Tournament not found"}, status=404)
             except Exception as e:
-                print("error: ", str(e), flush=True)
                 return Response({"error": str(e)}, status=400)
         else:
             tournaments = Tournament.objects.values("id", "name")

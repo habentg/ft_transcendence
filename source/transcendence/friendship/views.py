@@ -247,7 +247,6 @@ class NotificationViewSet(viewsets.ViewSet):
 		return super().handle_exception(exception)
 
 	def list(self, request):
-		# print('notification list for : ', request.user)
 		notifications = Notification.objects.all().filter(player=request.user).order_by('-created_at')
 		serializer = NotificationSerializer(notifications, many=True)
 		html = render_to_string(self.template_name, {'notifications': serializer.data})

@@ -1,6 +1,12 @@
 {% load static %}
 
-<h4>{{ total_games }} of games found!</h4>
+{% comment %} <h4>{{ total_games }} of games found!</h4> {% endcomment %}
+<div class="results-header mb-4">
+  <h6 class="text-center">
+    <i class="fas fa-gamepad me-3"></i>
+    <span class="found-count">{{ total_games }}</span> Games played
+  </h6>
+</div>
 <div class="table-responsive">
   <table class="table table-hover position-relative">
     <thead>
@@ -72,6 +78,6 @@
 <!-- Pagination -->
 <div class="pagination-size d-flex justify-content-center gap-2 mt-4">
   <button id="prev-page" class="btn btn-outline-light btn-sm {% if previous == 0 %}disabled{% endif %}" onclick="getUserGameHistory({{ previous }})"><i class="fas fa-chevron-left"></i></button>
-  <span id="page-numbers" class="d-flex gap-2"><span class="d-flex justify-content-center mt-1"><h6 style="color: #84ddfc;">{{ current_page }} of {{ num_pages }} pages</h6></span></span>
+  <span id="page-numbers" class="d-flex gap-2"><span class="d-flex justify-content-center mt-1"><h6 style="color: #84ddfc;"><span class="found-count">{{ current_page }}</span> of <span class="found-count">{{ num_pages }}</span> pages</h6></span></span>
   <button id="next-page" class="btn btn-outline-light btn-sm {% if next == 0 %}disabled{% endif %}" onclick="getUserGameHistory({{ next }})"><i class="fas fa-chevron-right"></i></button>
 </div>
