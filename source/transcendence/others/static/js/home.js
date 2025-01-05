@@ -8,7 +8,6 @@ async function search(query_parameter, url) {
     const fullUrl = new URL(url);
     route_url = fullUrl.pathname + fullUrl.search; // Extract the relative path and query string
   }
-  console.log("route_url: ", route_url);
   try {
     const response = await fetch(route_url.slice(1), {
       method: "GET",
@@ -24,7 +23,6 @@ async function search(query_parameter, url) {
     if (response.ok) {
       // history.pushState({ query_parameter }, "", route_url);
       const responseData = await response.json();
-      // console.log(responseData);
       /* activating the div */
       document.getElementById("searchResults").classList.remove("d-none");
       /* filling up the result to the inner div */

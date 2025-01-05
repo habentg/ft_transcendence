@@ -474,7 +474,30 @@ function createTournamentMapForEight(tournament_id, games) {
             </div>
 
             <!-- Final Round -->
-
+            <div class="col-4 d-flex justify-content-center">
+              <div class="round final-round1">
+                <div class="game game7">
+                  <div class="card">
+                    <div class="card-body-custom">
+                      <h5 id="game7" class="card-title game-7">Game 7</h5>
+                      <div class="d-flex justify-content-between align-items-center">
+                        <div class="team">
+                          <i class="profileIcon fas fa-user-circle"></i>
+                          <span class="">${games[6].player_one}</span>
+                        </div>
+                        <div class="score">
+                          <span class="score-value">${games[6].final_score}</span>
+                        </div>
+                        <div class="team">
+                          <span>${games[6].player_two}</span>
+                          <i class="profileIcon fas fa-user-circle"></i>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
         </div>
         </div>
     </div>

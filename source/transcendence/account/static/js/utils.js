@@ -47,7 +47,6 @@ function displayError(response) {
   } else if (response.email && response.email[0]) {
     error_msg = response.email[0];
   }
-  console.log("error_msg:", error_msg);
   document.getElementById("error-msg").innerText = error_msg;
   document.getElementById("error-msg").style.display = "block";
 }
@@ -68,7 +67,6 @@ async function handle42Login() {
 
     const authUrl = resposeData.authorization_url;
 
-    console.log("authUrl:", authUrl);
     window.location.href = authUrl;
   } catch (error) {
     console.error("Error in handle42Login:", error);
@@ -92,7 +90,6 @@ const removeResource = () => {
   // Remove styles in reverse order
   for (let i = allStyles.length - 1; i >= 0; i--) {
     if (allStyles[i].id.includes("/static/")) {
-      console.log("removing:", allStyles[i].id);
       allStyles[i].remove();
     }
   }
@@ -100,7 +97,6 @@ const removeResource = () => {
   // Remove scripts in reverse order
   for (let i = allScripts.length - 1; i >= 0; i--) {
     if (allScripts[i].id.includes("/static/")) {
-      console.log("removing:", allScripts[i].id);
       allScripts[i].remove();
     }
   }
@@ -116,12 +112,8 @@ const loadCssandJS = (data, remove_prev_resources) => {
     */
   const { css: css_file_paths, js: js_file_paths } = data;
 
-  console.log("--->>> js_file_path:", js_file_paths);
-  console.log("--->>> css_file_path:", css_file_paths);
-
   // Remove previous CSS & js
   if (remove_prev_resources) {
-    console.log("removing previous resources");
     removeResource();
   }
 
@@ -153,7 +145,7 @@ const loadCssandJS = (data, remove_prev_resources) => {
 };
 
 // update the Navbar for authenticated users && for signout and deleted users
-function updateNavBar(isAuthenticated, givenUsername=null, givenProfilePic=null) {
+function updateNavBar(isAuthenticated, givenUsername = null, givenProfilePic = null) {
   const navbar = document.getElementById("navbarNavDropdown");
   if (isAuthenticated) {
     let profilePic = "/static/images/default_profile_pic.jpeg";
@@ -165,14 +157,11 @@ function updateNavBar(isAuthenticated, givenUsername=null, givenProfilePic=null)
     // check if profile_btn has data-username
     if (profile_btn) {
       username = profile_btn.dataset.username;
-      
+
     }
     if (user_profile_pic) {
       profilePic = user_profile_pic.dataset.pfp; // Same as user_profile_pic.getAttribute("data-pfp");
     }
-
-    console.log("profilePic:", profilePic);
-    console.log("username:", username);
     if (givenUsername)
       username = givenUsername;
     if (givenProfilePic)
@@ -255,7 +244,6 @@ async function handleSignOut() {
 
     if (response.status === 200) {
       closeSignOutModal();
-      console.log("Signed out successfully ------ from utils");
       removeResource();
       updateNavBar(false);
       await updateUI(``);
@@ -304,11 +292,9 @@ document.querySelectorAll(".navbar-nav .nav-link").forEach(function (navLink) {
 
 /* notification dropdown */
 async function handleNotificationBellClick(action) {
-  if (document.getElementById("notificationDropdown").getAttribute("aria-expanded") === "flase") {
-    console.log("notification dropdown is already expanded");
+  if (document.getElementById("notificationDropdown").getAttribute("aria-expanded").valueOf() === 'false') {
     return;
   }
-  //check if its expanded - if its simply return
   // Fetch notifications
   const response = await fetch("/notifications/", {
     method: "GET",
@@ -317,62 +303,19 @@ async function handleNotificationBellClick(action) {
       action: `${action}`,
     },
   });
-  
+
   const notification_ul = document.getElementById("notification_ul");
-  if (response.status === 404) {
-    notification_ul.innerHTML = `
-    <p class="text-center my-2" style="color:white;">No notifications</p>
-    `;
-    return console.log("No notifications");
-  }
   if (response.ok) {
     const data = await response.json();
     notification_ul.innerHTML = data.html;
-    // console.log("data.html:", data.html);
     const notification_indicator = document.getElementById("notification-on");
     if (notification_indicator)
-    notification_indicator.classList.add("d-none");
+      notification_indicator.classList.add("d-none");
   } else {
-    console.error("Failed to fetch notifications:", response.statusText);
+    createToast({ type: 'error', error_message: 'Failed to Fetch Notifications List', title: "Failed to fetch Notifications!" });
   }
 
 }
-
-// Creates a toast notification that show a message passed as an argument
-// function showToast(type, title, message) {
-//   const toast = document.getElementById("toast");
-//   const toastHeader = document.getElementById("toast-header");
-//   const toastBody = document.getElementById("toast-body");
-//   const toastIcon = document.getElementById("toast-icon");
-//   const toastTitle = document.getElementById("toast-title");
-
-//   if (!toast || !toastHeader || !toastBody || !toastIcon || !toastTitle) {
-//     console.error("Toast elements not found!");
-//     return;
-//   }
-
-//   toastBody.textContent = message;
-
-//   toastTitle.textContent = title;
-
-//   if (type === "error") {
-//     toastHeader.classList.remove("bg-primary", "text-light");
-//     toastHeader.classList.add("bg-danger", "text-white");
-//     toastIcon.className = "fas fa-exclamation-circle text-warning";
-//   } else if (type === "chat") {
-//     toastHeader.classList.remove("bg-danger", "text-white");
-//     toastHeader.classList.add("bg-primary", "text-light");
-//     toastIcon.className = "fas fa-comment-dots text-info";
-//   } else {
-//     console.warn("Unknown toast type, defaulting to chat.");
-//     toastHeader.classList.remove("bg-danger", "text-white");
-//     toastHeader.classList.add("bg-secondary", "text-light");
-//     toastIcon.className = "fas fa-info-circle";
-//   }
-
-//   const bsToast = new bootstrap.Toast(toast);
-//   bsToast.show();
-// }
 
 // Create a function to create a toast div and append it to the body
 function createToast(content) {
@@ -421,7 +364,7 @@ function createToast(content) {
   toast.appendChild(toastBody);
   document.body.appendChild(toast);
 
-  
+
   if (`${content.type}` === "error") {
     toastBody.textContent = `${content.error_message}`;
     toastTitle.textContent = `${content.title} - Error`;
@@ -453,7 +396,6 @@ function createToast(content) {
 // message toast onclick
 function messageToastClick(contentStr) {
   const content = JSON.parse(contentStr);
-  console.log("content:", content);
   if (`${content.type}` === 'chat_message') {
     updateUI('/chat');
   }

@@ -1,13 +1,5 @@
 createWebSockets();
 
-// editing user info
-// function makeFieldEditable(fieldId) {
-//   console.log(`Make ${fieldId} editable`);
-//   const fieldInput = document.getElementById(fieldId);
-//   fieldInput.disabled = false;
-//   fieldInput.focus();
-// }
-
 // updating user info
 async function UpdateUserInfo() {
   try {
@@ -121,7 +113,6 @@ async function handleUpload() {
     });
 
     if (response.ok) {
-      console.log("Profile pic updated");
       closeModal("profile-pic-modal");
       // update the user info in the DOM
       const responseData = await response.json();
@@ -152,7 +143,6 @@ async function handleUpload() {
 
 // Update User Info Modal
 function updateProfileInfo() {
-  console.log("Update user info =====");
   const existingModal = document.getElementById("username-modal");
   if (existingModal) existingModal.remove();
 
@@ -188,12 +178,9 @@ function updateProfileInfo() {
 */
 
 async function addFriendRequest() {
-  console.log("addFriendRequest");
-
   const toBeFriend = document
     .getElementById("username")
     .getAttribute("data-username");
-  console.log("toBeFriend: ", toBeFriend);
   try {
     const response = await fetch(`/friend_request/${toBeFriend}/`, {
       method: "POST",
@@ -201,8 +188,6 @@ async function addFriendRequest() {
         "Content-Type": "application/json",
       },
     });
-
-    console.log("Response status:", response.status); // Log the response status
 
     if (response.status === 201) {
       const sendFriendRequestBtn = document.getElementById("add_friend_btn");
@@ -221,19 +206,16 @@ async function addFriendRequest() {
       profile_info_container.appendChild(cancelFRBtn);
       return;
     }
-
     throw new Error("Failed to send friend request");
   } catch (error) {
-    console.log("addFriendRequest Error: ", error);
+    createToast({type:'error',error_message:`couldnt send friend request to "${toBeFriend}"`,title:'Failed To Send Friend-Request!'})
   }
 }
 
 async function cancelFriendRequest() {
-  console.log("we here to cancel friend request");
   const toBeFriend = document
     .getElementById("username")
     .getAttribute("data-username");
-  console.log("toBeFriend: ", toBeFriend);
   try {
     const response = await fetch(`/friend_request/${toBeFriend}/`, {
       method: "PATCH",
@@ -241,9 +223,6 @@ async function cancelFriendRequest() {
         "Content-Type": "application/json",
       },
     });
-
-    console.log("Response status:", response.status); // Log the response status
-
     if (response.status === 200) {
       const cancelFRBtn = document.getElementById("cancel_request_btn");
       cancelFRBtn.remove();
@@ -261,15 +240,13 @@ async function cancelFriendRequest() {
       profile_info_container.appendChild(sendFriendRequestBtn);
       return;
     }
-
     throw new Error("Failed to cancel friend request");
   } catch (error) {
-    console.log("cancelFriendRequest Error: ", error);
+    createToast({type:'error',error_message:`couldnt cancel friend request to "${toBeFriend}"`,title:'Failed To Cancel Friend-Request!'})
   }
 }
 
 async function acceptOrDeclineFriendRequest(action, toBeFriend) {
-  console.log("acceptOrDeclineFriendRequest");
 
   try {
     const response = await fetch(`/friend_request_response/${toBeFriend}/`, {
@@ -331,13 +308,11 @@ async function acceptOrDeclineFriendRequest(action, toBeFriend) {
     }
     throw new Error("Failed to accept/decline friend request");
   } catch (error) {
-    console.log("Error: ", error);
-    // alert("Failed to accept/decline friend request");
+    createToast({type:'error',error_message:`couldnt '${action}' friend request from "${toBeFriend}"`,title:`Failed To ${action} Friend-Request!`})
   }
 }
 
 async function removeFriend() {
-  console.log("removeFriend");
   const toBeFriend = document
     .getElementById("username")
     .getAttribute("data-username");
@@ -348,8 +323,6 @@ async function removeFriend() {
         "Content-Type": "application/json",
       },
     });
-
-    console.log("Response status:", response.status); // Log the response status
 
     if (response.status === 200) {
       const unfriendBtn = document.getElementById("unfriend_btn");
@@ -376,13 +349,12 @@ async function removeFriend() {
 
     throw new Error("Failed to remove friend");
   } catch (error) {
-    console.log("Error: ", error);
+    createToast({type:'error',error_message:`couldnt unfriend friend "${toBeFriend}"`,title:'Failed To Remove Friend!'})
   }
 }
 
 /* sending request to create chat room between current user and a friend */
 async function create_chatroom(friend_username) {
-  console.log("Creating chatroom with {", friend_username, "}");
   try {
     const response = await fetch(`/chat/`, {
       method: "POST",
@@ -392,9 +364,12 @@ async function create_chatroom(friend_username) {
       },
       body: JSON.stringify({ recipient: friend_username }),
     });
-    await updateUI(`/chat`);
+    if (response.ok)
+      await updateUI(`/chat`);
+    else
+      throw new Error('Error!')
   } catch (error) {
-    console.error("Failed to create chatroom: ", error);
+    createToast({type:'error',error_message:`couldnt create chatroom with "${toBeFriend}"`,title:'Failed To Create ChatRoom!'})
   }
 }
 
@@ -407,10 +382,6 @@ async function getUserGameHistory(page_number) {
       document.getElementsByClassName("no-games-message")[0].classList.add("d-none");
       document.getElementById("game_history").classList.remove("d-none");
       document.getElementById("game_history").innerHTML = data.history;
-
-
-      // console.log("WE heree eeee ");
-      // console.table(data.history);
       return
     }
     throw new Error("Failed to get game history");
@@ -430,13 +401,7 @@ async function drawPieChart() {
   const wins = parseInt(document.getElementById("win_lose_stats").getAttribute("data-numsOfWins")) || 0;
   const losses = parseInt(document.getElementById("win_lose_stats").getAttribute("data-numsOfLoses")) || 0;
   const cancelled = gamesPlayed - (wins + losses);
-  
-  console.log("Games Played: ", gamesPlayed);
-  console.log("Wins: ", wins);
-  console.log("Losses: ", losses);
-  console.log("Cancelled: ", cancelled);
 
-  
   // Pie Chart - Percentage of Wins and Losses
   const pieCtx = document.getElementById("game-stats-pie-chart").getContext("2d");
   new Chart(pieCtx, {

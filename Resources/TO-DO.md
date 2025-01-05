@@ -44,7 +44,7 @@
 
 
 <!-- NEW -->
-1. Last game is not sent to the game history tournament modal. Only 6 games are being sent to the profile page.
+1. Sometimes last game is not sent to the game history tournament modal. Only 6 games are being sent to the profile page. ( I think the case is when, the logged in player is knocked out in the first round. Note sure though).  Screenshot image for the case is the Resources folder named "temp.png".
 2. When a tournament is not completed (i.e. refresh before the tournament ends), there is an error when trying to display on the game history tournament modal.
 3. When sending player names for the tournament modal for the game history dashboard, limit username to be from 3-6 chars. If more, list the first 4 letters and put .. (for reponsiveness).
 4. If possible, the tournament.css sent to the profile page when the tournament history is clicked should be removed when the tournament modal is closed bc It is creating some visual issues.

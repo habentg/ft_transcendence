@@ -35,7 +35,6 @@ async function updatePlayerPassword() {
       },
       body: JSON.stringify(formData),
     });
-    console.log("PU this is the response", response);
     if (!response.ok) {
       const responseData = await response.json();
       if (response.status === 429) {
@@ -53,7 +52,6 @@ async function updatePlayerPassword() {
     }
     closeModal("password-change-modal");
     await showSuccessMessage("Password updated successfully. Please log in again with your new password.", 3000);
-    console.log("this is the response data", response);
     await updateUI(`/signin`);
     updateNavBar(false);
   } catch (error) {

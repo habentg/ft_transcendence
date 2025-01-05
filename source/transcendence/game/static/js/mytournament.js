@@ -142,8 +142,6 @@ function loadGame() {
     });
 
     initGame(); //initializing the game flags and adding players etc.
-    console.log("Player 1 values:", players[0]);
-    console.log("Player 2 values:", players[1]);
     document.getElementById("startButton").addEventListener("click", () => {
       // send to backend to create the game -
       /* 
@@ -349,21 +347,6 @@ function draw(player1, player2) {
     player1.score++;
     resetGame(player1, player2, -1);
   }
-
-  // if (isGameOver(player1, player2)) {
-  // 	drawFlag = false;
-  // 	aiFlag = false;
-  // 	console.log("Game Over: SHOULD RETURN SETTINGS MENU");
-  // 	if (document.getElementById("aiButton")) {
-  // 		document.getElementById("aiButton").disabled = false;
-  // 	}
-  // 	if (document.getElementById("startButton")) {
-  // 		document.getElementById("startButton").disabled = false;
-  // 	}
-
-  // 	//This is the part where we could collect everything for the match history
-  // 	// players names, player scores aside from game mode. maybe add another function throw players and return it from there.
-  // }
 }
 
 // Display scores
@@ -383,9 +366,6 @@ function drawBall() {
 }
 
 function updatePaddleVelocities(player1, player2) {
-  // Player 1 movement
-  // console.log("Player 1 values:", player1);
-  // console.log("Player 2 values:", player2);
   if (activeKeys["KeyW"]) {
     player1.velocityY = -paddleSpeed;
   } else if (activeKeys["KeyS"]) {
@@ -448,12 +428,10 @@ function parryRefresh(player) {
 
 function move(e) {
   activeKeys[e.code] = true;
-  console.log(`Key Down: ${e.code}`); // Debugging
 }
 
 function stopMovement(e) {
   activeKeys[e.code] = false;
-  console.log(`Key Up: ${e.code}`);
 }
 
 // function to check if the paddle is inside the walls, by walls the top and bottom part of the board.

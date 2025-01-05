@@ -121,7 +121,6 @@ function initNotificationWebsocket() {
   };
 
   window.ws.onerror = (error) => {
-    console.log("wsUrl:", wsUrl);
     console.error("Notification WebSocket error:", error);
   };
 
@@ -153,7 +152,6 @@ function initNotificationWebsocket() {
 async function addMessageToChat(data) {
   const chatMessages = document.getElementById(`${data.chat_id}`);
   if (!chatMessages) {
-    console.log("chatMessages not found");
     recipient_chatroom = document.getElementById(`${data.sender}`);
     if (recipient_chatroom) {
       // recipient_chatroom.classList.add("unread");
@@ -216,7 +214,6 @@ function initChatWebsocket() {
   };
 
   window.ws_chat.onerror = (error) => {
-    console.log("wsUrl:", wsUrl);
     console.error("Chat WebSocket error:", error);
   };
 
@@ -226,7 +223,6 @@ function initChatWebsocket() {
       addMessageToChat(data);
     }
     else if (data.type === "chat_message_error") {
-      console.log("private message ERROR", data);
       alert(`${data.message}`);
     }
     else if (data.type === "block_unblock_player") {

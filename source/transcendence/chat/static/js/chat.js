@@ -255,8 +255,8 @@ async function clearConvo() {
       room: chat_id,
     };
     window.ws_chat.send(JSON.stringify(chatMessage));
-    console.log("Chatroom deleted.");
   }
-  else
-    console.error("WebSocket is not open. Unable to delete chatroom.");
+  else {
+    createToast({type: 'error', error_message: 'WebSocket is not open. Unable to delete chatroom.', title: 'Websocket Not Open!'});
+  }
 }

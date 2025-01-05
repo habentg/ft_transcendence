@@ -14,6 +14,11 @@
   height: 100vh;
 }
 
+/* make window not flow over html and body width */
+html, body {
+  overflow-x: hidden;
+}
+
 .playerListContainer {
   width: 80%;
   max-width: 1200px;
@@ -509,7 +514,7 @@ span.score-value {
   }
   
   .connection-5-7::before {
-    width : 180px;
+    width : 100px;
   }
 }
 

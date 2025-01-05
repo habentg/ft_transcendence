@@ -1,24 +1,19 @@
 {% load static %}
 
 <!-- Notifications -->
-{% for notification in notifications %}
-  <li style="border-bottom: 1px solid #ffffff; padding-bottom: 0.3rem; margin-bottom: 0.3rem;">
-    <a class="dropdown-item" href="/profile/{{notification.sender_username}}">
-      {% if notification.sender_profile_picture %}
-        <img src="{{ notification.sender_profile_picture }}" alt="Profile Picture" class="profile-pic-nav rounded-circle" style="width: 32px; height: 32px" />
-      {% else %}
-        <img src="{% static 'images/default_profile_pic.jpeg' %}" alt="Default Profile Picture" class="profile-pic-nav rounded-circle" style="width: 32px; height: 32px" />
-      {% endif %}Friend Request <i class="fas fa-user-plus ms-3"></i>
-      <p class="notificationMsg test-mute mt-2 mb-0" style="color: antiquewhite; font-size: 12px;">{{ notification.sender_username }} has sent you a friend request</p>
-    </a>
-  </li>
-{% empty %}
-  <li>No notifications found.</li>
-{% endfor %}
-
-{% comment %} 
-
-                        <a class="dropdown-item" href="#"><i class="fas fa-user me-3"></i>New message <i class="fas fa-envelope ms-3"></i>
-                          <div class="notification-text mt-2">John Doe has sent you a message</div>
-                        </a>
-{% endcomment %}
+{% if notifications %}
+  {% for notification in notifications %}
+    <li style="border-bottom: 1px solid #ffffff; padding-bottom: 0.3rem; margin-bottom: 0.3rem;">
+      <a class="dropdown-item" href="/profile/{{ notification.sender_username }}">
+        {% if notification.sender_profile_picture %}
+          <img src="{{ notification.sender_profile_picture }}" alt="Profile Picture" class="profile-pic-nav rounded-circle" style="width: 32px; height: 32px" />
+        {% else %}
+          <img src="{% static 'images/default_profile_pic.jpeg' %}" alt="Default Profile Picture" class="profile-pic-nav rounded-circle" style="width: 32px; height: 32px" />
+        {% endif %}Friend Request <i class="fas fa-user-plus ms-3"></i>
+        <p class="notificationMsg test-mute mt-2 mb-0" style="color: antiquewhite; font-size: 12px;">{{ notification.sender_username }} Friend request - '{{ notification.notification_type }}'</p>
+      </a>
+    </li>
+  {% endfor %}
+{% else %}
+  <p class="text-center my-2">No notifications yet!</p>
+{% endif %}

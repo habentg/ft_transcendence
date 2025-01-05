@@ -21,7 +21,7 @@ async function createGameInDB(game) {
     });
     if (response.ok) {
       const responseData = await response.json();
-      console.log("Game ID: ", responseData.game_id);
+      console.log("New Game ID: ", responseData.game_id);
       game.game_id = responseData.game_id;
       if (game.aiFlag) startaiGame(game);
       else if (game.tournamentFlag) return;
@@ -31,13 +31,12 @@ async function createGameInDB(game) {
     }
     throw new Error("Failed to load gameApiPOSTFunction");
   } catch (error) {
-    console.error("ERROR: ", error);
+    createToast({type: 'error', message: 'Failed to create game', title: 'Game Creating Error!'});
     return false;
   }
 }
 
 async function updateGameInDB(endgame_data, game_id) {
-  console.log("is it comming here --- Endgame data: ", endgame_data);
   try {
     const response = await fetch(`/game?game_id=${game_id}`, {
       method: "PATCH",
@@ -49,19 +48,17 @@ async function updateGameInDB(endgame_data, game_id) {
       body: JSON.stringify(endgame_data),
     });
     const responseData = await response.json();
-    console.log("responseData: ", responseData);
     if (response.ok) {
-      console.log("successfully updated the game id : ", game_id);
       return;
     }
     throw new Error(`Failed to update game with id: ${game_id} : ${response.status} : ${response.error}`);
   } catch (error) {
+    createToast({type: 'error', message: error, title: 'Game Updating Error!'});
     console.error(error);
   }
 }
 
 function showGameRules() {
-	console.log("Game Rules button clicked");
 	const modal = gameRulesModal();
 	document.body.appendChild(modal);
 
@@ -90,7 +87,6 @@ async function loadGame() {
 
   if (document.getElementById("settingButton")) {
     document.getElementById("settingButton").addEventListener("click", () => {
-      console.log("Setting button ");
       changeSetting(game);
     });
   }
@@ -99,9 +95,6 @@ async function loadGame() {
     document
       .getElementById("startButton")
       .addEventListener("click", async () => {
-        console.log("Game values before starting the game", game);
-        // console.table(game.players);
-
         await createGameInDB(game);
       });
   }
@@ -517,18 +510,14 @@ async function resetGame(player1, player2, direction, game) {
   if (isGameOver(player1, player2, game)) {
     game.drawFlag = false;
     game.aiFlag = false;
-    console.log("player1; ", player1);
     const endgame_stuff = {
       player1_username: player1.playerName,
       player2_username: player2.playerName,
       player1_score: player1.finalScore,
       player2_score: player2.finalScore,
     };
-    console.log("Endgame stuff##########################");
-    console.table(endgame_stuff);
-    console.log("Endgame stuff##########################");
     await updateGameInDB(endgame_stuff, game.game_id);
-    console.log("Game Over: SHOULD RETURN SETTINGS MENU");
+    console.log(`Game Between ${player1.playerName} Vs. ${player2.playerName} Over! Scores: ${player1.finalScore} - ${player2.finalScore}`);
 
     if (document.getElementById("aiButton")) {
       document.getElementById("aiButton").disabled = false;
@@ -640,8 +629,8 @@ function startaiGame(game) {
 }
 
 function aiLogic(player2, game, aiHelper) {
-  if (!game.aiFlag) return;
-  console.log("Inside AI logic");
+  if (!game.aiFlag)
+    return;
   const tolerance = 10; // Allow a small margin of error
 
   const time = (player2.x - game.ball.x - player2.width) / game.ball.velocityX;
@@ -676,7 +665,6 @@ function aiLogic(player2, game, aiHelper) {
 // function to check/store balls last position every 1 second.
 function aiView(game, aiHelper) {
   if (game.aiFlag) {
-    // console.log("Inside AI view settings values for aiHelper = ", aiHelper);
     aiHelper.x = game.ball.x;
     aiHelper.y = game.ball.y;
     aiHelper.velocityX = game.ball.velocityX;
@@ -785,9 +773,8 @@ function checkScreenSize() {
 function changeSetting(game) {
   const modal = gameSettingsModal();
 
-  if (document.body.appendChild(modal)) console.log("Child appended");
-  // if (document.body.classList.add("modal-open"))
-  //   console.log("modal open");
+  if (document.body.appendChild(modal))
+    console.log("Child appended");
 
   console.log("Modal values", modal);
 
@@ -799,7 +786,6 @@ function changeSetting(game) {
   });
 
   modal.addEventListener("keydown", (e) => {
-    console.log("keydown log for enter");
     if (e.key === "Enter") {
       if (applySetting(game) === 0) {
         closeModal("gameSettingsModal");
@@ -810,12 +796,10 @@ function changeSetting(game) {
   modal // close the modal
     .querySelector(".btn-close")
     .addEventListener("click", () => {
-      console.log("keydown log for button close");
       closeModal("gameSettingsModal");
     });
 
   modal.addEventListener("click", (e) => {
-    console.log("click for modal");
     if (e.target === modal) closeModal("gameSettingsModal");
   });
 

@@ -22,7 +22,6 @@ async function updateUI(path) {
     isInitialLoad = false;
     return;
   }
-  console.log("Updating UI for path:", path);
   if (!path.includes(`${window.location.origin}`))
     path = `${window.location.origin}${path}`;
   history.pushState(null, "", `${path}`);
@@ -100,7 +99,6 @@ async function initApp() {
       all_modals[i].classList.add("d-none");
     }
     const route = window.location.pathname;
-    console.log("Handling popstate for route:", route);
     await loadContent(route);
   });
 
@@ -113,7 +111,6 @@ async function initApp() {
       return;
     }
     const route = window.location.pathname;
-    console.log("Handling onload for route:", route);
     await loadContent(route);
   });
 
