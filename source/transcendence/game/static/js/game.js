@@ -1,4 +1,6 @@
 async function createGameInDB(game) {
+  console.log("Inside createGameInDB");
+  console.log("Game Data: ", game);
   const startgame_data = {
     player_one: game.players[0].playerName,
     player_two: game.players[1].playerName,
@@ -8,7 +10,9 @@ async function createGameInDB(game) {
     startgame_data["type"] = "TOURNAMENT";
     startgame_data["tournament_id"] = `${game.tournament_id}`;
   }
+  console.log("------- start ---- Game Data -------");
   console.table(startgame_data);
+  console.log("------- start ---- Game Data -------");
   try {
     const response = await fetch("/game/", {
       method: "POST",
@@ -20,13 +24,14 @@ async function createGameInDB(game) {
       body: JSON.stringify(startgame_data),
     });
     if (response.ok) {
+      console.log("response.ok");
       const responseData = await response.json();
       game.game_id = responseData.game_id;
       console.log("New Game ID: ", game.game_id);
       if (game.aiFlag)
         startaiGame(game);
       else if (game.tournamentFlag)
-        return;
+        return 'start_tournament';
       else 
         startGame(game);
       return;
@@ -97,13 +102,14 @@ async function loadGame() {
     document
       .getElementById("startButton")
       .addEventListener("click", async () => {
+        console.log("Start Button clicked");
         await createGameInDB(game);
       });
-  }
-
-  if (document.getElementById("aiButton")) {
-    document.getElementById("aiButton").addEventListener("click", async () => {
-      // document.getElementById("aiButton")
+    }
+    
+    if (document.getElementById("aiButton")) {
+      document.getElementById("aiButton").addEventListener("click", async () => {
+      console.log("Start Button clicked");
       await createGameInDB(game);
       // console.table(game);
       // startaiGame(game);

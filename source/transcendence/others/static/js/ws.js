@@ -126,7 +126,6 @@ function initNotificationWebsocket() {
 
   window.ws.onmessage = (e) => {
     const data = JSON.parse(e.data);
-    console.log("notification received:", data);
     if (data.type === "friend_request") {
       handleFriendRequestRecieved(data);
     }
@@ -141,9 +140,6 @@ function initNotificationWebsocket() {
     }
     else if (data.type === "unfriended") {
       handleFriendRequestUnfriend(data);
-    }
-    else {
-      console.log("unknown notification data:", data);
     }
   }
 }

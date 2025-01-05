@@ -17,6 +17,11 @@ async function updatePlayerPassword() {
       return;
     }
 
+    if (formData.new_password.length < 3) {
+      displayError({ error_msg: "Password must be at least 3 characters long" });
+      return;
+    }
+
     if (formData.new_password !== formData.confirm_password) {
       displayError({ error_msg: "New passwords do not match" });
       return;
@@ -315,15 +320,16 @@ function displayError(errorData) {
 }
 
 // A generic modal for closing modals passed as an arguments
-function closeModal(modalId) { // Currently only working for modals in the setting only., If taken to modal.js or utils.js, it requires refresh to work if gone from page profile to settings.
-  const modal = document.getElementById(modalId);
-  if (modal) {
-    modal.remove(); // Remove the modal from the DOM
-    document.body.classList.remove("modal-open"); // Remove the modal-open class from body
-  } else {
-    console.warn(`Modal with id "${modalId}" not found.`);
-  }
-}
+// function closeModal(modalId) { // Currently only working for modals in the setting only., If taken to modal.js or utils.js, it requires refresh to work if gone from page profile to settings.
+//   // console.log("closing modal");
+//   const modal = document.getElementById(modalId);
+//   if (modal) {
+//     modal.remove(); // Remove the modal from the DOM
+//     document.body.classList.remove("modal-open"); // Remove the modal-open class from body
+//   } else {
+//     console.warn(`Modal with id "${modalId}" not found.`);
+//   }
+// }
 
 
 // Initialize Settings

@@ -1,6 +1,6 @@
 from rest_framework import serializers
-from account.models import Player
 from .models import *
+from django.utils import timezone
 
 class GameSerializer(serializers.ModelSerializer):
     formatted_start_time = serializers.SerializerMethodField()
@@ -10,7 +10,8 @@ class GameSerializer(serializers.ModelSerializer):
         fields = '__all__'  # Include all fields or specify explicitly
 
     def get_formatted_start_time(self, obj):
-        return obj.start_time.strftime('%d/%m/%Y %H:%M')
+        local_start_time = timezone.localtime(obj.start_time)
+        return local_start_time.strftime('%d/%m/%Y %H:%M')
 
 """ Game serializer """
 class TournamentSerializer(serializers.ModelSerializer):

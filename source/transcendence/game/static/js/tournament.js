@@ -58,13 +58,15 @@ async function createTournamentinDB(tournament_type) {
         .getElementById("background")
         .getAttribute("data-tournamentId");
       this.game.tournament_id = tournament_id;
-      await createGameInDB(this.game);
-      requestAnimationFrame((timestamp) => gameLoop(this.game, timestamp));
-      //   if (gameCreated)
-      //   } else {
-      // alert("Failed to start game. We will have to restart")
-      // updateUI("/home")
-      //   }
+      console.log("Tournament ID:", tournament_id);
+      console.log("game: ", this.game);
+      const ret = await createGameInDB(this.game);
+      if (ret === 'start_tournament')
+        requestAnimationFrame((timestamp) => gameLoop(this.game, timestamp));
+      else {
+        createToast({type: 'error', error_message: 'Failed to start Tournament games', title: 'Game Creating Error!'});
+        return;
+      }
     }
     getPlayers() {
       return this.game.players;
@@ -616,7 +618,7 @@ async function createTournamentinDB(tournament_type) {
 		return new Promise((resolve) => {
 		  let elapsedTime = 0;
 		  const interval = 100; // Check every 100ms
-		  const timeout = 3000; // 10 seconds
+		  const timeout = 3000; // 3 seconds
 	
 		  const checker = setInterval(() => {
 			const modal = document.getElementById(modalId);
@@ -679,100 +681,33 @@ async function createTournamentinDB(tournament_type) {
       }
       const modal = getPlayerNumberModal(); //put player number modal, comes from other file
       document.body.appendChild(modal); //add it to the page
-
-      const playersNumberInput = document.getElementById("playersNumber"); //get players number div container
-      const submitPlayerNumBtn = document.getElementById("submitPlayerNumBtn"); //get submit player button
-
-      if (!playersNumberInput || !submitPlayerNumBtn) return;
-      // Add input event listener for real-time validation
-      playersNumberInput.addEventListener(
-        "input",
-        PlayerManager.validatePlayerNumber
-      ); //when number is inputted check if its correct
-      playersNumberInput.addEventListener("keypress", (e) => {
-        if (e.key === "Enter") {
-          submitPlayerNumBtn.click();
-        }
-      });
-
-      // Modify existing submit button event listener
-      submitPlayerNumBtn.addEventListener("click", async () => {
-        if (!PlayerManager.validatePlayerNumber()) {
-          return;
-        }
-        this.maxPlayerNumbers = playersNumberInput.value;
-        console.log(
-          "Creating tournament with ",
-          this.maxPlayerNumbers,
-          " players"
-        );
-        if (
-          parseInt(this.maxPlayerNumbers) != 4 &&
-          parseInt(this.maxPlayerNumbers) != 8
-        ) {
-          UIManager.closeModal("tournamentModal");
-          await updateUI("/");
-          return;
-        }
-        UIManager.closeModal("tournamentModal"); //close the tournament modal
+      
+      // create eventlistner
+      document.getElementById("tournamentOf4").addEventListener("click", () => {
+        this.maxPlayerNumbers = 4;
+        console.log( "Creating tournament with ", this.maxPlayerNumbers, " players");
+        console.log(this.maxPlayerNumbers);
+        UIManager.closeModal("tournamentModal");
         this.playerManager.setUpPlayerAddition(this.maxPlayerNumbers, this);
       });
-      // close the modal when the close button is clicked
-      if (!document) return;
-      document
-        .querySelector("#tournamentModal .btn-close")
-        .addEventListener("click", async () => {
-          this.maxPlayerNumbers = playersNumberInput.value;
-          console.log(
-            "Creating tournament with ",
-            this.maxPlayerNumbers,
-            " players"
-          );
-
-          if (
-            parseInt(this.maxPlayerNumbers) != 4 &&
-            parseInt(this.maxPlayerNumbers) != 8
-          ) {
-            UIManager.closeModal("tournamentModal");
-            await updateUI("/");
-            return;
-          }
-          UIManager.closeModal("tournamentModal");
-          this.playerManager.setUpPlayerAddition(this.maxPlayerNumbers, this);
-        });
-
-      // close the modal when the modal is clicked outside
-      modal.addEventListener("click", async (event) => {
-        if (event.target === modal) {
-          this.maxPlayerNumbers = playersNumberInput.value;
-          console.log(
-            "Creating tournament with ",
-            this.maxPlayerNumbers,
-            " players"
-          );
-          console.log(this.maxPlayerNumbers);
-          if (
-            parseInt(this.maxPlayerNumbers) != 4 &&
-            parseInt(this.maxPlayerNumbers) != 8
-          ) {
-            UIManager.closeModal("tournamentModal");
-            await updateUI("/");
-            return;
-          }
-          UIManager.closeModal("tournamentModal");
-          this.playerManager.setUpPlayerAddition(this.maxPlayerNumbers, this);
-        }
+      document.getElementById("tournamentOf8").addEventListener("click", () => {
+        this.maxPlayerNumbers = 8;
+        console.log( "Creating tournament with ", this.maxPlayerNumbers, " players");
+        console.log(this.maxPlayerNumbers);
+        UIManager.closeModal("tournamentModal");
+        this.playerManager.setUpPlayerAddition(this.maxPlayerNumbers, this);
       });
-      document
-        .getElementById("playerInput")
-        .addEventListener("input", function () {
-          const errorMsgDiv = document.getElementById("player-name-error-msg");
-          if (errorMsgDiv) {
-            errorMsgDiv.textContent = "";
-            errorMsgDiv.style.display = "none";
-          }
-        });
-    }
+      // set eventlisner for outside of the window clicked
+      document.querySelector(".btn-close").addEventListener("click", async (e) => {
+        // if (e.target.id === "tournamentModal") {
+          console.log("clicked outside");
+          UIManager.closeModal("tournamentModal");
+          await updateUI(`/home`);
+        // }
+      });
+    };
+
+
 
     //This is the main part where we create tournament map and run the tournament
     async startTournament(maxPlayerNumbers, playersNames) {

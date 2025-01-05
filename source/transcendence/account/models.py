@@ -121,4 +121,5 @@ class Player(AbstractUser):
     def win_percentage(self):
         if self.games_played_count == 0:
             return 0
-        return self.games_played.filter(outcome="WIN").count() / self.games_played_count * 100
+        percentage = (self.games_played.filter(outcome="WIN").count() / self.games_played_count) * 100
+        return round(percentage, 1)

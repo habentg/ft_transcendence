@@ -14,6 +14,11 @@
   height: 100vh;
 }
 
+/* make window not flow over html and body width */
+html, body {
+  overflow-x: hidden;
+}
+
 .playerListContainer {
   width: 80%;
   max-width: 1200px;
@@ -219,6 +224,8 @@ h6 {
   color: white;
   /* border: 1px solid #ddd; */
   transition: all 0.3s ease;
+  /* min-width: 200px; */
+  /* padding-right: 2rem; */
 }
 
 .card:hover {
@@ -395,7 +402,7 @@ span.score-value {
 
 /* Second Round to Final Connection */
 .connection-5-7 {
-  width: 30px;
+  width: 80px;
   height: 2px;
   top: 50%;
   left: 100%;
@@ -405,7 +412,7 @@ span.score-value {
   content: "";
   position: absolute;
   width: 2px;
-  height: 224px;
+  height: 250px;
   top: 50%;
   left: 100%;
   background-color: #b02c98;
@@ -426,9 +433,9 @@ span.score-value {
 }
 
 .connection-6-7 {
-  width: 30px;
+  width: 80px;
   height: 2px;
-  top: 20%;
+  top: 50%;
   left: 100%;
 }
 
@@ -480,6 +487,10 @@ span.score-value {
 
 /* Responsive Design */
 @media (max-width: 850px) {
+  .tournamentWrapper {
+    width: 100%;
+    padding: 0;
+  }
   .profileIcon {
     display: none;
   }
@@ -500,6 +511,10 @@ span.score-value {
   .connection-1-5::before,
   .connection-3-6::before {
     width: 120px;
+  }
+  
+  .connection-5-7::before {
+    width : 100px;
   }
 }
 
@@ -528,7 +543,11 @@ span.score-value {
 
   .connection-1-5::before,
   .connection-3-6::before {
-    width: 100px;
+    width: 70px;
+  }
+
+  .connection-5-7::before {
+    width : 20px;
   }
 }
 
