@@ -84,7 +84,7 @@ async function handlePassChangeSubmit(e) {
     });
     const responseData = await response.json();
     if (!response.ok) {
-      alert("Password couldn't reset: " + responseData.error_msg);
+      createToast({ type: "error", title: "Error", error_message: `${responseData.error_msg}`});
       return;
     }
 

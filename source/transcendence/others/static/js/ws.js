@@ -219,7 +219,7 @@ function initChatWebsocket() {
       addMessageToChat(data);
     }
     else if (data.type === "chat_message_error") {
-      alert(`${data.message}`);
+      createToast({ type: "error", title: "Error", error_message: data.message });
     }
     else if (data.type === "block_unblock_player") {
       chatOptionsModifier(data.action, false);
@@ -249,10 +249,6 @@ function initChatWebsocket() {
     else if (data.type === "room_deleted_notification") {
       // remove the chatroom from the list
       clearConvoHandler(data);
-    }
-    else if (data.type === "room_deleted_notification_error") {
-      // remove the chatroom from the list
-      alert("could not delete the room");
     }
   }
 }
