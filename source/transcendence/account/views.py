@@ -440,22 +440,27 @@ class PlayerProfileView(APIView, BaseView):
 			queried_user = self.get_player(kwargs.get('username'))
 			if not queried_user:
 				return {'error_msg_404':f'Player "{kwargs.get('username')}" not found'}
+		games = queried_user.games_played.all().order_by('-start_time')
+		paginator = Paginator(games, 5)  # 5 games per page
+		page_number = request.GET.get('page', 1)  # Get the page number from the request (default to 1)
+		try:
+			games_page = paginator.page(page_number)
+		except PageNotAnInteger:
+			games_page = paginator.page(1)
+		except EmptyPage:
+			games_page = paginator.page(paginator.num_pages)
 		data = {}
 		if queried_user.is_guest:
 			data = {
 				'player': PlayerSerializer(queried_user).data,
 				'is_self': False,
+				'is_guest': True,
+				'games': GameSerializer(games_page.object_list, many=True).data,
+				'num_of_games': games.count(),
+				'games_won': games.filter(outcome='WIN').count(),
+				'games_lost': games.filter(outcome='LOSE').count(),
 			}
 		else:
-			games = queried_user.games_played.all().order_by('-start_time')
-			paginator = Paginator(games, 5)  # 5 games per page
-			page_number = request.GET.get('page', 1)  # Get the page number from the request (default to 1)
-			try:
-				games_page = paginator.page(page_number)
-			except PageNotAnInteger:
-				games_page = paginator.page(1)
-			except EmptyPage:
-				games_page = paginator.page(paginator.num_pages)
 			data = {
 				'player': PlayerSerializer(queried_user).data,
 				'is_friend': request.user.friend_list.friends.filter(username=queried_user.username).exists(),

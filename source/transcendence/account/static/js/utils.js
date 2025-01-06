@@ -160,7 +160,6 @@ function updateNavBar(isAuthenticated, givenUsername = null, givenProfilePic = n
     // check if profile_btn has data-username
     if (profile_btn) {
       username = profile_btn.dataset.username;
-
     }
     if (user_profile_pic) {
       profilePic = user_profile_pic.dataset.pfp; // Same as user_profile_pic.getAttribute("data-pfp");
@@ -212,7 +211,7 @@ function updateNavBar(isAuthenticated, givenUsername = null, givenProfilePic = n
     <ul class="navbar-nav ms-auto align-items-center">
 
       <li class="nav-item">
-        <a href="#" class="nav-link"><i class="fas fa-gamepad me-2"></i>Quick game</a>
+        <a  onclick="appRouter()" href="/guest_player" class="nav-link"><i class="fas fa-gamepad me-2"></i>Quick game</a>
       </li>
       <li class="nav-item">
         <a onclick="appRouter()" class="nav-link btn btn-outline-primary ms-lg-2" href="/signin">Sign in</a>
@@ -401,12 +400,12 @@ async function messageToastClick(contentStr) {
   const content = JSON.parse(contentStr);
   if (`${content.type}` === 'chat_message') {
     if (window.location.href.includes('/chat'))
-      return ;
-      await updateUI('/chat');
-    }
-    if (`${content.type}` === 'friend_request') {
+      return;
+    await updateUI('/chat');
+  }
+  if (`${content.type}` === 'friend_request') {
     if (window.location.href.includes(`/profile/${content.sender}`))
-      return ;
+      return;
     await updateUI(`/profile/${content.sender}`);
   }
 }

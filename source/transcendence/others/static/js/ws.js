@@ -258,10 +258,15 @@ function initChatWebsocket() {
 }
 
 function createWebSockets() {
-  if (window.ws === undefined) {
-    initNotificationWebsocket();
+  if (window.location.href.includes("guest_player")) {
+    updateNavBar(true, null, '/static/images/anon.jpeg');
   }
-  if (window.ws_chat === undefined) {
-    initChatWebsocket();
+  else {
+    if (window.ws === undefined) {
+      initNotificationWebsocket();
+    }
+    if (window.ws_chat === undefined) {
+      initChatWebsocket();
+    }
   }
 }

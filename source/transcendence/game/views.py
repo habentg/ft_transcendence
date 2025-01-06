@@ -169,7 +169,7 @@ class LeaderBoardView(APIView, BaseView):
         return super().handle_exception(exception)
     
     def get_context_data(self, request, **kwargs):
-        all_players = Player.objects.all().order_by('-rating')
+        all_players = Player.objects.all().filter(is_guest=False).order_by('-rating')
         paginator = Paginator(all_players, 10)
         page_number = request.GET.get('page', 1)
         try:

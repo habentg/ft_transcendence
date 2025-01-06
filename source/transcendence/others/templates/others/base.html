@@ -102,6 +102,9 @@
                   {% if user.profile_picture %}
                   <img src="{{ user.profile_picture }}" alt="Profile Picture" class="profile-pic-nav rounded-circle"
                     style="width: 32px; height: 32px" />
+                  {% elif user.is_guest %}
+                  <img src="{% static 'images/anon.jpeg' %}" alt="Anonymous Profile Picture"
+                    class="profile-pic-nav rounded-circle" style="width: 32px; height: 32px" />
                   {% else %}
                   <img src="{% static 'images/default_profile_pic.jpeg' %}" alt="Default Profile Picture"
                     class="profile-pic-nav rounded-circle" style="width: 32px; height: 32px" />
@@ -127,7 +130,7 @@
               </li>
               {% else %}
               <li class="nav-item">
-                <a href="/temp_player" class="nav-link"><i class="fas fa-gamepad me-2"></i>Quick game</a>
+                <a  onclick="appRouter()" href="/guest_player" class="nav-link"><i class="fas fa-gamepad me-2"></i>Quick game</a>
               </li>
               <li class="nav-item">
                 <a onclick="appRouter()" class="nav-link btn btn-outline-primary ms-lg-2" href="/signin">Sign in</a>

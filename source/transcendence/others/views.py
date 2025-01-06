@@ -143,7 +143,9 @@ class HealthCheck(View):
 # view for the csrf token request
 class CsrfRequest(APIView):
 	authentication_classes = []
+	permission_classes = []
 	throttle_classes = []
+	
 	def get(self, request):
 		response = Response(status=status.HTTP_200_OK)
 		response.set_cookie('csrftoken', get_token(request))
