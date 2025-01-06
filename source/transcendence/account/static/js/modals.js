@@ -75,10 +75,6 @@ function updateProfileModal() {
           <button type="button" class="btn-close btn-close-white" id="close-username-modal"></button>
         </div>
         <div class="modal-body">
-          <div class="alert alert-warning small">
-            <i class="fas fa-exclamation-triangle me-2"></i> If you signed up using 42 account, changing your username or email may result in permanent loss of access.
-          </div>
-
           <div class="mb-3">
             <span class="form-label">Username</span>
             <span class="form-control bg-transparent text-muted">${username}</span>
