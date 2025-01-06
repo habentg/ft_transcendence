@@ -28,7 +28,7 @@
                     {% else %}
                       <img src="{% static 'images/default_profile_pic.jpeg' %}" alt="Default Profile Picture" class="profile-pic rounded-circle" style="width:30px;height: 30px;"/>
                     {% endif %}
-                    <span class="mb-0 username_span">{{ chatroom.get_participant_two.username }}</span>
+                    <span class="mb-0 username_span">{{ chatroom.get_participant_two.username|slice:":5" }}</span>
                   </li>
                   {% elif chatroom.get_participant_two.username == user.username %}
                   <li id="{{ chatroom.get_participant_one.username }}" class="friend-item d-flex align-items-center" data-recipent="{{ chatroom.get_participant_one.full_name }}" onclick="openChat('{{ chatroom.get_participant_one.username }}', '{{ chatroom.name }}')">
@@ -37,7 +37,7 @@
                     {% else %}
                       <img src="{% static 'images/default_profile_pic.jpeg' %}" alt="Default Profile Picture" class="profile-pic rounded-circle" style="width:30px;height: 30px;"/>
                     {% endif %}
-                    <span class="mb-0">{{ chatroom.get_participant_one.username }}</span>
+                    <span class="mb-0">{{ chatroom.get_participant_one.username|slice:":5" }}</span>
                   </li>
                 {% endif %}
               {% endfor %}

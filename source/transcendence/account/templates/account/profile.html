@@ -26,10 +26,10 @@
               </div>
 
               <div id="pfp_from_profile" class="profile-info mt-3" data-pfp="{{ player.profile_picture }}">
-                <h3 id="full_name" class="mb-1 nav_profile_pic">{{ player.full_name }}</h3>
-                <p id="username" class="text-muted mb-1" data-username="{{ player.username }}">@{{ player.username }}</p>
+                <h3 id="full_name" class="mb-1 nav_profile_pic">{{ player.full_name|slice:":10" }}</h3>
+                <p id="username" class="text-muted mb-1" data-username="{{ player.username }}">@{{ player.username|slice:":5" }}</p>
                 <p class="text-muted small mb-3">
-                  <i class="fas fa-envelope me-2"></i><span id="player_email">{{ player.email }}</span>
+                  <i class="fas fa-envelope me-2"></i><span id="player_email">{{ player.email|slice:":15"}}</span>
                 </p>
               </div>
 

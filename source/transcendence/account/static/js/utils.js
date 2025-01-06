@@ -47,6 +47,9 @@ function displayError(response) {
   } else if (response.email && response.email[0]) {
     error_msg = response.email[0];
   }
+  else if (response.invalid_chars) {
+    error_msg = response.invalid_chars;
+  }
   document.getElementById("error-msg").innerText = error_msg;
   document.getElementById("error-msg").style.display = "block";
 }
@@ -406,4 +409,9 @@ async function messageToastClick(contentStr) {
       return ;
     await updateUI(`/profile/${content.sender}`);
   }
+}
+
+function inputValidator(input) {
+  const regex = /^[a-zA-Z0-9_]+$/;
+  return regex.test(input);
 }

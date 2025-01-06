@@ -69,6 +69,7 @@ class SignUpView(APIView, BaseView):
 				FriendList.objects.create(player=new_player)
 				return response
 			return Response({'error_msg': 'Couldn\'t create the player'}, status=status.HTTP_422_UNPROCESSABLE_ENTITY)
+		print("Error in signup: ", serializer.errors, flush=True)
 		return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 	def get_context_data(self, request):
@@ -92,6 +93,7 @@ class SignInView(APIView, BaseView):
 
 	def post(self, request):
 		serializer = PlayerSigninSerializer(data=request.data)
+		print("Request data: ", request.data, flush=True)
 		if serializer.is_valid():
 			player = serializer.validated_data['player']
 			if player.tfa:
@@ -108,6 +110,7 @@ class SignInView(APIView, BaseView):
 			player.save()
 			return response
 		error_message = serializer.errors.get('non_field_errors', ['No specific error'])[0]
+		print("Error in sign in: ", serializer.errors, flush=True)
 		return Response({'error_msg': error_message}, status=status.HTTP_400_BAD_REQUEST)
 
 	def get_context_data(self, request):
@@ -403,8 +406,6 @@ class TwoFactorSetUpToggle(APIView):
 		return JsonResponse({'error': 'User not found'}, status=status.HTTP_404_NOT_FOUND)
 
 from django.core.paginator import Paginator
-from rest_framework.pagination import PageNumberPagination
-from others.views import SearchPaginator
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 # template_name for viewing player profile
 class PlayerProfileView(APIView, BaseView):

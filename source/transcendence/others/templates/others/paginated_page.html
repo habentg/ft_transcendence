@@ -27,8 +27,8 @@
 
                   <!-- Player Info -->
                   <div class="player-info ms-3 flex-grow-1">
-                    <h5 class="mb-1" style="color: #84ddfc;">{{ player.username }}</h5>
-                    <p class="mb-0">{{ player.full_name }}</p>
+                    <h5 class="mb-1" style="color: #84ddfc;">{{ player.username|slice:":15" }}</h5>
+                    <p class="mb-0">{{ player.full_name|slice:":35" }}</p>
                   </div>
 
                   <!-- Action Buttons -->
