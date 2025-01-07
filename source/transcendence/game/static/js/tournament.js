@@ -58,13 +58,15 @@ async function createTournamentinDB(tournament_type) {
         .getElementById("background")
         .getAttribute("data-tournamentId");
       this.game.tournament_id = tournament_id;
-      await createGameInDB(this.game);
-      requestAnimationFrame((timestamp) => gameLoop(this.game, timestamp));
-      //   if (gameCreated)
-      //   } else {
-      // alert("Failed to start game. We will have to restart")
-      // updateUI("/home")
-      //   }
+      console.log("Tournament ID:", tournament_id);
+      console.log("game: ", this.game);
+      const ret = await createGameInDB(this.game);
+      if (ret === 'start_tournament')
+        requestAnimationFrame((timestamp) => gameLoop(this.game, timestamp));
+      else {
+        createToast({type: 'error', error_message: 'Failed to start Tournament games', title: 'Game Creating Error!'});
+        return;
+      }
     }
     getPlayers() {
       return this.game.players;

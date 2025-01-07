@@ -37,7 +37,7 @@
 						  {% else %}
 							<img src="{% static 'images/default_profile_pic.jpeg' %}" alt="Default Profile Picture" class="profile-pic rounded-circle " style="width:30px;height: 30px;"/>
 						  {% endif %}
-							<span>{{ player.username }}</span>
+							<span>{{ player.username|slice:":10" }}</span>
 						</div>
 						</td>
 						<td>{{ player.games_played_count }}</td>

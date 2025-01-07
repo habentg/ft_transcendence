@@ -39,6 +39,11 @@ h6,
 	letter-spacing: 0.5px;
 }
 
+.found-count {
+    color: #b02c98;
+    font-weight: bold;
+}
+
 .note,
 .error-message,
 .settings-title,

@@ -143,7 +143,6 @@ class PlayerGameHistoryView(APIView):
                     }),
                 })
         except Exception as e:
-            print("error: ", str(e), flush=True)
             return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
 class LeaderBoardView(APIView, BaseView):
@@ -151,6 +150,7 @@ class LeaderBoardView(APIView, BaseView):
     permission_classes = [IsAuthenticated]
     throttle_classes = []
     template_name = 'game/leaderboard.html'
+    title = 'Leaderboard'
     css = ['css/leaderboard.css']
     js = ['js/leaderboard.js']
 
@@ -169,7 +169,7 @@ class LeaderBoardView(APIView, BaseView):
         return super().handle_exception(exception)
     
     def get_context_data(self, request, **kwargs):
-        all_players = Player.objects.all().order_by('-rating')
+        all_players = Player.objects.all().filter(is_guest=False).order_by('-rating')
         paginator = Paginator(all_players, 10)
         page_number = request.GET.get('page', 1)
         try:
@@ -212,12 +212,10 @@ class TournamentView(APIView, BaseView):
         return super().handle_exception(exception)
     
     def get_context_data(self, request, **kwargs):
-        print("player username: ", request.user.username, flush=True)
         return {'username': request.user.username}
 
     def patch(self, request):
         tournament_id = request.GET.get('tournament_id', None)
-        print("tournament_id: ", tournament_id, flush=True)
         if tournament_id: 
             try:
                 tournament = Tournament.objects.get(id=tournament_id)
@@ -266,20 +264,23 @@ class TournamentRetrievalView(APIView):
         if tournament_id:
             try:
                 tournament = Tournament.objects.get(id=tournament_id)
-                games_in_tournament = tournament.games.values("id", "player_one", "player_two", "final_score")
+                games_in_tournament = tournament.games.values("player_one", "player_two", "final_score")
                 list_of_games = list(games_in_tournament)
+                context = {
+                    "games": {str(index): game for index, game in enumerate(list_of_games)},
+                    "tournament_id": tournament.id,
+                }
                 if (tournament.type == 8):
-                    return Response({'css': self.css, "tournament_id": tournament.id, "tournament_type": 8, 'tournament_games': list_of_games}, status=200)
-                    # return Response({"tournament_id": tournament.id, 'tournament_games': list_of_games, "html": render_to_string(self.template_name_viii, {'game': list_of_games})}, status=200)
-                elif (tournament.type == 4):
-                    return Response({'css': self.css, "tournament_id": tournament.id, "tournament_type": 4, 'tournament_games': list_of_games}, status=200)
-                    # return Response({"tournament_id": tournament.id, 'tournament_games': list_of_games, "html": render_to_string(self.template_name_iv, {'game': list_of_games})}, status=200)
-                print("are we here in tournament retrieval view?")
+                    html_content = render_to_string(self.template_name_viii, context)
+                    return Response({'css': self.css, "tournament_id": tournament.id, "tournament_type": 8, 'html': html_content}, status=200)
+                if tournament.type == 4:
+                    html_content = render_to_string(self.template_name_iv, context)
+                    return Response({'css': self.css, "tournament_id": tournament.id, "tournament_type": 8, 'html': html_content}, status=200)
                 return Response({"tournament_id": tournament.id, "error": 'issues with number of games in tournament'}, status=400)
             except Tournament.DoesNotExist:
                 return Response({"error": "Tournament not found"}, status=404)
             except Exception as e:
-                print("error: ", str(e), flush=True)
+                print("error", str(e))
                 return Response({"error": str(e)}, status=400)
         else:
             tournaments = Tournament.objects.values("id", "name")

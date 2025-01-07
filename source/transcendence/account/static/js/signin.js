@@ -31,6 +31,11 @@ async function handleSignInSubmit(e) {
         username: document.getElementById("username").value,
         password: document.getElementById("password").value,
     };
+    console.log(formData);
+    if (!inputValidator(formData.username) ) {
+        displayError({ invalid_chars: "Invalid characters in username: Only AlphNumericals and underscore are allowed!" });
+        return;
+    }
     try {
         const m_csrf_token = await getCSRFToken();
         const response = await fetch('/signin/', {

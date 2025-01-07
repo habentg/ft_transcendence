@@ -126,7 +126,6 @@ function initNotificationWebsocket() {
 
   window.ws.onmessage = (e) => {
     const data = JSON.parse(e.data);
-    console.log("notification received:", data);
     if (data.type === "friend_request") {
       handleFriendRequestRecieved(data);
     }
@@ -141,9 +140,6 @@ function initNotificationWebsocket() {
     }
     else if (data.type === "unfriended") {
       handleFriendRequestUnfriend(data);
-    }
-    else {
-      console.log("unknown notification data:", data);
     }
   }
 }
@@ -223,7 +219,7 @@ function initChatWebsocket() {
       addMessageToChat(data);
     }
     else if (data.type === "chat_message_error") {
-      alert(`${data.message}`);
+      createToast({ type: "error", title: "Error", error_message: data.message });
     }
     else if (data.type === "block_unblock_player") {
       chatOptionsModifier(data.action, false);
@@ -254,18 +250,19 @@ function initChatWebsocket() {
       // remove the chatroom from the list
       clearConvoHandler(data);
     }
-    else if (data.type === "room_deleted_notification_error") {
-      // remove the chatroom from the list
-      alert("could not delete the room");
-    }
   }
 }
 
 function createWebSockets() {
-  if (window.ws === undefined) {
-    initNotificationWebsocket();
+  if (window.location.href.includes("guest_player")) {
+    updateNavBar(true, null, '/static/images/anon.jpeg');
   }
-  if (window.ws_chat === undefined) {
-    initChatWebsocket();
+  else {
+    if (window.ws === undefined) {
+      initNotificationWebsocket();
+    }
+    if (window.ws_chat === undefined) {
+      initChatWebsocket();
+    }
   }
 }
