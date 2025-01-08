@@ -208,7 +208,7 @@ function createGameCanvas() {
   gameBoard.id = "gameContent";
   gameBoard.className = " py-5 flex-direction: column";
   gameBoard.innerHTML = `
-		<div class="justify-content-center mb-3">
+		<div class="justify-content-center mb-5">
 		</div>
 		<div class="gamePlayers d-flex justify-content-between">
 			<div id="player1" class="col-12 col-md-6 text-center d-none">
