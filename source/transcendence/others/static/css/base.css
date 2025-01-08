@@ -330,9 +330,20 @@ td {
 	transition: all 0.3s ease;
 }
 
+.btn-primary2 {
+	background: linear-gradient(90deg, #b02c98, #84ddfc);
+	border: none;
+	transition: all 0.3s ease;
+}
+
 .modal .btn-primary:hover {
 	transform: translateY(-2px);
 	background: linear-gradient(45deg, #b02c98, #84ddfc);
+}
+
+.btn-primary2:hover {
+	transform: translateY(-2px);
+	background: linear-gradient(90deg, #84ddfc, #b02c98);
 }
 
 .modal .btn-outline-light {

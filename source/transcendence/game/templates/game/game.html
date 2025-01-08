@@ -18,17 +18,23 @@
         <div id="controls" class="col-12 text-center">
           {% if isAI %}
           <button id="aiButton" type="button" class="btn btn-primary me-3">
+            <i class="fas fa-robot me-2"></i>
             Start game
-          </button>
+          </button> 
           {% else %}
           <button id="startButton" type="button" class="btn btn-primary me-3">
+            <i class="fas fa-play me-2"></i>
             Start game
           </button>
           {% endif %}
           <button id="settingButton" type="button" class="btn btn-secondary me-3">
+            <i class="fas fa-cog me-2"></i>
             settings
           </button>
-          <button id="gameRulesButton" type="button" class="btn btn-success" onclick="showGameRules()"> How to play </button>
+          <button id="gameRulesButton" type="button" class="btn btn-primary2 text-light" onclick="showGameRules()" >
+            <i class="fas fa-book me-2"></i>
+            How to play
+          </button>
         </div>
       </div>
       <div class="justify-content-center">
