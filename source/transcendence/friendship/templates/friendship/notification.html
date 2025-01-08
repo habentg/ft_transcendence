@@ -10,7 +10,7 @@
         {% else %}
           <img src="{% static 'images/default_profile_pic.jpeg' %}" alt="Default Profile Picture" class="profile-pic-nav rounded-circle" style="width: 32px; height: 32px" />
         {% endif %}Friend Request <i class="fas fa-user-plus ms-3"></i>
-        <p class="notificationMsg test-mute mt-2 mb-0" style="color: antiquewhite; font-size: 12px;">{{ notification.sender_username }} Friend request - '{{ notification.notification_type }}'</p>
+        <p class="notificationMsg test-mute mt-2 mb-0" style="color: antiquewhite; font-size: 12px;">{{ notification.sender_username|slice:":5" }} Friend request - '{{ notification.notification_type }}'</p>
       </a>
     </li>
   {% endfor %}

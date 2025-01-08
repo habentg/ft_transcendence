@@ -209,7 +209,7 @@ async function fetchMessages(activeChatRecipient, chatMessages) {
     sendButton.addEventListener("click", handleMessageSend);
 
   } catch (error) {
-    alert(`${error}`);
+    createToast({ type: "error", title: "Chat Error", error_message: `${error}`});
   }
 }
 

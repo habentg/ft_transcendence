@@ -69,6 +69,7 @@ class SignUpView(APIView, BaseView):
 				FriendList.objects.create(player=new_player)
 				return response
 			return Response({'error_msg': 'Couldn\'t create the player'}, status=status.HTTP_422_UNPROCESSABLE_ENTITY)
+		print("Error in signup: ", serializer.errors, flush=True)
 		return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 	def get_context_data(self, request):
@@ -92,6 +93,7 @@ class SignInView(APIView, BaseView):
 
 	def post(self, request):
 		serializer = PlayerSigninSerializer(data=request.data)
+		print("Request data: ", request.data, flush=True)
 		if serializer.is_valid():
 			player = serializer.validated_data['player']
 			if player.tfa:
@@ -108,6 +110,7 @@ class SignInView(APIView, BaseView):
 			player.save()
 			return response
 		error_message = serializer.errors.get('non_field_errors', ['No specific error'])[0]
+		print("Error in sign in: ", serializer.errors, flush=True)
 		return Response({'error_msg': error_message}, status=status.HTTP_400_BAD_REQUEST)
 
 	def get_context_data(self, request):
@@ -403,8 +406,6 @@ class TwoFactorSetUpToggle(APIView):
 		return JsonResponse({'error': 'User not found'}, status=status.HTTP_404_NOT_FOUND)
 
 from django.core.paginator import Paginator
-from rest_framework.pagination import PageNumberPagination
-from others.views import SearchPaginator
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 # template_name for viewing player profile
 class PlayerProfileView(APIView, BaseView):
@@ -439,22 +440,27 @@ class PlayerProfileView(APIView, BaseView):
 			queried_user = self.get_player(kwargs.get('username'))
 			if not queried_user:
 				return {'error_msg_404':f'Player "{kwargs.get('username')}" not found'}
+		games = queried_user.games_played.all().order_by('-start_time')
+		paginator = Paginator(games, 5)  # 5 games per page
+		page_number = request.GET.get('page', 1)  # Get the page number from the request (default to 1)
+		try:
+			games_page = paginator.page(page_number)
+		except PageNotAnInteger:
+			games_page = paginator.page(1)
+		except EmptyPage:
+			games_page = paginator.page(paginator.num_pages)
 		data = {}
 		if queried_user.is_guest:
 			data = {
 				'player': PlayerSerializer(queried_user).data,
 				'is_self': False,
+				'is_guest': True,
+				'games': GameSerializer(games_page.object_list, many=True).data,
+				'num_of_games': games.count(),
+				'games_won': games.filter(outcome='WIN').count(),
+				'games_lost': games.filter(outcome='LOSE').count(),
 			}
 		else:
-			games = queried_user.games_played.all().order_by('-start_time')
-			paginator = Paginator(games, 5)  # 5 games per page
-			page_number = request.GET.get('page', 1)  # Get the page number from the request (default to 1)
-			try:
-				games_page = paginator.page(page_number)
-			except PageNotAnInteger:
-				games_page = paginator.page(1)
-			except EmptyPage:
-				games_page = paginator.page(paginator.num_pages)
 			data = {
 				'player': PlayerSerializer(queried_user).data,
 				'is_friend': request.user.friend_list.friends.filter(username=queried_user.username).exists(),

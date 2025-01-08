@@ -59,7 +59,10 @@ async function handleSignupSubmit(e) {
       document.getElementById("lastName").value,
     confirm_password: document.getElementById("confirm-password").value,
   };
-
+  if (!inputValidator(formData.username) || !inputValidator(document.getElementById("firstName").value) || !inputValidator(document.getElementById("lastName").value)) {
+    displayError({ invalid_chars: "Invalid characters detected: Only AlphNumericals and underscore are allowed!" });
+    return;
+}
   // Validate the form data
   if (formData.confirm_password !== formData.password) {
     displayError({ error_msg: "Passwords do not match" });

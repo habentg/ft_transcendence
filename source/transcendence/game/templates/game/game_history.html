@@ -3,7 +3,7 @@
 {% comment %} <h4>{{ total_games }} of games found!</h4> {% endcomment %}
 <div class="results-header mb-4">
   <h6 class="text-center">
-    <i class="fas fa-gamepad me-3"></i>
+    <i class="fas fa-gamepad me-1"></i>
     <span class="found-count">{{ total_games }}</span> Games played
   </h6>
 </div>
@@ -27,9 +27,9 @@
           <td>
             <div>
               {% if player == game.player_one %}
-                <span class="player-name">VS {{ game.player_two }}</span>
+                <span class="player-name">VS {{ game.player_two|slice:":5" }}</span>
               {% else %}
-                <span class="player-name">VS {{ game.player_one }}</span>
+                <span class="player-name">VS {{ game.player_one|slice:":5" }}</span>
               {% endif %}
             </div>
           </td>
@@ -67,7 +67,7 @@
           </td>
           <td>
             <div>
-              <span class="game-type">{{ game.type }}</span>
+              <span class="game-type">{{ game.type|slice:":5" }}</span>
             </div>
           </td>
         </tr>

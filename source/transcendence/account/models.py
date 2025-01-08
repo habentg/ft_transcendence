@@ -52,8 +52,8 @@ class Player(AbstractUser):
     id = models.BigAutoField(primary_key=True)
     username = models.CharField(max_length=150, unique=True)
     full_name = models.CharField(max_length=150, blank=True)
-    email = models.EmailField(unique=True   )
-    password = models.CharField(max_length=150, validators=[MinLengthValidator(8)])
+    email = models.EmailField(max_length=150, unique=True)
+    password = models.CharField(max_length=150)
     is_staff = models.BooleanField(default=False)
     tfa = models.BooleanField(default=False)
     secret = models.CharField(max_length=150, blank=True)
@@ -121,4 +121,5 @@ class Player(AbstractUser):
     def win_percentage(self):
         if self.games_played_count == 0:
             return 0
-        return self.games_played.filter(outcome="WIN").count() / self.games_played_count * 100
+        percentage = (self.games_played.filter(outcome="WIN").count() / self.games_played_count) * 100
+        return round(percentage, 1)

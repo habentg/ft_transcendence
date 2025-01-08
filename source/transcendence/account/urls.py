@@ -15,5 +15,5 @@ urlpatterns = [
     re_path(r'^profile/(?P<username>[\w-]+)/?$', PlayerProfileView.as_view(), name='player_profile'),
     re_path(r'^settings/?$', SettingsView.as_view(), name='settings'),
     re_path(r'^anonymize/?$', AnonymizePlayer.as_view(), name='anonymize'),
-    re_path(r'^temp_player/?$', TempPlayer.as_view(), name='temp_player'),
+    re_path(r'^guest_player/?$', TempPlayer.as_view(), name='temp_player'),
 ]

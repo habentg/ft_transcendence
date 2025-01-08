@@ -300,7 +300,7 @@ async function anonAccount() {
     }
     const responseData = await response.json();
     await showSuccessMessage("Account anonymized successfully!", 2000);
-    updateNavBar(true); // updating navbar
+    updateNavBar(true, `${responseData['anon_username']}`, '/static/images/anon.jpeg'); // updating navbar
     await updateUI(`/profile/${responseData['anon_username']}`, false);
   } catch (error) {
     console.error("Error:", error);
