@@ -237,6 +237,12 @@ td {
 	box-shadow: 0 0 0 0.25rem rgba(132, 221, 252, 0.25);
 }
 
+.neon-text {
+	background: linear-gradient(80deg, #b02c98, #84ddfc);
+	-webkit-background-clip: text;
+	-webkit-text-fill-color: transparent;
+}
+  
 /* Main Content */
 #content {
 	display: flex;

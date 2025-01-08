@@ -32,13 +32,13 @@
 }
 
 .chat-header {
-  width: 100%;
-  color: #84ddfc;
-  font-family: var(--font-heading);
-  background-color: rgb(36, 80, 98);
-  padding: 10px; 
-  box-sizing: border-box; 
-  border-radius: 10px 10px 0 0;
+	width: 100%;
+	color: #84ddfc;
+	font-family: var(--font-heading);
+	background-color: rgb(36, 80, 98);
+	padding: 10px;
+	box-sizing: border-box;
+	border-radius: 10px 10px 0 0;
 }
 
 .chat-messages {
@@ -112,9 +112,10 @@
 	border-bottom-left-radius: 15px;
 	border: 1px solid rgba(62, 166, 205, 0.8);
 
-	 /* Make the sidebar scrollable */
-	 max-height: 500px; 
-	 overflow-y: auto; /* Add vertical scroll when content exceeds max-height */
+	/* Make the sidebar scrollable */
+	max-height: 500px;
+	overflow-y: auto;
+	/* Add vertical scroll when content exceeds max-height */
 }
 
 .sidebar-header {
@@ -221,13 +222,28 @@
 	transform: translate(0, 0) !important;
 }
 
+.guest_player {
+	border: 1px solid rgba(255, 255, 255, 0.2);
+	background: linear-gradient(140deg,
+			rgba(255, 255, 255, 0.3) -1.82%,
+			rgba(255, 255, 255, 0.2) 68.19%,
+			rgba(255, 255, 255, 0.15) 80.14%);
+	backdrop-filter: blur(8px);
+	border-radius: 15px;
+	box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+	margin: 0 auto;
+}
+
+.guest_player .msg {
+	color: #84ddfc;
+}
+
 @media (max-width: 768px) {
 	.friend-item .profile-icon {
 		display: none;
 	}
 
 	.chat-sidebar {
-		/* width: fit-content; */
 		width: 27.5%;
 	}
 
@@ -237,5 +253,11 @@
 
 	.sidebar-header h5 {
 		font-size: 0.8rem;
+	}
+}
+
+@media (max-width: 576px) {
+	.guest_player {
+		width: 330px;
 	}
 }
