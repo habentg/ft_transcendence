@@ -27,9 +27,9 @@
           <td>
             <div>
               {% if player == game.player_one %}
-                <span class="player-name">VS {{ game.player_two|slice:":5" }}</span>
+                <span class="player-name">VS {{ game.player_two|slice:":10" }}</span>
               {% else %}
-                <span class="player-name">VS {{ game.player_one|slice:":5" }}</span>
+                <span class="player-name">VS {{ game.player_one|slice:":10" }}</span>
               {% endif %}
             </div>
           </td>

@@ -14,24 +14,24 @@
                 {% elif player.is_guest %}
                   <img src="{% static 'images/anon.jpeg' %}" alt="Anon Profile Picture" class="profile-pic rounded-circle" />
                 {% else %}
-                  <img src="{% static 'images/default_profile_pic.jpeg' %}" alt="Default Profile Picture" class="profile-pic rounded-circle" />
+                <img src="{% static 'images/default_profile_pic.jpeg' %}" alt="Default Profile Picture" class="profile-pic rounded-circle" />
                 {% endif %}
                 {% if is_self %}
                   <button id="change-profile-pic" class="btn btn-light btn-sm position-absolute bottom-0 end-0" onclick="updateProfilePic()"><i class="fa-solid fa-pen"></i></button>
+                  {% elif is_guest %}
+                    <i class="fa-solid fa-globe position-absolute globe-icon" style="color:black;"></i>
                 {% elif player.is_logged_in %}
                   <i class="fa-solid fa-globe position-absolute globe-icon" style="color:green;"></i>
-                {% elif is_guest %}
-                  <i class="fa-solid fa-globe position-absolute globe-icon" style="color:black;"></i>
                 {% else %}
                   <i class="fa-solid fa-globe position-absolute globe-icon" style="color:red;"></i>
                 {% endif %}
               </div>
 
               <div id="pfp_from_profile" class="profile-info mt-3" data-pfp="{{ player.profile_picture }}">
-                <h3 id="full_name" class="mb-1 nav_profile_pic">{{ player.full_name|slice:':12' }}</h3>
-                <p id="username" class="text-muted mb-1" data-username="{{ player.username }}">@{{ player.username|slice:':5' }}</p>
+                <h3 id="full_name" class="mb-1 nav_profile_pic">{{ player.full_name|slice:':15' }}</h3>
+                <p id="username" class="text-muted mb-1" data-username="{{ player.username }}">@{{ player.username|slice:':10' }}</p>
                 <p class="text-muted small mb-3">
-                  <i class="fas fa-envelope me-2"></i><span id="player_email">{{ player.email|slice:':25' }}</span>
+                  <i class="fas fa-envelope me-2"></i><span id="player_email">{{ player.email|slice:':20' }}</span>
                 </p>
               </div>
 

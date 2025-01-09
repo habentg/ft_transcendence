@@ -324,7 +324,12 @@ function initializeModal(game) {
     .querySelector("#submitSecondPlayerNameBtn")
     .addEventListener("click", () => {
       const secondPlayerName = modal.querySelector("#secondPlayerName").value;
-      if (secondPlayerName) {
+      if (secondPlayerName === "" || secondPlayerName.length > 20) {
+        const errorMsg = document.getElementById("local-game-error-msg");
+        errorMsg.textContent = "Player name should be greate between 1 and 20 Characters.";
+        errorMsg.style.display = "block";
+      }
+      else {
         game.defp2Name = secondPlayerName;
         document.getElementById(
           "player2Name"
@@ -332,10 +337,6 @@ function initializeModal(game) {
         document.getElementById("player2Name").style.display = "block";
         game.createPlayer(secondPlayerName, "right");
         modal.remove();
-      } else {
-        const errorMsg = document.getElementById("local-game-error-msg");
-        errorMsg.textContent = "Please enter the name of the second player.";
-        errorMsg.style.display = "block";
       }
     });
 

@@ -59,13 +59,21 @@ async function handleSignupSubmit(e) {
       document.getElementById("lastName").value,
     confirm_password: document.getElementById("confirm-password").value,
   };
-  if (!inputValidator(formData.username) || !inputValidator(document.getElementById("firstName").value) || !inputValidator(document.getElementById("lastName").value)) {
-    displayError({ invalid_chars: "Invalid characters detected: Only AlphNumericals and underscore are allowed!" });
+  if (!inputValidator(formData.username) || formData.username.length < 4 || formData.username.length > 100) {
+    displayError({ invalid_chars: "Invalid Username detected: Only AlphNumericals and underscore between 4 and 100 long!" });
     return;
-}
+  }
+  if (document.getElementById('firstName').value.length > 150 || document.getElementById('lastName').value.length > 150) {
+    displayError({ invalid_chars: "First Name or Last Name Lenght should be less than 150 Characters" });
+    return;
+  }
   // Validate the form data
   if (formData.confirm_password !== formData.password) {
     displayError({ error_msg: "Passwords do not match" });
+    return;
+  }
+  if (formData.confirm_password.length > 150 || formData.password.length > 150) {
+    displayError({ error_msg: "Password should be greater than 3 and less than 150" });
     return;
   }
   try {

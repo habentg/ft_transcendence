@@ -136,11 +136,11 @@ function searchingSystem() {
 
 function triggerSearch() {
   const query = document.getElementById("searchInput").value.trim();
-  if (query) {
-    search(query);
-  } else {
-    createToast({ type: "error", title: "Empty search", error_message: "Please enter a search query" });
+  if (!query || query.length > 100) {
+    createToast({ type: "error", title: "Invalid Search", error_message: "Search parameter should be > 0 and < 150 chars" });
     document.getElementById("searchResults").classList.add("d-none")
+  } else {
+    search(query);
   }
 }
 

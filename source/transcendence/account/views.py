@@ -263,7 +263,7 @@ class PasswordReset(BaseView):
 				'uidb64': urlsafe_base64_encode(force_bytes(player.pk)),
 				'token': default_token_generator.make_token(player)
 			}, status=status.HTTP_200_OK)
-		return JsonResponse({'error_msg': 'Couldnt find your email!'}, status=status.HTTP_404_NOT_FOUND)
+		return JsonResponse({'error_msg': 'No user found with provided Email Address!'}, status=status.HTTP_404_NOT_FOUND)
 
 	def email_pass_reset_link(self, player):
 		from_email = settings.DEFAULT_FROM_EMAIL
@@ -522,7 +522,7 @@ class PlayerProfileUpdatingView(APIView):
 	# updating user password
 	def post(self, request):
 		player = request.user
-		if player.last_password_change and (timezone.now() - player.last_password_change).total_seconds() < 3600:
+		if player.last_password_change and (timezone.now() - player.last_password_change).total_seconds() < 600:
 			return Response({'error_msg': 'You can only change your password once per hour!'}, status=status.HTTP_429_TOO_MANY_REQUESTS)
 		serializer = ChangePasswordSerializer(data=request.data)
 		if serializer.is_valid():
@@ -586,12 +586,12 @@ class TempPlayer(APIView):
 
 	def get(self, request, *args, **kwargs):
 		temp_player = createGuestPlayer()
-		temp_player.is_logged_in = True
-		temp_player.save()
+		temp_player.is_guest = True
 		new_jwts = RefreshToken.for_user(temp_player)
 		response = HttpResponseRedirect(reverse('home_page'))
 		response.set_cookie('access_token', str(new_jwts.access_token), httponly=True, samesite='Lax', secure=True)
 		response.set_cookie('refresh_token', str(new_jwts), httponly=True, samesite='Lax', secure=True)
+		temp_player.save()
 		return response
 
 """ player anonymization view """

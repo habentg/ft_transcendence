@@ -31,9 +31,12 @@ async function handleSignInSubmit(e) {
         username: document.getElementById("username").value,
         password: document.getElementById("password").value,
     };
-    console.log(formData);
-    if (!inputValidator(formData.username) ) {
-        displayError({ invalid_chars: "Invalid characters in username: Only AlphNumericals and underscore are allowed!" });
+    if (!inputValidator(formData.username) || formData.username.length < 4 || formData.username.length > 100) {
+        displayError({ invalid_chars: "Invalid Username detected: Only AlphNumericals and underscore between 4 and 100 long!" });
+        return;
+    }
+    if (formData.password.length < 3 || formData.password.length > 150) {
+        displayError({ invalid_chars: "Password length should be greater than 3 and less than 150!" });
         return;
     }
     try {
@@ -79,7 +82,7 @@ async function getTwoFactorAuth(username) {
             loadCssandJS(data, false);
             document.title = `${data.title} | PONG`;
             document.getElementById("content").innerHTML = data.html;
-            return ;
+            return;
         }
         throw new Error("Failed to load 2FA page content");
     }

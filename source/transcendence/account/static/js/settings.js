@@ -17,8 +17,10 @@ async function updatePlayerPassword() {
       return;
     }
 
-    if (formData.new_password.length < 3) {
-      displayError({ error_msg: "Password must be at least 3 characters long" });
+    if (formData.current_password.length > 150 ||
+      formData.new_password.length > 150 ||
+      formData.confirm_password.length > 150) {
+      displayError({ error_msg: "Password must be betwen 3 and 150 characters long!" });
       return;
     }
 
@@ -45,7 +47,7 @@ async function updatePlayerPassword() {
           title: "Failed To Change Password",
         }
         createToast(error_content);
-        return ;
+        return;
       }
       displayError(responseData);
       return;
@@ -103,8 +105,8 @@ async function handleEnableDisable2FA() {
           title: "Failed to update 2FA status",
         }
         createToast(error_content);
-        return ;
-      } 
+        return;
+      }
       createToast({ title: "Unknown ERROR" });
       throw new Error("error happed while updating 2fa");
     }

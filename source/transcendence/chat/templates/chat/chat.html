@@ -43,8 +43,7 @@
 							<img src="{% static 'images/default_profile_pic.jpeg' %}" alt="Default Profile Picture"
 								class="profile-pic rounded-circle" style="width:30px;height: 30px;" />
 							{% endif %}
-							<span class="mb-0 username_span">{{ chatroom.get_participant_two.username|slice:':5'
-								}}</span>
+							<span class="mb-0 username_span">{{ chatroom.get_participant_two.username|slice:':10'}}</span>
 						</li>
 						{% elif chatroom.get_participant_two.username == user.username %}
 						<li id="{{ chatroom.get_participant_one.username }}"
@@ -58,7 +57,7 @@
 							<img src="{% static 'images/default_profile_pic.jpeg' %}" alt="Default Profile Picture"
 								class="profile-pic rounded-circle" style="width:30px;height: 30px;" />
 							{% endif %}
-							<span class="mb-0">{{ chatroom.get_participant_one.username|slice:':5' }}</span>
+							<span class="mb-0">{{ chatroom.get_participant_one.username|slice:':10' }}</span>
 						</li>
 						{% endif %}
 						{% endfor %}
@@ -135,6 +134,6 @@
 				</div>
 			</div>
 		</div>
+		{% endif %}
 	</div>
 </div>
-{% endif %}

@@ -14,9 +14,14 @@ async function UpdateUserInfo() {
       return;
     }
 
+    if (formData.full_name.length > 150) {
+      displayError({ error_msg: "Fullname too Long. It should be less than 150 Chars" });
+      return;
+    }
+
     // Email validation
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(formData.email)) {
+    if (!emailRegex.test(formData.email) || formData.email.length > 150) {
       displayError({ error_msg: "Please enter a valid email address" });
       return;
     }
@@ -36,11 +41,11 @@ async function UpdateUserInfo() {
       return;
     }
     closeModal("username-modal");
-    document.getElementById("full_name").textContent = formData.full_name;
-    document.getElementById("player_email").textContent = formData.email;
+    document.getElementById("full_name").textContent = formData.full_name.slice(0, 20);
+    document.getElementById("player_email").textContent = formData.email.slice(0, 20);
     showSuccessMessage("Profile Information updated successfully");
   } catch (error) {
-    console.error("Error:", error);
+    // console.error("Error:", error);
   }
 }
 
