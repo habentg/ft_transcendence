@@ -32,6 +32,5 @@ async function handleOTPSubmit(event) {
       message: "Failed to authenticate",
       type: "error",
     });
-    console.error("Error:", error);
   }
 }

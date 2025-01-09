@@ -53,7 +53,12 @@ async function handlePassResetSubmit(e) {
     });
 
   } catch (error) {
-    console.error('Error:', error);
+  //   createToast({
+  //     title: "Error",
+  //     message: "Failed to authenticate",
+  //     type: "error",
+  //   });
+  //   console.error('Error:', error);
   }
 }
 
@@ -71,6 +76,10 @@ async function handlePassChangeSubmit(e) {
     displayError({ error_msg: "Passwords do not match" });
     return;
   }
+  if (new_password.length > 150 || new_password.length < 3) {
+    displayError({ error_msg: "Password should be between 3 and 150 characters long" });
+    return;
+  }
 
   try {
     const m_csrf_token = await getCSRFToken();
@@ -84,6 +93,7 @@ async function handlePassChangeSubmit(e) {
     });
     const responseData = await response.json();
     if (!response.ok) {
+      displayError(responseData);
       createToast({ type: "error", title: "Error", error_message: `${responseData.error_msg}`});
       return;
     }

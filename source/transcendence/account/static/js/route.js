@@ -29,6 +29,7 @@ async function updateUI(path) {
     showLoadingAnimation(); // Show animation
     await loadContent(`${path}`);
   } catch (error) {
+    createToast({ type: "error", title: "Error", error_message: `${error}` });
     console.error("Error loading page:", error);
   } finally {
     hideLoadingAnimation(); // Hide animation

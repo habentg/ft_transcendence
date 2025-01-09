@@ -128,7 +128,6 @@ async function handleUpload() {
       throw new Error("Failed to update profile pic");
     }
   } catch (error) {
-    console.error("Error:", error);
     const errorMsg = document.getElementById("error-msg");
     errorMsg.textContent = "Image is too large or invalid format";
     errorMsg.style.display = "block";
