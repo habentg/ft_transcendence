@@ -28,7 +28,6 @@ async function createTournamentinDB(tournament_type) {
       this.game.aiFlag = false;
       this.game.versusFlag = false;
       this.game.tournamentFlag = true;
-	  window.addEventListener("resize", tournamentGameScreenSize);
     }
     //this is the function that starts the game by calling draw function and displays names at the top of the canvas
     async startTournamentGame(player1Name, player2Name) {
@@ -87,25 +86,6 @@ async function createTournamentinDB(tournament_type) {
       console.log(this.playersNames[0]); // Logs "Tofara Mususa"
     }
 
-    // This is to check is number of players is 4 or 8 and if not give an error
-    static validatePlayerNumber() {
-      const playersNumberInput = document.getElementById("playersNumber");
-      const errorMsgDiv = document.getElementById("local-game-error-msg");
-      let maxPlayers = null;
-      if (playersNumberInput) {
-        maxPlayers = playersNumberInput.value;
-      }
-
-      if (maxPlayers === "") return false;
-      if (maxPlayers != 4 && maxPlayers != 8 && errorMsgDiv) {
-        errorMsgDiv.textContent = "Please enter either 4 or 8";
-        errorMsgDiv.style.display = "block";
-        return false;
-      } else if (errorMsgDiv) {
-        errorMsgDiv.style.display = "none";
-        return true;
-      }
-    }
     //this returns the html for the playercontainer elements
     getPlayerUiElements() {
       return {
@@ -183,41 +163,33 @@ async function createTournamentinDB(tournament_type) {
         errorMsgDiv.style.display = "block";
         return;
       }
+		// Validate the length of the individual player name
+		if ((playerName.length < 5 || playerName.length > 15) && errorMsgDiv) {
+			errorMsgDiv.textContent = "Player name must be between 5 and 15 characters.";
+			errorMsgDiv.style.display = "block";
+			return;
+		}
 
       // Check if name contains only letters
-      const letterRegex = /^[A-Za-z]+$/;
+	  const letterRegex = /^[A-Za-z0-9]+$/;
       if (!letterRegex.test(playerName) && errorMsgDiv) {
-        errorMsgDiv.textContent = "Name must contain only letters";
+        errorMsgDiv.textContent = "Name must contain only letters. No punctuation or spaces between";
         errorMsgDiv.style.display = "block";
         return;
       }
-
-      // Check name length (commented out but included)
-      //   if (playerName.length < 3 || playerName.length > 15) {
-      //     errorMsgDiv.textContent = "Name must be between 5 and 9 characters";
-      //     errorMsgDiv.style.display = "block";
-      //     return;
-      //   }
-      // Check if player already exists
       if (this.playersNames.includes(playerName) && errorMsgDiv) {
         errorMsgDiv.textContent = "Player name is taken!";
         errorMsgDiv.style.display = "block";
         return;
       }
-      // If all validations pass, add player and clear input
       this.addPlayerToList(playerName, playerContainer);
       playerInput.value = "";
     }
 
-    // Shuffles an array of players using the Fisher-Yates algorithm, returning a new randomized array while preserving the original
     static randomisePlayers(array) {
-      // Create a copy of the original array to avoid modifying the original
       const shuffledArray = [...array];
-      // Start from the last element and swap with a random previous element
       for (let i = shuffledArray.length - 1; i > 0; i--) {
-        // Generate a random index between 0 and i (inclusive)
         const j = Math.floor(Math.random() * (i + 1));
-        // Swap elements
         [shuffledArray[i], shuffledArray[j]] = [
           shuffledArray[j],
           shuffledArray[i],
@@ -235,9 +207,7 @@ async function createTournamentinDB(tournament_type) {
       playerContainer.appendChild(playerButton);
     }
 
-    // Sets up the player addition UI, handles player input, and initializes tournament actions based on max player numbers.
     setUpPlayerAddition(maxPlayerNumbers, tournamentObject) {
-      // maxPlayerNumbers = !maxPlayerNumbers || parseInt(maxPlayerNumbers) != 4 || 8 ? 4 : parseInt(maxPlayerNumbers);
       const uiElements = this.getPlayerUiElements();
       if (!uiElements) return;
 
@@ -273,11 +243,6 @@ async function createTournamentinDB(tournament_type) {
           maxPlayerNumbers,
           this.playersNames
         );
-        // console.log("Good to go:", goodToGo);
-        // if (goodToGo === false) {
-        // 	alert("Failed to start tournament. Please try again.");
-        // 	return ;
-        // }
       });
     }
   }
@@ -310,7 +275,6 @@ async function createTournamentinDB(tournament_type) {
         this.matchHistory.push(match);
         this.updateTournamentMap(match, playersNames);
         gameCanvas.remove();
-		window.removeEventListener("resize", tournamentGameScreenSize);
         return match.winner;
       }
       return new Promise((resolve) => {
@@ -342,8 +306,6 @@ async function createTournamentinDB(tournament_type) {
 
       return new Promise((resolve, reject) => {
         try {
-          const gameboard = document.getElementById("tournamentGameBoard");
-          const canvas = document.getElementById("board");
           let newTournamentGame = new GameBoard();
           let players = newTournamentGame.getPlayers();
           //HERE IS TO CREATE THE GAME IN DB
@@ -372,25 +334,14 @@ async function createTournamentinDB(tournament_type) {
       const gameToUpdate = this.tournamentElement.querySelector(
         `#game${this.matchCount}`
       );
-      // Determine which game to update based on this.matchCount
-
       if (gameToUpdate) {
-        // Update team names
-        const teamElements = gameToUpdate
-          .closest(".game")
-          .querySelectorAll(".team span");
-        teamElements[0].textContent = match.player1;
-        teamElements[1].textContent = match.player2;
-        const scoreElement = gameToUpdate
-          .closest(".game")
-          .querySelector(".score");
+        const teamElements = gameToUpdate.closest(".game").querySelectorAll(".team span");
+        teamElements[0].textContent = match.player1.length > 8 ? match.player1.slice(0,7) + '.' : match.player1;
+        teamElements[1].textContent = match.player2.length > 8 ? match.player2.slice(0,7) + '.' : match.player2;
+        const scoreElement = gameToUpdate.closest(".game").querySelector(".score");
         scoreElement.innerHTML = `<span class="score-value">${match.player1Score}</span> :
 			<span class="score-value">${match.player2Score}</span>`;
-        this.routeWinnerToNextRound(
-          this.matchCount,
-          match.winner,
-          playersNames
-        );
+        this.routeWinnerToNextRound(this.matchCount, match.winner, playersNames);
       }
     }
 
@@ -418,10 +369,9 @@ async function createTournamentinDB(tournament_type) {
           `#game${progression.nextGame}`
         );
         if (nextGameElement) {
-          const teamElements = nextGameElement
-            .closest(".game")
-            .querySelectorAll(".team span");
-          teamElements[progression.teamPosition].textContent = winner;
+          const teamElements = nextGameElement.closest(".game").querySelectorAll(".team span");
+			const concatWinner = winner.length > 8 ? winner.slice(0,7) + '.' : winner
+          teamElements[progression.teamPosition].textContent = concatWinner;
         }
       }
     }
@@ -431,6 +381,7 @@ async function createTournamentinDB(tournament_type) {
       const teamSpans = tournamentMap.querySelectorAll(".team span");
       // Iterate through playersNames and assign textContent to teamSpans
       for (let i = 0; i < playersNames.length; i++) {
+		playersNames[i] = playersNames[i].length > 8 ? playersNames[i].slice(0, 7) + '.' : playersNames[i];
         teamSpans[i].textContent = playersNames[i];
       }
       return tournamentMap;
@@ -572,7 +523,6 @@ async function createTournamentinDB(tournament_type) {
         );
         semiFinalWinners.push(winner);
         gameWinnerModal(winner);
-        // Close the modal after 2 seconds
         setTimeout(() => {
           UIManager.closeModal("gameClosing");
         }, 2000);
