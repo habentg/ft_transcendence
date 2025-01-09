@@ -164,8 +164,8 @@ async function createTournamentinDB(tournament_type) {
         return;
       }
 		// Validate the length of the individual player name
-		if ((playerName.length < 5 || playerName.length > 15) && errorMsgDiv) {
-			errorMsgDiv.textContent = "Player name must be between 5 and 15 characters.";
+		if ((playerName.length > 15) && errorMsgDiv) {
+			errorMsgDiv.textContent = "Player name must less than 15 characters.";
 			errorMsgDiv.style.display = "block";
 			return;
 		}
@@ -173,7 +173,7 @@ async function createTournamentinDB(tournament_type) {
       // Check if name contains only letters
 	  const letterRegex = /^[A-Za-z0-9]+$/;
       if (!letterRegex.test(playerName) && errorMsgDiv) {
-        errorMsgDiv.textContent = "Name must contain only letters. No punctuation or spaces between";
+        errorMsgDiv.textContent = "Player name should contain only letters and numbers!";
         errorMsgDiv.style.display = "block";
         return;
       }

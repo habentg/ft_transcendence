@@ -411,8 +411,8 @@ async function drawPieChart() {
       datasets: [
         {
           data: [wins, losses, cancelled],
-          backgroundColor: ["green", "red", "yellow"], // Green for wins, red for losses, grey for cancelled (may change to yellow)
-          borderColor: ["rgba(75, 192, 192, 1)", "rgba(255, 99, 132, 1)"],
+          backgroundColor: ["green", "red", "yellow"], // Green for wins, red for losses, yellow for cancelled
+          borderColor: ["rgba(75, 192, 192, 1)", "rgba(255, 99, 132, 1)", "rgba(255, 205, 86, 1)"],
           borderWidth: 2,
         },
       ],
@@ -423,7 +423,12 @@ async function drawPieChart() {
       aspectRatio: 1.2, // Adjust aspect ratio for smaller height
       plugins: {
         legend: {
-          position: "bottom",
+          position: "bottom", // Position the legend at the bottom
+          labels: {
+            usePointStyle: true, // Use small circles instead of squares for labels
+            boxWidth: 10, // Adjust the size of the point style
+            padding: 15, // Add spacing between labels
+          },
         },
         tooltip: {
           callbacks: {
@@ -435,68 +440,81 @@ async function drawPieChart() {
           },
         },
       },
+      layout: {
+        padding: {
+          bottom: 20, // Add padding between the chart and the legend
+        },
+      },
     },
   });
 }
 
-// function drawLineChart() {
-// 
-// }
+
+// bargraph for game catagory stats for AI, 1v1, and tournament
+function drawBarGraph() {
+  if (!document.getElementById("game_type_stat")) {
+    return;
+  }
+
+  const ai = parseInt(document.getElementById("game_type_stat").getAttribute("data-numsOfAIGames")) || 0;
+  const one_vs_one = parseInt(document.getElementById("game_type_stat").getAttribute("data-numsOf1v1Games")) || 0;
+  const tournament = parseInt(document.getElementById("game_type_stat").getAttribute("data-numsOfTournament")) || 0;
+
+  // Bar Chart - Game Type Stats
+  const barCtx = document.getElementById("game-type-bar-chart").getContext("2d");
+
+  new Chart(barCtx, {
+    type: "bar",
+    data: {
+      labels: ["AI", "1v1", "Tournament"],
+      datasets: [
+        {
+          label: "Games Played",
+          data: [ai, one_vs_one, tournament],
+          backgroundColor: ["#3e95cd", "#8e5ea2", "#3cba9f"],
+          borderColor: ["#3e95cd", "#8e5ea2", "#3cba9f"],
+          borderWidth: 1,
+        },
+      ],
+    },
+    options: {
+      responsive: true,
+      scales: {
+        y: {
+          beginAtZero: true,
+          title: {
+            display: true,
+            text: "Games Played",
+            font: {
+              size: 16,
+            },
+          },
+          ticks: {
+            stepSize: 1,
+          },
+        },
+        x: {
+          title: {
+            display: true,
+            text: "Game Type",
+            font: {
+              size: 16,
+            },
+          },
+        },
+      },
+      plugins: {
+        legend: {
+          display: false, 
+        },
+      },
+    },
+  });
+}
+
+
 
 
 // Stat charts
 drawPieChart();
-// drawLineChart();
-
-// Line Chart Data
-// const rankHistory = [10, 8, 7, 6, 5, 4];{
-// const timePoints = ["Day 1", "Day 2", "Day 3", "Day 4", "Day 5", "Day 6"]; // Corresponding time points}
-
-// // Line Chart - Rank Leaderboard Over Time
-// const lineCtx = document
-//   .getElementById("game-stats-line-chart")
-//   .getContext("2d");
-// new Chart(lineCtx, {
-//   type: "line",
-//   data: {
-//     labels: timePoints, // Time points
-//     datasets: [
-//       {
-//         label: "Player Rank",
-//         data: rankHistory,
-//         backgroundColor: "rgba(54, 162, 235, 0.2)",
-//         borderColor: "rgba(54, 162, 235, 1)",
-//         borderWidth: 2,
-//         tension: 0.4, // Smooth curves
-//         fill: true,
-//         pointBackgroundColor: "rgba(255, 99, 132, 1)", // Highlight points
-//         pointRadius: 5,
-//         pointHoverRadius: 8,
-//       },
-//     ],
-//   },
-//   options: {
-//     responsive: true,
-//     plugins: {
-//       legend: {
-//         position: "bottom",
-//       },
-//       tooltip: {
-//         callbacks: {
-//           label: function (context) {
-//             return `Rank: ${context.raw}`;
-//           },
-//         },
-//       },
-//     },
-//     scales: {
-//       y: {
-//         reverse: true, // Lower ranks are better
-//         ticks: {
-//           stepSize: 1,
-//           precision: 0,
-//         },
-//       },
-//     },
-//   },
-// });
+drawBarGraph();

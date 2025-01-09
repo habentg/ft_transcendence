@@ -246,19 +246,16 @@
     color: #dc3545;
 }
 
-.game-stats-card {
+/* .game-stats-card {
     height: 400px;
-    /* Set the same height for both containers */
-}
+} */
 
-.game-stats-card canvas {
+/* .game-stats-card canvas {
     max-width: 600px;
-    /* Restrict the canvas width */
     max-height: 300px;
-    /* Restrict the canvas height */
     width: auto;
     height: auto;
-}
+} */
 
 .no-games-message {
     padding: 20px;
