@@ -40,6 +40,15 @@
 
 # ****=============================================************ Testing case ***********=======================================*******
 1. input length limiting in ALL input fields ------------------------- NOT TESTED!
+2. input fields shouldnt be modified(trim etc.), receive it as it is and check if its a valid username. 
+    ☻ input field like username should not have invalid characters(whitespaces, '!@#$%^*()')
+    ☻ length of the input, minimum and maximum.
+3. Case where we go to the AI game and refresh it redirects to Versus(1v1) game. (rare case)
+4. Game setting inputs taking values such as e and ., Resulting to Paddlespeed value = NaN destroying the whole game. ..............FIXED
+5. start game button not working/having errors after a game. .......................................................................FIXED 
+6. Keyevent not stopping after a game...............................................................................................FIXED
+7. username should not have invalid characters such as quotes (resulting to database problems)
+8. Send OTP button doesnt work in forgot password
 2. Uplading pfp is not working (Front-end Issue)--------------------------------------NOT FIXED!
 
 

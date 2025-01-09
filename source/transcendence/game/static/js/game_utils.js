@@ -5,9 +5,9 @@ class Game {
     this.aiFlag = false;
     this.versusFlag = false;
     this.tournamentFlag = false;
-    this.tournament_id = 0;
+	this.tournament_id = 0;
 
-    this.drawFlag = false; // flag for stopping drawing
+    this.drawFlag = false // flag for stopping drawing
 
     //board values
     this.board = null;
@@ -32,7 +32,7 @@ class Game {
     this.slowServe = false;
 
     // Parry variables
-    this.cooldownTime = 0;
+    this.cooldownTime = 5000;
     this.parryFlag = false;
 
     this.ball = {
@@ -40,8 +40,9 @@ class Game {
       y: this.boardHeight / 2,
       velocityX: this.defballSpeed,
       velocityY: this.defballSpeed,
-      ballRadius: 7,
+      ballRadius: 7
     };
+    this.sound = new Sound();
   }
 
   getboardWidth() {
@@ -63,6 +64,12 @@ class Game {
   setupeventListeners() {
     document.addEventListener("keydown", this.move);
     document.addEventListener("keyup", this.stopMovement);
+  }
+  stopeventListeners() {
+    while (this.activeKeys.length > 0)
+        this.activeKeys.pop();
+    document.removeEventListener("keydown", this.move);
+    document.removeEventListener("keyup", this.stopMovement);
   }
 
   resetBall(direction) {
@@ -101,43 +108,40 @@ class Game {
   move = (event) => {
     this.activeKeys[event.code] = true;
     console.log(`Key Down: ${event.code}`); // Debugging
-  };
+  }
 
   stopMovement = (event) => {
     this.activeKeys[event.code] = false;
     console.log(`Key Up: ${event.code}`);
-  };
-}
-
-class Player {
-  constructor(name, position, game) {
-    this.playerName = name;
-    this.width = game.getplayerWidth();
-    this.height = game.getplayerHeight();
-    this.cooldownFlag = false;
-    this.parryCooldown = 0;
-    this.velocityY = 0;
-    this.score = 0;
-    this.finalScore = 0; // final score after match
-    this.gameWon = 0;
-    this.position = "";
-    if (position === "left") {
-      this.x = 10;
-      this.y = 500 / 2 - this.width / 2;
-      this.parryKey = "KeyA";
-      this.moveUp = "KeyW";
-      this.moveDown = "KeyS";
-    } else if (position === "right") {
-      this.x = 800 - this.width - 10;
-      this.y = 500 / 2 - this.height / 2;
-      this.parryKey = "Numpad0";
-      this.moveUp = "ArrowUp";
-      this.moveDown = "ArrowDown";
+  }
+  saveSettings(user) {
+    const key = `gameSetting_${user}`;
+    const settings = {
+      defballSpeed: this.defballSpeed,
+      paddleSpeed: this.paddleSpeed,
+      maxScore: this.maxScore,
+      slowServe: this.slowServe,
+    };
+    localStorage.setItem(key, JSON.stringify(settings));
+    console.log("Settings saved to localStorage:", settings);
+  }
+  
+  loadSettings(user) {
+    //load settings should check for invalid values or invalid ranges
+    const key = `gameSetting_${user}`;
+    const savedSettings = JSON.parse(localStorage.getItem(key));
+    if (savedSettings) {
+      this.defballSpeed = savedSettings.defballSpeed || this.defballSpeed;
+      this.paddleSpeed = savedSettings.paddleSpeed || this.paddleSpeed;
+      this.maxScore = savedSettings.maxScore || this.maxScore;
+      this.slowServe = savedSettings.slowServe || this.slowServe;
+      console.log("Loaded settings from localStorage:", savedSettings);
+    } else {
+      console.log("No saved settings found in localStorage.");
     }
   }
 }
-
-/* tournament view */
+  /* tournament view */
 
 async function getFullTournamentView(tournament_id) {
   try {
@@ -236,4 +240,74 @@ function createTournamentMapForEight(tournament_id, populatedHtml) {
   modal.innerHTML = populatedHtml;;
 
   return modal;
+}
+
+
+class Player {
+  constructor(name, position, game) {
+    this.playerName = name;
+    this.width = game.getplayerWidth();
+    this.height = game.getplayerHeight();
+    this.cooldownFlag = false;
+    this.parryCooldown = 0;
+    this.velocityY = 0;
+    this.score = 0;
+    this.finalScore = 0; // final score after match
+    this.gameWon = 0;
+    this.position = "";
+    if (position === "left") {
+      this.x = 10;
+      this.y = 500 / 2 - this.width / 2;
+      this.parryKey = "Space";
+      this.moveUp = "KeyW";
+      this.moveDown = "KeyS";
+    } else if (position === "right") {
+      this.x = 800 - this.width - 10;
+      this.y = 500 / 2 - this.height / 2;
+      this.parryKey = "Numpad0";
+      this.moveUp = "ArrowUp";
+      this.moveDown = "ArrowDown";
+    }
+  }
+}
+
+class Sound {
+  constructor () {
+    this.sounds = [];
+    this.soundPaths = [
+      { name: "score", path: "/static/sounds/score.wav" },
+      { name: "wallhit", path: "/static/sounds/wall_hit.wav" },
+      { name: "parry", path: "/static/sounds/parry.wav" },
+      { name: "paddlehit", path: "/static/sounds/paddle_hit.wav" }
+    ];
+    this.soundPaths.forEach(({ name, path }) => this.load(name, path));
+  }
+
+  load(name, path) {
+    const audio = new Audio(path);
+
+    // Event listener for successful loading
+    audio.oncanplaythrough = () => {
+      this.sounds[name] = audio;
+      console.log(`Sound "${name}" loaded successfully.`);
+    };
+
+    // Event listener for loading errors
+    audio.onerror = () => {
+      console.error(`Failed to load sound "${name}" from "${path}".`);
+    };
+
+    // Start loading the audio
+    audio.load(); // Explicitly start loading
+  }
+
+  play(name) {
+    const sound = this.sounds[name];
+    if (sound) {
+      sound.currentTime = 0; // Reset for replay
+      sound.play();
+    } else {
+      console.warn(`Sound "${name}" not found.`);
+    }
+  }
 }
