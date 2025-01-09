@@ -459,6 +459,9 @@ class PlayerProfileView(APIView, BaseView):
 				'num_of_games': games.count(),
 				'games_won': games.filter(outcome='WIN').count(),
 				'games_lost': games.filter(outcome='LOSE').count(),
+				'ai_games':games.filter(type='AI').exclude(outcome='CANCELLED').count(),
+				'1v1_games':games.filter(type='VERSUS').exclude(outcome='CANCELLED').count(),
+				'tournament_games':games.filter(type='TOURNAMENT').exclude(outcome='CANCELLED').count(),
 			}
 		else:
 			data = {
@@ -472,6 +475,9 @@ class PlayerProfileView(APIView, BaseView):
 				'num_of_games': games.count(),
 				'games_won': games.filter(outcome='WIN').count(),
 				'games_lost': games.filter(outcome='LOSE').count(),
+				'ai_games':games.filter(type='AI').exclude(outcome='CANCELLED').count(),
+				'1v1_games':games.filter(type='VERSUS').exclude(outcome='CANCELLED').count(),
+				'tournament_games':games.filter(type='TOURNAMENT').exclude(outcome='CANCELLED').count(),
 			}
 		return data
 

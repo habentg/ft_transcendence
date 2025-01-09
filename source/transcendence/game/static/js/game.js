@@ -858,7 +858,8 @@ function checkScreenSize() {
     window.innerHeight < MIN_WINDOW_HEIGHT
   ) {
     warningMessage.classList.remove("d-none");
-    gameContent.classList.add("d-none");
+	if(gameContent)
+		gameContent.classList.add("d-none");
   } else {
     if (warningMessage) {
       warningMessage.classList.add("d-none");
@@ -960,7 +961,7 @@ function applySetting(game) {
 
 if (window.location.href.includes("/game")) {
   loadGame();
-  window.addEventListener("resize", checkScreenSize);
 }
 
+window.addEventListener("resize", checkScreenSize);
 // checkScreenSize();

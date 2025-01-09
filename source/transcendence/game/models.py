@@ -18,7 +18,7 @@ class Game(models.Model):
 	final_score = models.CharField(max_length=20, blank=False, null=False, default="-")
 	player_two = models.CharField(max_length=100, blank=False, null=False, default="player_two")
 	type = models.CharField(max_length=20, choices=GAME_TYPE, default='AI')
-	outcome = models.CharField(max_length=20, choices=END_RESULT, default='STARTED')
+	outcome = models.CharField(max_length=20, choices=END_RESULT, default='CANCELLED')
 	start_time = models.DateTimeField(auto_now_add=True)
 	tournament_id = models.BigIntegerField(null=True, blank=True, default=None)
 

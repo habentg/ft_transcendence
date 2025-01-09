@@ -102,20 +102,20 @@
 
       <!-- new div for game stats with a pie chart and line graph in it side by side -->
       {% if num_of_games > 0 %}
-        <div class="row justify-content-center g-4 mt-2 stats-container">
+        <div class="row d-flex justify-content-center g-4 mt-2 stats-container">
           <div class="col-lg-4">
             <div id="win_lose_stats" class="content game-stats-card p-4" data-numsOfGames="{{ num_of_games }}" data-numsOfWins="{{ games_won }}" data-numsOfLoses="{{ games_lost }}">
               <h3 class="text-center mb-4">Win-Loss Stats</h3>
-              <div class="d-flex justify-content-center">
+              <div class="charts d-flex justify-content-center" style="height: 300px;">
                 <canvas id="game-stats-pie-chart"></canvas>
               </div>
             </div>
           </div>
           <div class="col-lg-8">
-            <div class="content game-stats-card p-4">
-              <h3 class="text-center mb-4">Leaderboard Ranking</h3>
-              <div class="d-flex justify-content-center">
-                <canvas id="game-stats-line-chart"></canvas>
+            <div id="game_type_stat" class="content game-stats-card p-4" data-numsOfGames="{{ num_of_games}}" data-numsOfAIGames="{{ ai_games }}" data-numsOf1v1Games="{{ 1v1_games }}" data-numsOfTournament="{{ tournament_games }}">
+              <h3 class="text-center mb-4">Game Type Stats</h3>
+              <div class="charts d-flex justify-content-center" style="height: 300px;">
+                <canvas id="game-type-bar-chart" ></canvas>
               </div>
             </div>
           </div>
