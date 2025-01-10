@@ -216,6 +216,7 @@ class OauthCallback(View):
 			)
 			if created:
 				ft_player.full_name = user_info['usual_full_name']
+				ft_player.is_42_student = True
 				image_url = user_info['image']['link']
 				img_temp = NamedTemporaryFile(delete=True)
 				img_temp.write(urlopen(image_url).read())
@@ -223,6 +224,8 @@ class OauthCallback(View):
 				ft_player.profile_picture.save(f"{ft_player.username}_pfp.jpg", File(img_temp))
 				ft_player.set_unusable_password()  # Player can't login with password
 				FriendList.objects.create(player=ft_player)
+			if ft_player.is_42_student == False:
+				raise Exception('Player already exists!')
 		except Exception as e:
 			return render(request, 'others/base.html', {'css':['css/404.css'],'html': render_to_string('others/404.html', {'status_code': '400', 'error_msg_header': 'BAD REQUEST', 'error_msg': 'Failed to create 42 user account. Either username/email is already in use!'})})
 		ft_player.is_logged_in = True
