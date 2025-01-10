@@ -18,46 +18,46 @@
                 </tr>
               </thead>
               <tbody>
-				{% if players %}
-					{% for player in players %}
-					<tr>
-						<td>
-						<div>
-							{% if forloop.counter|add:page_offset == 1 %}
-							<i class="fas fa-crown me-2" style="color: gold;"></i>
-							{%else%}
-							<span>{{ forloop.counter|add:page_offset }}</span>
-							{%endif%}
-						</div>
-						</td>
-						<td>
-						<div>
-							{% if player.profile_picture %}
-							<img src="{{ player.profile_picture.url }}" alt="Profile Picture" class="profile-pic rounded-circle " style="width:30px;height: 30px;"/>
-						  {% else %}
-							<img src="{% static 'images/default_profile_pic.jpeg' %}" alt="Default Profile Picture" class="profile-pic rounded-circle " style="width:30px;height: 30px;"/>
-						  {% endif %}
-							<span>{{ player.username|slice:":10" }}</span>
-						</div>
-						</td>
-						<td>{{ player.games_played_count }}</td>
-						<td>{{ player.win_percentage }}%</td>
-						<td>{{ player.rating }}</td>
-					</tr>
-					{% endfor %}
-				{% else %}
-				<div>
-					<h6 class="text-center">No players found</h6>
-				</div>
-				{% endif %}
+                {% if players %}
+                  {% for player in players %}
+                    <tr>
+                      <td>
+                        <div>
+                          {% if forloop.counter|add:page_offset == 1 %}
+                            <i class="fas fa-crown me-2" style="color: gold;"></i>
+                          {% else %}
+                            <span>{{ forloop.counter|add:page_offset }}</span>
+                          {% endif %}
+                        </div>
+                      </td>
+                      <td>
+                        <div>
+                          {% if player.profile_picture %}
+                            <img src="{{ player.profile_picture.url }}" alt="Profile Picture" class="profile-pic rounded-circle" style="width:30px;height: 30px;" />
+                          {% else %}
+                            <img src="{% static 'images/default_profile_pic.jpeg' %}" alt="Default Profile Picture" class="profile-pic rounded-circle" style="width:30px;height: 30px;" />
+                          {% endif %}
+                          <span>{{ player.username|slice:':10' }}</span>
+                        </div>
+                      </td>
+                      <td>{{ player.games_played_count }}</td>
+                      <td>{{ player.win_percentage }}%</td>
+                      <td>{{ player.rating }}</td>
+                    </tr>
+                  {% endfor %}
+                {% else %}
+                  <div>
+                    <h6 class="text-center">No players found</h6>
+                  </div>
+                {% endif %}
               </tbody>
             </table>
           </div>
         </div>
         <div class="pagination-size d-flex justify-content-center gap-2 mt-4">
-          <a id="prev-page" class="btn btn-outline-light btn-sm  {% if previous == 0 %}disabled{% endif %}" href="/leaderboard?page={{previous}}" onclick="appRouter()"><i class="fas fa-chevron-left"></i></a>
-          <span id="page-numbers" class="d-flex gap-2"><span class="d-flex justify-content-center mt-1"><h6 style="color: #84ddfc;">{{ current_page}} of {{num_pages}}</h6></span></span>
-          <a id="next-page" class="btn btn-outline-light btn-sm  {% if next == 0 %}disabled{% endif %}" href="/leaderboard?page={{next}}" onclick="appRouter()"><i class="fas fa-chevron-right"></i></a>
+          <a id="prev-page" class="btn btn-outline-light btn-sm  {% if previous == 0 %}disabled{% endif %}" href="/leaderboard?page={{ previous }}" onclick="appRouter()"><i class="fas fa-chevron-left"></i></a>
+          <span id="page-numbers" class="d-flex gap-2"><span class="d-flex justify-content-center mt-1"><h6 style="color: #84ddfc;">{{ current_page }} of {{ num_pages }}</h6></span></span>
+          <a id="next-page" class="btn btn-outline-light btn-sm  {% if next == 0 %}disabled{% endif %}" href="/leaderboard?page={{ next }}" onclick="appRouter()"><i class="fas fa-chevron-right"></i></a>
         </div>
       </div>
     </div>

@@ -227,7 +227,7 @@ class OauthCallback(View):
 			if ft_player.is_42_student == False:
 				raise Exception('Player already exists!')
 		except Exception as e:
-			return render(request, 'others/base.html', {'css':['css/404.css'],'html': render_to_string('others/404.html', {'status_code': '400', 'error_msg_header': 'BAD REQUEST', 'error_msg': 'Failed to create 42 user account. Either username/email is already in use!'})})
+			return render(request, 'others/base.html', {'css':['css/404.css'],'html': render_to_string('others/404.html', {'status_code': '400', 'error_msg_header': 'BAD REQUEST', 'error_msg': 'Either your username/email is already in use!'})})
 		ft_player.is_logged_in = True
 		ft_player.save()
 		refresh = RefreshToken.for_user(ft_player)

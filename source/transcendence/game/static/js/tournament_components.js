@@ -318,11 +318,11 @@ function tournamentClosingModal(winner, secondplace) {
 
 function updateTournamentMapAfterFinal(tournamentContainer, tournamentElement) {
   const continueButton = tournamentElement.querySelector(".continueButton");
-  continueButton.textContent = "Go to Home Page";
+  continueButton.innerHTML = `<i class="fas fa-home me-2"></i>Return Home`;
   continueButton.addEventListener("click", () => updateUI("/home"));
   // Clone the continue button
   const restartButton = continueButton.cloneNode(true);
-  restartButton.textContent = "Restart Tournament";
+  restartButton.innerHTML = `<i class="fas fa-trophy me-1"></i>New Tournament`;
   restartButton.classList.remove("continueButton");
   restartButton.classList.add("restartButton");
   restartButton.style.marginLeft = "10px"; // Add space between buttons
