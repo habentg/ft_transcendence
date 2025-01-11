@@ -10,7 +10,6 @@ async function createGameInDB(game) {
     startgame_data["type"] = "TOURNAMENT";
     startgame_data["tournament_id"] = `${game.tournament_id}`;
   }
-  console.log("------- start ---- Game Data -------");
   console.table(startgame_data);
   console.log("------- start ---- Game Data -------");
   try {
@@ -84,9 +83,8 @@ function showGameRules() {
 async function loadGame() {
   //starting the game by getting game settings and intializingthe struct.
   // make game obj.
-  // window.game = new Game();
-  // const game = window.game;
   const game = new Game();
+  window.addEventListener("resize", () => checkScreenSize(game));
   game.initializeBoard("board"); //initialize the board
   setgameMode(game); // set flags for which game mode
   initPlayers(game);
@@ -101,7 +99,6 @@ async function loadGame() {
     document
       .getElementById("startButton")
       .addEventListener("click", async () => {
-        // console.log("Start Button clicked");
         game.loadSettings(game.players[0].playerName);
         await createGameInDB(game);
       });
@@ -111,8 +108,6 @@ async function loadGame() {
     document.getElementById("aiButton").addEventListener("click", async () => {
       game.loadSettings(game.players[0].playerName);
       await createGameInDB(game);
-      // console.table(game);
-      // startaiGame(game);
     });
   }
 }
@@ -141,16 +136,15 @@ function gameLoop(game, timestamp) {
   }
 
   // Continue the loop if drawFlag is true
-  if (game.drawFlag) {
-    requestAnimationFrame((newTimestamp) => {
-    //   checkScreenSize();
-      gameLoop(game, newTimestamp);
-    });
+  if (1) {
+    requestAnimationFrame((newTimestamp) => gameLoop(game, newTimestamp));
   }
 }
 
 function updategameValues(player1, player2, game) {
   //checks if player movement is inside the board then moves it.
+  if (!game.drawFlag)
+    return;
   oob(player1, game);
   oob(player2, game);
 
@@ -161,9 +155,6 @@ function updategameValues(player1, player2, game) {
   // Check ball collision with players
   ballCollision(game.ball, player1, "left", game);
   ballCollision(game.ball, player2, "right", game);
-
-  // ballCollision(game.ball, player1);
-  // ballCollision(game.ball, player2);
 
   //check for scores
   if (game.ball.x - game.ball.ballRadius < 0) {
@@ -800,20 +791,18 @@ function aikeyEvents(moveDirection, aiHelper) {
 
 // settings
 
-function checkScreenSize() {
+function checkScreenSize(game = null) {
   const MIN_WINDOW_WIDTH = 820;
   const MIN_WINDOW_HEIGHT = 700;
 
   const warningMessage = document.getElementById("warningMessage");
   const gameContent = document.getElementById("gameContent");
 
-  if (
-    window.innerWidth < MIN_WINDOW_WIDTH ||
-    window.innerHeight < MIN_WINDOW_HEIGHT
-  ) {
+  if (window.innerWidth < MIN_WINDOW_WIDTH || window.innerHeight < MIN_WINDOW_HEIGHT) {
     warningMessage.classList.remove("d-none");
-	if(gameContent)
-		gameContent.classList.add("d-none");
+	  if(gameContent)
+		  gameContent.classList.add("d-none");
+    game.drawFlag = false;
   } else {
     if (warningMessage) {
       warningMessage.classList.add("d-none");
@@ -821,7 +810,9 @@ function checkScreenSize() {
     if (gameContent) {
       gameContent.classList.remove("d-none");
     }
+    game.drawFlag = true;
   }
+  console.log("changed flag = ", game.drawFlag);
 }
 
 function changeSetting(game) {
@@ -896,6 +887,3 @@ function applySetting(game) {
 if (window.location.href.includes("/game")) {
   loadGame();
 }
-
-window.addEventListener("resize", checkScreenSize);
-// checkScreenSize();

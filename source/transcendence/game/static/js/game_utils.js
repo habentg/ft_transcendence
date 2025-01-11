@@ -5,7 +5,7 @@ class Game {
     this.aiFlag = false;
     this.versusFlag = false;
     this.tournamentFlag = false;
-	this.tournament_id = 0;
+	  this.tournament_id = 0;
 
     this.drawFlag = false // flag for stopping drawing
 
@@ -123,12 +123,12 @@ class Game {
 
   move = (event) => {
     this.activeKeys[event.code] = true;
-    console.log(`Key Down: ${event.code}`); // Debugging
+    // console.log(`Key Down: ${event.code}`); // Debugging
   }
 
   stopMovement = (event) => {
     this.activeKeys[event.code] = false;
-    console.log(`Key Up: ${event.code}`);
+    // console.log(`Key Up: ${event.code}`);
   }
 
   saveSettings(user) {
