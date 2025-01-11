@@ -110,10 +110,12 @@ async function loadGame() {
       await createGameInDB(game);
     });
   }
+
 }
 
 function startGame(game) {
   game.drawFlag = true;
+  window.isGameRunning = true
 
   game.setupeventListeners();
   document.getElementById("startButton").disabled = true;
@@ -124,6 +126,10 @@ function startGame(game) {
 }
 
 function gameLoop(game, timestamp) {
+  if (!window.isGameRunning) {
+    console.log("say something before returning ...")
+    return ;
+  }
   const fps = 60;
   const interval = 1000 / fps;
   // console.log("GameLoop playerHeight", game.playerHeight);
@@ -523,6 +529,7 @@ async function resetGame(player1, player2, direction, game) {
   if (isGameOver(player1, player2, game)) {
     game.stopeventListeners();
     game.drawFlag = false;
+    window.isGameRunning = false;
     // game.aiFlag = false;
     const endgame_stuff = {
       player1_username: player1.playerName,
@@ -633,6 +640,7 @@ function startaiGame(game) {
 
   let gameloopFlag = false;
   game.drawFlag = true;
+  window.isGameRunning = true;
   requestAnimationFrame((timestamp) => {
     gameLoop(game, timestamp);
   });
@@ -811,6 +819,7 @@ function checkScreenSize(game = null) {
       gameContent.classList.remove("d-none");
     }
     game.drawFlag = true;
+    // window.isGameRunning = true;
   }
   console.log("changed flag = ", game.drawFlag);
 }
