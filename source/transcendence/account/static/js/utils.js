@@ -372,8 +372,14 @@ function createToast(content) {
     toastTitle.textContent = `${content.title} - Error`;
     toastHeader.classList.add("bg-danger", "text-white");
     toastIcon.className = "fas fa-exclamation-circle text-warning";
+  } else if (`${content.type}` === "game_invite") {
+    toastTitle.textContent = `${content.title}`;
+    toastBody.textContent = `${content.message}`;
+    toastHeader.classList.add("#037923", "text-dark");
+    toastIcon.className = "fas fa-gamepad mt-2";
+    toastIcon.style.color = "red";
   } else if (`${content.type}` === "chat_message") {
-    toastTitle.textContent = `${content.sender} has sent you a message`;
+    toastTitle.textContent = `Message from ${content.sender}`;
     toastBody.textContent = `${content.message}`;
     toastHeader.classList.add("#84ddfc", "text-light");
     toastIcon.className = "fas fa-comment-alt text-info mt-2";
