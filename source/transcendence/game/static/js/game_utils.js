@@ -62,9 +62,25 @@ class Game {
   }
 
   setupeventListeners() {
-    document.addEventListener("keydown", this.move);
-    document.addEventListener("keyup", this.stopMovement);
+    document.addEventListener("keydown", (event) => {
+      if (this.aiFlag && isaiKey(event) && !event.isAI) {
+        // Block physical keyboard inputs for AI keys
+        event.preventDefault();
+        return;
+      }
+      this.move(event); // Process both physical player inputs and AI events
+    });
+  
+    document.addEventListener("keyup", (event) => {
+      if (this.aiFlag && isaiKey(event) && !event.isAI) {
+        // Block physical keyboard inputs for AI keys
+        event.preventDefault();
+        return;
+      }
+      this.stopMovement(event); // Process both physical player inputs and AI events
+    });
   }
+  
   stopeventListeners() {
     while (this.activeKeys.length > 0)
         this.activeKeys.pop();
@@ -114,6 +130,7 @@ class Game {
     this.activeKeys[event.code] = false;
     console.log(`Key Up: ${event.code}`);
   }
+
   saveSettings(user) {
     const key = `gameSetting_${user}`;
     const settings = {

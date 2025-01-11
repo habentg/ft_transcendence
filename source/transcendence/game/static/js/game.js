@@ -61,7 +61,6 @@ async function updateGameInDB(endgame_data, game_id) {
     throw new Error(`Failed to update game with id: ${game_id} : ${response.status} : ${response.error}`);
   } catch (error) {
     createToast({type: 'error', error_message: error, title: 'Game Updating Error!'});
-    console.error(error);
   }
 }
 
@@ -102,7 +101,8 @@ async function loadGame() {
     document
       .getElementById("startButton")
       .addEventListener("click", async () => {
-        console.log("Start Button clicked");
+        // console.log("Start Button clicked");
+        game.loadSettings(game.players[0].playerName);
         await createGameInDB(game);
       });
   }
@@ -226,7 +226,7 @@ function drawPlayers(player1, player2, game) {
       player1.height,
       player1.width / 2,
       "#84ddfc",
-      "black",
+      "white",
       game
     );
   if (!player2.cooldownFlag && game.parryFlag)
@@ -248,7 +248,7 @@ function drawPlayers(player1, player2, game) {
       player2.height,
       player2.width / 2,
       "#84ddfc",
-      "black",
+      "white",
       game
     );
 }
@@ -459,38 +459,6 @@ function oob(player, game) {
   }
 }
 
-
-// function ballCollision(ball, player) {
-//   console.log("ball", ball);
-//   if (player.pos === "left" && ball.velocityX < 0) {
-//     const nextX = ball.x + ball.velocityX;
-//     if (
-//       nextX - ball.ballRadius <= player.x + player.width && // Ball is near the paddle
-//       ball.y >= player.y &&
-//       ball.y <= player.y + player.height
-//     ) {
-//       ball.velocityX *= -1; // Reverse horizontal direction
-//       const hitPoint = ball.y - (player.y + player.height / 2);
-//       const normalizedHitPoint = hitPoint / (player.height / 2);
-//       ball.velocityY = normalizedHitPoint * 4;
-//     }
-//   }
-
-//   if (player.pos === "right" && ball.velocityX > 0) {
-//     const nextX = ball.x + ball.velocityX;
-//     if (
-//       nextX + ball.ballRadius >= player.x && // Ball is near the paddle
-//       ball.y >= player.y &&
-//       ball.y <= player.y + player.height
-//     ) {
-//       ball.velocityX *= -1; // Reverse horizontal direction
-//       const hitPoint = ball.y - (player.y + player.height / 2);
-//       const normalizedHitPoint = hitPoint / (player.height / 2);
-//       ball.velocityY = normalizedHitPoint * 4;
-//     }
-//   }
-// }
-
 function ballCollision(ball, player, position, game) {
   // Define the maximum speed for the ball
   const MAX_SPEED_X = 8; // Maximum horizontal speed (velocityX)
@@ -519,7 +487,7 @@ function ballCollision(ball, player, position, game) {
     const normalizedHitPoint = hitPosition / (player.height / 2);
 
     ball.velocityX *= -1;
-    ball.velocityY = normalizedHitPoint * 4;
+    ball.velocityY = normalizedHitPoint * 4.1;
     // Resolve collision by moving the ball outside the paddle
     if (position === "left") {
       ball.x = player.x + player.width + ball.ballRadius;
@@ -755,57 +723,48 @@ function aiView(game, aiHelper) {
   }
 }
 
+function isaiKey(event) {
+  const keys = ["ArrowUp", "ArrowDown", "Numpad0"]
+  return keys.includes(event.key);
+}
+
 function aikeyEvents(moveDirection, aiHelper) {
   let event;
 
-  // Handle 'up' movement
-  if (moveDirection === "up" && !aiHelper.aiMovingUp) {
-    // Ensure 'down' key is released before pressing 'up'
-    if (aiHelper.aiMovingDown) {
-      event = new KeyboardEvent("keyup", {
-        key: "ArrowDown",
-        code: "ArrowDown",
-        keyCode: 40,
-        bubbles: true,
-        cancelable: true,
-      });
-      document.dispatchEvent(event);
-      aiHelper.aiMovingDown = false;
-    }
-    // Simulate 'keydown' for 'up'
-    event = new KeyboardEvent("keydown", {
-      key: "ArrowUp",
-      code: "ArrowUp",
-      keyCode: 38,
+  const createAIKeyEvent = (type, key, code, keyCode) => {
+    return new KeyboardEvent(type, {
+      key: key,
+      code: code,
+      keyCode: keyCode,
       bubbles: true,
       cancelable: true,
     });
+  };
+
+  // Handle 'up' movement
+  if (moveDirection === "up" && !aiHelper.aiMovingUp) {
+    if (aiHelper.aiMovingDown) {
+      event = createAIKeyEvent("keyup", "ArrowDown", "ArrowDown", 40);
+      event.isAI = true; // Mark this event as AI-generated
+      document.dispatchEvent(event);
+      aiHelper.aiMovingDown = false;
+    }
+    event = createAIKeyEvent("keydown", "ArrowUp", "ArrowUp", 38);
+    event.isAI = true;
     document.dispatchEvent(event);
     aiHelper.aiMovingUp = true;
   }
 
   // Handle 'down' movement
   else if (moveDirection === "down" && !aiHelper.aiMovingDown) {
-    // Ensure 'up' key is released before pressing 'down'
     if (aiHelper.aiMovingUp) {
-      event = new KeyboardEvent("keyup", {
-        key: "ArrowUp",
-        code: "ArrowUp",
-        keyCode: 38,
-        bubbles: true,
-        cancelable: true,
-      });
+      event = createAIKeyEvent("keyup", "ArrowUp", "ArrowUp", 38);
+      event.isAI = true;
       document.dispatchEvent(event);
       aiHelper.aiMovingUp = false;
     }
-    // Simulate 'keydown' for 'down'
-    event = new KeyboardEvent("keydown", {
-      key: "ArrowDown",
-      code: "ArrowDown",
-      keyCode: 40,
-      bubbles: true,
-      cancelable: true,
-    });
+    event = createAIKeyEvent("keydown", "ArrowDown", "ArrowDown", 40);
+    event.isAI = true;
     document.dispatchEvent(event);
     aiHelper.aiMovingDown = true;
   }
@@ -813,24 +772,14 @@ function aikeyEvents(moveDirection, aiHelper) {
   // Handle stopping movement
   else if (moveDirection === "stop") {
     if (aiHelper.aiMovingUp) {
-      event = new KeyboardEvent("keyup", {
-        key: "ArrowUp",
-        code: "ArrowUp",
-        keyCode: 38,
-        bubbles: true,
-        cancelable: true,
-      });
+      event = createAIKeyEvent("keyup", "ArrowUp", "ArrowUp", 38);
+      event.isAI = true;
       document.dispatchEvent(event);
       aiHelper.aiMovingUp = false;
     }
     if (aiHelper.aiMovingDown) {
-      event = new KeyboardEvent("keyup", {
-        key: "ArrowDown",
-        code: "ArrowDown",
-        keyCode: 40,
-        bubbles: true,
-        cancelable: true,
-      });
+      event = createAIKeyEvent("keyup", "ArrowDown", "ArrowDown", 40);
+      event.isAI = true;
       document.dispatchEvent(event);
       aiHelper.aiMovingDown = false;
     }
@@ -838,29 +787,16 @@ function aikeyEvents(moveDirection, aiHelper) {
 
   // Handle 'parry' action
   else if (moveDirection === "parry") {
-    event = new KeyboardEvent("keydown", {
-      key: "Numpad0",
-      code: "Numpad0",
-      keyCode: 96,
-      bubbles: true,
-      cancelable: true,
-    });
+    event = createAIKeyEvent("keydown", "Numpad0", "Numpad0", 96);
+    event.isAI = true;
     document.dispatchEvent(event);
-
-    // Simulate quick release
     setTimeout(() => {
-      const releaseEvent = new KeyboardEvent("keyup", {
-        key: "Numpad0",
-        code: "Numpad0",
-        keyCode: 96,
-        bubbles: true,
-        cancelable: true,
-      });
+      const releaseEvent = createAIKeyEvent("keyup", "Numpad0", "Numpad0", 96);
+      releaseEvent.isAI = true;
       document.dispatchEvent(releaseEvent);
     }, 50);
   }
 }
-
 
 // settings
 
@@ -921,27 +857,7 @@ function changeSetting(game) {
     if (e.target === modal) closeModal("gameSettingsModal");
   });
 
-  // document.body.appendChild(modal);
-  // document.body.classList.add("modal-open");
-  // document.body.appendChild(modal);
-  // document.body.classList.add("modal-open");
-
   console.log("Game values: ", game);
-
-  // const paddleSpeedInput = parseInt(document.getElementById("paddleSpeed").value);
-
-  // document.getElementById("settingsMenu").style.display = "none";
-  // console.log("Settings Applied: ", {
-  //   paddleSpeed,
-  //   defballSpeed,
-  //   maxScore,
-  //   slowServe,
-  //   parryFlag,
-  // });
-
-  // document.getElementById("settingsMenu").style.display = "none";
-  // console.log("Settings Applied: ", { this:paddleSpeed, this:defballSpeed, this:maxScore });
-  // closeModal("gameSettingsModal");
 }
 
 function applySetting(game) {
