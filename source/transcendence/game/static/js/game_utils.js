@@ -5,7 +5,7 @@ class Game {
     this.aiFlag = false;
     this.versusFlag = false;
     this.tournamentFlag = false;
-    this.tournament_id = 0;
+	  this.tournament_id = 0;
 
     this.drawFlag = false; // flag for stopping drawing
 
@@ -62,9 +62,25 @@ class Game {
   }
 
   setupeventListeners() {
-    document.addEventListener("keydown", this.move);
-    document.addEventListener("keyup", this.stopMovement);
+    document.addEventListener("keydown", (event) => {
+      if (this.aiFlag && isaiKey(event) && !event.isAI) {
+        // Block physical keyboard inputs for AI keys
+        event.preventDefault();
+        return;
+      }
+      this.move(event); // Process both physical player inputs and AI events
+    });
+  
+    document.addEventListener("keyup", (event) => {
+      if (this.aiFlag && isaiKey(event) && !event.isAI) {
+        // Block physical keyboard inputs for AI keys
+        event.preventDefault();
+        return;
+      }
+      this.stopMovement(event); // Process both physical player inputs and AI events
+    });
   }
+  
   stopeventListeners() {
     while (this.activeKeys.length > 0) this.activeKeys.pop();
     document.removeEventListener("keydown", this.move);
@@ -106,13 +122,14 @@ class Game {
 
   move = (event) => {
     this.activeKeys[event.code] = true;
-    console.log(`Key Down: ${event.code}`); // Debugging
-  };
+    // console.log(`Key Down: ${event.code}`); // Debugging
+  }
 
   stopMovement = (event) => {
     this.activeKeys[event.code] = false;
-    console.log(`Key Up: ${event.code}`);
-  };
+    // console.log(`Key Up: ${event.code}`);
+  }
+
   saveSettings(user) {
     const key = `gameSetting_${user}`;
     const settings = {
@@ -220,14 +237,15 @@ class Player {
     this.score = 0;
     this.finalScore = 0; // final score after match
     this.gameWon = 0;
-    this.position = "";
     if (position === "left") {
+      this.pos = "left";
       this.x = 10;
       this.y = 500 / 2 - this.width / 2;
       this.parryKey = "Space";
       this.moveUp = "KeyW";
       this.moveDown = "KeyS";
     } else if (position === "right") {
+      this.pos = "right"
       this.x = 800 - this.width - 10;
       this.y = 500 / 2 - this.height / 2;
       this.parryKey = "Numpad0";
