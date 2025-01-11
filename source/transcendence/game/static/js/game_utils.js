@@ -254,14 +254,15 @@ class Player {
     this.score = 0;
     this.finalScore = 0; // final score after match
     this.gameWon = 0;
-    this.position = "";
     if (position === "left") {
+      this.pos = "left";
       this.x = 10;
       this.y = 500 / 2 - this.width / 2;
       this.parryKey = "Space";
       this.moveUp = "KeyW";
       this.moveDown = "KeyS";
     } else if (position === "right") {
+      this.pos = "right"
       this.x = 800 - this.width - 10;
       this.y = 500 / 2 - this.height / 2;
       this.parryKey = "Numpad0";

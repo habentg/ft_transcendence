@@ -162,6 +162,9 @@ function updategameValues(player1, player2, game) {
   ballCollision(game.ball, player1, "left", game);
   ballCollision(game.ball, player2, "right", game);
 
+  // ballCollision(game.ball, player1);
+  // ballCollision(game.ball, player2);
+
   //check for scores
   if (game.ball.x - game.ball.ballRadius < 0) {
     player2.score++;
@@ -387,8 +390,8 @@ function updatePaddleVelocities(player1, player2, game) {
   if (game.parryFlag) {
     if (game.activeKeys["Space"] && !player1.cooldownFlag) {
       if (isParry(player1, game)) {
-        game.ball.velocityX *= 2;
-        game.ball.velocityY = 0;
+        game.ball.velocityX *= 1.5;
+        // game.ball.velocityY = 0;
         game.sound.play("parry");
         console.log("Good Parry");
       } else console.log("Wrong parry");
@@ -396,8 +399,8 @@ function updatePaddleVelocities(player1, player2, game) {
     }
     if (game.activeKeys["Numpad0"] && !player2.cooldownFlag) {
       if (isParry(player2, game)) {
-        game.ball.velocityX *= -2;
-        game.ball.velocityY = 0;
+        game.ball.velocityX *= -1.5;
+        // game.ball.velocityY = 0;
         game.sound.play("parry");
         console.log("Good Parry");
       } else console.log("Wrong parry");
@@ -456,6 +459,38 @@ function oob(player, game) {
   }
 }
 
+
+// function ballCollision(ball, player) {
+//   console.log("ball", ball);
+//   if (player.pos === "left" && ball.velocityX < 0) {
+//     const nextX = ball.x + ball.velocityX;
+//     if (
+//       nextX - ball.ballRadius <= player.x + player.width && // Ball is near the paddle
+//       ball.y >= player.y &&
+//       ball.y <= player.y + player.height
+//     ) {
+//       ball.velocityX *= -1; // Reverse horizontal direction
+//       const hitPoint = ball.y - (player.y + player.height / 2);
+//       const normalizedHitPoint = hitPoint / (player.height / 2);
+//       ball.velocityY = normalizedHitPoint * 4;
+//     }
+//   }
+
+//   if (player.pos === "right" && ball.velocityX > 0) {
+//     const nextX = ball.x + ball.velocityX;
+//     if (
+//       nextX + ball.ballRadius >= player.x && // Ball is near the paddle
+//       ball.y >= player.y &&
+//       ball.y <= player.y + player.height
+//     ) {
+//       ball.velocityX *= -1; // Reverse horizontal direction
+//       const hitPoint = ball.y - (player.y + player.height / 2);
+//       const normalizedHitPoint = hitPoint / (player.height / 2);
+//       ball.velocityY = normalizedHitPoint * 4;
+//     }
+//   }
+// }
+
 function ballCollision(ball, player, position, game) {
   // Define the maximum speed for the ball
   const MAX_SPEED_X = 8; // Maximum horizontal speed (velocityX)
@@ -480,33 +515,11 @@ function ballCollision(ball, player, position, game) {
 
   // If either current or previous position indicates a collision, handle it
   if (isCollision || wasCollision) {
-    let hitPosition = (ball.y - player.y) / player.height; // Normalize hit position between 0 and 1
-    let section = Math.floor(hitPosition * 4); // Section index (0, 1, 2, 3)
+    let hitPosition = ball.y - (player.y + player.height / 2);
+    const normalizedHitPoint = hitPosition / (player.height / 2);
 
-    if (position === "left") {
-      // Ball hit the left player's paddle
-      ball.velocityX = Math.abs(ball.velocityX); // Ensure velocityX is positive (moving right)
-    } else if (position === "right") {
-      // Ball hit the right player's paddle
-      ball.velocityX = -Math.abs(ball.velocityX); // Ensure velocityX is negative (moving left)
-    }
-
-    // Adjust vertical velocity based on the section of the paddle hit
-    switch (section) {
-      case 0:
-        ball.velocityY = -1.5; // Strong upwards angle
-        break;
-      case 1:
-        ball.velocityY = -1.0; // Slightly upwards
-        break;
-      case 2:
-        ball.velocityY = 1.0; // Slightly downwards
-        break;
-      case 3:
-        ball.velocityY = 1.5; // Strong downward angle
-        break;
-    }
-
+    ball.velocityX *= -1;
+    ball.velocityY = normalizedHitPoint * 4;
     // Resolve collision by moving the ball outside the paddle
     if (position === "left") {
       ball.x = player.x + player.width + ball.ballRadius;
@@ -637,7 +650,6 @@ function drawLine(game) {
 //Start of AI
 
 function startaiGame(game) {
-  game.drawFlag = true;
 
   game.setupeventListeners();
   // make player 2 name as AI
@@ -660,13 +672,19 @@ function startaiGame(game) {
     aiMovingDown: false,
   };
 
-  // aiLogic(player2);
+  let gameloopFlag = false;
+  game.drawFlag = true;
   requestAnimationFrame((timestamp) => {
     gameLoop(game, timestamp);
-    setInterval(() => aiView(game, aiHelper), 1000);
-    setInterval(() => aiLogic(game.players[1], game, aiHelper), 50);
   });
-
+  gameloopFlag = true;
+  console.log("set gameloop flag to true");
+  if(gameloopFlag){
+  setInterval(() =>{ 
+      aiView(game, aiHelper);}
+  , 1000);
+  }
+  setInterval(() => aiLogic(game.players[1], game, aiHelper), 50);
 }
 
 function aiLogic(player2, game, aiHelper) {
@@ -674,11 +692,11 @@ function aiLogic(player2, game, aiHelper) {
     return;
 
   if (aiHelper.velocityX < 0) {
-    console.log("Not expecting a return should go back in the middle");
+    // console.log("Not expecting a return should go back in the middle");
     const middlePos = game.boardHeight / 2;
     const paddleCenter = player2.y + player2.height / 2;
 
-    if (paddleCenter > middlePos - 10 && paddleCenter < middlePos + 10){
+    if (paddleCenter > middlePos - (game.paddleSpeed * 2) && paddleCenter < middlePos + (game.paddleSpeed * 2)){
       aikeyEvents("stop", aiHelper);
       return ;
     }
@@ -713,7 +731,7 @@ function aiLogic(player2, game, aiHelper) {
   }
   
   let target = Math.abs(yHit - player2.height / 2);
-  console.log("Expecting a return target is = ", target);
+  // console.log("Expecting a return target is = ", target);
   if (target > player2.y - tolerance && target < player2.y + 40) {
     // If the AI is close enough to the target Y position, stop moving
     aikeyEvents("stop", aiHelper);
