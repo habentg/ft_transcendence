@@ -275,7 +275,7 @@ class TournamentRetrievalView(APIView):
                     return Response({'css': self.css, "tournament_id": tournament.id, "tournament_type": 8, 'html': html_content}, status=200)
                 if tournament.type == 4:
                     html_content = render_to_string(self.template_name_iv, context)
-                    return Response({'css': self.css, "tournament_id": tournament.id, "tournament_type": 8, 'html': html_content}, status=200)
+                    return Response({'css': self.css, "tournament_id": tournament.id, "tournament_type": 4, 'html': html_content}, status=200)
                 return Response({"tournament_id": tournament.id, "error": 'issues with number of games in tournament'}, status=400)
             except Tournament.DoesNotExist:
                 return Response({"error": "Tournament not found"}, status=404)
