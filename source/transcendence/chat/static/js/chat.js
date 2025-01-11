@@ -209,7 +209,7 @@ async function fetchMessages(activeChatRecipient, chatMessages) {
     sendButton.addEventListener("click", handleMessageSend);
 
   } catch (error) {
-    createToast({ type: "error", title: "Chat Error", error_message: `${error}`});
+    createToast({ type: "error", title: "Chat Error", error_message: `${error}` });
   }
 }
 
@@ -257,6 +257,17 @@ async function clearConvo() {
     window.ws_chat.send(JSON.stringify(chatMessage));
   }
   else {
-    createToast({type: 'error', error_message: 'WebSocket is not open. Unable to delete chatroom.', title: 'Websocket Not Open!'});
+    createToast({ type: 'error', error_message: 'WebSocket is not open. Unable to delete chatroom.', title: 'Websocket Not Open!' });
+  }
+}
+
+function inviteToGame() {
+  const [active_chat_recipient, chat_id] = getActiveChatIdandRecipient();
+  console.log(active_chat_recipient)
+  if (window.ws && window.ws.readyState === WebSocket.OPEN) {
+    window.ws.send(JSON.stringify({
+      type: "invite_to_game",
+      recipient: active_chat_recipient,
+    }));
   }
 }
