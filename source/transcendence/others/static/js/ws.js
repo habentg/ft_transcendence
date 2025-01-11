@@ -141,6 +141,9 @@ function initNotificationWebsocket() {
     else if (data.type === "unfriended") {
       handleFriendRequestUnfriend(data);
     }
+    else if (data.type === "game_invitation") {
+      createToast({ type: "game_invite", title: `Game Invitation - ${data.sender}`, message: data.message });
+    }
   }
 }
 

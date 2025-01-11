@@ -60,3 +60,9 @@
 5. Time (hour to be specific) is not UAE timezone.
 6. Round up the decimal value for the WIN PERCENTAGE field on the Leaderboard page.
 
+
+
+<!-- TODO befor submission -->
+1. remove all console logs and prints
+2. change the server to production mode and configure nginx to serve static files
+3. 

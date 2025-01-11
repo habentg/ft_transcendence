@@ -191,7 +191,7 @@ function createTournamentMap() {
 					<div class="d-flex justify-content-center">
 					<button
 					  id="startButton"
-					  class="btn btn-success continueButton btn-md"
+					  class="btn btn-primary continueButton btn-md"
 					  style="display: flex; align-items: center"
 					>
 					  Continue
@@ -233,12 +233,10 @@ function nextMatchModal(player1, player2) {
   const modalHTML = `
 	  <div class="modal fade" id="nextMatch" tabindex="-1" role="dialog" aria-labelledby="modalTitle" aria-hidden="true">
 		<div class="modal-dialog modal-dialog-centered modal-md" role="document">
-		  <div class="card modal-card shadow-lg  position-relative">
-			<button type="button" class="btn-close btn-close-white close-btn position-absolute top-0 end-0 m-2" onclick="closeModal('nextMatch')" aria-label="Close"></button>
-			<div class="card-body text-center"> 
-			  <h3 class="modal-title " id="modalTitle2"> Next Match </h3>
-			  <p class="modal-text winner-text mt-3"> ${player1} vs ${player2} </p>
-			  <button class="btn btn-secondary btn-sm modal-continue mt-4" onclick="closeModal('nextMatch')">CONTINUE</button>
+		  <div class="card modal-card shadow-lg  position-relative nextgame">
+			<div class="card-body text-center nextgame"> 
+			  <h6 class="modal-title " id="modalTitle2"> Next Match </h6>
+			  <h2 class="modal-text winner-text mt-3"> ${player1} vs ${player2} </h2>	
 			</div>
 		  </div>
 		</div>
@@ -324,9 +322,10 @@ function updateTournamentMapAfterFinal(tournamentContainer, tournamentElement) {
   const restartButton = continueButton.cloneNode(true);
   restartButton.innerHTML = `<i class="fas fa-trophy me-1"></i>New Tournament`;
   restartButton.classList.remove("continueButton");
+  restartButton.classList.remove("btn-primary");
   restartButton.classList.add("restartButton");
   restartButton.style.marginLeft = "10px"; // Add space between buttons
-  restartButton.style.backgroundColor = "#007bff"; // Add blue color
+  restartButton.style.backgroundColor = "#A1F037"; 
   restartButton.addEventListener("click", () => updateUI("/tournament"));
   // Insert restart button after continue button
   continueButton.insertAdjacentElement("afterend", restartButton);

@@ -455,8 +455,13 @@ span.score-value {
 }
 
 .winner-text {
-  font-size: 1.2rem;
-  color: #84ddfc;
+  font-size: 2rem;
+  color: #b02c98;
+}
+
+.nextgame {
+  min-width: 300px;
+  width: fit-content;
 }
 
 .btn-secondary {
@@ -474,8 +479,8 @@ span.score-value {
 }
 
 #modalTitle2 {
-  color: #b02c98;
-  font-size: 2rem;
+  color: #b02c98 #84ddfc;
+  font-size: 1.8rem;
 }
 
 /* Center the Modal on Page */
@@ -552,9 +557,15 @@ span.score-value {
 }
 
 #warningMessage {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    z-index: 1000;
+  position: fixed;
+  top: 30%;
+  left: 5%;
+  width: 90%;
+  z-index: 1000;
+  min-height: 200px;
+  height: fit-content;
+  background: rgb(227, 96, 96);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+  border-radius: 15px;
 }
