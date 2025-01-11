@@ -24,6 +24,7 @@ async function createTournamentinDB(tournament_type) {
   class GameBoard {
     constructor() {
       this.game = new Game();
+	  window.addEventListener("resize", () => checkScreenSize(this.game));
       this.game.initializeBoard("board");
       this.game.aiFlag = false;
       this.game.versusFlag = false;
@@ -60,7 +61,10 @@ async function createTournamentinDB(tournament_type) {
       console.log("game: ", this.game);
       const ret = await createGameInDB(this.game);
       if (ret === 'start_tournament')
+	  {
+		window.isGameRunning = true
         requestAnimationFrame((timestamp) => gameLoop(this.game, timestamp));
+	  }
       else {
         createToast({type: 'error', error_message: 'Failed to start Tournament games', title: 'Game Creating Error!'});
         return;
@@ -230,7 +234,7 @@ async function createTournamentinDB(tournament_type) {
     }
 
     checkGameStatus = (players, newTournamentGame, gameCanvas, playersNames) => {
-      if (!newTournamentGame.game.drawFlag) {
+      if (!newTournamentGame.game.drawFlag && !window.isGameRunning) {
         const match = {
           player1: players[0].playerName,
           player1Score: players[0].finalScore,
