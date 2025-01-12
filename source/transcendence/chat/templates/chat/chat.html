@@ -33,18 +33,18 @@
                   {% elif chatroom.get_participant_one.username == user.username %}
                     <li id="{{ chatroom.get_participant_two.username }}" class="friend-item d-flex align-items-center" data-recipent="{{ chatroom.get_participant_two.full_name }}" onclick="openChat('{{ chatroom.get_participant_two.username }}', '{{ chatroom.name }}')">
                       {% if chatroom.get_participant_two.profile_picture %}
-                        <img src="{{ chatroom.get_participant_two.profile_picture.url }}" alt="Profile Picture" class="profile-pic rounded-circle" style="width:30px;height: 30px;" />
+                        <img src="{{ chatroom.get_participant_two.profile_picture.url }}" alt="Profile Picture" class="profile-pic pfp-remove rounded-circle" style="width:30px;height: 30px;" />
                       {% else %}
-                        <img src="{% static 'images/default_profile_pic.jpeg' %}" alt="Default Profile Picture" class="profile-pic rounded-circle" style="width:30px;height: 30px;" />
+                        <img src="{% static 'images/default_profile_pic.jpeg' %}" alt="Default Profile Picture" class="profile-pic pfp-remove rounded-circle" style="width:30px;height: 30px;" />
                       {% endif %}
                       <span class="mb-0 username_span">{{ chatroom.get_participant_two.username|slice:':10' }}</span>
                     </li>
                   {% elif chatroom.get_participant_two.username == user.username %}
                     <li id="{{ chatroom.get_participant_one.username }}" class="friend-item d-flex align-items-center" data-recipent="{{ chatroom.get_participant_one.full_name }}" onclick="openChat('{{ chatroom.get_participant_one.username }}', '{{ chatroom.name }}')">
                       {% if chatroom.get_participant_one.profile_picture %}
-                        <img src="{{ chatroom.get_participant_one.profile_picture.url }}" alt="Profile Picture" class="profile-pic rounded-circle" style="width:30px;height: 30px;" />
+                        <img src="{{ chatroom.get_participant_one.profile_picture.url }}" alt="Profile Picture" class="profile-pic pfp-remove rounded-circle" style="width:30px;height: 30px;" />
                       {% else %}
-                        <img src="{% static 'images/default_profile_pic.jpeg' %}" alt="Default Profile Picture" class="profile-pic rounded-circle" style="width:30px;height: 30px;" />
+                        <img src="{% static 'images/default_profile_pic.jpeg' %}" alt="Default Profile Picture" class="profile-pic pfp-remove rounded-circle" style="width:30px;height: 30px;" />
                       {% endif %}
                       <span class="mb-0">{{ chatroom.get_participant_one.username|slice:':10' }}</span>
                     </li>

@@ -375,9 +375,9 @@ function createToast(content) {
   } else if (`${content.type}` === "game_invite") {
     toastTitle.textContent = `${content.title}`;
     toastBody.textContent = `${content.message}`;
-    toastHeader.classList.add("#037923", "text-dark");
+    toastHeader.classList.add("bg-warning", "text-dark");
     toastIcon.className = "fas fa-gamepad mt-2";
-    toastIcon.style.color = "red";
+    toastIcon.style.color = "#ff0080";
   } else if (`${content.type}` === "chat_message") {
     toastTitle.textContent = `Message from ${content.sender}`;
     toastBody.textContent = `${content.message}`;

@@ -140,11 +140,7 @@ function gameLoop(game, timestamp) {
     // Draw the game
     draw(game.players[0], game.players[1], game);
   }
-
-  // Continue the loop if drawFlag is true
-  if (1) {
-    requestAnimationFrame((newTimestamp) => gameLoop(game, newTimestamp));
-  }
+  requestAnimationFrame((newTimestamp) => gameLoop(game, newTimestamp));
 }
 
 function updategameValues(player1, player2, game) {
