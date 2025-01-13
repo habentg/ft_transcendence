@@ -60,11 +60,10 @@ async function createTournamentinDB(tournament_type) {
       console.log("Tournament ID:", tournament_id);
       console.log("game: ", this.game);
       const ret = await createGameInDB(this.game);
-      if (ret === 'start_tournament')
-	  {
-		window.isGameRunning = true
+      if (ret === 'start_tournament'){
+        window.isGameRunning = true;
         requestAnimationFrame((timestamp) => gameLoop(this.game, timestamp));
-	  }
+      }
       else {
         createToast({type: 'error', error_message: 'Failed to start Tournament games', title: 'Game Creating Error!'});
         return;

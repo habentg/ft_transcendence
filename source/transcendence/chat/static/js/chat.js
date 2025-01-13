@@ -65,7 +65,7 @@ function handleMessageSend() {
 
 function activeChatHeaderUpdate(recipeint_username, activeChatFullname) {
   // Update chat header
-  document.getElementById("chatTitle").textContent = activeChatFullname;
+  document.getElementById("chatTitle").textContent = activeChatFullname.length > 10 ? `${activeChatFullname.slice(0, 10)}...` : activeChatFullname;
 
   // chat options update 
   const three_dots = document.getElementById("three_dots");
