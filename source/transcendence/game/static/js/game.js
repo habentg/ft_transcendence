@@ -100,6 +100,7 @@ async function loadGame() {
       .getElementById("startButton")
       .addEventListener("click", async () => {
         game.loadSettings(game.players[0].playerName);
+        game.randomizeServe();
         await createGameInDB(game);
       });
   }
@@ -107,6 +108,7 @@ async function loadGame() {
   if (document.getElementById("aiButton")) {
     document.getElementById("aiButton").addEventListener("click", async () => {
       game.loadSettings(game.players[0].playerName);
+      game.randomizeServe();
       await createGameInDB(game);
     });
   }
@@ -126,13 +128,10 @@ function startGame(game) {
 }
 
 function gameLoop(game, timestamp) {
-  if (!window.isGameRunning) {
-    console.log("say something before returning ...")
+  if (!window.isGameRunning)
     return ;
-  }
   const fps = 60;
   const interval = 1000 / fps;
-  // console.log("GameLoop playerHeight", game.playerHeight);
   if (timestamp - game.lastTime >= interval) {
     game.lastTime = timestamp;
     // Update game values
@@ -141,10 +140,7 @@ function gameLoop(game, timestamp) {
     draw(game.players[0], game.players[1], game);
   }
 
-  // Continue the loop if drawFlag is true
-  if (1) {
-    requestAnimationFrame((newTimestamp) => gameLoop(game, newTimestamp));
-  }
+  requestAnimationFrame((newTimestamp) => gameLoop(game, newTimestamp));
 }
 
 function updategameValues(player1, player2, game) {
@@ -156,7 +152,7 @@ function updategameValues(player1, player2, game) {
 
   updatePaddleVelocities(player1, player2, game);
 
-  ballMovement(game); // hence the name
+  ballMovement(game);
 
   // Check ball collision with players
   ballCollision(game.ball, player1, "left", game);
@@ -615,16 +611,50 @@ function drawLine(game) {
 
 //Start of AI
 
-function startaiGame(game) {
+// function startaiGame(game) {
 
+//   game.setupeventListeners();
+//   // make player 2 name as AI
+//   document.getElementById("player2Name").textContent = "@ AI";
+//   document.getElementById("player2Name").style.display = "block";
+
+//   // document.getElementById("player1").classList.remove("d-none");
+//   // document.getElementById("player2").classList.remove("d-none");
+
+//   document.getElementById("aiButton").disabled = true;
+//   document.getElementById("settingButton").disabled = true;
+//   document.getElementById("gameRulesButton").disabled = true;
+
+//   let aiHelper = {
+//     x: 0,
+//     y: 0,
+//     velocityX: 0,
+//     velocityY: 0,
+//     aiMovingUp: false,
+//     aiMovingDown: false,
+//   };
+
+//   let gameloopFlag = false;
+//   game.drawFlag = true;
+//   window.isGameRunning = true;
+//   requestAnimationFrame((timestamp) => {
+//     gameLoop(game, timestamp);
+//   });
+//   gameloopFlag = true;
+//   if(gameloopFlag){
+//     setInterval(() =>{aiView(game, aiHelper);}, 1000);
+//   }
+//   setInterval(() => aiLogic(game.players[1], game, aiHelper), 50);
+// }
+
+function startaiGame(game) {
   game.setupeventListeners();
-  // make player 2 name as AI
+
+  // Make player 2 name as AI
   document.getElementById("player2Name").textContent = "@ AI";
   document.getElementById("player2Name").style.display = "block";
 
-  // document.getElementById("player1").classList.remove("d-none");
-  // document.getElementById("player2").classList.remove("d-none");
-
+  // Disable buttons
   document.getElementById("aiButton").disabled = true;
   document.getElementById("settingButton").disabled = true;
   document.getElementById("gameRulesButton").disabled = true;
@@ -636,29 +666,53 @@ function startaiGame(game) {
     velocityY: 0,
     aiMovingUp: false,
     aiMovingDown: false,
+    scoreDeficit: 0
   };
 
-  let gameloopFlag = false;
   game.drawFlag = true;
   window.isGameRunning = true;
+
+  let lastAiViewTime = performance.now(); // Initialize last AI view timestamp
+  let lastAiLogicTime = performance.now(); // Initialize last AI logic timestamp
+
+  // Start the AI loop
+  function aiLoop(timestamp) {
+    if (!window.isGameRunning) return; // Stop if the game is no longer running
+
+    // Calculate elapsed time
+    let currentTime = timestamp;
+    let deltaTimeView = currentTime - lastAiViewTime;
+    let deltaTimeLogic = currentTime - lastAiLogicTime;
+
+    // Run `aiView` every 1000 ms
+    if (deltaTimeView >= 1000) {
+      aiView(game, aiHelper);
+      lastAiViewTime = currentTime; // Reset timer
+    }
+
+    // Run `aiLogic` every 50 ms
+    if (deltaTimeLogic >= 50) {
+      aiLogic(game.players[1], game, aiHelper);
+      lastAiLogicTime = currentTime; // Reset timer
+    }
+
+    requestAnimationFrame(aiLoop); // Continue the AI loop
+  }
+
+  // Start the AI loop
+  requestAnimationFrame(aiLoop);
+
+  // Start the shared game loop (assuming it's already defined elsewhere)
   requestAnimationFrame((timestamp) => {
     gameLoop(game, timestamp);
   });
-  gameloopFlag = true;
-  console.log("set gameloop flag to true");
-  if(gameloopFlag){
-  setInterval(() =>{ 
-      aiView(game, aiHelper);}
-  , 1000);
-  }
-  setInterval(() => aiLogic(game.players[1], game, aiHelper), 50);
 }
+
 
 function aiLogic(player2, game, aiHelper) {
   if (!game.drawFlag)
     return;
-
-  if (aiHelper.velocityX < 0) {
+  if (aiHelper.velocityX < 0 && aiHelper.scoreDeficit > 0) {
     // console.log("Not expecting a return should go back in the middle");
     const middlePos = game.boardHeight / 2;
     const paddleCenter = player2.y + player2.height / 2;
@@ -667,11 +721,11 @@ function aiLogic(player2, game, aiHelper) {
       aikeyEvents("stop", aiHelper);
       return ;
     }
-    if (paddleCenter < middlePos + 5){
+    if (paddleCenter < middlePos + game.paddleSpeed){
       aikeyEvents("down", aiHelper);
       // console.log("this is down target" , paddleCenter);
     }
-    else if (paddleCenter > middlePos - 5){
+    else if (paddleCenter > middlePos - game.paddleSpeed){
       aikeyEvents("up", aiHelper);
       // console.log("this is up target", paddleCenter);
     } else
@@ -679,22 +733,29 @@ function aiLogic(player2, game, aiHelper) {
     return ;
   }
 
-  const tolerance = 10; // Allow a small margin of error
+  let tolerance = 50; // Allow a small margin of error
+  if (aiHelper.scoreDeficit > 0)
+    tolerance += (aiHelper.scoreDeficit * 10);
+  else if (aiHelper.scoreDeficit < 0)
+    tolerance -= (aiHelper.scoreDeficit * 10);
+
+  // console.log("tolerance value = ", tolerance);
+  // console.log("scoreDeficit = ", aiHelper.scoreDeficit);
   
+  //time for ball to reach the x location
   const time = (player2.x - game.ball.x - player2.width) / game.ball.velocityX;
+
+  if (game.parryFlag && aiHelper.velocityX > 0 && !player2.cooldownFlag)
+      aiparryChance(aiHelper, time);
+  //predicts y location based on the time. this variable would exceed the board size. exceeding board size would mean its supposed to hit wall
   const yChange = game.ball.velocityY * time;
   let yHit = game.ball.y + yChange;
   
-  if (game.parryFlag && aiHelper.velocityX > 0 && !player2.cooldownFlag) {
-    setTimeout(() => {
-      aikeyEvents("parry", aiHelper);
-    }, time * 60);
-  }
-  
+  //sets the expected y hit back to the board size if it exceeded board size
   if (yHit < 0) {
     yHit *= -1;
-  } else if (yHit > 500) {
-    yHit -= 500;
+  } else if (yHit > game.boardHeight) {
+    yHit -= (game.boardHeight * 2);
   }
   
   let target = Math.abs(yHit - player2.height / 2);
@@ -711,6 +772,24 @@ function aiLogic(player2, game, aiHelper) {
   }
 }
 
+function aiparryChance(aiHelper, time){
+
+  const deficit = Math.max(0, aiHelper.scoreDeficit);
+  let aiparryChance = 0.8; //set the ai's parry chance by 80% default
+
+  aiparryChance -= deficit * 0.1;
+  // console.log("deficit is = ", deficit);
+  // console.log("parryChance for ai is = ", aiparryChance);
+  if (Math.random() < aiparryChance) {
+    setTimeout(() => {
+      aikeyEvents("parry", aiHelper);
+    }, time * 60);
+  } else 
+    setTimeout(() => {
+      aikeyEvents("parry", aiHelper);
+    }, (time * 60) + 60);
+}
+
 // function to check/store balls last position every 1 second.
 function aiView(game, aiHelper) {
   if (game.drawFlag) {
@@ -719,6 +798,8 @@ function aiView(game, aiHelper) {
     aiHelper.y = game.ball.y;
     aiHelper.velocityX = game.ball.velocityX;
     aiHelper.velocityY = game.ball.velocityY;
+    // if the player is losing increase scoredificit
+    aiHelper.scoreDeficit = game.players[0].score < game.players[1].score ? game.players[1].score - game.players[0].score : game.players[0].score - game.players[1].score;
   }
 }
 

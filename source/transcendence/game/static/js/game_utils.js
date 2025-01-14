@@ -26,7 +26,7 @@ class Game {
     this.activeKeys = []; // for key inputs
 
     //setting variables
-    this.defballSpeed = 6;
+    this.defballSpeed = 8;
     this.paddleSpeed = 8;
     this.maxScore = 3;
     this.slowServe = false;
@@ -100,6 +100,11 @@ class Game {
       this.ball.velocityX = direction * Math.abs(this.defballSpeed);
       this.ball.velocityY = 2 * (Math.random() > 0.5 ? 1 : -1);
     }
+  }
+
+  randomizeServe() {
+    this.ball.velocityX = (Math.random() % 2 == 1 ? this.defballSpeed : -this.defballSpeed)
+    this.ball.velocityY = 2 * (Math.random() > 0.5 ? 1 : -1);
   }
 
   initializeBoard(boardElementId) {
