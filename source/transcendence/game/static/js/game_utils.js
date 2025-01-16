@@ -97,7 +97,7 @@ class Game {
   createPlayer(name, position) {
     const player = new Player(name, position, this);
     this.players.push(player);
-    console.log("Player created: ", player);
+    // console.log("Player created: ", player);
   }
 
   updateParryFlag() {
@@ -107,12 +107,12 @@ class Game {
 
   move = (event) => {
     this.activeKeys[event.code] = true;
-    console.log(`Key Down: ${event.code}`); // Debugging
+    // console.log(`Key Down: ${event.code}`); // Debugging
   }
 
   stopMovement = (event) => {
     this.activeKeys[event.code] = false;
-    console.log(`Key Up: ${event.code}`);
+    // console.log(`Key Up: ${event.code}`);
   }
   saveSettings(user) {
     const key = `gameSetting_${user}`;
@@ -123,7 +123,7 @@ class Game {
       slowServe: this.slowServe,
     };
     localStorage.setItem(key, JSON.stringify(settings));
-    console.log("Settings saved to localStorage:", settings);
+    // console.log("Settings saved to localStorage:", settings);
   }
   
   loadSettings(user) {
@@ -135,9 +135,7 @@ class Game {
       this.paddleSpeed = savedSettings.paddleSpeed || this.paddleSpeed;
       this.maxScore = savedSettings.maxScore || this.maxScore;
       this.slowServe = savedSettings.slowServe || this.slowServe;
-      console.log("Loaded settings from localStorage:", savedSettings);
-    } else {
-      console.log("No saved settings found in localStorage.");
+      // console.log("Loaded settings from localStorage:", savedSettings);
     }
   }
 }
@@ -159,7 +157,7 @@ async function getFullTournamentView(tournament_id) {
       const responseData = await response.json();
       loadCssandJS(responseData, false);
       if (responseData.tournament_type === 4) {
-        console.log(responseData.html);
+        // console.log(responseData.html);
         // const tournamentMap = createTournamentMapForFour(tournament_id, responseData.tournament_games);
         const tournamentOfFour = createTournamentModalForFour(
           tournament_id,
