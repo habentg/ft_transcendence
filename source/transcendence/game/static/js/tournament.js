@@ -553,7 +553,6 @@ async function createTournamentinDB(tournament_type) {
 
   class UIManager {
     static closeModal(modalId) {
-      console.log("closing modal");
       const modal = document.getElementById(modalId);
       if (modal) {
         let backdrop = document.querySelector(".modal-backdrop");
