@@ -5,7 +5,7 @@ async function handlePassResetSubmit(e) {
   const formData = {
     email: document.getElementById("email").value,
   };
-
+  showLoadingAnimation();
   try {
     const m_csrf_token = await getCSRFToken();
     const response = await fetch("/password_reset/", {
@@ -18,7 +18,7 @@ async function handlePassResetSubmit(e) {
     });
 
     const responseData = await response.json();
-
+    hideLoadingAnimation();
     if (!response.ok) {
       displayError(responseData);
       return;

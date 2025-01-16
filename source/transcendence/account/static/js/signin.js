@@ -39,6 +39,7 @@ async function handleSignInSubmit(e) {
         displayError({ invalid_chars: "Password length should be greater than 3 and less than 150!" });
         return;
     }
+    showLoadingAnimation();
     try {
         const m_csrf_token = await getCSRFToken();
         const response = await fetch('/signin/', {
@@ -49,11 +50,16 @@ async function handleSignInSubmit(e) {
             },
             body: JSON.stringify(formData)
         });
-
         if (!response.ok) {
             const responseData = await response.json();
             if (response.status === 302) {
-                await getTwoFactorAuth(`${formData.username}`);
+                try {
+                    await getTwoFactorAuth(`${formData.username}`);
+                } catch (e){
+                    console.log("some error in 302 sign in")
+                } finally {
+                    hideLoadingAnimation();
+                }
             }
             else
                 displayError(responseData);

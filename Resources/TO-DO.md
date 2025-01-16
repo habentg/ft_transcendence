@@ -65,4 +65,4 @@
 <!-- TODO befor submission -->
 1. remove all console logs and prints
 2. change the server to production mode and configure nginx to serve static files
-3. 
+3. remove the target in Makefile that is leaving the postgress and redis images without deleting

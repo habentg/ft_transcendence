@@ -26,7 +26,7 @@ class Game {
     this.activeKeys = []; // for key inputs
 
     //setting variables
-    this.defballSpeed = 6;
+    this.defballSpeed = 8;
     this.paddleSpeed = 8;
     this.maxScore = 3;
     this.slowServe = false;
@@ -102,6 +102,11 @@ class Game {
     }
   }
 
+  randomizeServe() {
+    this.ball.velocityX = (Math.random() % 2 == 1 ? this.defballSpeed : -this.defballSpeed)
+    this.ball.velocityY = 2 * (Math.random() > 0.5 ? 1 : -1);
+  }
+
   initializeBoard(boardElementId) {
     this.board = document.getElementById(boardElementId);
     this.board.width = this.getboardWidth();
@@ -112,7 +117,7 @@ class Game {
   createPlayer(name, position) {
     const player = new Player(name, position, this);
     this.players.push(player);
-    console.log("Player created: ", player);
+    // console.log("Player created: ", player);
   }
 
   updateParryFlag() {
@@ -139,7 +144,7 @@ class Game {
       slowServe: this.slowServe,
     };
     localStorage.setItem(key, JSON.stringify(settings));
-    console.log("Settings saved to localStorage:", settings);
+    // console.log("Settings saved to localStorage:", settings);
   }
 
   loadSettings(user) {
@@ -151,9 +156,7 @@ class Game {
       this.paddleSpeed = savedSettings.paddleSpeed || this.paddleSpeed;
       this.maxScore = savedSettings.maxScore || this.maxScore;
       this.slowServe = savedSettings.slowServe || this.slowServe;
-      console.log("Loaded settings from localStorage:", savedSettings);
-    } else {
-      console.log("No saved settings found in localStorage.");
+      // console.log("Loaded settings from localStorage:", savedSettings);
     }
   }
 }
@@ -174,10 +177,6 @@ async function getFullTournamentView(tournament_id) {
     if (response.ok) {
       const responseData = await response.json();
       loadCssandJS(responseData, false);
-      console.log(
-        "responseData.tournament_type: ",
-        responseData.tournament_type
-      );
       const tournamentViewerModal = createTournamentViewerModal(
         tournament_id,
         responseData.html
@@ -190,7 +189,6 @@ async function getFullTournamentView(tournament_id) {
         document.getElementById(`tournamentModal${tournament_id}`)
       );
       tournamentModal.show();
-
 
       // remove the modal when clicked outside
       tournamentViewerModal.addEventListener("click", (e) => {
@@ -273,7 +271,6 @@ class Sound {
     // Event listener for successful loading
     audio.oncanplaythrough = () => {
       this.sounds[name] = audio;
-      console.log(`Sound "${name}" loaded successfully.`);
     };
 
     // Event listener for loading errors
