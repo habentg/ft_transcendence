@@ -10,7 +10,6 @@ async function createGameInDB(game) {
     startgame_data["type"] = "TOURNAMENT";
     startgame_data["tournament_id"] = `${game.tournament_id}`;
   }
-  console.log("------- start ---- Game Data -------");
   console.table(startgame_data);
   console.log("------- start ---- Game Data -------");
   try {
@@ -61,7 +60,6 @@ async function updateGameInDB(endgame_data, game_id) {
     throw new Error(`Failed to update game with id: ${game_id} : ${response.status} : ${response.error}`);
   } catch (error) {
     createToast({type: 'error', error_message: error, title: 'Game Updating Error!'});
-    console.error(error);
   }
 }
 
@@ -85,9 +83,8 @@ function showGameRules() {
 async function loadGame() {
   //starting the game by getting game settings and intializingthe struct.
   // make game obj.
-  // window.game = new Game();
-  // const game = window.game;
   const game = new Game();
+  window.addEventListener("resize", () => checkScreenSize(game));
   game.initializeBoard("board"); //initialize the board
   setgameMode(game); // set flags for which game mode
   initPlayers(game);
@@ -102,7 +99,7 @@ async function loadGame() {
     document
       .getElementById("startButton")
       .addEventListener("click", async () => {
-        console.log("Start Button clicked");
+        game.loadSettings(game.players[0].playerName);
         await createGameInDB(game);
       });
   }
@@ -111,14 +108,14 @@ async function loadGame() {
     document.getElementById("aiButton").addEventListener("click", async () => {
       game.loadSettings(game.players[0].playerName);
       await createGameInDB(game);
-      // console.table(game);
-      // startaiGame(game);
     });
   }
+
 }
 
 function startGame(game) {
   game.drawFlag = true;
+  window.isGameRunning = true
 
   game.setupeventListeners();
   document.getElementById("startButton").disabled = true;
@@ -129,6 +126,10 @@ function startGame(game) {
 }
 
 function gameLoop(game, timestamp) {
+  if (!window.isGameRunning) {
+    console.log("say something before returning ...")
+    return ;
+  }
   const fps = 60;
   const interval = 1000 / fps;
   // console.log("GameLoop playerHeight", game.playerHeight);
@@ -139,18 +140,13 @@ function gameLoop(game, timestamp) {
     // Draw the game
     draw(game.players[0], game.players[1], game);
   }
-
-  // Continue the loop if drawFlag is true
-  if (game.drawFlag) {
-    requestAnimationFrame((newTimestamp) => {
-    //   checkScreenSize();
-      gameLoop(game, newTimestamp);
-    });
-  }
+  requestAnimationFrame((newTimestamp) => gameLoop(game, newTimestamp));
 }
 
 function updategameValues(player1, player2, game) {
   //checks if player movement is inside the board then moves it.
+  if (!game.drawFlag)
+    return;
   oob(player1, game);
   oob(player2, game);
 
@@ -223,7 +219,7 @@ function drawPlayers(player1, player2, game) {
       player1.height,
       player1.width / 2,
       "#84ddfc",
-      "black",
+      "white",
       game
     );
   if (!player2.cooldownFlag && game.parryFlag)
@@ -245,7 +241,7 @@ function drawPlayers(player1, player2, game) {
       player2.height,
       player2.width / 2,
       "#84ddfc",
-      "black",
+      "white",
       game
     );
 }
@@ -387,8 +383,8 @@ function updatePaddleVelocities(player1, player2, game) {
   if (game.parryFlag) {
     if (game.activeKeys["Space"] && !player1.cooldownFlag) {
       if (isParry(player1, game)) {
-        game.ball.velocityX *= 2;
-        game.ball.velocityY = 0;
+        game.ball.velocityX *= 1.5;
+        // game.ball.velocityY = 0;
         game.sound.play("parry");
         console.log("Good Parry");
       } else console.log("Wrong parry");
@@ -396,8 +392,8 @@ function updatePaddleVelocities(player1, player2, game) {
     }
     if (game.activeKeys["Numpad0"] && !player2.cooldownFlag) {
       if (isParry(player2, game)) {
-        game.ball.velocityX *= -2;
-        game.ball.velocityY = 0;
+        game.ball.velocityX *= -1.5;
+        // game.ball.velocityY = 0;
         game.sound.play("parry");
         console.log("Good Parry");
       } else console.log("Wrong parry");
@@ -480,33 +476,11 @@ function ballCollision(ball, player, position, game) {
 
   // If either current or previous position indicates a collision, handle it
   if (isCollision || wasCollision) {
-    let hitPosition = (ball.y - player.y) / player.height; // Normalize hit position between 0 and 1
-    let section = Math.floor(hitPosition * 4); // Section index (0, 1, 2, 3)
+    let hitPosition = ball.y - (player.y + player.height / 2);
+    const normalizedHitPoint = hitPosition / (player.height / 2);
 
-    if (position === "left") {
-      // Ball hit the left player's paddle
-      ball.velocityX = Math.abs(ball.velocityX); // Ensure velocityX is positive (moving right)
-    } else if (position === "right") {
-      // Ball hit the right player's paddle
-      ball.velocityX = -Math.abs(ball.velocityX); // Ensure velocityX is negative (moving left)
-    }
-
-    // Adjust vertical velocity based on the section of the paddle hit
-    switch (section) {
-      case 0:
-        ball.velocityY = -1.5; // Strong upwards angle
-        break;
-      case 1:
-        ball.velocityY = -1.0; // Slightly upwards
-        break;
-      case 2:
-        ball.velocityY = 1.0; // Slightly downwards
-        break;
-      case 3:
-        ball.velocityY = 1.5; // Strong downward angle
-        break;
-    }
-
+    ball.velocityX *= -1;
+    ball.velocityY = normalizedHitPoint * 4.1;
     // Resolve collision by moving the ball outside the paddle
     if (position === "left") {
       ball.x = player.x + player.width + ball.ballRadius;
@@ -551,6 +525,7 @@ async function resetGame(player1, player2, direction, game) {
   if (isGameOver(player1, player2, game)) {
     game.stopeventListeners();
     game.drawFlag = false;
+    window.isGameRunning = false;
     // game.aiFlag = false;
     const endgame_stuff = {
       player1_username: player1.playerName,
@@ -637,7 +612,6 @@ function drawLine(game) {
 //Start of AI
 
 function startaiGame(game) {
-  game.drawFlag = true;
 
   game.setupeventListeners();
   // make player 2 name as AI
@@ -660,13 +634,20 @@ function startaiGame(game) {
     aiMovingDown: false,
   };
 
-  // aiLogic(player2);
+  let gameloopFlag = false;
+  game.drawFlag = true;
+  window.isGameRunning = true;
   requestAnimationFrame((timestamp) => {
     gameLoop(game, timestamp);
-    setInterval(() => aiView(game, aiHelper), 1000);
-    setInterval(() => aiLogic(game.players[1], game, aiHelper), 50);
   });
-
+  gameloopFlag = true;
+  console.log("set gameloop flag to true");
+  if(gameloopFlag){
+  setInterval(() =>{ 
+      aiView(game, aiHelper);}
+  , 1000);
+  }
+  setInterval(() => aiLogic(game.players[1], game, aiHelper), 50);
 }
 
 function aiLogic(player2, game, aiHelper) {
@@ -674,11 +655,11 @@ function aiLogic(player2, game, aiHelper) {
     return;
 
   if (aiHelper.velocityX < 0) {
-    console.log("Not expecting a return should go back in the middle");
+    // console.log("Not expecting a return should go back in the middle");
     const middlePos = game.boardHeight / 2;
     const paddleCenter = player2.y + player2.height / 2;
 
-    if (paddleCenter > middlePos - 10 && paddleCenter < middlePos + 10){
+    if (paddleCenter > middlePos - (game.paddleSpeed * 2) && paddleCenter < middlePos + (game.paddleSpeed * 2)){
       aikeyEvents("stop", aiHelper);
       return ;
     }
@@ -713,7 +694,7 @@ function aiLogic(player2, game, aiHelper) {
   }
   
   let target = Math.abs(yHit - player2.height / 2);
-  console.log("Expecting a return target is = ", target);
+  // console.log("Expecting a return target is = ", target);
   if (target > player2.y - tolerance && target < player2.y + 40) {
     // If the AI is close enough to the target Y position, stop moving
     aikeyEvents("stop", aiHelper);
@@ -737,57 +718,48 @@ function aiView(game, aiHelper) {
   }
 }
 
+function isaiKey(event) {
+  const keys = ["ArrowUp", "ArrowDown", "Numpad0"]
+  return keys.includes(event.key);
+}
+
 function aikeyEvents(moveDirection, aiHelper) {
   let event;
 
-  // Handle 'up' movement
-  if (moveDirection === "up" && !aiHelper.aiMovingUp) {
-    // Ensure 'down' key is released before pressing 'up'
-    if (aiHelper.aiMovingDown) {
-      event = new KeyboardEvent("keyup", {
-        key: "ArrowDown",
-        code: "ArrowDown",
-        keyCode: 40,
-        bubbles: true,
-        cancelable: true,
-      });
-      document.dispatchEvent(event);
-      aiHelper.aiMovingDown = false;
-    }
-    // Simulate 'keydown' for 'up'
-    event = new KeyboardEvent("keydown", {
-      key: "ArrowUp",
-      code: "ArrowUp",
-      keyCode: 38,
+  const createAIKeyEvent = (type, key, code, keyCode) => {
+    return new KeyboardEvent(type, {
+      key: key,
+      code: code,
+      keyCode: keyCode,
       bubbles: true,
       cancelable: true,
     });
+  };
+
+  // Handle 'up' movement
+  if (moveDirection === "up" && !aiHelper.aiMovingUp) {
+    if (aiHelper.aiMovingDown) {
+      event = createAIKeyEvent("keyup", "ArrowDown", "ArrowDown", 40);
+      event.isAI = true; // Mark this event as AI-generated
+      document.dispatchEvent(event);
+      aiHelper.aiMovingDown = false;
+    }
+    event = createAIKeyEvent("keydown", "ArrowUp", "ArrowUp", 38);
+    event.isAI = true;
     document.dispatchEvent(event);
     aiHelper.aiMovingUp = true;
   }
 
   // Handle 'down' movement
   else if (moveDirection === "down" && !aiHelper.aiMovingDown) {
-    // Ensure 'up' key is released before pressing 'down'
     if (aiHelper.aiMovingUp) {
-      event = new KeyboardEvent("keyup", {
-        key: "ArrowUp",
-        code: "ArrowUp",
-        keyCode: 38,
-        bubbles: true,
-        cancelable: true,
-      });
+      event = createAIKeyEvent("keyup", "ArrowUp", "ArrowUp", 38);
+      event.isAI = true;
       document.dispatchEvent(event);
       aiHelper.aiMovingUp = false;
     }
-    // Simulate 'keydown' for 'down'
-    event = new KeyboardEvent("keydown", {
-      key: "ArrowDown",
-      code: "ArrowDown",
-      keyCode: 40,
-      bubbles: true,
-      cancelable: true,
-    });
+    event = createAIKeyEvent("keydown", "ArrowDown", "ArrowDown", 40);
+    event.isAI = true;
     document.dispatchEvent(event);
     aiHelper.aiMovingDown = true;
   }
@@ -795,24 +767,14 @@ function aikeyEvents(moveDirection, aiHelper) {
   // Handle stopping movement
   else if (moveDirection === "stop") {
     if (aiHelper.aiMovingUp) {
-      event = new KeyboardEvent("keyup", {
-        key: "ArrowUp",
-        code: "ArrowUp",
-        keyCode: 38,
-        bubbles: true,
-        cancelable: true,
-      });
+      event = createAIKeyEvent("keyup", "ArrowUp", "ArrowUp", 38);
+      event.isAI = true;
       document.dispatchEvent(event);
       aiHelper.aiMovingUp = false;
     }
     if (aiHelper.aiMovingDown) {
-      event = new KeyboardEvent("keyup", {
-        key: "ArrowDown",
-        code: "ArrowDown",
-        keyCode: 40,
-        bubbles: true,
-        cancelable: true,
-      });
+      event = createAIKeyEvent("keyup", "ArrowDown", "ArrowDown", 40);
+      event.isAI = true;
       document.dispatchEvent(event);
       aiHelper.aiMovingDown = false;
     }
@@ -820,46 +782,31 @@ function aikeyEvents(moveDirection, aiHelper) {
 
   // Handle 'parry' action
   else if (moveDirection === "parry") {
-    event = new KeyboardEvent("keydown", {
-      key: "Numpad0",
-      code: "Numpad0",
-      keyCode: 96,
-      bubbles: true,
-      cancelable: true,
-    });
+    event = createAIKeyEvent("keydown", "Numpad0", "Numpad0", 96);
+    event.isAI = true;
     document.dispatchEvent(event);
-
-    // Simulate quick release
     setTimeout(() => {
-      const releaseEvent = new KeyboardEvent("keyup", {
-        key: "Numpad0",
-        code: "Numpad0",
-        keyCode: 96,
-        bubbles: true,
-        cancelable: true,
-      });
+      const releaseEvent = createAIKeyEvent("keyup", "Numpad0", "Numpad0", 96);
+      releaseEvent.isAI = true;
       document.dispatchEvent(releaseEvent);
     }, 50);
   }
 }
 
-
 // settings
 
-function checkScreenSize() {
+function checkScreenSize(game = null) {
   const MIN_WINDOW_WIDTH = 820;
   const MIN_WINDOW_HEIGHT = 700;
 
   const warningMessage = document.getElementById("warningMessage");
   const gameContent = document.getElementById("gameContent");
 
-  if (
-    window.innerWidth < MIN_WINDOW_WIDTH ||
-    window.innerHeight < MIN_WINDOW_HEIGHT
-  ) {
+  if (window.innerWidth < MIN_WINDOW_WIDTH || window.innerHeight < MIN_WINDOW_HEIGHT) {
     warningMessage.classList.remove("d-none");
-	if(gameContent)
-		gameContent.classList.add("d-none");
+	  if(gameContent)
+		  gameContent.classList.add("d-none");
+    game.drawFlag = false;
   } else {
     if (warningMessage) {
       warningMessage.classList.add("d-none");
@@ -867,7 +814,10 @@ function checkScreenSize() {
     if (gameContent) {
       gameContent.classList.remove("d-none");
     }
+    game.drawFlag = true;
+    // window.isGameRunning = true;
   }
+  console.log("changed flag = ", game.drawFlag);
 }
 
 function changeSetting(game) {
@@ -903,27 +853,7 @@ function changeSetting(game) {
     if (e.target === modal) closeModal("gameSettingsModal");
   });
 
-  // document.body.appendChild(modal);
-  // document.body.classList.add("modal-open");
-  // document.body.appendChild(modal);
-  // document.body.classList.add("modal-open");
-
   console.log("Game values: ", game);
-
-  // const paddleSpeedInput = parseInt(document.getElementById("paddleSpeed").value);
-
-  // document.getElementById("settingsMenu").style.display = "none";
-  // console.log("Settings Applied: ", {
-  //   paddleSpeed,
-  //   defballSpeed,
-  //   maxScore,
-  //   slowServe,
-  //   parryFlag,
-  // });
-
-  // document.getElementById("settingsMenu").style.display = "none";
-  // console.log("Settings Applied: ", { this:paddleSpeed, this:defballSpeed, this:maxScore });
-  // closeModal("gameSettingsModal");
 }
 
 function applySetting(game) {
@@ -962,6 +892,3 @@ function applySetting(game) {
 if (window.location.href.includes("/game")) {
   loadGame();
 }
-
-window.addEventListener("resize", checkScreenSize);
-// checkScreenSize();

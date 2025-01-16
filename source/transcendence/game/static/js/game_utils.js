@@ -5,9 +5,9 @@ class Game {
     this.aiFlag = false;
     this.versusFlag = false;
     this.tournamentFlag = false;
-	this.tournament_id = 0;
+	  this.tournament_id = 0;
 
-    this.drawFlag = false // flag for stopping drawing
+    this.drawFlag = false; // flag for stopping drawing
 
     //board values
     this.board = null;
@@ -40,7 +40,7 @@ class Game {
       y: this.boardHeight / 2,
       velocityX: this.defballSpeed,
       velocityY: this.defballSpeed,
-      ballRadius: 7
+      ballRadius: 7,
     };
     this.sound = new Sound();
   }
@@ -62,12 +62,27 @@ class Game {
   }
 
   setupeventListeners() {
-    document.addEventListener("keydown", this.move);
-    document.addEventListener("keyup", this.stopMovement);
+    document.addEventListener("keydown", (event) => {
+      if (this.aiFlag && isaiKey(event) && !event.isAI) {
+        // Block physical keyboard inputs for AI keys
+        event.preventDefault();
+        return;
+      }
+      this.move(event); // Process both physical player inputs and AI events
+    });
+  
+    document.addEventListener("keyup", (event) => {
+      if (this.aiFlag && isaiKey(event) && !event.isAI) {
+        // Block physical keyboard inputs for AI keys
+        event.preventDefault();
+        return;
+      }
+      this.stopMovement(event); // Process both physical player inputs and AI events
+    });
   }
+  
   stopeventListeners() {
-    while (this.activeKeys.length > 0)
-        this.activeKeys.pop();
+    while (this.activeKeys.length > 0) this.activeKeys.pop();
     document.removeEventListener("keydown", this.move);
     document.removeEventListener("keyup", this.stopMovement);
   }
@@ -114,6 +129,7 @@ class Game {
     this.activeKeys[event.code] = false;
     // console.log(`Key Up: ${event.code}`);
   }
+
   saveSettings(user) {
     const key = `gameSetting_${user}`;
     const settings = {
@@ -125,7 +141,7 @@ class Game {
     localStorage.setItem(key, JSON.stringify(settings));
     // console.log("Settings saved to localStorage:", settings);
   }
-  
+
   loadSettings(user) {
     //load settings should check for invalid values or invalid ranges
     const key = `gameSetting_${user}`;
@@ -139,7 +155,7 @@ class Game {
     }
   }
 }
-  /* tournament view */
+/* tournament view */
 
 async function getFullTournamentView(tournament_id) {
   try {
@@ -156,52 +172,27 @@ async function getFullTournamentView(tournament_id) {
     if (response.ok) {
       const responseData = await response.json();
       loadCssandJS(responseData, false);
-      if (responseData.tournament_type === 4) {
-        // console.log(responseData.html);
-        // const tournamentMap = createTournamentMapForFour(tournament_id, responseData.tournament_games);
-        const tournamentOfFour = createTournamentModalForFour(
-          tournament_id,
-          responseData.html
-        );
-        // append the modal to the body
-        document.body.appendChild(tournamentOfFour);
+      const tournamentViewerModal = createTournamentViewerModal(
+        tournament_id,
+        responseData.html
+      );
+      // append the modal to the body
+      document.body.appendChild(tournamentViewerModal);
 
-        // show the modal
-        const tournamentModal = new bootstrap.Modal(
-          document.getElementById(`tournamentModal${tournament_id}`)
-        );
-        tournamentModal.show();
+      // show the modal
+      const tournamentModal = new bootstrap.Modal(
+        document.getElementById(`tournamentModal${tournament_id}`)
+      );
+      tournamentModal.show();
 
-        // remove the modal when clicked outside
-        document.getElementById(`tournamentModal${tournament_id}`).addEventListener("click", (e) => {
-          console.log("clicked outside");
-          closeModal(`tournamentModal${tournament_id}`);
-          document.getElementById(`/static/css/tournament.css-id`).remove();
-
-        });
-      } else if (responseData.tournament_type === 8) {
-        console.log(responseData.html);
-        const tournamentMap = createTournamentMapForEight(
-          tournament_id,
-          responseData.html
-        );
-        // document.getElementById("content").innerHTML = "";
-        // document.getElementById("content").appendChild(tournamentMap);
-
-        document.body.appendChild(tournamentMap);
-
-        const tournamentModal = new bootstrap.Modal(
-          document.getElementById(`tournamentModal${tournament_id}`)
-        );
-        tournamentModal.show();
-
-        // remove the modal when clicked outside
-        document.getElementById(`tournamentModal${tournament_id}`).addEventListener("click", (e) => {
-          console.log("clicked outside");
-          closeModal(`tournamentModal${tournament_id}`);
-          document.getElementById(`/static/css/tournament.css-id`).remove();
-        });
-      }
+      // remove the modal when clicked outside
+      tournamentViewerModal.addEventListener("click", (e) => {
+        if (e.target === tournamentViewerModal) {
+            console.log("Removing modal tournamentModal");
+            closeModal(`tournamentModal${tournament_id}`);
+            document.getElementById(`/static/css/tournament.css-id`).remove();
+        } 
+      });
       return;
     }
     throw new Error("Failed to load retrieveAllGamesOfaTournament");
@@ -211,10 +202,13 @@ async function getFullTournamentView(tournament_id) {
 }
 
 /* tournament history modal viewer modal */
-function createTournamentModalForFour(tournament_id, populatedHtml) {
+function createTournamentViewerModal(tournament_id, populatedHtml) {
+  if (document.getElementById(`tournamentModal${tournament_id}`)) {
+    return;
+  }
   const modal = document.createElement("div");
   modal.className =
-    "modal fade d-flex justify-content-center align-items-center tournamentModal";
+    "modal d-flex justify-content-center align-items-center tournamentModal";
   modal.id = `tournamentModal${tournament_id}`;
   modal.tabIndex = -1;
   modal.setAttribute("aria-labelledby", `tournamentModalLabel${tournament_id}`);
@@ -224,22 +218,6 @@ function createTournamentModalForFour(tournament_id, populatedHtml) {
 
   return modal;
 }
-
-/* tournament history modal viewer modal */
-function createTournamentMapForEight(tournament_id, populatedHtml) {
-  const modal = document.createElement("div");
-  modal.className =
-    "modal fade d-flex justify-content-center align-items-center tournamentModal";
-  modal.id = `tournamentModal${tournament_id}`;
-  modal.tabIndex = -1;
-  modal.setAttribute("aria-labelledby", `tournamentModalLabel${tournament_id}`);
-  modal.setAttribute("aria-hidden", "true");
-
-  modal.innerHTML = populatedHtml;;
-
-  return modal;
-}
-
 
 class Player {
   constructor(name, position, game) {
@@ -252,14 +230,15 @@ class Player {
     this.score = 0;
     this.finalScore = 0; // final score after match
     this.gameWon = 0;
-    this.position = "";
     if (position === "left") {
+      this.pos = "left";
       this.x = 10;
       this.y = 500 / 2 - this.width / 2;
       this.parryKey = "Space";
       this.moveUp = "KeyW";
       this.moveDown = "KeyS";
     } else if (position === "right") {
+      this.pos = "right"
       this.x = 800 - this.width - 10;
       this.y = 500 / 2 - this.height / 2;
       this.parryKey = "Numpad0";
@@ -270,13 +249,13 @@ class Player {
 }
 
 class Sound {
-  constructor () {
+  constructor() {
     this.sounds = [];
     this.soundPaths = [
       { name: "score", path: "/static/sounds/score.wav" },
       { name: "wallhit", path: "/static/sounds/wall_hit.wav" },
       { name: "parry", path: "/static/sounds/parry.wav" },
-      { name: "paddlehit", path: "/static/sounds/paddle_hit.wav" }
+      { name: "paddlehit", path: "/static/sounds/paddle_hit.wav" },
     ];
     this.soundPaths.forEach(({ name, path }) => this.load(name, path));
   }

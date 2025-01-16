@@ -162,10 +162,16 @@ footer {
 
 #warningMessage {
     position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
+    top: 30%;
+    left: 5%;
+    width: 90%;
     z-index: 1000;
+    min-height: 200px;
+    height: fit-content;
+    background: rgb(227, 96, 96);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+    border-radius: 15px;
 }
 
 

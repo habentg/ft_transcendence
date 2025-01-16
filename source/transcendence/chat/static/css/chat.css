@@ -260,4 +260,8 @@
 	.guest_player {
 		width: 330px;
 	}
+	/* remove profile picture */
+	.pfp-remove {
+		display: none;
+	}
 }

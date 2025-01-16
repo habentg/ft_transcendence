@@ -48,6 +48,8 @@ async function appRouter(event) {
   event = event || window.event;
   event.preventDefault();
 
+  if (window.isGameRunning)
+      window.isGameRunning = false;
   const href = event.target.closest("a").href;
   if (href === window.location.href) return;
   await updateUI(href);
@@ -95,11 +97,13 @@ async function loadContent(route) {
 async function initApp() {
   // browser back/forward buttons
   window.addEventListener("popstate", async () => {
-    const all_modals = document.querySelectorAll(".modal");
-    for (let i = 0; i < all_modals.length; i++) {
-      all_modals[i].classList.add("d-none");
-    }
-    const route = window.location.pathname;
+    // const all_modals = document.querySelectorAll(".modal");
+    // for (let i = 0; i < all_modals.length; i++) {
+    //   all_modals[i].classList.add("d-none");
+    // }
+    if (window.isGameRunning)
+      window.isGameRunning = false;
+    const route = window.location.href;
     await loadContent(route);
   });
 
@@ -111,11 +115,12 @@ async function initApp() {
       isInitialLoad = false;
       return;
     }
-    const route = window.location.pathname;
+    const route = window.location.href;
     await loadContent(route);
   });
 
   window.baseUrl = "https://localhost";
+  window.isGameRunning = false;
 }
 
 initApp();
