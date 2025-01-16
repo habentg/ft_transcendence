@@ -3,10 +3,11 @@ import time
 from django.core.mail import send_mail
 from django.conf import settings
 from django.template.loader import render_to_string
-from .auth_middleware import is_valid_token
+from others.auth_middleware import is_valid_token
 from .models import Player
 import string
 import random
+import jwt
 
 def generate_otp_secret():
     return pyotp.random_base32()
@@ -26,7 +27,6 @@ def send_2fa_code(player):
         return True
     return False
 
-
 def isUserisAuthenticated(request):
     if request.user.is_authenticated:
         return True
@@ -34,8 +34,6 @@ def isUserisAuthenticated(request):
     if token and is_valid_token(token):
         return True
     return False
-
-
 
 def generate_username():
 	length = 7
@@ -50,8 +48,13 @@ def createGuestPlayer() -> Player:
 	)
 	guest_email = f'{anon.username}@guest_email.com'
 	anon.email = guest_email
-	print(f"Anon player created: {anon.email}", flush=True)
 	anon.set_unusable_password()
 	anon.is_guest = True
 	anon.save()
 	return anon
+
+def getPlayerFromToken(refresh_token):
+    refresh_token_data = jwt.decode(refresh_token, algorithms=["HS256"], key=settings.SECRET_KEY, options={"verify_exp": True})
+    user_id = refresh_token_data['user_id']
+    player = Player.objects.get(id=user_id)
+    return player

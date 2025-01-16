@@ -5,7 +5,10 @@ COMPOSE 		= cd ./source && docker-compose
 # ----------------------- creating services --------------------------
 all: build up
 
-up:
+keygen:
+	@sh ./source/nginx_server/tools/self_signed_keygen.sh
+
+up: keygen
 	$(COMPOSE) -f docker-compose.yaml up -d --remove-orphans
 
 create_users:
@@ -41,11 +44,17 @@ restart: stop start # restarting the services (volumes, network, and images stay
 
 
 # ----------------------- Deleting resources and rebuilding --------------------------
+clean: down
+	@yes | docker container prune
+	@yes | docker network prune
+	@yes | docker images -q | grep -v $$(docker images redis:6-alpine -q) | grep -v $$(docker images postgres:15-alpine -q) | xargs docker rmi -f || true
+	@yes | docker volume ls -q | grep -q . && docker volume rm $$(docker volume ls -q) || true 
+
 fclean: down
 	@yes | docker system prune --all
 	@docker volume ls -q | grep -q . && docker volume rm $$(docker volume ls -q) || true 
 
-rebuild: fclean all
+rebuild: clean all
 
 # ----------------------- Managing app service only --------------------------
 
@@ -100,6 +109,7 @@ help:
 	@echo "Targets:"
 	@echo "  all:          Build and start the services"
 	@echo "  up:           Start the services"
+	@echo "  keygen:       Generate self-signed SSL certificate"
 	@echo "  build:        Build the services"
 	@echo "  down:         Stop the services"
 	@echo "  start:        Start the services"

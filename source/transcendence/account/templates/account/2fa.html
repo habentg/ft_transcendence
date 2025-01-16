@@ -1,7 +1,7 @@
 {% load static %}
 
 <div class="two-factor-page">
-  <div class="background-image w-100 vh-100">
+  <div class="background-image w-100 vh-100 d-flex justify-content-center align-items-center">
     <div class="container py-5">
       <form class="col-12 col-md-8 col-lg-6 mx-auto form-cont" onsubmit="handleOTPSubmit(event)">
         {% csrf_token %}
@@ -14,7 +14,7 @@
 
         <div class="mb-4">
           <p class="text-white-50 mb-4">
-            An OTP has been sent to {{ email }}. Please enter it below to verify your identity.
+            An OTP has been sent to <span id="2fa_player_email">{{ email }}</span>. Please enter it below to verify your identity.
             <br>
             <small class="text-warning">Note: OTP will expire in 2 minutes</small>
           </p>

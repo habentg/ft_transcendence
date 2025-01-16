@@ -14,9 +14,9 @@
 
 .content {
     background: linear-gradient(140deg,
-        rgba(255, 255, 255, 0.12) -1.82%,
-        rgba(255, 255, 255, 0.04) 68.19%,
-        rgba(255, 255, 255, 0.03) 80.14%);
+            rgba(255, 255, 255, 0.12) -1.82%,
+            rgba(255, 255, 255, 0.04) 68.19%,
+            rgba(255, 255, 255, 0.03) 80.14%);
     backdrop-filter: blur(10px);
     border: 1px solid rgba(255, 255, 255, 0.1);
     border-radius: 15px;
@@ -37,6 +37,11 @@
     padding: 3px;
 }
 
+#change-profile-pic {
+    color: whitesmoke;
+    border-radius: 10px;
+}
+
 .profile-details .detail-item {
     display: flex;
     align-items: center;
@@ -44,27 +49,82 @@
     color: #ccc;
 }
 
+.table-responsive {
+    border: 3px solid grey;
+    border-radius: 10px;
+}
+
 /* Game History Styles */
 .table {
     color: white;
     margin-bottom: 0;
+    border-radius: 8px;
+    overflow: hidden;
 }
 
 .table thead th {
     border-bottom: 2px solid #84ddfc;
-    color: #84ddfc;
+    color: #b02c98;
     font-weight: 500;
+    text-transform: uppercase;
+    font-size: 0.9rem;
+    padding-left: 2rem;
 }
 
-.table td, .table th {
-    background-color: rgba(45, 73, 84, 0.8);
-    border-color: rgba(132, 221, 252, 0.2);
-    padding: 1rem;
+.table td,
+.table th {
+    background: rgba(255, 255, 255, 0);
+    padding: 0.9rem;
     vertical-align: middle;
 }
 
 .table tbody tr {
     transition: all 0.3s ease;
+}
+
+.table tbody tr:hover {
+    background-color: rgba(132, 221, 252, 0.1);
+}
+
+.text-success {
+    font-weight: bold;
+    color: #28a745 !important;
+}
+
+.text-danger {
+    font-weight: bold;
+    color: #dc3545 !important;
+}
+
+.text-warning {
+    font-weight: bold;
+    color: #ffc107 !important;
+}
+
+#page-numbers {
+    height: fit-content;
+    font-size: 5px;
+}
+
+/* .pagination-size {
+    position: absolute;
+    left: 45%;
+    bottom: 0;
+} */
+
+
+/* Date styling */
+.results,
+.date,
+.points-badge,
+.player-name,
+.game-type,
+.score-res {
+    display: flex;
+    justify-content: center;
+    font-size: 0.85rem;
+    font-style: italic;
+    color: #84ddfc;
 }
 
 .badge {
@@ -131,42 +191,6 @@
     color: #adb5bd !important;
 }
 
-/* Responsive Adjustments */
-@media (max-width: 768px) {
-    .container {
-        padding: 1rem;
-    }
-    
-    .profile-pic {
-        width: 120px;
-        height: 120px;
-    }
-    
-    .table-responsive {
-        margin: 0 -1rem;
-    }
-    
-    .table td, .table th {
-        padding: 0.75rem;
-    }
-}
-
-/* Animation */
-@keyframes fadeIn {
-    from {
-        opacity: 0;
-        transform: translateY(20px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
-.content {
-    animation: fadeIn 0.5s ease-out;
-}
-
 /* Modal Styles */
 .modal {
     backdrop-filter: blur(8px);
@@ -174,14 +198,15 @@
 
 .modal-content {
     background: linear-gradient(140deg,
-        rgba(255, 255, 255, 0.12) -1.82%,
-        rgba(255, 255, 255, 0.04) 68.19%,
-        rgba(255, 255, 255, 0.03) 80.14%);
+            rgba(255, 255, 255, 0.12) -1.82%,
+            rgba(255, 255, 255, 0.04) 68.19%,
+            rgba(255, 255, 255, 0.03) 80.14%);
     border: 1px solid rgba(255, 255, 255, 0.1);
     box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
 }
 
-.modal-header, .modal-footer {
+.modal-header,
+.modal-footer {
     border-color: rgba(255, 255, 255, 0.1);
 }
 
@@ -221,20 +246,137 @@
     color: #dc3545;
 }
 
-@media (max-width: 576px) {
-    .modal-dialog {
+/* .game-stats-card {
+    height: 400px;
+} */
+
+/* .game-stats-card canvas {
+    max-width: 600px;
+    max-height: 300px;
+    width: auto;
+    height: auto;
+} */
+
+.no-games-message {
+    padding: 20px;
+}
+
+.no-games-message i {
+    font-size: 2rem;
+    color: #6c757d;
+    /* Neutral gray tone */
+}
+
+.no-games-message .primary-message {
+    margin-top: 10px;
+    font-weight: bold;
+    font-size: 1.5rem;
+    color: #6c757d;
+}
+
+.no-games-message .secondary-message {
+    color: #6c757d;
+    font-size: 1rem;
+}
+
+.game-history-container {
+    padding: 5rem;
+}
+
+.card {
+    width: 250px !important;
+}
+
+/* Responsive Adjustments */
+@media (max-width: 851px) {
+    .final-round1 {
+        left : 30% !important;
+    }
+
+    .connection-1-5::before, .connection-3-6::before {
+        width: 80px !important;
+    }
+
+    .connection-5-7, .connection-6-7 {
+        width : 40px !important;
+    }
+
+    .connection-5-7::before, .connection-6-7::before {
+        width : 20px !important;
+    }
+
+    .card {
+        width: 150px !important;
+    }
+}
+/* @media (max-width: 768px) { */
+    /* .container {
+        padding: 1rem;
+    }
+
+    .profile-pic {
+        width: 120px;
+        height: 120px;
+    }
+
+    .table-responsive {
+        margin: 0 -1rem;
+    }
+
+    .table td,
+    .table th {
+        padding: 0.75rem;
+    } */
+
+    /* .final-round1 {
+        right : 50% !important;
+    } */
+/* } */
+
+
+@media (max-width: 600px) {
+    /* .modal-dialog {
         margin: 1rem;
     }
-    
+
     .modal-body {
         padding: 1rem;
     }
-    
+
     .btn {
         padding: 0.5rem 1rem;
         font-size: 0.9rem;
     }
+
+    #change-profile-pic {
+        padding: 4px 6px;
+    } */
+
+    /* .final-round1 {
+        right : 10% !important;
+
+    } */
+
+    .final-round1 {
+        left : 50% !important;
+    }
+
+    .connection-1-5::before, .connection-3-6::before {
+        width: 60px !important;
+    }
+
+    .connection-5-7, .connection-6-7 {
+        width : 30px !important;
+    }
+
+
+
+    /* prevent overflow width and height */
+    html, body  {
+        overflow-x: hidden;
+    }
 }
+
 
 /* Add to your modal styles section */
 .modal-content .form-control::placeholder {

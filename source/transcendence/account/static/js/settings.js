@@ -17,6 +17,13 @@ async function updatePlayerPassword() {
       return;
     }
 
+    if (formData.current_password.length > 150 ||
+      formData.new_password.length > 150 ||
+      formData.confirm_password.length > 150) {
+      displayError({ error_msg: "Password must be betwen 3 and 150 characters long!" });
+      return;
+    }
+
     if (formData.new_password !== formData.confirm_password) {
       displayError({ error_msg: "New passwords do not match" });
       return;
@@ -30,18 +37,25 @@ async function updatePlayerPassword() {
       },
       body: JSON.stringify(formData),
     });
-
     if (!response.ok) {
-      console.error("400 Error - bad :", response);
       const responseData = await response.json();
+      if (response.status === 429) {
+        closeModal("password-change-modal");
+        const error_content = {
+          type: "error",
+          error_message: `${responseData.error_msg}. Please try again later.`,
+          title: "Failed To Change Password",
+        }
+        createToast(error_content);
+        return;
+      }
       displayError(responseData);
       return;
     }
-
-    // Success - close modal and show success message
     closeModal("password-change-modal");
-    showSuccessMessage("Password updated successfully!");
-    updateUI("/settings", false);
+    await showSuccessMessage("Password updated successfully. Please log in again with your new password.", 3000);
+    await updateUI(`/signin`);
+    updateNavBar(false);
   } catch (error) {
     console.error("Error:", error);
     displayError({ error_msg: "An error occurred while updating password" });
@@ -56,7 +70,7 @@ async function updatePlayerPassword() {
         */
 async function handleEnableDisable2FA() {
   try {
-    const response = await fetch("/2fa/", {
+    const response = await fetch("/2fa_toggle/", {
       method: "PATCH",
       headers: {
         "Content-Type": "application/json",
@@ -65,8 +79,8 @@ async function handleEnableDisable2FA() {
       },
     });
 
+    closeModal("2fa-modal");
     if (response.ok) {
-      closeModal("2fa-modal");
       const button =
         document.getElementById("enable-2fa") ||
         document.getElementById("disable-2fa");
@@ -75,16 +89,26 @@ async function handleEnableDisable2FA() {
         button.id = "disable-2fa";
         button.className = "btn btn-warning w-100";
         button.textContent = "Disable 2FA";
-        showSuccessMessage("Two-Factor Authentication enabled successfully!", 2000);
+        await showSuccessMessage("Two-Factor Authentication enabled successfully!", 2000);
       } else {
         button.id = "enable-2fa";
         button.className = "btn btn-success w-100";
         button.textContent = "Enable 2FA";
-        showSuccessMessage("Two-Factor Authentication disabled successfully!", 2000);
+        await showSuccessMessage("Two-Factor Authentication disabled successfully!", 2000);
       }
-      updateUI("/settings", false);
+      updateUI("/settings");
     } else {
-      throw new Error("Failed to update 2FA status");
+      if (response.status === 429) {
+        const error_content = {
+          type: "error",
+          error_message: "Too many requests. Please try again later.",
+          title: "Failed to update 2FA status",
+        }
+        createToast(error_content);
+        return;
+      }
+      createToast({ title: "Unknown ERROR" });
+      throw new Error("error happed while updating 2fa");
     }
   } catch (error) {
     console.error("Error:", error);
@@ -138,22 +162,11 @@ function createAndShowPasswordModal() {
 
   // Close modal when clicking outside
   changePassModal.addEventListener("click", (e) => {
-    // console.log("clicked outside of the modal");
     if (e.target === changePassModal) {
-      // console.log("clicked outside of the modal 3333333333333");
       closeModal("password-change-modal");
     }
   });
 }
-
-// Helper Functions
-// function closePasswordModal() {
-//   const modal = document.getElementById("password-change-modal");
-//   if (modal) {
-//     modal.remove();
-//     document.body.classList.remove("modal-open");
-//   }
-// }
 
 // Delete Account Modal
 function deleteAccountCheck() {
@@ -174,7 +187,7 @@ function deleteAccountCheck() {
   deleteModal
     .querySelector("#delete-acc-confirm")
     .addEventListener("click", deleteAccount);
-  
+
   // Close modal when clicking outside
   deleteModal.addEventListener("click", (e) => {
     if (e.target === deleteModal) closeModal("delete-account-modal");
@@ -195,7 +208,7 @@ async function deleteAccount() {
     if (response.status === 200) {
       closeModal("delete-account-modal");
       updateNavBar(false);
-      updateUI("", false);
+      updateUI("");
     } else {
       throw new Error("Failed to delete account");
     }
@@ -287,10 +300,10 @@ async function anonAccount() {
     if (!response.ok) {
       throw new Error("Failed to anonymize account");
     }
-    console.log("Account anonymized");
-    showSuccessMessage("Account anonymized successfully!", 2000);
-    updateNavBar(true); // updating navbar
-    updateUI("/profile", false);
+    const responseData = await response.json();
+    await showSuccessMessage("Account anonymized successfully!", 2000);
+    updateNavBar(true, `${responseData['anon_username']}`, '/static/images/anon.jpeg'); // updating navbar
+    await updateUI(`/profile/${responseData['anon_username']}`, false);
   } catch (error) {
     console.error("Error:", error);
   }
@@ -309,16 +322,16 @@ function displayError(errorData) {
 }
 
 // A generic modal for closing modals passed as an arguments
-function closeModal(modalId) { // Currently only working for modals in the setting only., If taken to modal.js or utils.js, it requires refresh to work if gone from page profile to settings.
-	// console.log("closing modal");
-  const modal = document.getElementById(modalId);
-  if (modal) {
-    modal.remove(); // Remove the modal from the DOM
-    document.body.classList.remove("modal-open"); // Remove the modal-open class from body
-  } else {
-    console.warn(`Modal with id "${modalId}" not found.`);
-  }
-}
+// function closeModal(modalId) { // Currently only working for modals in the setting only., If taken to modal.js or utils.js, it requires refresh to work if gone from page profile to settings.
+//   // console.log("closing modal");
+//   const modal = document.getElementById(modalId);
+//   if (modal) {
+//     modal.remove(); // Remove the modal from the DOM
+//     document.body.classList.remove("modal-open"); // Remove the modal-open class from body
+//   } else {
+//     console.warn(`Modal with id "${modalId}" not found.`);
+//   }
+// }
 
 
 // Initialize Settings

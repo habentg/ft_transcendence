@@ -47,7 +47,9 @@ function displayError(response) {
   } else if (response.email && response.email[0]) {
     error_msg = response.email[0];
   }
-  console.log("error_msg:", error_msg);
+  else if (response.invalid_chars) {
+    error_msg = response.invalid_chars;
+  }
   document.getElementById("error-msg").innerText = error_msg;
   document.getElementById("error-msg").style.display = "block";
 }
@@ -68,7 +70,6 @@ async function handle42Login() {
 
     const authUrl = resposeData.authorization_url;
 
-    console.log("authUrl:", authUrl);
     window.location.href = authUrl;
   } catch (error) {
     console.error("Error in handle42Login:", error);
@@ -85,24 +86,25 @@ async function handle42Login() {
 
 /* removing the object form DOM */
 const removeResource = () => {
-  // get all syles and scripts
+  // Get all styles and scripts
   let allStyles = document.getElementsByTagName("link");
   let allScripts = document.getElementsByTagName("script");
 
-  // remove existing
-  for (let i = 0; i < allStyles.length; i++) {
+  // Remove styles in reverse order
+  for (let i = allStyles.length - 1; i >= 0; i--) {
     if (allStyles[i].id.includes("/static/")) {
-      console.log("removing:", allStyles[i].id);
       allStyles[i].remove();
     }
   }
-  for (let i = 0; i < allScripts.length; i++) {
+
+  // Remove scripts in reverse order
+  for (let i = allScripts.length - 1; i >= 0; i--) {
     if (allScripts[i].id.includes("/static/")) {
-      console.log("removing:", allScripts[i].id);
       allScripts[i].remove();
     }
   }
 };
+
 
 const loadCssandJS = (data, remove_prev_resources) => {
   // object deconstruction
@@ -113,14 +115,11 @@ const loadCssandJS = (data, remove_prev_resources) => {
     */
   const { css: css_file_paths, js: js_file_paths } = data;
 
-  console.log("--->>> js_file_path:", js_file_paths);
-  console.log("--->>> css_file_path:", css_file_paths);
-
   // Remove previous CSS & js
   if (remove_prev_resources) {
-    console.log("removing previous resources");
     removeResource();
   }
+
   // loading new css
   if (css_file_paths) {
     for (let i = 0; i < css_file_paths.length; i++) {
@@ -149,7 +148,7 @@ const loadCssandJS = (data, remove_prev_resources) => {
 };
 
 // update the Navbar for authenticated users && for signout and deleted users
-async function updateNavBar(isAuthenticated) {
+function updateNavBar(isAuthenticated, givenUsername = null, givenProfilePic = null) {
   const navbar = document.getElementById("navbarNavDropdown");
   if (isAuthenticated) {
     let profilePic = "/static/images/default_profile_pic.jpeg";
@@ -165,56 +164,22 @@ async function updateNavBar(isAuthenticated) {
     if (user_profile_pic) {
       profilePic = user_profile_pic.dataset.pfp; // Same as user_profile_pic.getAttribute("data-pfp");
     }
-
-    console.log("profilePic:", profilePic);
-    console.log("username:", username);
+    if (givenUsername)
+      username = givenUsername;
+    if (givenProfilePic)
+      profilePic = givenProfilePic;
     navbar.innerHTML = `
     <ul class="navbar-nav ms-auto align-items-center">
       <li class="nav-item">
-        <a href="#" class="nav-link"><i class="fas fa-trophy me-2"></i>Leaderboard</a>
+        <a nclick="appRouter()" href="/leaderboard" class="nav-link"><i class="fas fa-trophy me-2"></i>Leaderboard</a>
       </li>
       <li class="nav-item">
-        <a href="#" class="nav-link"><i class="fas fa-users me-2"></i>Friends</a>
-      </li>
-      <li class="nav-item">
-        <a href="/chat" class="nav-link" onclick="appRouter()"><i class="fas fa-comments me-2"></i>Chat</a>
-      </li>
-      <li class="nav-item ms-lg-2 dropdown">
-        <a
-          class="nav-link position-relative notification-badge"
-          href="#"
-          role="button"
-          id="notificationDropdown"
-          data-bs-toggle="dropdown"
-          aria-expanded="false"
-        >
-          <i class="fas fa-bell"></i>
-        </a>
-        <ul
-          class="dropdown-menu dropdown-menu-end"
-          aria-labelledby="notificationDropdown"
-          style="width: 300px;" 
-        >
-          <!-- Notifications -->
-          <li style="border-bottom: 1px solid #ffffff; padding-bottom: 0.3rem; margin-bottom: 0.3rem;">
-            <a class="dropdown-item" href="#"><i class="fas fa-user me-3"></i>Friend Request <i class="fas fa-user-plus ms-3"></i></a>
-            <div class="small test-mute ms-3" style="color: antiquewhite;"> John Doe has sent you a friend request</div>
-          </li>
-          <li style="border-bottom: 1px solid #ffffff; padding-bottom: 0.3rem; margin-bottom: 0.3rem;">
-            <a class="dropdown-item" href="#"><i class="fas fa-user me-3"></i>Friend Request <i class="fas fa-user-plus ms-3"></i></a>
-            <div class="small test-mute ms-3" style="color: antiquewhite;"> John Doe has sent you a friend request</div>
-          </li>
-          <li style="border-bottom: 1px solid #ffffff; padding-bottom: 0.3rem; margin-bottom: 0.3rem;">
-            <a class="dropdown-item" href="#"><i class="fas fa-user me-3"></i> New message <i class="fas fa-envelope ms-3"></i></a>
-            <div class="small test ms-3" style="color: antiquewhite;"> John Doe has sent you a message</div>
-          </li>
-          <!-- See more option that leads to the notification page -->
-          <li>
-            <a class="dropdown-item" href="#"><i class="fas fa-ellipsis-h me-3"></i>See More</a>
-          </li>
-
-        </ul>
-      </li>
+      <a href="/chat" class="nav-link" onclick="appRouter()"><i class="fas fa-comments me-2"></i>Chat</a>
+    </li>
+    <li id="notification_dropdown_list" class="nav-item ms-lg-2 dropdown">
+      <a onclick="handleNotificationBellClick()" class="nav-link position-relative notification-badge" role="button" id="notificationDropdown" data-bs-toggle="dropdown" aria-expanded="false"><i class="fas fa-bell"></i></a>
+      <ul id="notification_ul" class="dropdown-menu dropdown-menu-end" aria-labelledby="notificationDropdown" style="width: 300px;"></ul>
+    </li>
       <li class="nav-item ms-lg-2 dropdown">
         <a class="nav-link profile-link" href="#" role="button" id="profileDropdown" 
            data-bs-toggle="dropdown" aria-expanded="false">
@@ -246,7 +211,7 @@ async function updateNavBar(isAuthenticated) {
     <ul class="navbar-nav ms-auto align-items-center">
 
       <li class="nav-item">
-        <a href="#" class="nav-link"><i class="fas fa-gamepad me-2"></i>Quick game</a>
+        <a  onclick="appRouter()" href="/guest_player" class="nav-link"><i class="fas fa-gamepad me-2"></i>Quick game</a>
       </li>
       <li class="nav-item">
         <a onclick="appRouter()" class="nav-link btn btn-outline-primary ms-lg-2" href="/signin">Sign in</a>
@@ -281,10 +246,9 @@ async function handleSignOut() {
 
     if (response.status === 200) {
       closeSignOutModal();
-      console.log("Signed out successfully ------ from utils");
       removeResource();
       updateNavBar(false);
-      await updateUI("", false);
+      await updateUI(``);
     } else {
       throw new Error("Failed to sign out");
     }
@@ -330,7 +294,9 @@ document.querySelectorAll(".navbar-nav .nav-link").forEach(function (navLink) {
 
 /* notification dropdown */
 async function handleNotificationBellClick(action) {
-  //check if its expanded - if its simply return
+  if (document.getElementById("notificationDropdown").getAttribute("aria-expanded").valueOf() === 'false') {
+    return;
+  }
   // Fetch notifications
   const response = await fetch("/notifications/", {
     method: "GET",
@@ -341,65 +307,27 @@ async function handleNotificationBellClick(action) {
   });
 
   const notification_ul = document.getElementById("notification_ul");
-  if (response.status === 404) {
-    notification_ul.innerHTML = `
-      <p class="text-center text-muted my-2">No notifications</p>
-    `;
-    return console.log("No notifications");
-  }
   if (response.ok) {
     const data = await response.json();
     notification_ul.innerHTML = data.html;
-    console.log("data.html:", data.html);
+    const notification_indicator = document.getElementById("notification-on");
+    if (notification_indicator)
+      notification_indicator.classList.add("d-none");
   } else {
-    console.error("Failed to fetch notifications:", response.statusText);
+    createToast({ type: 'error', error_message: 'Failed to Fetch Notifications List', title: "Failed to fetch Notifications!" });
   }
+
 }
 
-// Creates a toast notification that show a message passed as an argument
-// function showToast(type, title, message) {
-//   const toast = document.getElementById("toast");
-//   const toastHeader = document.getElementById("toast-header");
-//   const toastBody = document.getElementById("toast-body");
-//   const toastIcon = document.getElementById("toast-icon");
-//   const toastTitle = document.getElementById("toast-title");
-
-//   if (!toast || !toastHeader || !toastBody || !toastIcon || !toastTitle) {
-//     console.error("Toast elements not found!");
-//     return;
-//   }
-
-//   toastBody.textContent = message;
-
-//   toastTitle.textContent = title;
-
-//   if (type === "error") {
-//     toastHeader.classList.remove("bg-primary", "text-light");
-//     toastHeader.classList.add("bg-danger", "text-white");
-//     toastIcon.className = "fas fa-exclamation-circle text-warning";
-//   } else if (type === "chat") {
-//     toastHeader.classList.remove("bg-danger", "text-white");
-//     toastHeader.classList.add("bg-primary", "text-light");
-//     toastIcon.className = "fas fa-comment-dots text-info";
-//   } else {
-//     console.warn("Unknown toast type, defaulting to chat.");
-//     toastHeader.classList.remove("bg-danger", "text-white");
-//     toastHeader.classList.add("bg-secondary", "text-light");
-//     toastIcon.className = "fas fa-info-circle";
-//   }
-
-//   const bsToast = new bootstrap.Toast(toast);
-//   bsToast.show();
-// }
-
 // Create a function to create a toast div and append it to the body
-function createToast(type, title, message) {
+function createToast(content) {
   const toast = document.createElement("div");
   toast.id = "toast";
   toast.classList.add("toast");
   toast.setAttribute("role", "alert");
   toast.setAttribute("aria-live", "assertive");
   toast.setAttribute("aria-atomic", "true");
+  toast.setAttribute("onclick", `messageToastClick('${JSON.stringify(content)}')`);
 
   // Create the toast-header div
   const toastHeader = document.createElement("div");
@@ -438,24 +366,57 @@ function createToast(type, title, message) {
   toast.appendChild(toastBody);
   document.body.appendChild(toast);
 
-  toastBody.textContent = message;
-  toastTitle.textContent = title;
 
-  if (type === "error") {
-    toastHeader.classList.remove("bg-primary", "text-light");
+  if (`${content.type}` === "error") {
+    toastBody.textContent = `${content.error_message}`;
+    toastTitle.textContent = `${content.title} - Error`;
     toastHeader.classList.add("bg-danger", "text-white");
     toastIcon.className = "fas fa-exclamation-circle text-warning";
-  } else if (type === "chat") {
-    toastHeader.classList.remove("bg-danger", "text-white");
-    toastHeader.classList.add("bg-primary", "text-light");
-    toastIcon.className = "fas fa-comment-dots text-info";
+  } else if (`${content.type}` === "game_invite") {
+    toastTitle.textContent = `${content.title}`;
+    toastBody.textContent = `${content.message}`;
+    toastHeader.classList.add("bg-warning", "text-dark");
+    toastIcon.className = "fas fa-gamepad mt-2";
+    toastIcon.style.color = "#ff0080";
+  } else if (`${content.type}` === "chat_message") {
+    toastTitle.textContent = `Message from ${content.sender}`;
+    toastBody.textContent = `${content.message}`;
+    toastHeader.classList.add("#84ddfc", "text-light");
+    toastIcon.className = "fas fa-comment-alt text-info mt-2";
+    toastIcon.style.color = "red";
+  } else if (`${content.type}` === "friend_request") {
+    toastBody.textContent = `${content.message}`;
+    toastTitle.textContent = `${content.title}`;
+    toastHeader.classList.add("bg-secondary", "text-light");
+    toastIcon.className = "fas fa-user-plus";
   } else {
+    toastBody.textContent = `Some kind of notification`;
+    toastTitle.textContent = `Dont know what this is`;
     console.warn("Unknown toast type, defaulting to chat.");
-    toastHeader.classList.remove("bg-danger", "text-white");
     toastHeader.classList.add("bg-secondary", "text-light");
     toastIcon.className = "fas fa-info-circle";
   }
 
   const bsToast = new bootstrap.Toast(toast);
   bsToast.show();
+}
+
+// message toast onclick
+async function messageToastClick(contentStr) {
+  const content = JSON.parse(contentStr);
+  if (`${content.type}` === 'chat_message') {
+    if (window.location.href.includes('/chat'))
+      return;
+    await updateUI('/chat');
+  }
+  if (`${content.type}` === 'friend_request') {
+    if (window.location.href.includes(`/profile/${content.sender}`))
+      return;
+    await updateUI(`/profile/${content.sender}`);
+  }
+}
+
+function inputValidator(input) {
+  const regex = /^[a-zA-Z0-9_]+$/;
+  return regex.test(input);
 }

@@ -1,4 +1,4 @@
-/* .gamePage .background-image  {
+    /* .gamePage .background-image  {
     display: flex;
     justify-content: center;
     align-items: center;
@@ -47,7 +47,7 @@ html {
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
-    padding: 1.5rem 0;
+    /* padding: 1.5rem 0; */
 
     min-height: fit-content;
     height: 100vh;
@@ -61,6 +61,11 @@ html {
 
     background-color: linear;
 } */
+
+#gameContent {
+    position: absolute;
+    top: 5%;
+}
 
 
 #board {
@@ -157,10 +162,16 @@ footer {
 
 #warningMessage {
     position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
+    top: 30%;
+    left: 5%;
+    width: 90%;
     z-index: 1000;
+    min-height: 200px;
+    height: fit-content;
+    background: rgb(227, 96, 96);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+    border-radius: 15px;
 }
 
 
@@ -209,3 +220,4 @@ footer {
     background: rgba(255, 255, 255, 0.2);
     color: white;
 }
+

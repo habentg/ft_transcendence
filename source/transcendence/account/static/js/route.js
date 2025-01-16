@@ -9,17 +9,31 @@ window.isInitialLoad = true;
         - calls a function to load the content of the page;
 */
 
-async function updateUI(path, deep_route) {
+function showLoadingAnimation() {
+  const overlay = document.getElementById("loading-overlay").classList.remove("d-none");
+}
+
+function hideLoadingAnimation() {
+  const overlay = document.getElementById("loading-overlay").classList.add("d-none");
+}
+
+async function updateUI(path) {
   if (isInitialLoad) {
     isInitialLoad = false;
     return;
   }
-  console.log("updateUI() of:", path);
-  if (deep_route)
-    history.pushState(null, "", `${path}`);
-  else
-    history.pushState(null, "", `${window.baseUrl}${path}`);
-  await loadContent(`${window.baseUrl}${path}`);
+  if (!path.includes(`${window.location.origin}`))
+    path = `${window.location.origin}${path}`;
+  history.pushState(null, "", `${path}`);
+  try {
+    showLoadingAnimation(); // Show animation
+    await loadContent(`${path}`);
+  } catch (error) {
+    createToast({ type: "error", title: "Error", error_message: `${error}` });
+    console.error("Error loading page:", error);
+  } finally {
+    hideLoadingAnimation(); // Hide animation
+  }
 }
 
 // routing function
@@ -31,21 +45,20 @@ async function updateUI(path, deep_route) {
     then update the UI;
 */
 async function appRouter(event) {
-    event = event || window.event;
-    event.preventDefault();
-    
-    const href = event.target.closest('a').href;
-    let urlObj = new URL(href);
-    let path = urlObj.pathname;
-    if (path === window.location.pathname)
-        return;
-    await updateUI(path, false);
-};
+  event = event || window.event;
+  event.preventDefault();
+
+  if (window.isGameRunning)
+      window.isGameRunning = false;
+  const href = event.target.closest("a").href;
+  if (href === window.location.href) return;
+  await updateUI(href);
+}
 
 // Load the content of the page
 async function loadContent(route) {
   try {
-    const response = await fetch(`${route}/`, {
+    const response = await fetch(`${route}`, {
       method: "GET",
       headers: {
         "X-Requested-With": "XMLHttpRequest",
@@ -53,28 +66,23 @@ async function loadContent(route) {
     });
 
     if (!response.ok) {
-      // may be we will handle other error codes later
-      // if the response is a redirect, then redirect the user to the new location
-      if (response.status === 302) {
-        const data = await response.json();
-        console.log("Redirecting to:", data["redirect"]);
-        history.pushState(null, "", data["redirect"]);
-        handleLocationChange();
-        return;
-      }
-      if (response.status === 401) {
-        // removing any css js if there is any
-        console.log("Unauthorized, asdf asdf asfd");
-        return;
-      }
-      throw new Error("HTTP " + response.status);
+      throw new Error({
+        status: response.status,
+        route: route,
+        statusText: response.statusText,
+      });
     }
     // history.replaceState(null, "", response.url);
     let data = await response.json();
     loadCssandJS(data, true); // load the css and js of the page - remove the previous ones(true)
-    document.title = data.title;
+    document.title = `${data.title} | PONG`;
     document.getElementById("content").innerHTML = data.html;
   } catch (error) {
+    showErrorMessage(
+      `${error.status} : Error loading '${route}' - ${error.statusText}`,
+      3000,
+      "Error"
+    );
     console.error(`Failed to load -- ${route} -- page content:`, error);
   }
 }
@@ -85,34 +93,34 @@ async function loadContent(route) {
     load the content of the page;
     NOTE: this will be used almost everywhere in this SPA;
 */
-async function handleLocationChange() {
-  let path = window.location.pathname.slice(1);
-
-  if (isInitialLoad) { // if its initial load ... page will come already loaded from the server
-    isInitialLoad = false;
-    return;
-  }
-  console.log("handleLocationChange() of:", path);
-  await loadContent(path);
-}
 
 async function initApp() {
   // browser back/forward buttons
-  window.addEventListener("popstate", async (event) => {
-    console.log("popstate event:", event);
-    await handleLocationChange();
-  });
-  
-  // Handling initial load
-  window.addEventListener("load", async (event) => {
-    isInitialLoad = true;
-    // /* websocket - for real-time updates and chat*/
-    // initWebsocket();
-    await handleLocationChange();
+  window.addEventListener("popstate", async () => {
+    // const all_modals = document.querySelectorAll(".modal");
+    // for (let i = 0; i < all_modals.length; i++) {
+    //   all_modals[i].classList.add("d-none");
+    // }
+    if (window.isGameRunning)
+      window.isGameRunning = false;
+    const route = window.location.href;
+    await loadContent(route);
   });
 
-  
-  window.baseUrl = "http://localhost";
+  // Handling initial load
+  window.addEventListener("load", async () => {
+    isInitialLoad = true;
+    if (isInitialLoad) {
+      // if its initial load ... page will come already loaded from the server
+      isInitialLoad = false;
+      return;
+    }
+    const route = window.location.href;
+    await loadContent(route);
+  });
+
+  window.baseUrl = "https://localhost";
+  window.isGameRunning = false;
 }
 
 initApp();

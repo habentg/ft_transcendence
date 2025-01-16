@@ -75,13 +75,13 @@ services:
     networks:
       - trans_net
     ports:
-      - "80:80"
+      # - "80:80"
       # - dont forget to add secure=true to all the cookies in the app
-      # - "443:443"  # If you want to use HTTPS
+      - "443:443"  # If you want to use HTTPS
     volumes:
       - ./nginx_server/conf/nginx.conf:/etc/nginx/nginx.conf:ro
       - media_static_vol:/media_static
-      # - ./transcendence/media:/media
+      - ../secrets/.:/etc/nginx/certs/.:ro
 
 volumes:
   db_data:

@@ -78,9 +78,7 @@ class FriendRequest(models.Model):
             sender_friends.add_friend(self.receiver)
             receiver_friends.add_friend(self.sender)
         except Exception as e:
-            print("Error adding friends: ", e, flush=True)
             raise e
-        print(f"Friendship created between {self.sender.username} and {self.receiver.username}", flush=True)
 
     def decline(self):
         """Decline the friend request"""
@@ -115,6 +113,9 @@ class Notification(models.Model):
     @property
     def sender_username(self):
         return self.sender.username
+    
+    def remove(self):
+        self.delete()
     
 
 # """ ChatMessage model """

@@ -111,18 +111,16 @@
 }
 
 #pagination_navigation .btn {
-  margin: 0 0.5rem;
-  background: linear-gradient(45deg, #84ddfc, #b02c98);
-  border: none;
-  color: white;
-  padding: 0.5rem 1rem;
+  margin: 0px 1rem;
+  border: 2px solid grey;
+  color: black;
   transition: all 0.3s ease;
-  border-radius: 10px;
+  border-radius: 5px;
 }
 
 #pagination_navigation .btn:hover {
   transform: translateY(-2px);
-  background: linear-gradient(45deg, #b02c98, #84ddfc);
+  background: #84ddfc;
   box-shadow: 0 4px 15px rgba(132, 221, 252, 0.3);
 }
 

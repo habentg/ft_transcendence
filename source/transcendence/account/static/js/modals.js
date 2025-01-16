@@ -2,6 +2,12 @@
 
 // update profile picture modal
 function updateProfilePictureModal() {
+  // check if the modal already exists
+  const existingModal = document.getElementById("profile-pic-modal");
+  if (existingModal) {
+    existingModal.remove();
+  }
+
   const modal = document.createElement("div");
   modal.id = "profile-pic-modal";
   modal.className = "modal fade show";
@@ -38,6 +44,11 @@ function updateProfilePictureModal() {
 
 // update userprofile modal
 function updateProfileModal() {
+  const existingModal = document.getElementById("username-modal");
+  if (existingModal) {
+    existingModal.remove();
+  }
+
   // Get the text content from spans inside the profile details
   const full_name = document
     .querySelector(".profile-info h3")
@@ -65,12 +76,12 @@ function updateProfileModal() {
         </div>
         <div class="modal-body">
           <div class="mb-3">
-            <label for="new-fullname" class="form-label">Full Name</label>
-            <input type="text" id="new-fullname" class="form-control bg-transparent text-white" value="${full_name}">
+            <span class="form-label">Username</span>
+            <span class="form-control bg-transparent text-muted">${username}</span>
           </div>
           <div class="mb-3">
-            <label for="new-username" class="form-label">Username</label>
-            <input type="text" id="new-username" class="form-control bg-transparent text-white" value="${username}">
+            <label for="new-fullname" class="form-label">Full Name</label>
+            <input type="text" id="new-fullname" class="form-control bg-transparent text-white" value="${full_name}">
           </div>
           <div class="mb-3">
             <label for="new-email" class="form-label">Email</label>
@@ -95,6 +106,11 @@ function updateProfileModal() {
 // ----------------- Modals from the settings page ----------------- //
 // Change password modal
 function changePasswordModal() {
+  const existingModal = document.getElementById("password-change-modal");
+  if (existingModal) {
+    existingModal.remove();
+  }
+
   const modal = document.createElement("div");
   modal.id = "password-change-modal";
   modal.className = "modal fade show";
@@ -164,6 +180,11 @@ function changePasswordModal() {
 
 // Enable/disable 2FA modal
 function twoFactorModal(button) {
+  const existingModal = document.getElementById("2fa-modal");
+  if (existingModal) {
+    existingModal.remove();
+  }
+
   const is2FAEnabled = button.id === "disable-2fa";
   const modalTitle = is2FAEnabled ? "Disable 2FA" : "Enable 2FA";
   const modalIcon = "fa-shield-alt";
@@ -208,6 +229,11 @@ function twoFactorModal(button) {
 
 /* anon modal */
 function anonymizeModal() {
+  const existingModal = document.getElementById("anon-account-modal");
+  if (existingModal) {
+    existingModal.remove();
+  }
+
   const anon_confirmation_modal = document.createElement("div");
   anon_confirmation_modal.id = "anon-account-modal";
   anon_confirmation_modal.className = "modal fade show";
@@ -298,6 +324,11 @@ function showSignOutModal(event) {
 
 // Delete account modal
 function deleteAccountModal() {
+  const existingModal = document.getElementById("delete-account-modal");
+  if (existingModal) {
+    existingModal.remove();
+  }
+
   const modal = document.createElement("div");
   modal.id = "delete-account-modal";
   modal.className = "modal fade show";
@@ -334,6 +365,11 @@ function deleteAccountModal() {
 
 // Reset password confirmation modal
 function resetPasswordConfirmModal() {
+  const existingModal = document.getElementById("reset-password-confirm-modal");
+  if (existingModal) {
+    existingModal.remove();
+  }
+
   // Show the reset password confirmation modal
   const otpModal = document.createElement("div");
   otpModal.className = "modal fade show";
@@ -370,39 +406,52 @@ function resetPasswordConfirmModal() {
 
 // Get Number of player for tournament
 function getPlayerNumberModal() {
+
+  const existingModal = document.getElementById("tournamentModal");
+  if (existingModal) {
+    existingModal.remove();
+  }
+
   const modal = document.createElement("div");
   modal.classList.add("modal");
   modal.id = "tournamentModal";
   modal.className = "modal fade show";
   modal.style.display = "block";
   modal.innerHTML = `
-  <div class="modal-dialog modal-dialog-centered modal-md">
-    <div class="modal-content">
-      <div class="modal-header border-0 py-3">
-        <h5 class="modal-title">
-          <i class="fas fa-trophy me-2"></i> Create Tournament
-        </h5>
-        <button type="button" class="btn-close btn-close-white" data-dismiss="modal"></button>
+    <div class="modal-dialog modal-dialog-centered modal-md">
+      <div class="modal-content">
+        <div class="modal-header border-0 py-3">
+          <h5 class="modal-title">
+            <i class="fas fa-trophy me-2"></i> Create Tournament
+          </h5>
+          <button type="button" class="btn-close btn-close-white" data-dismiss="modal"></button>
+        </div>
+        <div class="modal-body px-3 py-2">
+          <div id="local-game-error-msg" class="alert alert-danger small py-2" style="display:none;"></div>
+          <p class="text-white mb-0">Select the number of players in the tournament:</p>
+          <div class="d-flex gap-2 my-4 justify-content-center">
+            <button type="button" id="tournamentOf4" class="btn btn-outline-primary btn-sm" >
+              <h6 class="d-flex my-2 justify-content-center"> 4 Players </h6>
+            </button>
+            <button type="button" id="tournamentOf8" class="btn btn-outline-primary btn-sm">
+            <h6 class="d-flex my-2 justify-content-center"> 8 Players </h6>
+            </button>
+          </div>
+        </div>
       </div>
-      <div class="modal-body px-3 py-2">
-        <div id="local-game-error-msg" class="alert alert-danger small py-2" style="display:none;"></div>
-        <p class="text-white mb-0">Enter number of player in tournament</p>
-        <input type="int" id="playersNumber" class="form-control my-2" placeholder="Enter number of players" />
-        <small class="notice mt-2 d-block">Minimum players: 4 | Max players: 8</small>
-      </div>
-      <div class="modal-footer border-0 py-3 d-flex justify-content-start">
-        <button type="button" class="btn btn-primary btn-sm" id="submitPlayerNumBtn">
-          <i class="fas fa-paper-plane me-2"></i> Submit
-      </button>
     </div>
-    </div>
-  </div>
   `;
   return modal;
+
 }
 
 // Modal for AI or localgame selection
 function optionLocalGameModal() {
+  const existingModal = document.getElementById("localGameModal");
+  if (existingModal) {
+    existingModal.remove();
+  }
+
   const modal = document.createElement("div");
   modal.classList.add("modal");
   modal.id = "localGameModal";
@@ -422,21 +471,55 @@ function optionLocalGameModal() {
         <p class="text-white mb-0">Choose who you'd like to play:</p>
       </div>
       <div class="modal-footer border-0 py-3 d-flex justify-content-start">
-        <button type="button" class="btn btn-primary btn-sm me-2" id="aiGameBtn">
+        <a class="btn btn-primary btn-sm me-2" id="aiGameBtn" onclick="appRouter()" href="/game?isAI=true">
           <i class="fas fa-robot me-2"></i> Play with AI
-        </button>
-        <button type="button" class="btn btn-outline-light btn-sm me-2" id="playFriends">
+        </a>
+        <a class="btn btn-outline-light btn-sm me-2" id="playFriends" onclick="appRouter()" href="/game?isAI=false">
           <i class="fas fa-user-friends me-2"></i> Play with a friend
-        </button>
+        </a>
       </div>
     </div>
   </div>
   `;
-  return modal;
+  // return modal;
+
+  document.body.appendChild(modal);
+
+  // Event Listeners
+  document.getElementById("aiGameBtn").addEventListener("click", () => {
+    //  Send to AI game page (1 vs AI)
+    console.log("Creating AI game");
+    closeModal("localGameModal");
+    // For now, page is refreshing. Need to fix.
+    // window.location.href = "/game/?isAI=true";
+
+  });
+  document.getElementById("playFriends").addEventListener("click", () => {
+    // Send to localgame game page (1 vs 1)
+    console.log("Creating local game");
+    closeModal("localGameModal");
+  });
+
+  // close the modal when the close button is clicked
+  document.querySelector("#localGameModal .btn-close").addEventListener("click", () => {
+    closeModal("localGameModal");
+  });
+
+  // close the modal when the modal is clicked outside
+  modal.addEventListener("click", (event) => {
+    if (event.target === modal) {
+      closeModal("localGameModal");
+    }
+  });
 }
 
 // functin to ask for second player name before starting the game
 function secondPlayerNameModal() {
+  const existingModal = document.getElementById("secondPlayerNameModal");
+  if (existingModal) {
+    existingModal.remove();
+  }
+
   const modal = document.createElement("div");
   modal.classList.add("modal");
   modal.id = "secondPlayerNameModal";
@@ -470,7 +553,6 @@ function secondPlayerNameModal() {
 
 // game settings modal for game settings
 function gameSettingsModal() {
-  console.log("##################1");
   const modal = document.createElement("div");
   modal.classList.add("modal");
   modal.id = "gameSettingsModal";
@@ -492,10 +574,6 @@ function gameSettingsModal() {
                 <input type="number" class="form-control" id="paddleSpeed" min="1" value="6">
             </div>
             <div class="mb-3">
-                <label for="ballSpeed" class="form-label text-light">Ball Speed:</label>
-                <input type="number" class="form-control" id="ballSpeed" min="1" value="4.5">
-            </div>
-            <div class="mb-3">
                 <label for="maxScore" class="form-label text-light">Score to Win:</label>
                 <input type="number" class="form-control" id="maxScore" min="1" value="3">
             </div>
@@ -507,52 +585,30 @@ function gameSettingsModal() {
                 <input type="checkbox" class="form-check-input" id="parryMode">
                 <label class="form-check-label text-light" for="parryMode">Parry Mode</label>
             </div>
-            <div id="errorMessages" class="text-danger mb-3"></div>
+            <div id="error-msg" class="text-danger mb-3">
+            </div>
             <button id="applyButton" type="button" class="btn btn-primary w-100">Apply Settings</button>
           </form>
         </div>
       </div>
     </div>
   `;
-
-  // show the modal
-  document.body.appendChild(modal);
-  document.body.classList.add("modal-open");
-  
-  // Event Listeners
-  modal
-    .querySelector("#applyButton")
-    .addEventListener("click", changeSetting);
-
-  modal.addEventListener("keydown", (e) => {
-      if (e.key === "Enter") changeSetting();
-    });
-  
-  modal // close the modal
-    .querySelector(".btn-close")
-    .addEventListener("click", () => closeModal("gameSettingsModal"));
-  
-  modal.addEventListener("click", (e) => {
-    if (e.target === modal) closeModal("gameSettingsModal");
-  });
+  return modal;
 }
 
 // ----------------- Modals for general purpose ----------------- //
 
 // A generic modal for closing modals passed as an arguments
 function closeModal(modalId) {
-  console.log("closing modal");
   const modal = document.getElementById(modalId);
   if (modal) {
     modal.remove(); // Remove the modal from the DOM
     document.body.classList.remove("modal-open"); // Remove the modal-open class from body
-  } else {
-    console.warn(`Modal with id "${modalId}" not found.`);
-  }
+  } 
 }
 
 // ShowSuccessMessage Function
-function showSuccessMessage(message, timeout = 3000) {
+async function showSuccessMessage(message, timeout = 3000, successHeader=`Success`) {
   // create and show success modal
   const existingModal = document.getElementById("success-modal");
   if (existingModal) existingModal.remove();
@@ -568,7 +624,7 @@ function showSuccessMessage(message, timeout = 3000) {
       <div class="content modal-content">
         <div class="modal-header border-0 py-3">
           <h5 class="modal-title text-success">
-            <i class="fas fa-check-circle me-2"></i>Success
+            <i class="fas fa-check-circle me-2"></i>${successHeader}
           </h5>
           <button type="button" class="btn-close btn-close-white" id="close-success-modal"></button>
         </div>
@@ -591,22 +647,32 @@ function showSuccessMessage(message, timeout = 3000) {
   // Event Listeners
   modal
     .querySelector("#close-success-modal")
-    .addEventListener("click", () => closeModal("success-modal"));
+    .addEventListener("click", () => {
+      closeModal("success-modal")
+      return ;
+    });
   modal
     .querySelector("#success-modal-close")
-    .addEventListener("click", () => closeModal("success-modal"));
+    .addEventListener("click", () => {
+      closeModal("success-modal")
+      return ;
+    });
   modal.addEventListener("click", (e) => {
-    if (e.target === modal) closeModal("success-modal");
+    if (e.target === modal) {
+      closeModal("success-modal")
+      return ;
+    };
   });
 
   // Close modal after 3 seconds
   setTimeout(() => {
     closeModal("success-modal");
   }, timeout);
+  await new Promise((resolve) => setTimeout(resolve, timeout + 100));
 }
 
 // Create a modal for displaying error messages
-function showErrorMessage(message) {
+function showErrorMessage(message, timeout = 3000, errorHeader=`Error`) {
   // create and show error modal
   const existingModal = document.getElementById("error-modal");
   if (existingModal) existingModal.remove();
@@ -622,7 +688,7 @@ function showErrorMessage(message) {
       <div class="content modal-content">
         <div class="modal-header border-0 py-3">
           <h5 class="modal-title text-danger">
-            <i class="fas fa-exclamation-triangle me-2"></i>Error
+            <i class="fas fa-exclamation-triangle me-2"></i>${errorHeader}
           </h5>
           <button type="button" class="btn-close btn-close-white" id="close-error-modal"></button>
         </div>
@@ -652,7 +718,64 @@ function showErrorMessage(message) {
     if (e.target === modal) closeModal("error-modal");
   }
   );
+  // Close modal after 3 seconds
+  setTimeout(() => {
+    closeModal("error-modal");
+  }, timeout);
 }
 
-// call the function to show the error message: TEST
-// showErrorMessage("This is an error message");
+function gameRulesModal() {
+  const existingModal = document.getElementById("gameRulesModal");
+  if (existingModal) {
+    existingModal.remove();
+  }
+
+  const modal = document.createElement("div");
+  modal.id = "gameRulesModal";
+  modal.className = "modal fade show";
+  modal.style.display = "block";
+  modal.innerHTML = `
+    <div class="modal-dialog modal-dialog-centered modal-md">
+      <div class="modal-content text-white">
+        <div class="modal-header border-0 py-3">
+          <h5 class="modal-title">
+            <i class="fas fa-book me-2"></i> Game Rules
+          </h5>
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body px-4 py-3">
+          <div class="mb-3">
+            <i class="fas fa-gamepad me-2"></i>
+            <strong>Player 1 (Left):</strong>
+            <ul class="ms-4">
+              <li>Use <span class="badge bg-secondary">W</span> to move up and <span class="badge bg-secondary">S</span> to move down.</li>
+              <li>If <strong>Parry</strong> is enabled, press <span class="badge bg-secondary">Space</span> precisely when the ball hits your paddle to perform a parry.</li>
+            </ul>
+          </div>
+          <div class="mb-3">
+            <i class="fas fa-gamepad me-2"></i>
+            <strong>Player 2 (Right):</strong>
+            <ul class="ms-4">
+              <li>Use <span class="badge bg-secondary">↑</span> and <span class="badge bg-secondary">↓</span> to move up and down.</li>
+              <li>If <strong>Parry</strong> is enabled, press <span class="badge bg-secondary">0</span> precisely when the ball hits your paddle to perform a parry.</li>
+            </ul>
+          </div>
+          <div class="mb-3">
+            <i class="fas fa-gamepad me-2"></i>
+            <strong>Parry Mode ON</strong>
+            <p class="ms-4">Parry mode allows you to powershot ball back to your opponent by pressing the correct key at the right time.</p>
+          </div>
+          <div>
+            <i class="fas fa-info-circle me-2"></i>
+            <strong>Goal:</strong>
+            <p class="ms-4">Try to score points by getting the ball past your opponent! <br> The first player to reach the score limit wins the game.</p> 
+          </div>
+        </div>
+        <div class="modal-footer border-0">
+          <button type="button" class="btn btn-secondary closeButton" data-bs-dismiss="modal">Close</button>
+        </div>
+      </div>
+    </div>
+  `;
+  return modal;
+}

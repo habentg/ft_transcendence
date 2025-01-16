@@ -17,7 +17,10 @@ source/.env
 source/transcendence/profile_pics/
 
 # Ignore migration files
-**/migration/
+**/migrations/
 
 # Ignore the pfp directory
 **/profile_pics/
+
+# ignore secret dir
+secrets/

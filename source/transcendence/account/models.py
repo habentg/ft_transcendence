@@ -3,6 +3,8 @@ from django.core.exceptions import ValidationError
 from django.contrib.auth.models import BaseUserManager, AbstractUser
 from django.core.validators import MinLengthValidator
 from friendship.models import *
+from game.models import Game
+from django.db.models import Q
 
 """ image file size validation """
 def validate_image_size(image):
@@ -50,8 +52,8 @@ class Player(AbstractUser):
     id = models.BigAutoField(primary_key=True)
     username = models.CharField(max_length=150, unique=True)
     full_name = models.CharField(max_length=150, blank=True)
-    email = models.EmailField(unique=True)
-    password = models.CharField(max_length=150, validators=[MinLengthValidator(8)])
+    email = models.EmailField(max_length=150, unique=True)
+    password = models.CharField(max_length=150)
     is_staff = models.BooleanField(default=False)
     tfa = models.BooleanField(default=False)
     secret = models.CharField(max_length=150, blank=True)
@@ -62,9 +64,10 @@ class Player(AbstractUser):
     )
     is_guest = models.BooleanField(default=False)
     is_logged_in = models.BooleanField(default=False)
-    rating = models.IntegerField(default=0)
+    rating = models.BigIntegerField(default=0)
     blocked_players = models.ManyToManyField('self', symmetrical=False, blank=True, related_name="players_blocked_list")
-
+    last_password_change = models.DateTimeField(blank=True, null=True)
+    is_42_student = models.BooleanField(default=False)
 
     # Fields removed
     first_name = None
@@ -102,3 +105,22 @@ class Player(AbstractUser):
 
     def is_blocked(self, player):
         return self.blocked_players.filter(username=player.username).exists()
+    
+    @property
+    def friends(self):
+        return [friendship.to_friend for friendship in self.friend_set.all()]
+
+    @property
+    def games_played(self):
+        return Game.objects.filter(Q(player_one=self.username) | Q(player_two=self.username))
+
+    @property
+    def games_played_count(self):
+        return self.games_played.count()
+
+    @property
+    def win_percentage(self):
+        if self.games_played_count == 0:
+            return 0
+        percentage = (self.games_played.filter(outcome="WIN").count() / self.games_played_count) * 100
+        return round(percentage, 1)

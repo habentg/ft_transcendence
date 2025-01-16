@@ -4,10 +4,10 @@
   <div class="container py-4">
     {% if players %}
       <div class="results-header mb-4">
-        <h5 class="text-center">
+        <h6 class="text-center">
           <i class="fas fa-search me-2"></i>
           <span class="found-count">{{ total_items }}</span> Results Found
-        </h5>
+        </h6>
       </div>
       <div class="row justify-content-center">
         <div class="col-lg-8 w-100">
@@ -27,8 +27,8 @@
 
                   <!-- Player Info -->
                   <div class="player-info ms-3 flex-grow-1">
-                    <h5 class="mb-1" style="color: #84ddfc;">{{ player.username }}</h5>
-                    <p class="mb-0">{{ player.full_name }}</p>
+                    <h5 class="mb-1" style="color: #84ddfc;">{{ player.username|slice:":15" }}</h5>
+                    <p class="mb-0">{{ player.full_name|slice:":25" }}</p>
                   </div>
 
                   <!-- Action Buttons -->
@@ -50,7 +50,7 @@
       </div>
     {% else %}
       <div class="no-results text-center py-5">
-        <i class="fas fa-search fa-3x mb-3"></i>
+        <i class="fas fa-search fa-2x mb-3"></i>
         {% if search_type == 'friends' %}
           <h3>No Friends Found</h3>
           <p class="text-muted">Start connecting ...</p>
@@ -58,8 +58,8 @@
           <h3>No Friend Requests Found</h3>
           <p class="text-muted">lmao...</p>
         {% else %}
-          <h3>No Results Found for "{{ search_type }}"</h3>
-          <p class="text-muted">Try different search terms</p>
+          <h5>No Results Found for "{{ search_type }}"</h5>
+          <p >Try different search terms</p>
         {% endif %}
       </div>
     {% endif %}

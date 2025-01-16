@@ -3,39 +3,58 @@ from .models import Player
 
 # user registration serializer class
 class PlayerSignupSerializer(serializers.ModelSerializer):
-	password = serializers.CharField(max_length=100, min_length=3, style={'input_type': 'password'}, write_only=True)
-	class Meta:
-		model = Player
-		fields = ['full_name', 'username', 'email', 'password']
+    password = serializers.CharField(
+        max_length=500,
+        min_length=3,
+        write_only=True,
+        style={'input_type': 'password'},
+        trim_whitespace=False,  # Prevent trimming of whitespace
+    )
 
-	def create(self, validated_data):
-		if (validated_data['password'] != self.initial_data['confirm_password']):
-			raise serializers.ValidationError("Passwords do not match from backend.")
-		user_password = validated_data.pop('password')
-		playa = self.Meta.model(**validated_data)
-		playa.set_password(user_password)
-		playa.save()
-		return playa
+    class Meta:
+        model = Player
+        fields = ['full_name', 'username', 'email', 'password']
 
-	# validate username - we can add email uniqueness check here as well - if think is neccessary
-	def validate_username(self, username):
-		if self.Meta.model.objects.filter(username=username).exists():
-			raise serializers.ValidationError("Username already taken.")
-		return username
+    def create(self, validated_data):
+        print("Initial data:", self.initial_data, flush=True)
+        print("Validated data:", validated_data, flush=True)
+        if validated_data['password'] != self.initial_data['confirm_password']:
+            raise serializers.ValidationError("Passwords do not match from backend.")
+        user_password = validated_data.pop('password')
+        playa = self.Meta.model(**validated_data)
+        playa.set_password(user_password)
+        playa.save()
+        return playa
+
+    def validate_username(self, username):
+        if self.Meta.model.objects.filter(username=username).exists():
+            raise serializers.ValidationError("Username already taken.")
+        return username
+
 
 # user login serializer class
-class PlayerSigninSerializer(serializers.Serializer):
+class PlayerSigninSerializer(serializers.Serializer): 
 	username = serializers.CharField(max_length=150)
-	password = serializers.CharField(max_length=150, min_length=3, style={'input_type': 'password'})
+	password = serializers.CharField(
+		max_length=500,
+		min_length=3,
+		write_only=True,
+		style={'input_type': 'password'},
+		trim_whitespace=False,  # Prevent trimming of whitespace
+	)
 
 	def validate(self, data):
 		username = data.get('username')
 		password = data.get('password')
-		if not Player.objects.filter(username=username).exists():
+
+		try:
+			player = Player.objects.get(username=username)
+		except Player.DoesNotExist:
 			raise serializers.ValidationError("User does not exist.")
-		player = Player.objects.get(username=username)
+
 		if not player.check_password(password):
 			raise serializers.ValidationError("Incorrect password.")
+
 		data['player'] = player
 		return data
 
@@ -54,9 +73,27 @@ class PlayerProfileSerializer(serializers.ModelSerializer):
 
 # user password update/change serializer class - we doing it this way coz password update needs more validation
 class ChangePasswordSerializer(serializers.Serializer):
-	current_password = serializers.CharField(max_length=150, min_length=3)
-	new_password = serializers.CharField(max_length=150, min_length=3)
-	confirm_password = serializers.CharField(max_length=150, min_length=3)
+	current_password = serializers.CharField(
+			max_length=500,
+			min_length=3,
+			write_only=True,
+			style={'input_type': 'password'},
+			trim_whitespace=False,  # Prevent trimming of whitespace
+		)
+	new_password = serializers.CharField(
+			max_length=500,
+			min_length=3,
+			write_only=True,
+			style={'input_type': 'password'},
+			trim_whitespace=False,  # Prevent trimming of whitespace
+		)
+	confirm_password = serializers.CharField(
+			max_length=500,
+			min_length=3,
+			write_only=True,
+			style={'input_type': 'password'},
+			trim_whitespace=False,  # Prevent trimming of whitespace
+		)
 
 class PlayerSerializer(serializers.ModelSerializer):
 	class Meta:

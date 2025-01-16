@@ -25,9 +25,9 @@
               <div id="searchResults" class="mt-3 d-none">
                 <div id="search_list"></div>
                 <div id="pagination_navigation" class="pagination d-flex align-items-center justify-content-center d-none">
-                  <button type="button" id="prevPage" class="btn btn-secondary" data-url="">&lt;&lt;</button>
-                  <span id="pageNumbers"><span id="current_page"></span> of <span id="total_pages"></span> pages</span>
-                  <button type="button" id="nextPage" class="btn btn-primary" data-url="">&gt;&gt;</button>
+                  <button type="button" id="prevPage" class="btn btn-outline-light btn-sm" data-url=""><i class="fas fa-chevron-left d-flex justify-content-center align-items-center" style="color: grey;"></i></button>
+                  <span id="pageNumbers"><span id="current_page" class="found-count"></span> of <span id="total_pages" class="found-count"></span> pages</span>
+                  <button type="button" id="nextPage" class="btn btn-outline-light btn-sm" data-url=""><i class="fas fa-chevron-right d-flex justify-content-center align-items-center " style="color: grey;" ></i></button>
                 </div>
               </div>
             </div>
@@ -68,24 +68,10 @@
                   <h5 class="mb-0">Settings</h5>
                 </a>
               </div>
-              <div class="col-md-6">
-                <button onclick="GameApiTester()" class="menu-item d-flex align-items-center p-3">
-                  <i class="fas fa-gamepad fa-2x me-3"></i>
-                  <h5 class="mb-0">Game API Tester</h5>
-                </button>
-              </div>
             </div>
           </div>
         </div>
       </div>
-      <!-- <div id="toast" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
-        <div id="toast-header" class="toast-header">
-          <span id="toast-icon" class="me-2"></span>
-          <strong id="toast-title" class="ms-2 me-auto">Notification</strong>
-          <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
-        </div>
-        <div id="toast-body" class="toast-body"></div>
-      </div>       -->
     </div>
   </div>
 </div>

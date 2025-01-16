@@ -6,7 +6,7 @@ from django.template.loader import render_to_string
 from django.shortcuts import render
 from django.urls import reverse
 from rest_framework.permissions import IsAuthenticated
-from account.auth_middleware import JWTCookieAuthentication
+from others.auth_middleware import JWTCookieAuthentication, generate_access_token
 from rest_framework.exceptions import AuthenticationFailed
 from django.db import connection
 from rest_framework.response import Response
@@ -14,6 +14,7 @@ from django.middleware.csrf import get_token
 from rest_framework import status
 import urllib.parse
 from account.utils import *
+from account.utils import isUserisAuthenticated, getPlayerFromToken
 
 
 # base view for basic pages in our SPA
@@ -25,7 +26,7 @@ from account.utils import *
 
 class BaseView(View):
 	authentication_classes = []
-	permission_classes = []
+	throttle_classes = []
 	template_name = None
 	title = None
 	css = None
@@ -33,17 +34,28 @@ class BaseView(View):
 	
 	def get(self, request, *args, **kwargs):
 		context = self.get_context_data(request, **kwargs)
+		if context.get('error_msg_404') is not None:
+			self.title = '404 Page'
+			self.css = ['css/404.css']
+			self.template_name = 'others/404.html'
+			context['status_code'] = 404
+			context['error_msg_header'] = 'Page Not Found'
+			context['error_msg'] = context.get('error_msg_404')
 		html_content = render_to_string(self.template_name, context)
 		resources = {
 			'title': self.title,
 			'css': self.css,
 			'js': self.js,
 			'html': html_content,
-			'is_authenticated': isUserisAuthenticated(request)
 		}
 		if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
 			return JsonResponse(resources)
 		else:
+			resources['is_authenticated'] =  isUserisAuthenticated(request)
+			if resources['is_authenticated'] == True and not request.user.is_authenticated:
+				resources['user'] = PlayerSerializer(getPlayerFromToken(request.COOKIES.get('refresh_token'))).data
+			if request.user.is_authenticated:
+				resources['user'] = PlayerSerializer(request.user).data
 			return render(request, 'others/base.html', resources)
 
 	def get_context_data(self, request, **kwargs):
@@ -52,7 +64,7 @@ class BaseView(View):
 # view for the 404 page1
 class Catch_All(BaseView):
 	authentication_classes = []
-	permission_classes = []
+	throttle_classes = []
 	template_name = 'others/404.html'
 	title = 'Error Page'
 	css = ['css/404.css']
@@ -60,11 +72,21 @@ class Catch_All(BaseView):
 
 	def get(self, request, path=None, *args, **kwargs):
 		return super().get(request)
+	
+	def get_context_data(self, request, **kwargs):
+		code_param = request.GET.get('code', 404)
+
+		return {
+			'status_code': code_param,
+			'error_msg_header': 'Page Not Found',
+			'error_msg': ' Oops! Looks like this page got lost in the game.'
+			}
 
 # view for the home page
 class HomeView(APIView, BaseView):
 	authentication_classes = [JWTCookieAuthentication]
 	permission_classes = [IsAuthenticated]
+	throttle_classes = []
 	template_name = 'others/home.html'
 	title = 'Home Page'
 	css = ['css/home.css']
@@ -72,6 +94,12 @@ class HomeView(APIView, BaseView):
 	
 	def handle_exception(self, exception):
 		if isinstance(exception, AuthenticationFailed):
+			""" is refresh token not expired """
+			if 'access token is invalid but refresh token is valid' in str(exception):
+				
+				response = HttpResponseRedirect(self.request.path)
+				response.set_cookie('access_token', generate_access_token(self.request.COOKIES.get('refresh_token')), httponly=True, samesite='Lax', secure=True)
+				return response
 			response = HttpResponseRedirect(reverse('landing'))
 			response.delete_cookie('access_token')
 			response.delete_cookie('refresh_token')
@@ -89,7 +117,7 @@ class HomeView(APIView, BaseView):
 # view for the index page
 class LandingPageView(BaseView):
 	authentication_classes = []
-	permission_classes = []
+	throttle_classes = []
 	template_name = 'others/landing.html'
 	css = ['css/landing.css']
 	title = 'Index Page'
@@ -103,7 +131,7 @@ class LandingPageView(BaseView):
 # Health check view
 class HealthCheck(View):
 	authentication_classes = []
-	permission_classes = []
+	throttle_classes = []
 	def get(self, request):
 		try:
 			with connection.cursor() as cursor:
@@ -116,6 +144,8 @@ class HealthCheck(View):
 class CsrfRequest(APIView):
 	authentication_classes = []
 	permission_classes = []
+	throttle_classes = []
+	
 	def get(self, request):
 		response = Response(status=status.HTTP_200_OK)
 		response.set_cookie('csrftoken', get_token(request))
@@ -123,21 +153,21 @@ class CsrfRequest(APIView):
 
 class AboutView(BaseView):
 	authentication_classes = []
-	permission_classes = []
+	throttle_classes = []
 	template_name = 'others/about.html'
 	title = 'About Us'
 	css = ['css/static_pages.css']
 
 class PrivacyView(BaseView):
 	authentication_classes = []
-	permission_classes = []
+	throttle_classes = []
 	template_name = 'others/privacy.html'
 	title = 'Privacy Policy'
 	css = ['css/static_pages.css']
 
 class TermsView(BaseView):
 	authentication_classes = []
-	permission_classes = []
+	throttle_classes = []
 	template_name = 'others/terms.html'
 	title = 'Terms of Service'
 	css = ['css/static_pages.css']
@@ -154,12 +184,18 @@ class SearchPaginator(PageNumberPagination):
 class PaginatedSearch(APIView, BaseView):
 	authentication_classes = [JWTCookieAuthentication]
 	permission_classes = [IsAuthenticated]
-	template_name = 'others/paginated_page.html'
+	throttle_classes = []
+	template_name = 'friendship/search_result.html'
 	css = ['css/search.css']
 	js = ['js/friend.js']
 
 	def handle_exception(self, exception):
 		if isinstance(exception, AuthenticationFailed):
+			if 'access token is invalid but refresh token is valid' in str(exception):
+				
+				response = HttpResponseRedirect(self.request.path)
+				response.set_cookie('access_token', generate_access_token(self.request.COOKIES.get('refresh_token')), httponly=True, samesite='Lax', secure=True)
+				return response
 			signin_url = reverse('signin_page')
 			params = urllib.parse.urlencode({'next': self.request.path})
 			response = HttpResponseRedirect(f'{signin_url}?{params}')
@@ -216,48 +252,3 @@ class PaginatedSearch(APIView, BaseView):
 			'next_page_link': paginator.get_next_link(),
 			'previous_page_link': paginator.get_previous_link(),
 		})
-""" game view """
-class GameView(APIView, BaseView):
-	authentication_classes = [JWTCookieAuthentication]
-	permission_classes = [IsAuthenticated]
-	template_name = 'others/game.html'
-	title = 'Game Page'
-	css = ['css/game.css']
-	js = ['js/game.js']
-
-	# def get(self, request):
-	# 	return super().get(request)
-	def get_context_data(self, request, **kwargs):
-		is_ai = request.GET.get('isAI', 'false').lower() == 'true'
-		print(f"####### isAI : {is_ai}", flush=True)
-		return {
-			'isAI': is_ai,
-			'current_username': request.user.username
-		}
-	
-class TournamentView(BaseView):
-	authentication_classes = []
-	permission_classes = []
-	template_name = 'others/tournament.html'
-	title = 'Tournament Page'
-	css = ['css/tournament.css']
-	js = ['js/tournament.js']
-
-	def get(self, request):
-		return super().get(request)
-
-
-
-
-
-
-# class GameAIView(BaseView):
-# 	authentication_classes = []
-# 	permission_classes = []
-# 	template_name = 'others/game.html'
-# 	title = 'Game AI Page'
-# 	css = ['css/game.css']
-# 	js = ['js/gameai.js']
-
-# 	def get(self, request):
-# 		return super().get(request)

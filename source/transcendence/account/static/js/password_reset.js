@@ -1,15 +1,13 @@
 // Initiate the password reset process
 async function handlePassResetSubmit(e) {
   e.preventDefault();
-  loadSpinner();
 
   const formData = {
     email: document.getElementById("email").value,
   };
-
+  showLoadingAnimation();
   try {
     const m_csrf_token = await getCSRFToken();
-    console.log("CSRF Token:", m_csrf_token);
     const response = await fetch("/password_reset/", {
       method: "POST",
       headers: {
@@ -20,7 +18,7 @@ async function handlePassResetSubmit(e) {
     });
 
     const responseData = await response.json();
-
+    hideLoadingAnimation();
     if (!response.ok) {
       displayError(responseData);
       return;
@@ -34,26 +32,33 @@ async function handlePassResetSubmit(e) {
     localStorage.setItem('uidb64', uidb64);
     localStorage.setItem('token', token);
 
-    
+
     const otpModal = resetPasswordConfirmModal();
     document.body.appendChild(otpModal);
     document.body.classList.add('modal-open');
 
-    otpModal.querySelector("close-otp-modal").addEventListener("click", () => closeModal("eset-password-confirm-modal"));
-
+    otpModal.querySelector("#close-otp-modal").addEventListener("click", () => {
+      closeModal("reset-password-confirm-modal");
+    });
+    
     otpModal.addEventListener("click", (e) => {
       if (e.target === otpModal) {
         closeModal("reset-password-confirm-modal");
       }
     });
 
-    document.getElementById('returnToSignIn').addEventListener('click', async function() {
+    document.querySelector('#returnToSignIn').addEventListener('click', async () => {
       closeModal("reset-password-confirm-modal");
-      updateUI(`/signin`, false);
+      updateUI(`/signin`);
     });
 
   } catch (error) {
-    console.error('Error:', error);
+  //   createToast({
+  //     title: "Error",
+  //     message: "Failed to authenticate",
+  //     type: "error",
+  //   });
+  //   console.error('Error:', error);
   }
 }
 
@@ -71,6 +76,10 @@ async function handlePassChangeSubmit(e) {
     displayError({ error_msg: "Passwords do not match" });
     return;
   }
+  if (new_password.length > 150 || new_password.length < 3) {
+    displayError({ error_msg: "Password should be between 3 and 150 characters long" });
+    return;
+  }
 
   try {
     const m_csrf_token = await getCSRFToken();
@@ -84,12 +93,13 @@ async function handlePassChangeSubmit(e) {
     });
     const responseData = await response.json();
     if (!response.ok) {
-      alert("Password couldn't reset: " + responseData.error_msg);
+      displayError(responseData);
+      createToast({ type: "error", title: "Error", error_message: `${responseData.error_msg}`});
       return;
     }
 
-    showSuccessModal("Password reset successfully! Please sign in with your new password.");
-    updateUI(`/signin`, false);
+    showSuccessMessage("Password reset successfully");
+    updateUI(`/signin`);
 
     // Clear the local storage
     localStorage.removeItem('uidb64');

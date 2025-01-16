@@ -6,11 +6,7 @@ https://radixweb.com/blog/what-is-django
 * wtf are asgi and wsgi
 https://samagra.me/wtf/2024/09/27/gateway-interfaces.html
 
-* DJANGO multiple language support blog
-https://medium.com/@sakhawy/multilingual-support-in-django-5706e1e144a8
-
-
-* password hasshing:
+* password hashing:
 https://nishothan-17.medium.com/pbkdf2-hashing-algorithm-841d5cc9178d
 
 
@@ -39,8 +35,6 @@ https://security.stackexchange.com/questions/175536/does-a-csrf-cookie-need-to-b
 
 ## Python Debuging Handbook
 https://www.freecodecamp.org/news/python-debugging-handbook/
-
-
 
 
 # Redis

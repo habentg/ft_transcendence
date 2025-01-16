@@ -41,7 +41,21 @@ class Player {
     this.parryCooldown = 0;
     this.velocityY = playerVelocityY;
     this.score = 0;
+    this.seed = 0; // this part is for randomizing brackets for the tournament
+    this.gameWon = 0;
     this.position = "";
+    if (position === "left") {
+      this.x = 10;
+      this.y = boardHeight / 2 - playerHeight / 2;
+      this.parryKey = "KeyA";
+    } else if (position === "right") {
+      this.x = boardWidth - playerWidth - 10;
+      this.y = boardHeight / 2 - playerHeight / 2;
+      this.parryKey = "Numpad0";
+    }
+  }
+
+  setplayPos(position){
     if (position === "left") {
       this.x = 10;
       this.y = boardHeight / 2 - playerHeight / 2;
@@ -128,8 +142,6 @@ function loadGame() {
     });
 
     initGame(); //initializing the game flags and adding players etc.
-    console.log("Player 1 values:", players[0]);
-    console.log("Player 2 values:", players[1]);
     document.getElementById("startButton").addEventListener("click", () => {
       // send to backend to create the game -
       /* 
@@ -335,21 +347,6 @@ function draw(player1, player2) {
     player1.score++;
     resetGame(player1, player2, -1);
   }
-
-  // if (isGameOver(player1, player2)) {
-  // 	drawFlag = false;
-  // 	aiFlag = false;
-  // 	console.log("Game Over: SHOULD RETURN SETTINGS MENU");
-  // 	if (document.getElementById("aiButton")) {
-  // 		document.getElementById("aiButton").disabled = false;
-  // 	}
-  // 	if (document.getElementById("startButton")) {
-  // 		document.getElementById("startButton").disabled = false;
-  // 	}
-
-  // 	//This is the part where we could collect everything for the match history
-  // 	// players names, player scores aside from game mode. maybe add another function throw players and return it from there.
-  // }
 }
 
 // Display scores
@@ -369,9 +366,6 @@ function drawBall() {
 }
 
 function updatePaddleVelocities(player1, player2) {
-  // Player 1 movement
-  // console.log("Player 1 values:", player1);
-  // console.log("Player 2 values:", player2);
   if (activeKeys["KeyW"]) {
     player1.velocityY = -paddleSpeed;
   } else if (activeKeys["KeyS"]) {
@@ -434,12 +428,10 @@ function parryRefresh(player) {
 
 function move(e) {
   activeKeys[e.code] = true;
-  console.log(`Key Down: ${e.code}`); // Debugging
 }
 
 function stopMovement(e) {
   activeKeys[e.code] = false;
-  console.log(`Key Up: ${e.code}`);
 }
 
 // function to check if the paddle is inside the walls, by walls the top and bottom part of the board.
@@ -555,7 +547,7 @@ function resetGame(player1, player2, direction) {
   if (isGameOver(player1, player2)) {
     drawFlag = false;
     aiFlag = false;
-    console.log("Game Over: SHOULD RETURN SETTINGS MENU");
+    console.log("Game Over: SHOULD RETURN SETTINGS MENU ----- ");
 
     if (document.getElementById("aiButton")) {
       document.getElementById("aiButton").disabled = false;
@@ -581,9 +573,13 @@ function isGameOver(player1, player2) {
 
 function resetScores(player1, player2) {
   if (player1) {
+    if (player1.score === maxScore)
+        player1.gamesWon += 1;
     player1.score = 0;
   }
   if (player2) {
+    if (player2.score === maxScore)
+      player2.gamesWon += 1;
     player2.score = 0;
   }
 }
@@ -782,28 +778,163 @@ function aiView() {
   }
 }
 
-function checkScreenSize() {
-  const MIN_WINDOW_WIDTH = 820;
-  const MIN_WINDOW_HEIGHT = 700;
+// function checkScreenSize() {
+//   const MIN_WINDOW_WIDTH = 820;
+//   const MIN_WINDOW_HEIGHT = 700;
 
-  const warningMessage = document.getElementById("warningMessage");
-  const gameContent = document.getElementById("gameContent");
+//   const warningMessage = document.getElementById("warningMessage");
+//   const gameContent = document.getElementById("gameContent");
 
-  if (
-    window.innerWidth < MIN_WINDOW_WIDTH ||
-    window.innerHeight < MIN_WINDOW_HEIGHT
-  ) {
-    warningMessage.classList.remove("d-none");
-    gameContent.classList.add("d-none");
-  } else {
-    warningMessage.classList.add("d-none");
-    gameContent.classList.remove("d-none");
-  }
-}
+//   if (
+//     window.innerWidth < MIN_WINDOW_WIDTH ||
+//     window.innerHeight < MIN_WINDOW_HEIGHT
+//   ) {
+//     warningMessage.classList.remove("d-none");
+//     gameContent.classList.add("d-none");
+//   } else {
+//     warningMessage.classList.add("d-none");
+//     gameContent.classList.remove("d-none");
+//   }
+// }
 
-loadGame();
-// Run check on page load
-checkScreenSize();
+// // loadGame();
+// // Run check on page load
+// checkScreenSize();
 
 // Listen for screen resize
-window.addEventListener("resize", checkScreenSize);
+// window.addEventListener("resize", checkScreenSize);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+//what I made 
+
+
+/* Things needed for tournament
+
+    playerCount // How many players are playing in the tournament 4 or 8 players.
+    players[] // to store all of the players
+    function for a pause state(A state where both players supposed to ready up before they start the game);
+*/
+
+let playerCount = 8;
+
+/* 
+    this function will simulate getting all of the values needed for running a tournament such as
+    grabbing players count
+    grabbing players name
+
+
+    In the game js make sure everything is removed from players[] everytime it finishes a 1v1/ai game. (situations like you play ai/versus then goes to tournament but I guess everything is removed when we move through another page.)
+*/
+
+async function simulateModal(playerCount) { 
+    if (playerCount === 4) {
+        //push 4 players
+        players.push(new Player("random1", "left"));
+        players.push(new Player("random2", "left"));
+        players.push(new Player("random3", "left"));
+        players.push(new Player("random4", "left"));
+    } else if (playerCount === 8) {
+        //push 8 players
+        players.push(new Player("random1", "left"));
+        players.push(new Player("random2", "left"));
+        players.push(new Player("random3", "left"));
+        players.push(new Player("random4", "left"));
+        players.push(new Player("random5", "left"));
+        players.push(new Player("random6", "left"));
+        players.push(new Player("random7", "left"));
+        players.push(new Player("random8", "left"));
+    }
+}
+
+function randomizeSeeds(players) {
+    players.forEach(player => {
+        player.seed = Math.random(); // Assign a random number between 0 and 1 as the seed
+    });
+
+    /* 
+    sorts the randomized seed so we could easily pair them, this would change the whole postion of the players in the array. so by this logic 0-1,2-3 will be paired, and who ever won on those 2 pairs will be paired after that.
+    */
+    players.sort((a, b) => a.seed - b.seed); 
+}
+
+async function startTournament(playerCount) {
+  board = document.getElementById("board");
+  board.height = boardHeight;
+  board.width = boardWidth;
+  context = board.getContext("2d");
+  console.log("playerCount", playerCount);
+
+  await simulateModal(playerCount); // Await the asynchronous setup
+  randomizeSeeds(players);
+
+  let currentRoundPlayers = [...players];
+  let round = 1;
+
+  console.log("Players", currentRoundPlayers);
+  while (currentRoundPlayers.length > 1) {
+      console.log(`Starting Round ${round}`);
+      currentRoundPlayers = await playRound(currentRoundPlayers); // Await the round to finish
+      round++;
+  }
+
+  console.log(`Winner: ${currentRoundPlayers[0]?.playerName || "No Winner"}`); // Safe access
+}
+
+async function playRound(players) {
+  const winners = [];
+  
+  for (let i = 0; i < players.length; i += 2) {
+      const player1 = players[i];
+      const player2 = players[i + 1];
+      
+      player1.setplayPos("left");
+      player2.setplayPos("right");
+
+      console.log(`Match: ${player1.playerName} vs ${player2.playerName}`);
+      
+      const winner = await startgameTournament(player1, player2); // Await the match to finish
+      console.log(`Winner: ${winner.playerName}`);
+      winners.push(winner);
+  }
+  console.log("Round winners:", winners);
+  return winners;
+}
+
+async function startgameTournament(player1, player2) {
+  drawFlag = true;
+
+  console.log(`Game started between ${player1.playerName} and ${player2.playerName}`);
+
+  return new Promise(resolve => {
+      // Simulate the game with a timeout
+      requestAnimationFrame(() => draw(player1, player2));
+      
+      const gameDuration = 10000; // Simulate a 10-second match
+      setTimeout(() => {
+          const winner = Math.random() > 0.5 ? player1 : player2;
+          resolve(winner); // Resolve after the simulated delay
+      }, gameDuration); // Use the 10-second duration here
+  });
+}
+
+startTournament(playerCount);

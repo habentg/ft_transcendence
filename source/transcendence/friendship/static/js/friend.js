@@ -1,11 +1,5 @@
 
 async function searchedFriendRequestResponce(event, action, toBeFriend) {
-
-  console.log("acceptOrDeclineFriendRequest");
-  console.log("acceptOrDeclineFriendRequest");
-  console.log("acceptOrDeclineFriendRequest");
-  console.log("acceptOrDeclineFriendRequest");
-  console.log("acceptOrDeclineFriendRequest");
   event.stopPropagation(); // Prevent the click event from bubbling up to the anchor tag
 
   if (action === 'accept') {

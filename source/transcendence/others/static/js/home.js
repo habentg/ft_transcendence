@@ -8,7 +8,6 @@ async function search(query_parameter, url) {
     const fullUrl = new URL(url);
     route_url = fullUrl.pathname + fullUrl.search; // Extract the relative path and query string
   }
-  console.log("route_url: ", route_url);
   try {
     const response = await fetch(route_url.slice(1), {
       method: "GET",
@@ -17,12 +16,13 @@ async function search(query_parameter, url) {
       },
     });
 
-    if (response.status === 205)
-      updateUI("/home", false);
+    if (response.status === 205) {
+      updateUI("/home");
+      return;
+    }
     if (response.ok) {
       // history.pushState({ query_parameter }, "", route_url);
       const responseData = await response.json();
-      // console.log(responseData);
       /* activating the div */
       document.getElementById("searchResults").classList.remove("d-none");
       /* filling up the result to the inner div */
@@ -54,7 +54,7 @@ async function search(query_parameter, url) {
       loadCssandJS(responseData, false);
     }
     else if (response.status === 302) {
-      updateUI("/signin", false);
+      updateUI("/signin");
     } else {
       console.error("Failed to load -- ", query_parameter, "-- search content");
     }
@@ -135,11 +135,12 @@ function searchingSystem() {
 }
 
 function triggerSearch() {
-  const query = document.getElementById("searchInput").value;
-  if (query) {
-    search(query.trim());
-  } else {
+  const query = document.getElementById("searchInput").value.trim();
+  if (!query || query.length > 100) {
+    createToast({ type: "error", title: "Invalid Search", error_message: "Search parameter should be > 0 and < 150 chars" });
     document.getElementById("searchResults").classList.add("d-none")
+  } else {
+    search(query);
   }
 }
 
@@ -205,178 +206,75 @@ function createLocalGameModal() {
     existingModal.remove();
   }
 
+  optionLocalGameModal();
 
-  const modal = optionLocalGameModal();
-  document.body.appendChild(modal);
+  // const modal = optionLocalGameModal();
+  // document.body.appendChild(modal);
 
-  // Event Listeners
-  document.getElementById("aiGameBtn").addEventListener("click", () => {
-    //  Send to AI game page (1 vs AI)
-    console.log("Creating AI game");
-    closeModal("localGameModal");
-    // For now, page is refreshing. Need to fix.
-    window.location.href = "/game/?isAI=true";
+  // // Event Listeners
+  // document.getElementById("aiGameBtn").addEventListener("click", () => {
+  //   //  Send to AI game page (1 vs AI)
+  //   console.log("Creating AI game");
+  //   closeModal("localGameModal");
+  //   // For now, page is refreshing. Need to fix.
+  //   // window.location.href = "/game/?isAI=true";
 
-  });
-  document.getElementById("playFriends").addEventListener("click", () => {
-    // Send to localgame game page (1 vs 1)
-    console.log("Creating local game");
-    closeModal("localGameModal");
+  // });
+  // document.getElementById("playFriends").addEventListener("click", () => {
+  //   // Send to localgame game page (1 vs 1)
+  //   console.log("Creating local game");
+  //   closeModal("localGameModal");
 
-    // For now, page is refreshing. Need to fix.
-    // updateUI("/game?isAI=false", false);
-    window.location.href = "/game/?isAI=false";
-  });
+  //   // For now, page is refreshing. Need to fix.
+  //   // updateUI("/game?isAI=false");
+  //   // window.location.href = "/game/?isAI=false";
+  // });
 
-  // close the modal when the close button is clicked
-  document.querySelector("#localGameModal .btn-close").addEventListener("click", () => {
-    closeModal("localGameModal");
-  });
+  // // close the modal when the close button is clicked
+  // document.querySelector("#localGameModal .btn-close").addEventListener("click", () => {
+  //   closeModal("localGameModal");
+  // });
 
-  // close the modal when the modal is clicked outside
-  modal.addEventListener("click", (event) => {
-    if (event.target === modal) {
-      closeModal("localGameModal");
-    }
-  });
+  // // close the modal when the modal is clicked outside
+  // modal.addEventListener("click", (event) => {
+  //   if (event.target === modal) {
+  //     closeModal("localGameModal");
+  //   }
+  // });
 
 }
 
 // Create a modal for creating a tournament
-function createTournamentModal() {
-  const existingModal = document.getElementById("tournamentModal");
-  if (existingModal) {
-    existingModal.remove();
-  }
+// function createTournamentModal() {
+//   const existingModal = document.getElementById("tournamentModal");
+//   if (existingModal) {
+//     existingModal.remove();
+//   }
 
 
-  const modal = getPlayerNumberModal();
-  document.body.appendChild(modal);
+//   const modal = getPlayerNumberModal();
+//   document.body.appendChild(modal);
 
-  // Event Listeners
-  document.getElementById("submitPlayerNumBtn").addEventListener("click", () => {
-    const playersNumber = document.getElementById("playersNumber").value;
-    console.log("Creating tournament with ", playersNumber, " players");
-    // createTournament(playersNumber);
-    closeModal("tournamentModal");
-  });
+//   // Event Listeners
+//   document.getElementById("submitPlayerNumBtn").addEventListener("click", () => {
+//     const playersNumber = document.getElementById("playersNumber").value;
+//     console.log("Creating tournament with ", playersNumber, " players");
+//     // createTournament(playersNumber);
+//     closeModal("tournamentModal");
+//   });
 
-  // close the modal when the close button is clicked
-  document.querySelector("#tournamentModal .btn-close").addEventListener("click", () => {
-    closeModal("tournamentModal");
-  });
+//   // close the modal when the close button is clicked
+//   document.querySelector("#tournamentModal .btn-close").addEventListener("click", () => {
+//     closeModal("tournamentModal");
+//   });
 
-  // close the modal when the modal is clicked outside
-  modal.addEventListener("click", (event) => {
-    if (event.target === modal) {
-      closeModal("tournamentModal");
-    }
-  });
+//   // close the modal when the modal is clicked outside
+//   modal.addEventListener("click", (event) => {
+//     if (event.target === modal) {
+//       closeModal("tournamentModal");
+//     }
+//   });
 
-}
+// }
 
 searchingSystem();
-
-
-
-/* Game Api tester */
-async function gameApiPATCHFunction(endgame_data, game_id) {
-  try {
-    const response = await fetch(`/game_api/${game_id}/`, {
-      method: "PATCH",
-      headers: {
-        "X-Requested-With": "XMLHttpRequest",
-        "X-CSRFToken": await getCSRFToken(),
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(endgame_data),
-    });
-    if (response.ok) {
-      const responseData = await response.json();
-      console.log(responseData);
-      return;
-    }
-    throw new Error("Failed to load gameApiPATCHFunction");
-  } catch (error) {
-    console.error("ERROR: ", error);
-  }
-}
-async function gameApiPOSTFunction(startgame_data) {
-  try {
-    const response = await fetch("/game_api/", {
-      method: "POST",
-      headers: {
-        "X-Requested-With": "XMLHttpRequest",
-        "X-CSRFToken": await getCSRFToken(),
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(startgame_data),
-    });
-    if (response.ok) {
-      const responseData = await response.json();
-      console.log(responseData);
-      return;
-    }
-    throw new Error("Failed to load gameApiPOSTFunction");
-  } catch (error) {
-    console.error("ERROR: ", error);
-  }
-}
-
-async function gameApiDELETEFunction(game_id) {
-  try {
-    const response = await fetch(`/game_api/${game_id}/`, {
-      method: "DELETE",
-      headers: {
-        "X-Requested-With": "XMLHttpRequest",
-        "Content-Type": "application/json",
-      },
-    });
-    if (response.ok) {
-      const responseData = await response.json();
-      console.log(responseData);
-      return;
-    }
-    throw new Error("Failed to load gameApiDELETEFunction");
-  } catch (error) {
-    console.error("ERROR: ", error);
-  }
-}
-async function gameApiGETFunction() {
-  try {
-    const response = await fetch("/game_api/", {
-      method: "GET",
-      headers: {
-        "X-Requested-With": "XMLHttpRequest",
-        "Content-Type": "application/json",
-      },
-    });
-    if (response.ok) {
-      const responseData = await response.json();
-      console.log(responseData);
-      return;
-    }
-    throw new Error("Failed to load gameApiGETFunction");
-  } catch (error) {
-    console.error("ERROR: ", error);
-  }
-}
-
-async function GameApiTester() {
-  /* Get request - to get all history */
-  const data = {
-    player_two: "martin",
-    type: "TOURNAMENT",
-  };
-  const endgame_data = {
-    outcome: "CANCELLED",
-  };
-
-  // await gameApiGETFunction();
-  
-  await gameApiPOSTFunction(data);
-  
-  // await gameApiPATCHFunction(endgame_data, 5);
-
-  // await gameApiDELETEFunction(1);
-}
