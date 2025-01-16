@@ -8,7 +8,7 @@
         <div class="text-center mb-3">
           <h2>Two-Factor Authentication</h2>
         </div>
-        <hr />
+      <hr />
 
         <div class="alert alert-danger" role="alert" id="error-msg" style="display: none"></div>
 
@@ -16,9 +16,8 @@
           <p class="text-white-50 mb-4">
             An OTP has been sent to <span id="2fa_player_email">{{ email }}</span>. Please enter it below to verify your identity.
             <br>
-            <small class="text-warning">Note: OTP will expire in 2 minutes</small>
           </p>
-
+          
           <div class="form-group">
             <label for="otp" class="form-label">Enter OTP</label>
             <div class="input-group">
@@ -26,14 +25,15 @@
                 <i class="fas fa-key text-light"></i>
               </span>
               <input type="text" class="form-control border-start-0" 
-                     name="otp" id="otp" placeholder="Enter OTP code" required />
+              name="otp" id="otp" placeholder="Enter OTP code" required />
             </div>
           </div>
         </div>
-
+        
         <button type="submit" class="btn btn-primary w-100 mb-3">
           <i class="fas fa-shield-alt me-2"></i>Verify OTP
         </button>
+        <small class="text-warning">Note: OTP will expire in 2 minutes</small>
 
         <div class="text-center mt-4">
           <p class="mb-0">

@@ -53,11 +53,6 @@ async function handlePassResetSubmit(e) {
     });
 
   } catch (error) {
-  //   createToast({
-  //     title: "Error",
-  //     message: "Failed to authenticate",
-  //     type: "error",
-  //   });
   //   console.error('Error:', error);
   }
 }
@@ -129,17 +124,3 @@ document.querySelectorAll(".toggle-password").forEach((button) => {
     }
   });
 });
-
-// function loadSpinner() {
-//   const spinner = document.getElementById("load-spinner");
-
-//   if (spinner) {
-//     spinner.style.display = "block";
-//   }
-//   // Show spinner for 2 seconds
-//   setTimeout(() => {
-//     if (spinner) {
-//       spinner.style.display = "none";
-//     }
-//   }, 2000);
-// }

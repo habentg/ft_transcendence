@@ -276,7 +276,7 @@ class PasswordReset(BaseView):
 		c = {
 			'email': player.email,
 			'domain': settings.DOMAIN_NAME,
-			'site_name': 'Haben Pong',
+			'site_name': 'Neon Pong',
 			'uid': urlsafe_base64_encode(force_bytes(player.pk)),
 			'user': player,
 			'token': default_token_generator.make_token(player),

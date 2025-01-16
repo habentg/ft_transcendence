@@ -424,7 +424,7 @@ function getPlayerNumberModal() {
           <h5 class="modal-title">
             <i class="fas fa-trophy me-2"></i> Create Tournament
           </h5>
-          <button type="button" class="btn-close btn-close-white" data-dismiss="modal"></button>
+          <button type="button" class="btn-close btn-close-white" data-dismiss="modal" onclick="closeModal('tournamentModal')" ></button>
         </div>
         <div class="modal-body px-3 py-2">
           <div id="local-game-error-msg" class="alert alert-danger small py-2" style="display:none;"></div>

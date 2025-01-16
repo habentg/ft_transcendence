@@ -642,13 +642,13 @@ async function createTournamentinDB(tournament_type) {
         UIManager.closeModal("tournamentModal");
         this.playerManager.setUpPlayerAddition(this.maxPlayerNumbers, this);
       });
-      document.getElementById("tournamentOf8").addEventListener("click", () => {
-        this.maxPlayerNumbers = 8;
-        console.log( "Creating tournament with ", this.maxPlayerNumbers, " players");
-        console.log(this.maxPlayerNumbers);
-        UIManager.closeModal("tournamentModal");
-        this.playerManager.setUpPlayerAddition(this.maxPlayerNumbers, this);
-      });
+      // document.getElementById("tournamentOf8").addEventListener("click", () => {
+      //   this.maxPlayerNumbers = 8;
+      //   console.log( "Creating tournament with ", this.maxPlayerNumbers, " players");
+      //   console.log(this.maxPlayerNumbers);
+      //   UIManager.closeModal("tournamentModal");
+      //   this.playerManager.setUpPlayerAddition(this.maxPlayerNumbers, this);
+      // });
       // set eventlisner for outside of the window clicked
       document.querySelector(".btn-close").addEventListener("click", async (e) => {
         // if (e.target.id === "tournamentModal") {

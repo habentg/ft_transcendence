@@ -1,39 +1,3 @@
-    /* .gamePage .background-image  {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
-    background-image: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), url('/static/images/background2.jpg');
-    background-size: cover;
-    background-position: center;
-    background-repeat: no-repeat;
-    
-}
-
-
-#board {
-    background-color: black;
-    border-top: 3px solid skyblue;
-    border-bottom: 3px solid skyblue;
-    border-right: 3px solid skyblue;
-    border-left: 3px solid skyblue;
-    border-radius: 15px;
-}
-
-.menu {
-    display: none;
-    position: absolute;
-    top: 20%;
-    left: 30%;
-    width: 40%;
-    padding: 20px;
-    background-color: #222;
-    color: white;
-    border: 2px solid #555;
-    border-radius: 10px;
-    z-index: 10;
-} */
-
 .body,
 html {
     overflow: hidden;
@@ -52,15 +16,6 @@ html {
     min-height: fit-content;
     height: 100vh;
 }
-
-/* 
-#aiButton, #startButton, #settingButton {
-    padding: 10px 20px;
-    font-size: 1.2rem;
-    border-radius: 8px;
-
-    background-color: linear;
-} */
 
 #gameContent {
     position: absolute;
@@ -179,6 +134,21 @@ footer {
     background: linear-gradient(45deg, #84ddfc, #b02c98);
     border: none;
     transition: all 0.3s ease;
+}
+
+.btn-ternary {
+	background-color: aquamarine;
+	border: none;
+	transition: all 0.3s ease;
+}
+
+.btn-ternary:hover {
+	transform: translateY(-2px);
+	background-color: aqua;
+}
+
+.btn-ternary:disabled {
+    background-color: #6edddd;
 }
 
 .btn-secondary {

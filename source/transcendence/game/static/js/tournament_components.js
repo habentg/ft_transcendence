@@ -189,14 +189,15 @@ function createTournamentMap() {
 						</div>
 					</div>
 					<div class="d-flex justify-content-center">
-					<button
-					  id="startButton"
-					  class="btn btn-primary continueButton btn-md"
-					  style="display: flex; align-items: center"
-					>
-					  Continue
-					</button>
-				  </div>
+						<button id="gameRulesButton" type="button" class="btn btn-ternary me-4" onclick="showGameRules()" >
+							<i class="fas fa-book me-2"></i>
+							How to play
+						</button>
+						<button id="startButton" class="btn btn-primary continueButton btn-md  ms-2" style="display: flex; align-items: center">
+							<i class="fa-solid fa-play me-2"></i>
+							Continue
+						</button>
+				  	</div>
 		`;
 
   return tournamentWrapper;
