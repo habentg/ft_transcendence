@@ -106,13 +106,6 @@
     font-size: 5px;
 }
 
-/* .pagination-size {
-    position: absolute;
-    left: 45%;
-    bottom: 0;
-} */
-
-
 /* Date styling */
 .results,
 .date,
@@ -246,17 +239,6 @@
     color: #dc3545;
 }
 
-/* .game-stats-card {
-    height: 400px;
-} */
-
-/* .game-stats-card canvas {
-    max-width: 600px;
-    max-height: 300px;
-    width: auto;
-    height: auto;
-} */
-
 .no-games-message {
     padding: 20px;
 }
@@ -309,54 +291,9 @@
         width: 150px !important;
     }
 }
-/* @media (max-width: 768px) { */
-    /* .container {
-        padding: 1rem;
-    }
-
-    .profile-pic {
-        width: 120px;
-        height: 120px;
-    }
-
-    .table-responsive {
-        margin: 0 -1rem;
-    }
-
-    .table td,
-    .table th {
-        padding: 0.75rem;
-    } */
-
-    /* .final-round1 {
-        right : 50% !important;
-    } */
-/* } */
 
 
 @media (max-width: 600px) {
-    /* .modal-dialog {
-        margin: 1rem;
-    }
-
-    .modal-body {
-        padding: 1rem;
-    }
-
-    .btn {
-        padding: 0.5rem 1rem;
-        font-size: 0.9rem;
-    }
-
-    #change-profile-pic {
-        padding: 4px 6px;
-    } */
-
-    /* .final-round1 {
-        right : 10% !important;
-
-    } */
-
     .final-round1 {
         left : 50% !important;
     }
@@ -368,8 +305,6 @@
     .connection-5-7, .connection-6-7 {
         width : 30px !important;
     }
-
-
 
     /* prevent overflow width and height */
     html, body  {

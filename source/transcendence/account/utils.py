@@ -20,7 +20,7 @@ def send_2fa_code(player):
     otp_code = totp.now()
     from_email = settings.DEFAULT_FROM_EMAIL
     recipient_list = [player.email]
-    subject = "OTP for Haben Pong"
+    subject = "OTP for Neon Pong"
     email_template_name = "account/OTP_email_template.txt"
     email_body = render_to_string(email_template_name, {'otp': otp_code})
     if send_mail(subject, email_body, from_email, recipient_list, fail_silently=False):

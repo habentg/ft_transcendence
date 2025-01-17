@@ -8,7 +8,7 @@
       {% if title %}
         {{ title }} | PONG
       {% else %}
-        PING-PONG
+        NEON-PONG
       {% endif %}
     </title>
     <!-- Favicon -->
@@ -123,10 +123,11 @@
       </div>
     </header>
     <div id="loading-overlay" class="d-flex flex-column justify-content-center align-items-center d-none" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.8); z-index: 9999;">
-      <div class="spinner-border p-4 mb-3" style="color: aqua; width: 4rem; height: 4rem;">
-      </div>
+      <div class="spinner-border p-4 mb-3" style="color: aqua; width: 4rem; height: 4rem;"></div>
       <div class="loading-message text-center" style="color: aqua; font-size: 1.2rem;">
-        <p class="mb-0" id="loading-text"><i class="neon-text fas fa-table-tennis-paddle-ball me-2"></i> Loading...</p>
+        <p class="mb-0" id="loading-text">
+          <i class="neon-text fas fa-table-tennis-paddle-ball me-2"></i> Loading...
+        </p>
       </div>
     </div>
     <main id="content">{{ html|safe }}</main>

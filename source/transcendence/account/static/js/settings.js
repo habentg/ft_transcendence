@@ -87,16 +87,15 @@ async function handleEnableDisable2FA() {
 
       if (button.id === "enable-2fa") {
         button.id = "disable-2fa";
-        button.className = "btn btn-warning w-100";
-        button.textContent = "Disable 2FA";
-        await showSuccessMessage("Two-Factor Authentication enabled successfully!", 2000);
+        button.className = "btn btn-light w-100";
+        button.innerHTML = `<i class="fas fa-shield-alt me-2"></i>Disable 2FA`;
+        await showSuccessMessage("Two-Factor Authentication enabled successfully!");
       } else {
         button.id = "enable-2fa";
         button.className = "btn btn-success w-100";
-        button.textContent = "Enable 2FA";
-        await showSuccessMessage("Two-Factor Authentication disabled successfully!", 2000);
+        button.innerHTML = `<i class="fas fa-shield-alt me-2"></i>Enable 2FA`;
+        await showSuccessMessage("Two-Factor Authentication disabled successfully!");
       }
-      updateUI("/settings");
     } else {
       if (response.status === 429) {
         const error_content = {
@@ -218,13 +217,6 @@ async function deleteAccount() {
   }
 }
 
-// function closeDeleteAccountModal() {
-//   const modal = document.getElementById("delete-account-modal");
-//   if (modal) {
-//     modal.remove();
-//     document.body.classList.remove("modal-open");
-//   }
-// }
 
 // Function to create and show the 2FA modal
 function show2FAModal() {
@@ -254,14 +246,6 @@ function show2FAModal() {
     if (e.target === modal) closeModal("2fa-modal");
   });
 }
-
-// function close2FAModal() {
-//   const modal = document.getElementById("2fa-modal");
-//   if (modal) {
-//     modal.remove();
-//     document.body.classList.remove("modal-open");
-//   }
-// }
 
 // Anonymize Account Modal
 async function anonAccountModal() {
@@ -320,19 +304,6 @@ function displayError(errorData) {
     }, 3000);
   }
 }
-
-// A generic modal for closing modals passed as an arguments
-// function closeModal(modalId) { // Currently only working for modals in the setting only., If taken to modal.js or utils.js, it requires refresh to work if gone from page profile to settings.
-//   // console.log("closing modal");
-//   const modal = document.getElementById(modalId);
-//   if (modal) {
-//     modal.remove(); // Remove the modal from the DOM
-//     document.body.classList.remove("modal-open"); // Remove the modal-open class from body
-//   } else {
-//     console.warn(`Modal with id "${modalId}" not found.`);
-//   }
-// }
-
 
 // Initialize Settings
 function initSettings() {

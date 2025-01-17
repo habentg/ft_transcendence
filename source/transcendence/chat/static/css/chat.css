@@ -172,10 +172,6 @@
 .friend-item span {
 	flex-grow: 1;
 	font-size: 1rem;
-	/* color: #adb5bd; */
-	/* border-bottom: 10px solid green; */
-
-	/* Match the text color */
 }
 
 .friend-list li {
@@ -190,19 +186,6 @@
 	background-color: rgba(132, 221, 252, 0.1);
 	color: white;
 }
-
-/* media query to drop profileIcon when smaller screens */
-/* @media (max-width: 768px) {
-	.chat-wrapper {
-		flex-direction: column;
-	}
-	.chat-container {
-		height: 100%;
-	}
-	.chat-sidebar {
-		width: 100%;
-	}
-} */
 
 /* Ensure the iconbtn stays in the top-right corner */
 .iconbtn {

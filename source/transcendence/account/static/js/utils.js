@@ -58,6 +58,7 @@ function displayError(response) {
 /* setting up and initiating an OAuth 2.0 authorization flow with the 42 intranet API. */
 /* Initiating an OAuth 2.0 authorization flow with the 42 intranet API. */
 async function handle42Login() {
+  showLoadingAnimation("Signing in with 42...");
   try {
     const response = await fetch("/auth_42/", {
       method: "GET",
@@ -69,9 +70,11 @@ async function handle42Login() {
     const resposeData = await response.json();
 
     const authUrl = resposeData.authorization_url;
-
+    
+    hideLoadingAnimation(); // Hide animation
     window.location.href = authUrl;
   } catch (error) {
+    hideLoadingAnimation(); // Hide animation
     console.error("Error in handle42Login:", error);
   }
 }

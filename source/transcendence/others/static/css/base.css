@@ -330,22 +330,9 @@ td {
 	transition: all 0.3s ease;
 }
 
-.btn-primary2 {
-	/* background: linear-gradient(90deg, #b02c98, #84ddfc); */
-	background-color: aquamarine;
-	border: none;
-	transition: all 0.3s ease;
-}
-
 .modal .btn-primary:hover {
 	transform: translateY(-2px);
 	background: linear-gradient(45deg, #b02c98, #84ddfc);
-}
-
-.btn-primary2:hover {
-	transform: translateY(-2px);
-	/* background: linear-gradient(90deg, #84ddfc, #b02c98); */
-	background-color: aqua;
 }
 
 .modal .btn-outline-light {
@@ -362,13 +349,6 @@ td {
 
 /* Footer Styles */
 .footer {
-	/* background: rgba(0, 0, 0, 0.8);
-    backdrop-filter: blur(10px);
-    border-top: 1px solid rgba(132, 221, 252, 0.2);
-    color: white;
-    font-family: var(--font-body);*/
-	/* height: auto;  */
-	/* background-color: #b02c98; */
 	color: #84ddfc;
 	font-size: 1rem;
 	font-weight: 600;
