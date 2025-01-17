@@ -43,7 +43,7 @@ async function UpdateUserInfo() {
     closeModal("username-modal");
     document.getElementById("full_name").textContent = formData.full_name.slice(0, 20);
     document.getElementById("player_email").textContent = formData.email.slice(0, 20);
-    showSuccessMessage("Profile Information updated successfully");
+    await showSuccessMessage("Profile Information updated successfully");
   } catch (error) {
     // console.error("Error:", error);
   }
@@ -123,7 +123,7 @@ async function handleUpload() {
       const responseData = await response.json();
       await updateUI(`/profile/${responseData.username}`, false);
       updateNavBar(true);
-      showSuccessMessage("Profile Picture updated successfully");
+      await showSuccessMessage("Profile Picture updated successfully");
     } else {
       throw new Error("Failed to update profile pic");
     }
@@ -183,7 +183,7 @@ function updateProfileInfo() {
 
 async function addFriendRequest() {
   const toBeFriend = document
-    .getElementById("username")
+    .getElementById("player_username")
     .getAttribute("data-username");
   try {
     const response = await fetch(`/friend_request/${toBeFriend}/`, {
@@ -218,7 +218,7 @@ async function addFriendRequest() {
 
 async function cancelFriendRequest() {
   const toBeFriend = document
-    .getElementById("username")
+    .getElementById("player_username")
     .getAttribute("data-username");
   try {
     const response = await fetch(`/friend_request/${toBeFriend}/`, {
@@ -318,7 +318,7 @@ async function acceptOrDeclineFriendRequest(action, toBeFriend) {
 
 async function removeFriend() {
   const toBeFriend = document
-    .getElementById("username")
+    .getElementById("player_username")
     .getAttribute("data-username");
   try {
     const response = await fetch(`/friend_request/${toBeFriend}/`, {

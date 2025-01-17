@@ -16,7 +16,7 @@
           <p class="text-white-50 mb-4">
             An OTP has been sent to <span id="2fa_player_email">{{ email }}</span>. Please enter it below to verify your identity.
             <br>
-            <small class="text-warning">Note: OTP will expire in 2 minutes</small>
+            <small class="text-warning">Note: OTP will expire in 10 minutes</small>
           </p>
 
           <div class="form-group">
@@ -38,7 +38,7 @@
         <div class="text-center mt-4">
           <p class="mb-0">
             Didn't receive the code? 
-            <a href="#" class="text-primary">Resend OTP</a>
+            <span class="text-primary" onclick="resendOtp()">Resend OTP</span>
           </p>
         </div>
       </form>

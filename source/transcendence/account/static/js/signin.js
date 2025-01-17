@@ -53,16 +53,11 @@ async function handleSignInSubmit(e) {
         if (!response.ok) {
             const responseData = await response.json();
             if (response.status === 302) {
-                try {
-                    await getTwoFactorAuth(`${formData.username}`);
-                } catch (e){
-                    console.log("some error in 302 sign in")
-                } finally {
-                    hideLoadingAnimation();
-                }
+                await getTwoFactorAuth(`${formData.username}`);
             }
             else
                 displayError(responseData);
+            hideLoadingAnimation();
             return;
         }
         // redirect to the protected page
@@ -96,3 +91,26 @@ async function getTwoFactorAuth(username) {
         console.error('2 FA - Error:', error);
     }
 }
+
+async function resendOtp() {
+    console.log("Resend OTP");
+    showLoadingAnimation("Resending OTP..."); // Show animation
+    const m_csrf_token = await getCSRFToken();
+    const response = await fetch("/2fa/", {
+      method: "PATCH",
+      headers: {
+        "X-Requested-With": "XMLHttpRequest",
+        "X-CSRFToken": m_csrf_token,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({email : document.getElementById("2fa_player_email").textContent}),
+    });
+    console.log(response);
+    if (!response.ok) {
+      const responseData = await response.json();
+      displayError(responseData);
+      return;
+    }
+    hideLoadingAnimation(); // Hide animation
+    await showSuccessMessage("OTP re-sent successfully", 5000, "Resent OTP");
+  }

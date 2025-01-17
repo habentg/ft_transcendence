@@ -93,7 +93,6 @@ class SignInView(APIView, BaseView):
 
 	def post(self, request):
 		serializer = PlayerSigninSerializer(data=request.data)
-		print("Request data: ", request.data, flush=True)
 		if serializer.is_valid():
 			player = serializer.validated_data['player']
 			if player.tfa:
@@ -335,6 +334,7 @@ class PassResetNewPass(View):
 			return JsonResponse({'error_msg': 'Invalid password reset request'}, status=status.HTTP_400_BAD_REQUEST)
 
 # 2FA - Two Factor Authentication
+@method_decorator(csrf_protect, name='dispatch')
 class TwoFactorAuth(APIView, BaseView):
 	authentication_classes = []
 	permission_classes = []
@@ -370,6 +370,30 @@ class TwoFactorAuth(APIView, BaseView):
 			else:
 				return JsonResponse({'error_msg': 'Invalid OTP!'}, status=status.HTTP_401_UNAUTHORIZED)
 		return JsonResponse({'failure': 'no player found with that email!'}, status=status.HTTP_401_UNAUTHORIZED)
+	
+	def patch(self, request):
+		print("Is we fucking here in get 2fa for resending otp?", flush=True)
+		print("Is we fucking here in get 2fa for resending otp?", flush=True)
+		print("Is we fucking here in get 2fa for resending otp?", flush=True)
+		print("Is we fucking here in get 2fa for resending otp?", flush=True)
+		print("Is we fucking here in get 2fa for resending otp?", flush=True)
+		print("Is we fucking here in get 2fa for resending otp?", flush=True)
+		print("Is we fucking here in get 2fa for resending otp?", flush=True)
+		try:
+			player_email = request.data.get('email')
+			player = Player.objects.filter(email=player_email).first()
+			if player.tfa:
+				if send_2fa_code(player):
+					print("OTP sent successfully", flush=True)
+					return Response({'success': 'OTP sent successfully'}, status=status.HTTP_200_OK)
+				else:
+					return Response({'error_msg': 'Couldn\'t send OTP to the given Email'}, 
+								status=status.HTTP_422_UNPROCESSABLE_ENTITY)
+			else:
+				return Response({'error_msg': '2FA is not enabled for this player!'}, status=status.HTTP_400_BAD_REQUEST)
+		except Exception as e:
+			print("Error in 2fa: ", e, flush=True)
+			return Response({'error_msg': str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
 class TwoFactorSetUpToggle(APIView):
 	authentication_classes = [JWTCookieAuthentication]

@@ -98,7 +98,7 @@ async function handlePassChangeSubmit(e) {
       return;
     }
 
-    showSuccessMessage("Password reset successfully");
+    await showSuccessMessage("Password reset successfully");
     updateUI(`/signin`);
 
     // Clear the local storage
