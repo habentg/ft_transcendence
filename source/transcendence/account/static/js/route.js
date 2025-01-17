@@ -22,18 +22,17 @@ async function updateUI(path) {
     isInitialLoad = false;
     return;
   }
+  showLoadingAnimation(); // Show animation
   if (!path.includes(`${window.location.origin}`))
     path = `${window.location.origin}${path}`;
   history.pushState(null, "", `${path}`);
   try {
-    showLoadingAnimation(); // Show animation
     await loadContent(`${path}`);
   } catch (error) {
     createToast({ type: "error", title: "Error", error_message: `${error}` });
     console.error("Error loading page:", error);
-  } finally {
-    hideLoadingAnimation(); // Hide animation
   }
+  hideLoadingAnimation(); // Hide animation
 }
 
 // routing function

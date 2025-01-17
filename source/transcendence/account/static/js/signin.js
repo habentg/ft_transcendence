@@ -53,16 +53,11 @@ async function handleSignInSubmit(e) {
         if (!response.ok) {
             const responseData = await response.json();
             if (response.status === 302) {
-                try {
-                    await getTwoFactorAuth(`${formData.username}`);
-                } catch (e){
-                    console.log("some error in 302 sign in")
-                } finally {
-                    hideLoadingAnimation();
-                }
+                await getTwoFactorAuth(`${formData.username}`);
             }
             else
                 displayError(responseData);
+            hideLoadingAnimation();
             return;
         }
         // redirect to the protected page

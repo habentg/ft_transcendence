@@ -50,17 +50,9 @@ function updateProfileModal() {
   }
 
   // Get the text content from spans inside the profile details
-  const full_name = document
-    .querySelector(".profile-info h3")
-    .textContent.trim();
-  const username = document
-    .querySelector(".profile-info p:first-of-type")
-    .textContent.replace("@", "")
-    .trim();
-  const email = document
-    .querySelector(".profile-info p:last-of-type")
-    .textContent.trim();
-
+  const full_name = document.getElementById("player_full_name").getAttribute('data-fullname').trim();
+  const username = document.getElementById("player_username").getAttribute('data-username').trim();
+  const email = document.getElementById("player_email").getAttribute('data-email').trim();
   const modal = document.createElement("div");
   modal.id = "username-modal";
   modal.className = "modal fade show";

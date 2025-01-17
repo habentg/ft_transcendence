@@ -183,7 +183,7 @@ function updateProfileInfo() {
 
 async function addFriendRequest() {
   const toBeFriend = document
-    .getElementById("username")
+    .getElementById("player_username")
     .getAttribute("data-username");
   try {
     const response = await fetch(`/friend_request/${toBeFriend}/`, {
@@ -218,7 +218,7 @@ async function addFriendRequest() {
 
 async function cancelFriendRequest() {
   const toBeFriend = document
-    .getElementById("username")
+    .getElementById("player_username")
     .getAttribute("data-username");
   try {
     const response = await fetch(`/friend_request/${toBeFriend}/`, {
@@ -318,7 +318,7 @@ async function acceptOrDeclineFriendRequest(action, toBeFriend) {
 
 async function removeFriend() {
   const toBeFriend = document
-    .getElementById("username")
+    .getElementById("player_username")
     .getAttribute("data-username");
   try {
     const response = await fetch(`/friend_request/${toBeFriend}/`, {
