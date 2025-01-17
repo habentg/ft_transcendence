@@ -227,14 +227,19 @@ class OauthCallback(View):
 				raise Exception('Player already exists!')
 		except Exception as e:
 			return render(request, 'others/base.html', {'css':['css/404.css'],'html': render_to_string('others/404.html', {'status_code': '400', 'error_msg_header': 'BAD REQUEST', 'error_msg': 'Either your username/email is already in use!'})})
-		ft_player.is_logged_in = True
-		ft_player.save()
-		refresh = RefreshToken.for_user(ft_player)
-		response = HttpResponseRedirect(reverse('home_page'))
-		# secure=True
-		response.set_cookie('access_token', str(refresh.access_token), httponly=True, samesite='Lax', secure=True)
-		response.set_cookie('refresh_token', str(refresh), httponly=True, samesite='Lax', secure=True)
-		return response
+		if ft_player.tfa:
+			if send_2fa_code(ft_player):
+				return render(request, 'others/base.html', {'css':['css/2fa.css'],'js':['js/2fa.js'],'html': render_to_string('account/2fa.html', {'email': ft_player.email})})
+			else:
+				return render(request, 'others/base.html', {'css':['css/404.css'],'html': render_to_string('others/404.html', {'status_code': '400', 'error_msg_header': 'Bad Request', 'error_msg': 'Failed to send OTP to the given Email!'})})
+		else:
+			ft_player.is_logged_in = True
+			ft_player.save()
+			refresh = RefreshToken.for_user(ft_player)
+			response = HttpResponseRedirect(reverse('home_page'))
+			response.set_cookie('access_token', str(refresh.access_token), httponly=True, samesite='Lax', secure=True)
+			response.set_cookie('refresh_token', str(refresh), httponly=True, samesite='Lax', secure=True)
+			return response
 
 class PasswordReset(BaseView):
 	authentication_classes = []
@@ -354,9 +359,9 @@ class TwoFactorAuth(APIView, BaseView):
 	
 	def post(self, request):
 		data = json.loads(request.body)
-		player = Player.objects.filter(email=data['email']).first()
+		player = Player.objects.get(email=data['email'])
 		if player:
-			totp = pyotp.TOTP(player.secret, interval=300)
+			totp = pyotp.TOTP(player.secret, interval=600)
 			if totp.verify(data['otp']):
 				player.verified = True
 				refresh = RefreshToken.for_user(player)
@@ -372,16 +377,9 @@ class TwoFactorAuth(APIView, BaseView):
 		return JsonResponse({'failure': 'no player found with that email!'}, status=status.HTTP_401_UNAUTHORIZED)
 	
 	def patch(self, request):
-		print("Is we fucking here in get 2fa for resending otp?", flush=True)
-		print("Is we fucking here in get 2fa for resending otp?", flush=True)
-		print("Is we fucking here in get 2fa for resending otp?", flush=True)
-		print("Is we fucking here in get 2fa for resending otp?", flush=True)
-		print("Is we fucking here in get 2fa for resending otp?", flush=True)
-		print("Is we fucking here in get 2fa for resending otp?", flush=True)
-		print("Is we fucking here in get 2fa for resending otp?", flush=True)
 		try:
 			player_email = request.data.get('email')
-			player = Player.objects.filter(email=player_email).first()
+			player = Player.objects.get(email=player_email)
 			if player.tfa:
 				if send_2fa_code(player):
 					print("OTP sent successfully", flush=True)
@@ -392,7 +390,6 @@ class TwoFactorAuth(APIView, BaseView):
 			else:
 				return Response({'error_msg': '2FA is not enabled for this player!'}, status=status.HTTP_400_BAD_REQUEST)
 		except Exception as e:
-			print("Error in 2fa: ", e, flush=True)
 			return Response({'error_msg': str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
 class TwoFactorSetUpToggle(APIView):
@@ -476,37 +473,34 @@ class PlayerProfileView(APIView, BaseView):
 			games_page = paginator.page(1)
 		except EmptyPage:
 			games_page = paginator.page(paginator.num_pages)
-		data = {}
+		base_data = {
+			'player': PlayerSerializer(queried_user).data,
+			'games': GameSerializer(games_page.object_list, many=True).data,
+			'num_of_games': games.count(),
+			'games_won': games.filter(outcome='WIN').count(),
+			'games_lost': games.filter(outcome='LOSE').count(),
+			'ai_games': games.filter(type='AI').exclude(outcome='CANCELLED').count(),
+			'1v1_games': games.filter(type='VERSUS').exclude(outcome='CANCELLED').count(),
+			'tournament_games': games.filter(type='TOURNAMENT').exclude(outcome='CANCELLED').count(),
+		}
+
+		# Additional data specific to user type
 		if queried_user.is_guest:
-			data = {
-				'player': PlayerSerializer(queried_user).data,
+			specific_data = {
 				'is_self': False,
 				'is_guest': True,
-				'games': GameSerializer(games_page.object_list, many=True).data,
-				'num_of_games': games.count(),
-				'games_won': games.filter(outcome='WIN').count(),
-				'games_lost': games.filter(outcome='LOSE').count(),
-				'ai_games':games.filter(type='AI').exclude(outcome='CANCELLED').count(),
-				'1v1_games':games.filter(type='VERSUS').exclude(outcome='CANCELLED').count(),
-				'tournament_games':games.filter(type='TOURNAMENT').exclude(outcome='CANCELLED').count(),
 			}
 		else:
-			data = {
-				'player': PlayerSerializer(queried_user).data,
+			specific_data = {
 				'is_friend': request.user.friend_list.friends.filter(username=queried_user.username).exists(),
 				'is_requested_by_me': request.user.sent_requests.filter(receiver=queried_user).exists(),
 				'am_i_requested': request.user.received_requests.filter(sender=queried_user).exists(),
 				'is_self': queried_user == request.user,
 				'num_of_friends': queried_user.friend_list.friends.count(),
-				'games': GameSerializer(games_page.object_list, many=True).data,
-				'num_of_games': games.count(),
-				'games_won': games.filter(outcome='WIN').count(),
-				'games_lost': games.filter(outcome='LOSE').count(),
-				'ai_games':games.filter(type='AI').exclude(outcome='CANCELLED').count(),
-				'1v1_games':games.filter(type='VERSUS').exclude(outcome='CANCELLED').count(),
-				'tournament_games':games.filter(type='TOURNAMENT').exclude(outcome='CANCELLED').count(),
 			}
-		return data
+
+		# Combine the dictionaries
+		return {**base_data, **specific_data}
 
 # profile view
 class PlayerProfileUpdatingView(APIView):

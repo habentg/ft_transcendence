@@ -379,7 +379,7 @@ async function create_chatroom(friend_username) {
 
 async function getUserGameHistory(page_number) {
   try {
-    const visited_player_username = document.getElementById("username").getAttribute("data-username");
+    const visited_player_username = document.getElementById("player_username").getAttribute("data-username");
     const response = await fetch(`/game_history?player=${visited_player_username}&page=${page_number}`);
     if (response.ok) {
       const data = await response.json();
