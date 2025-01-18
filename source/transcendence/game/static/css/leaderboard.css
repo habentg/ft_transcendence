@@ -118,9 +118,7 @@
 	.table td,
 	.table th {
 		font-size: 0.8rem;
-		/* Adjust font size for smaller screens */
 		padding-left: 2rem;
-		/* Reduce padding */
 	}
 
 	.table thead th {

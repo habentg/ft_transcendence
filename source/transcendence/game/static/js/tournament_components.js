@@ -293,7 +293,7 @@ function tournamentClosingModal(winner, secondplace) {
 						  onclick="closeModal('congratsModal')" 
 						  aria-label="Close"></button>
 				  <div class="card-body text-center"> 
-					  <h2 class="modal-title" id="modalTitle">🎉 Congratulations ${winner}! 🎉</h2>
+					  <h2 class="modal-title1" id="modalTitle">🎉 Congratulations ${winner}! 🎉</h2>
 					  <img src="https://img.icons8.com/bubbles/200/000000/trophy.png" alt="Trophy" class="modal-trophy">
 					  <p class="modal-text">The winner of the tournament is <strong>${winner}</strong>. 🏆🏆🏆</p>
 					  <p class="modal-text">2nd place goes to <strong>${secondplace}</strong>. 🥈🥈🥈</p>

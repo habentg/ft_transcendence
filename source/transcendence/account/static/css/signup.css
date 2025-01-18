@@ -1,9 +1,8 @@
-
 .sign_up_page .background-image {
   display: flex;
   align-items: center;
   justify-content: center;
-  background-image: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.7)), url('/static/images/download.jpeg');
+  background-image: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.7)), url('/static/images/background1.jpeg');
   background-size: cover;
   background-position: center;
 
@@ -128,7 +127,7 @@
   border-color: #84ddfc;
 }
 
-.input-group .form-control:focus + .toggle-password,
-.input-group .form-control:focus + .toggle-confirm-password {
+.input-group .form-control:focus+.toggle-password,
+.input-group .form-control:focus+.toggle-confirm-password {
   border-color: #84ddfc;
 }

@@ -824,7 +824,8 @@ function checkScreenSize(game = null) {
   const gameContent = document.getElementById("gameContent");
 
   if (window.innerWidth < MIN_WINDOW_WIDTH || window.innerHeight < MIN_WINDOW_HEIGHT) {
-    warningMessage.classList.remove("d-none");
+    if (warningMessage)
+      warningMessage.classList.remove("d-none");
 	  if(gameContent)
 		  gameContent.classList.add("d-none");
     game.drawFlag = false;
