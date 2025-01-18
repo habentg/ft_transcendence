@@ -60,6 +60,7 @@ async function createTournamentinDB(tournament_type) {
       const ret = await createGameInDB(this.game);
       if (ret === 'start_tournament'){
         window.isGameRunning = true;
+		this.game.resetValues();
         requestAnimationFrame((timestamp) => gameLoop(this.game, timestamp));
       }
       else {
@@ -440,8 +441,6 @@ async function createTournamentinDB(tournament_type) {
         if (backdrop) backdrop.remove();
         modal.remove();
         document.body.classList.remove("modal-open");
-      } else {
-        console.warn(`Modal with id "${modalId}" not found.`);
       }
     }
 
@@ -458,7 +457,6 @@ async function createTournamentinDB(tournament_type) {
 			  clearInterval(checker);
 			  resolve(1);
 			} else if (elapsedTime >= timeout) {
-			  console.warn("Modal exists for too long. Closing modal...");
 			  clearInterval(checker);
 			  modal.hide;
 			  UIManager.closeModal(modalId);
@@ -474,7 +472,6 @@ async function createTournamentinDB(tournament_type) {
         const continueButton = document.querySelector(buttonClass);
         if (!continueButton) {
           reject("Not working");
-          console.error("Continue button not found in the DOM.");
           return;
         }
         const handleClick = () => {
