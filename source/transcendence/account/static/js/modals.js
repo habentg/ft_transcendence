@@ -480,7 +480,6 @@ function optionLocalGameModal() {
   // Event Listeners
   document.getElementById("aiGameBtn").addEventListener("click", () => {
     //  Send to AI game page (1 vs AI)
-    console.log("Creating AI game");
     closeModal("localGameModal");
     // For now, page is refreshing. Need to fix.
     // window.location.href = "/game/?isAI=true";
@@ -488,7 +487,6 @@ function optionLocalGameModal() {
   });
   document.getElementById("playFriends").addEventListener("click", () => {
     // Send to localgame game page (1 vs 1)
-    console.log("Creating local game");
     closeModal("localGameModal");
   });
 

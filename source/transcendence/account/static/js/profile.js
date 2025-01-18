@@ -478,32 +478,45 @@ function drawBarGraph() {
           title: {
             display: true,
             text: "Games Played",
+            color: "#84ddfc",
             font: {
               size: 16,
             },
           },
           ticks: {
+            color: "#ffffff",
             stepSize: 1,
+          },
+          grid: {
+            display: false,
           },
         },
         x: {
           title: {
             display: true,
             text: "Game Type",
+            color: "#84ddfc",
             font: {
               size: 16,
             },
+          },
+          ticks: {
+            color: "#ffffff",
+          },
+          grid: {
+            display: false,
           },
         },
       },
       plugins: {
         legend: {
-          display: false, 
+          display: false,
         },
       },
     },
   });
 }
+
 
 
 // Stat charts

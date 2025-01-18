@@ -24,10 +24,14 @@
                       <td>
                         <div>
                           {% if forloop.counter|add:page_offset == 1 %}
-                            <i class="fas fa-crown me-2" style="color: gold;"></i>
-                          {% else %}
-                            <span>{{ forloop.counter|add:page_offset }}</span>
-                          {% endif %}
+                          <i class="fas fa-crown me-2" style="color: gold;"> 1 </i>
+                        {% elif forloop.counter|add:page_offset == 2 %}
+                          <i class="fas fa-medal me-2" style="color: silver;"> 2 </i>
+                        {% elif forloop.counter|add:page_offset == 3 %}
+                          <i class="fas fa-medal me-2" style="color: #cd7f32;"> 3 </i> 
+                        {% else %}
+                          <span>{{ forloop.counter|add:page_offset }}</span>
+                        {% endif %}
                         </div>
                       </td>
                       <td>

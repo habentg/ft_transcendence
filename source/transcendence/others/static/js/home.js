@@ -72,23 +72,6 @@ for searched profiles, we need to attach event listeners to the buttons
 
 function searchingSystem() {
 
-  // const localGameBtn = document.getElementById("localGameBtn");
-  // const createTournamentBtn = document.getElementById("createTournamentBtn");
-
-  // if (localGameBtn) {
-  //   localGameBtn.addEventListener("click", () => {
-  //     createLocalGameModal();
-  //   });
-  // }
-
-  // if (createTournamentBtn) {
-  //   createTournamentBtn.addEventListener("click", () => {
-  //     createTournamentModal();
-  //   });
-  // }
-  /* search related eventlistners */
-  // createToast("error", "This is a test ", "This is an error toast message");
-  // createToast("chat", "This is a test ", "This is an chat toast message");
   const home_friendrequest_search = document.getElementById("friend_requests_btn");
   const home_friends_search = document.getElementById("friends_btn");
   if (home_friendrequest_search) {
@@ -153,35 +136,6 @@ function attachSearchEventListners() {
     - when clicked, it will send a request to the server to accept the friend request
     - the 'false' paramenter is just boolean to indicate that the request is not from the friend profile page
   */
-  // const acceptFriendRequestBtn = document.getElementsByClassName("acc_req_btn"); // could be multiple
-  // if (acceptFriendRequestBtn) {
-  //   for (let i = 0; i < acceptFriendRequestBtn.length; i++) {
-  //     acceptFriendRequestBtn[i].addEventListener("click", (event) => {
-  //       event.stopPropagation()
-  //       const toBeFriend = document
-  //         .getElementsByClassName("acc_req_btn")[i]
-  //         .getAttribute("data-username");
-  //       // console.log("accepting friend request from: ", toBeFriend);
-  //       searchedFriendRequestResponce(event, "accept", toBeFriend);
-  //       console.log("R: ", toBeFriend);
-  //     });
-  //   }
-  // }
-  // const declineFriendRequestBtn = document.getElementsByClassName("rej_req_btn"); // could be multiple
-  // if (declineFriendRequestBtn) {
-  //   for (let i = 0; i < declineFriendRequestBtn.length; i++) {
-  //     declineFriendRequestBtn[i].addEventListener("click", (event) => {
-  //       event.stopPropagation();
-  //       const toBeFriend = document
-  //       .getElementsByClassName("rej_req_btn")[i]
-  //       .getAttribute("data-username");
-  //       // console.log("declineing friend request from: ", toBeFriend);
-  //       searchedFriendRequestResponce(event, "decline", toBeFriend);
-  //       // alert(" --- sfa -- asdf -as ")
-  //       console.log("R: ", toBeFriend);
-  //     });
-  //   }
-  // }
   const chatFriendBtn = document.getElementsByClassName("chat_btn"); // could be multiple
   if (chatFriendBtn) {
     for (let i = 0; i < chatFriendBtn.length; i++) {
@@ -189,7 +143,6 @@ function attachSearchEventListners() {
         const toBeFriend = document
           .getElementsByClassName("chat_btn")[i]
           .getAttribute("data-username");
-        console.log("I will send create chatroom request directly from friendlist with: ", toBeFriend);
         // await create_chatroom(toBeFriend);
       });
     }
@@ -207,74 +160,6 @@ function createLocalGameModal() {
   }
 
   optionLocalGameModal();
-
-  // const modal = optionLocalGameModal();
-  // document.body.appendChild(modal);
-
-  // // Event Listeners
-  // document.getElementById("aiGameBtn").addEventListener("click", () => {
-  //   //  Send to AI game page (1 vs AI)
-  //   console.log("Creating AI game");
-  //   closeModal("localGameModal");
-  //   // For now, page is refreshing. Need to fix.
-  //   // window.location.href = "/game/?isAI=true";
-
-  // });
-  // document.getElementById("playFriends").addEventListener("click", () => {
-  //   // Send to localgame game page (1 vs 1)
-  //   console.log("Creating local game");
-  //   closeModal("localGameModal");
-
-  //   // For now, page is refreshing. Need to fix.
-  //   // updateUI("/game?isAI=false");
-  //   // window.location.href = "/game/?isAI=false";
-  // });
-
-  // // close the modal when the close button is clicked
-  // document.querySelector("#localGameModal .btn-close").addEventListener("click", () => {
-  //   closeModal("localGameModal");
-  // });
-
-  // // close the modal when the modal is clicked outside
-  // modal.addEventListener("click", (event) => {
-  //   if (event.target === modal) {
-  //     closeModal("localGameModal");
-  //   }
-  // });
-
 }
-
-// Create a modal for creating a tournament
-// function createTournamentModal() {
-//   const existingModal = document.getElementById("tournamentModal");
-//   if (existingModal) {
-//     existingModal.remove();
-//   }
-
-
-//   const modal = getPlayerNumberModal();
-//   document.body.appendChild(modal);
-
-//   // Event Listeners
-//   document.getElementById("submitPlayerNumBtn").addEventListener("click", () => {
-//     const playersNumber = document.getElementById("playersNumber").value;
-//     console.log("Creating tournament with ", playersNumber, " players");
-//     // createTournament(playersNumber);
-//     closeModal("tournamentModal");
-//   });
-
-//   // close the modal when the close button is clicked
-//   document.querySelector("#tournamentModal .btn-close").addEventListener("click", () => {
-//     closeModal("tournamentModal");
-//   });
-
-//   // close the modal when the modal is clicked outside
-//   modal.addEventListener("click", (event) => {
-//     if (event.target === modal) {
-//       closeModal("tournamentModal");
-//     }
-//   });
-
-// }
 
 searchingSystem();
