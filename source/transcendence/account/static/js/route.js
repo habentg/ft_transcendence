@@ -97,10 +97,10 @@ async function loadContent(route) {
 async function initApp() {
   // browser back/forward buttons
   window.addEventListener("popstate", async () => {
-    // const all_modals = document.querySelectorAll(".modal");
-    // for (let i = 0; i < all_modals.length; i++) {
-    //   all_modals[i].classList.add("d-none");
-    // }
+    const all_modals = document.querySelectorAll(".modal");
+    for (let i = 0; i < all_modals.length; i++) {
+      all_modals[i].classList.add("d-none");
+    }
     if (window.isGameRunning)
       window.isGameRunning = false;
     const route = window.location.href;
