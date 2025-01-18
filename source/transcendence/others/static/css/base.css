@@ -161,8 +161,8 @@ td {
 .profile-link,
 .nav-link .notification-badge {
 	position: relative;
-	width: 32px;
-	height: 32px;
+	/* width: 32px;
+	height: 32px; */
 	display: flex;
 	align-items: center;
 	justify-content: center;

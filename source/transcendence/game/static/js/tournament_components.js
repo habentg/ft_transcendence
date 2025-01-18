@@ -231,18 +231,22 @@ function createGameCanvas() {
 function nextMatchModal(player1, player2) {
   const existingModal = document.getElementById("nextMatch");
   if (existingModal) existingModal.remove();
-  const modalHTML = `
-	  <div class="modal fade" id="nextMatch" tabindex="-1" role="dialog" aria-labelledby="modalTitle" aria-hidden="true">
-		<div class="modal-dialog modal-dialog-centered modal-md" role="document">
-		  <div class="card modal-card shadow-lg  position-relative nextgame">
-			<div class="card-body text-center nextgame"> 
-			  <h6 class="modal-title " id="modalTitle2"> Next Match </h6>
-			  <h2 class="modal-text winner-text mt-3"> ${player1} vs ${player2} </h2>	
+	const modalHTML = `
+		<div class="modal fade" id="nextMatch" tabindex="-1" role="dialog" aria-labelledby="modalTitle" aria-hidden="true">
+			<div class="modal-dialog modal-dialog-centered modal-md" role="document">
+				<div class="card modal-card shadow-lg position-relative nextgame">
+					<div class="card-body text-center nextgame">
+						<div class="modal-background mb-3">
+							<i class="fas fa-trophy fa-3x text-warning"></i> 
+						</div>
+						<h6 class="modal-title mb-2" id="modalTitle2">Next Match</h6>
+						<h2 class="modal-text winner-text mt-3"> ${player1} vs ${player2} </h2>
+					</div>
+				</div>
 			</div>
-		  </div>
 		</div>
-	  </div>
-	  `;
+	`;
+
   // Append the modal to the body
 //   const body = document.querySelector("body");
   const modalContainer = document.createElement("div");
