@@ -98,6 +98,10 @@ async function handleSignupSubmit(e) {
     updateNavBar(true);
     createWebSockets();
   } catch (error) {
-    console.error('Error:', error);
+    createToast({
+      type: "error",
+      title: "Error",
+      error_message: "Failed to authenticate",
+    });
   }
 }

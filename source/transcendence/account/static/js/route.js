@@ -31,7 +31,6 @@ async function updateUI(path) {
     await loadContent(`${path}`);
   } catch (error) {
     createToast({ type: "error", title: "Error", error_message: `${error}` });
-    console.error("Error loading page:", error);
   }
   hideLoadingAnimation(); // Hide animation
 }
@@ -83,7 +82,7 @@ async function loadContent(route) {
       3000,
       "Error"
     );
-    console.error(`Failed to load -- ${route} -- page content:`, error);
+    createToast({type:'error', error_message:`Failed to load -- ${route} -- page content:`,title:'Error'});
   }
 }
 

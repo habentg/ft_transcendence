@@ -121,7 +121,7 @@ function initNotificationWebsocket() {
   };
 
   window.ws.onerror = (error) => {
-    console.error("Notification WebSocket error:", error);
+    createToast({ type: "error", title: "Error", error_message: "Notification WebSocket error" });
   };
 
   window.ws.onmessage = (e) => {
@@ -213,7 +213,7 @@ function initChatWebsocket() {
   };
 
   window.ws_chat.onerror = (error) => {
-    console.error("Chat WebSocket error:", error);
+    createToast({ type: "error", title: "Error", error_message: "Chat WebSocket error" });
   };
 
   window.ws_chat.onmessage = async (e) => {

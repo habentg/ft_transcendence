@@ -4,18 +4,15 @@ createWebSockets();
 function getActiveChatIdandRecipient() {
   let active_recipient_list = document.getElementsByClassName("active")[0];
   if (!active_recipient_list) {
-    console.error("No active recipient list found.");
     return [null, null];
   }
   const chatMessages = document.getElementsByClassName("chat-messages")[0];
   if (!chatMessages) {
-    console.error("No chat messages found.");
     return [null, null];
   }
   const active_chat_recipient = active_recipient_list.id;
   const active_chat_id = chatMessages.id;
   if (!active_chat_recipient || !active_chat_id) {
-    console.error("No active chat recipient.");
     return [null, null];
   }
   return [active_chat_recipient, active_chat_id];
@@ -137,7 +134,7 @@ function sendMessage(message, recipient, chat_id) {
     messageInput.focus();
     chatMessages.scrollTop = chatMessages.scrollHeight;
   } else {
-    console.error("WebSocket is not open. Unable to send message.");
+    createToast({ type: 'error', error_message: 'WebSocket is not open. Unable to send message.', title: 'Websocket Not Open!' });
     // createWebSockets();
   }
 }
@@ -263,7 +260,7 @@ async function clearConvo() {
 
 function inviteToGame() {
   const [active_chat_recipient, chat_id] = getActiveChatIdandRecipient();
-  console.log(active_chat_recipient)
+  // console.log(active_chat_recipient)
   if (window.ws && window.ws.readyState === WebSocket.OPEN) {
     window.ws.send(JSON.stringify({
       type: "invite_to_game",

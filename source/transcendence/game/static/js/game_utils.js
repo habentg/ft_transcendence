@@ -193,7 +193,7 @@ async function getFullTournamentView(tournament_id) {
       // remove the modal when clicked outside
       tournamentViewerModal.addEventListener("click", (e) => {
         if (e.target === tournamentViewerModal) {
-            console.log("Removing modal tournamentModal");
+            // console.log("Removing modal tournamentModal");
             closeModal(`tournamentModal${tournament_id}`);
             document.getElementById(`/static/css/tournament.css-id`).remove();
         } 
@@ -202,7 +202,7 @@ async function getFullTournamentView(tournament_id) {
     }
     throw new Error("Failed to load retrieveAllGamesOfaTournament");
   } catch (error) {
-    console.error("ERROR: ", error);
+    createToast({type:'error',error_message: 'Failed to load retrieveAllGamesOfaTournament',title:'Error'});
   }
 }
 
@@ -275,7 +275,7 @@ class Sound {
 
     // Event listener for loading errors
     audio.onerror = () => {
-      console.error(`Failed to load sound "${name}" from "${path}".`);
+      createToast({type:'error',error_message: `Failed to load sound "${name}" from "${path}".`,title:'Error'});
     };
 
     // Start loading the audio
@@ -288,7 +288,6 @@ class Sound {
       sound.currentTime = 0; // Reset for replay
       sound.play();
     } else {
-      console.warn(`Sound "${name}" not found.`);
     }
   }
 }

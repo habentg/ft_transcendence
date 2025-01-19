@@ -56,11 +56,11 @@ async function search(query_parameter, url) {
     else if (response.status === 302) {
       updateUI("/signin");
     } else {
-      console.error("Failed to load -- ", query_parameter, "-- search content");
+      createToast({ type: "error", title: "Error", error_message: "Failed to load search content" });
     }
 
   } catch (error) {
-    console.error(`Failed to load -- ${query_parameter} -- profile content:`, error);
+    createToast({ type: "error", title: "Error", error_message: "Failed to load profile content" });
   }
 }
 

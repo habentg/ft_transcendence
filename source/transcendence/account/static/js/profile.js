@@ -45,7 +45,7 @@ async function UpdateUserInfo() {
     document.getElementById("player_email").textContent = formData.email.slice(0, 20);
     await showSuccessMessage("Profile Information updated successfully");
   } catch (error) {
-    // console.error("Error:", error);
+    createToast({type:'error',error_message:'Failed to update profile info',title:'Error!'})
   }
 }
 
@@ -379,7 +379,7 @@ async function getUserGameHistory(page_number) {
     }
     throw new Error("Failed to get game history");
   } catch (error) {
-    console.error("Error: ", error);
+    createToast({type:'error',error_message:`couldnt get game history`,title:'Error'});
   }
 }
 

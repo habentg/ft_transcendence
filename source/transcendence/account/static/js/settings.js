@@ -57,7 +57,6 @@ async function updatePlayerPassword() {
     await updateUI(`/signin`);
     updateNavBar(false);
   } catch (error) {
-    console.error("Error:", error);
     displayError({ error_msg: "An error occurred while updating password" });
   }
 }
@@ -110,7 +109,7 @@ async function handleEnableDisable2FA() {
       throw new Error("error happed while updating 2fa");
     }
   } catch (error) {
-    console.error("Error:", error);
+    createToast({ title: "Error", error_message: "Failed to update 2FA status", type: "error" });
   }
 }
 
@@ -212,7 +211,6 @@ async function deleteAccount() {
       throw new Error("Failed to delete account");
     }
   } catch (error) {
-    console.error("Error:", error);
     displayError({ error_msg: "Failed to delete account" });
   }
 }
@@ -289,7 +287,7 @@ async function anonAccount() {
     updateNavBar(true, `${responseData['anon_username']}`, '/static/images/anon.jpeg'); // updating navbar
     await updateUI(`/profile/${responseData['anon_username']}`, false);
   } catch (error) {
-    console.error("Error:", error);
+    createToast({ type: "error", title: "Error", error_message: "Failed to anonymize account" });
   }
 }
 

@@ -16,7 +16,7 @@ async function createTournamentinDB(tournament_type) {
 		}
 		return 0;
 	} catch (error) {
-		console.error("some kinda error in tournament creation!")
+    createToast({type: 'error', error_message: 'Failed to create tournament', title: 'Tournament Creation Error!'});
 	}
 }
 
@@ -273,7 +273,7 @@ async function createTournamentinDB(tournament_type) {
           newTournamentGame.startTournamentGame(player1Name, player2Name);
           resolve(this.checkGameStatus(players, newTournamentGame, gameCanvas,playersNames));
         } catch (error) {
-          console.error("Error playing match:", error);
+          createToast({ type: "error", title: "Error", error_message: "An error occurred. Please try again later" });
           reject(error);
         }
       });
@@ -453,7 +453,7 @@ async function createTournamentinDB(tournament_type) {
         modal.remove(); // Remove the modal from the DOM
         document.body.classList.remove("modal-open"); // Remove the modal-open class from body
       } else {
-        console.warn(`Modal with id "${modalId}" not found.`);
+        createToast({ type: "error", title: "Error", error_message: "Modal not found in the DOM." });
       }
     }
 
@@ -470,7 +470,6 @@ async function createTournamentinDB(tournament_type) {
 			  clearInterval(checker);
 			  resolve(1);
 			} else if (elapsedTime >= timeout) {
-			  console.warn("Modal exists for too long. Closing modal...");
 			  clearInterval(checker);
 			  modal.hide;
 			  UIManager.closeModal(modalId);
@@ -487,7 +486,7 @@ async function createTournamentinDB(tournament_type) {
         const continueButton = document.querySelector(buttonClass);
         if (!continueButton) {
           reject("Not working");
-          console.error("Continue button not found in the DOM.");
+          createToast({ type: "error", title: "Error", error_message: "Continue button not found in the DOM." });
           return;
         }
         const handleClick = () => {
@@ -559,9 +558,9 @@ async function createTournamentinDB(tournament_type) {
         const champion = await this.tournament.runTournament(playersNames);
         console.log("Champion:", champion);
         console.log(this.tournament.matchHistory);
-      } catch (error)
-	  	{console.error("Tournament error:", error);}
-      console.log("Tournament complete!");
+      } catch (error) {
+        createToast({ type: "error", title: "Error", error_message: "An error occurred. Please try again later" });      
+      }
     }
   }
 

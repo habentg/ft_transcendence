@@ -266,8 +266,11 @@ function gameWinnerModal(playerName) {
 		  <div class="modal-dialog modal-dialog-centered modal-md" role="document">
 			  <div class="card modal-card shadow-lg position-relative">
 				  <div class="card-body text-center"> 
-					  <h3 class="modal-title" id="modalTitle2"> ${playerName} wins the game! </h3>
-					  <p class="modal-text winner-text mt-3"> ${playerName} passes to the next round </p>
+						<div class="modal-background mb-3">
+							<i class="fas fa-trophy fa-3x text-warning"></i> 
+			  			</div>
+					  <h6 class="modal-title" id="modalTitle2"> ${playerName} wins the game! </h6>
+					  <h2 class="modal-text winner-text mt-3"> ${playerName} passes to the next round </h2>
 				  </div>
 			  </div>
 		  </div>
