@@ -233,7 +233,11 @@ async function createTournamentinDB(tournament_type) {
       await UIManager.waitForModal("nextMatch");
       const pageContainer = document.getElementById("background");
       const gameCanvas = createGameCanvas();
-      if (pageContainer) pageContainer.appendChild(gameCanvas);
+      if (pageContainer) 
+		{
+			pageContainer.appendChild(addWarningMessage());
+			pageContainer.appendChild(gameCanvas);
+		}
       return new Promise((resolve, reject) => {
         try {
           let newTournamentGame = new GameBoard();

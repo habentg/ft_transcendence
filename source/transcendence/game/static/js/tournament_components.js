@@ -353,4 +353,22 @@ function addPlayerTitles(player1Name, player2Name)
 }
 
 
-
+function addWarningMessage() {
+	const warningMessage = document.createElement("div");
+	warningMessage.id = "warningMessage";
+	warningMessage.className = "d-none text-center text-light p-2";
+  
+	const heading = document.createElement("h3");
+	heading.className = "mb-4 mt-2";
+	heading.textContent = "Screen too small to play";
+  
+	const subheading = document.createElement("h5");
+	subheading.textContent =
+	  "Please switch to a laptop or desktop with a larger screen for the best experience.";
+  
+	warningMessage.appendChild(heading);
+	warningMessage.appendChild(subheading);
+  
+	return warningMessage;
+  }
+  
