@@ -1,4 +1,4 @@
-.page .background-image,
+.background-image,
 .tournamentPage .background-image {
   display: flex;
   justify-content: center;
@@ -40,6 +40,15 @@ html, body {
   align-items: center;
   flex-direction: column;
   justify-content: center;
+}
+
+.playerHeaderContainer {
+	display: flex;
+	align-items: center;
+	margin: auto;
+	margin-top: 36px;
+	margin-bottom: 36px;
+	flex-direction: column;
 }
 
 .menu-item {
