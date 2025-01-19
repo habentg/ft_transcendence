@@ -101,7 +101,6 @@ class Game {
   resetBall(direction) {
     this.ball.x = this.boardWidth / 2;
     this.ball.y = this.boardHeight / 2;
-    // console.log("Ball values after reset = ", this.ball);
     if (this.slowServe) {
       // Apply reduced speed if slow serve is enabled
       this.ball.velocityX = direction * Math.abs(this.defballSpeed) * 0.5;
@@ -133,7 +132,6 @@ class Game {
   createPlayer(name, position) {
     const player = new Player(name, position, this);
     this.players.push(player);
-    // console.log("Player created: ", player);
   }
 
   updateParryFlag() {
@@ -143,12 +141,10 @@ class Game {
 
   move = (event) => {
     this.activeKeys[event.code] = true;
-    // console.log(`Key Down: ${event.code}`); // Debugging
   }
 
   stopMovement = (event) => {
     this.activeKeys[event.code] = false;
-    // console.log(`Key Up: ${event.code}`);
   }
 
   saveSettings(user) {
@@ -160,7 +156,6 @@ class Game {
       slowServe: this.slowServe,
     };
     localStorage.setItem(key, JSON.stringify(settings));
-    // console.log("Settings saved to localStorage:", settings);
   }
 
   loadSettings(user) {
@@ -172,7 +167,6 @@ class Game {
       this.paddleSpeed = savedSettings.paddleSpeed || this.paddleSpeed;
       this.maxScore = savedSettings.maxScore || this.maxScore;
       this.slowServe = savedSettings.slowServe || this.slowServe;
-      // console.log("Loaded settings from localStorage:", savedSettings);
     }
   }
 }
@@ -209,7 +203,6 @@ async function getFullTournamentView(tournament_id) {
       // remove the modal when clicked outside
       tournamentViewerModal.addEventListener("click", (e) => {
         if (e.target === tournamentViewerModal) {
-            console.log("Removing modal tournamentModal");
             closeModal(`tournamentModal${tournament_id}`);
             document.getElementById(`/static/css/tournament.css-id`).remove();
         } 
