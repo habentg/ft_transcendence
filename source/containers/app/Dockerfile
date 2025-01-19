@@ -9,7 +9,7 @@ ENV PYTHONUNBUFFERED 1
 # this will Reduced disk usage, improve security and performance
 ENV PYTHONDONTWRITEBYTECODE 1
 
-WORKDIR /app
+WORKDIR /setup
 
 # Installing system dependencies
 RUN apk update && apk add --no-cache \
@@ -17,22 +17,20 @@ RUN apk update && apk add --no-cache \
     curl \
     && rm -rf /var/lib/apt/lists
 
-COPY requirements.txt .
-COPY entry_point.sh .
+COPY tools/requirements.txt tools/entry_point.sh ./
 
 RUN pip install --upgrade pip && pip install --no-cache-dir -r requirements.txt
 
-EXPOSE 8000
+WORKDIR /app
 
 # Creating the static and media files directory
 RUN mkdir -p /media_static/static && mkdir -p /media_static/media
 
-# Creating and Runing as non-root user
 RUN useradd -m transcendance_user
-
-# Ensuring the directory is writable by the trans user
 RUN chown -R transcendance_user:transcendance_user /media_static && chmod -R 755 /media_static
 
 USER transcendance_user
 
-ENTRYPOINT [ "sh", "entry_point.sh" ]
+EXPOSE 8000
+
+ENTRYPOINT [ "sh", "/setup/entry_point.sh" ]

@@ -284,7 +284,6 @@ class PasswordReset(BaseView):
 			'uid': urlsafe_base64_encode(force_bytes(player.pk)),
 			'user': player,
 			'token': default_token_generator.make_token(player),
-			'protocol': 'https',
 		}
 		email_body = render_to_string(email_template_name, c)
 		send_mail(subject, email_body, from_email, recipient_list, fail_silently=False)

@@ -10,7 +10,7 @@ python manage.py migrate
 # python manage.py collectstatic --no-input
 # updating requirements.txt
 echo "UPDATING REQUIREMENTS.TXT"
-pip freeze > requirements.txt
+pip freeze > /setup/requirements.txt
 
 # Create superuser
 echo "CREATING SUPER-USER"

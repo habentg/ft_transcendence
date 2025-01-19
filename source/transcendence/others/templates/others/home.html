@@ -27,7 +27,7 @@
                 <div id="pagination_navigation" class="pagination d-flex align-items-center justify-content-center d-none">
                   <button type="button" id="prevPage" class="btn btn-outline-light btn-sm" data-url=""><i class="fas fa-chevron-left d-flex justify-content-center align-items-center" style="color: grey;"></i></button>
                   <span id="pageNumbers"><span id="current_page" class="found-count"></span> of <span id="total_pages" class="found-count"></span> pages</span>
-                  <button type="button" id="nextPage" class="btn btn-outline-light btn-sm" data-url=""><i class="fas fa-chevron-right d-flex justify-content-center align-items-center " style="color: grey;" ></i></button>
+                  <button type="button" id="nextPage" class="btn btn-outline-light btn-sm" data-url=""><i class="fas fa-chevron-right d-flex justify-content-center align-items-center" style="color: grey;"></i></button>
                 </div>
               </div>
             </div>
@@ -41,7 +41,7 @@
           <div class="content p-4">
             <div class="row g-4">
               <div class="col-md-6">
-                <button id="localGameBtn" onclick="createLocalGameModal()" class="menu-item d-flex align-items-center p-3">
+                <button id="localGameBtn" class="menu-item d-flex align-items-center p-3">
                   <i class="fas fa-gamepad fa-2x me-3"></i>
                   <h5 class="mb-0">Local Game</h5>
                 </button>
@@ -56,11 +56,11 @@
                   {% endif %}
                 </a>
               </div>
-              <div id="createTournamentBtn" class="col-md-6">
-                <a onclick="appRouter()" href="/tournament" class="menu-item d-flex align-items-center p-3">
+              <div class="col-md-6">
+                <button id="createTournamentBtn" class="menu-item d-flex align-items-center p-3">
                   <i class="fas fa-trophy fa-2x me-3"></i>
-                  <h5 class="mb-0">Create Tournament</h5>
-                </a>
+                  <h5 class="mb-0">Tournament</h5>
+                </button>
               </div>
               <div class="col-md-6">
                 <a onclick="appRouter()" href="/settings" class="menu-item d-flex align-items-center p-3">

@@ -3,7 +3,7 @@
 SECRETS_DIR=./secrets
 
 mkdir -p ${SECRETS_DIR}
-
+python3 get_host_ip.py
 # cat "${SECRETS_DIR}/intro.txt"
 
 openssl req -x509 -nodes -days 365 \
