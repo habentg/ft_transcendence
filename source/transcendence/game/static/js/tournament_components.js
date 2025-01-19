@@ -1,4 +1,3 @@
-//Returns a tournament map html
 function createTournamentMap() {
   const tournamentWrapper = document.createElement("div");
   tournamentWrapper.className = "tournamentWrapper";
@@ -203,7 +202,6 @@ function createTournamentMap() {
   return tournamentWrapper;
 }
 
-//this returns canvas for the ping-pong game
 function createGameCanvas() {
   const gameBoard = document.createElement("div");
   gameBoard.id = "gameContent";
@@ -227,7 +225,6 @@ function createGameCanvas() {
   return gameBoard;
 }
 
-//Displays modal displaying who is going to play next in upcoming match
 function nextMatchModal(player1, player2) {
   const existingModal = document.getElementById("nextMatch");
   if (existingModal) existingModal.remove();
@@ -256,9 +253,7 @@ function nextMatchModal(player1, player2) {
   modal.show();
 }
 
-//displays after every game to show who won and who moves on the next round
 function gameWinnerModal(playerName) {
-  // Create the modal structure
   const existingModal = document.getElementById("gameClosing");
   if (existingModal) existingModal.remove();
   const modalHTML = `
@@ -277,7 +272,6 @@ function gameWinnerModal(playerName) {
 	  </div>
 	  `;
 
-  // Append the modal to the body
   const body = document.querySelector("body");
   const modalContainer = document.createElement("div");
   modalContainer.innerHTML = modalHTML;
@@ -287,7 +281,6 @@ function gameWinnerModal(playerName) {
 
 }
 
-//This is for the final end of the tournament to display the winner and second place
 function tournamentClosingModal(winner, secondplace) {
   const existingModal = document.getElementById("congratsModal");
   if (existingModal) existingModal.remove();
@@ -311,13 +304,10 @@ function tournamentClosingModal(winner, secondplace) {
 		  </div>
 	  </div>`;
 
-  // Append the modal to the body
   const body = document.querySelector("body");
   const modalContainer = document.createElement("div");
   modalContainer.innerHTML = modalHTML;
   if (body) body.appendChild(modalContainer);
-
-  // Show the modal (requires Bootstrap JS to work)
   const modal = new bootstrap.Modal(document.getElementById("congratsModal"));
   modal.show();
 }
@@ -326,18 +316,15 @@ function updateTournamentMapAfterFinal(tournamentContainer, tournamentElement) {
   const continueButton = tournamentElement.querySelector(".continueButton");
   continueButton.innerHTML = `<i class="fas fa-home me-2"></i>Return Home`;
   continueButton.addEventListener("click", () => updateUI("/home"));
-  // Clone the continue button
   const restartButton = continueButton.cloneNode(true);
   restartButton.innerHTML = `<i class="fas fa-trophy me-1"></i>New Tournament`;
   restartButton.classList.remove("continueButton");
   restartButton.classList.remove("btn-primary");
   restartButton.classList.add("restartButton");
-  restartButton.style.marginLeft = "10px"; // Add space between buttons
+  restartButton.style.marginLeft = "10px";
   restartButton.style.backgroundColor = "#A1F037"; 
   restartButton.addEventListener("click", () => updateUI("/tournament"));
-  // Insert restart button after continue button
   continueButton.insertAdjacentElement("afterend", restartButton);
-  // Insert restart button after continue button
   continueButton.insertAdjacentElement("afterend", restartButton);
   if (tournamentContainer) tournamentContainer.appendChild(tournamentElement);
 }

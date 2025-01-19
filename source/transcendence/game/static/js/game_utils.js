@@ -26,7 +26,7 @@ class Game {
     this.activeKeys = []; // for key inputs
 
     //setting variables
-    this.defballSpeed = 8;
+    this.defballSpeed = 10;
     this.paddleSpeed = 8;
     this.maxScore = 3;
     this.slowServe = false;
@@ -59,6 +59,17 @@ class Game {
 
   getplayerWidth() {
     return this.playerWidth;
+  }
+
+  resetValues() {
+    this.stopeventListeners();
+    this.ball.x = this.boardWidth / 2;
+    this.ball.y = this.boardWidth / 2;
+    this.players[0].y = this.boardHeight / 2 - this.playerWidth / 2;
+    this.players[1].y = this.boardHeight / 2 - this.playerWidth / 2;
+    this.players[0].velocityY = 0;
+    this.players[1].velocityY = 0;
+    this.randomizeServe();
   }
 
   setupeventListeners() {
@@ -103,8 +114,13 @@ class Game {
   }
 
   randomizeServe() {
-    this.ball.velocityX = (Math.random() % 2 == 1 ? this.defballSpeed : -this.defballSpeed)
-    this.ball.velocityY = 2 * (Math.random() > 0.5 ? 1 : -1);
+    if (this.slowServe) {
+      this.ball.velocityX = (Math.random() > 0.5 ? this.defballSpeed * 0.5: -this.defballSpeed * 0.5)
+      this.ball.velocityY = 2 * (Math.random() > 0.5 ? 1 : -1);
+    } else {
+      this.ball.velocityX = (Math.random() > 0.5 ? this.defballSpeed : -this.defballSpeed)
+      this.ball.velocityY = 2 * (Math.random() > 0.5 ? 1 : -1);
+    }
   }
 
   initializeBoard(boardElementId) {
