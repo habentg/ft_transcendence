@@ -8,8 +8,6 @@ async function createGameInDB(game) {
     startgame_data["type"] = "TOURNAMENT";
     startgame_data["tournament_id"] = `${game.tournament_id}`;
   }
-  // console.table(startgame_data);
-  console.log("------- start ---- Game Data -------");
   try {
     const response = await fetch("/game/", {
       method: "POST",
@@ -94,8 +92,7 @@ async function loadGame() {
   if (document.getElementById("startButton")) {
     document
       .getElementById("startButton")
-      .addEventListener("click", async () => {
-        console.log("Inside start button"); 
+      .addEventListener("click", async () => { 
         game.loadSettings(game.players[0].playerName);
         game.resetValues();
         await createGameInDB(game);
@@ -104,7 +101,6 @@ async function loadGame() {
 
   if (document.getElementById("aiButton")) {
     document.getElementById("aiButton").addEventListener("click", async () => {
-      console.log("Before load and randomizeServe");
       game.loadSettings(game.players[0].playerName);
       game.resetValues();
       await createGameInDB(game);
@@ -130,6 +126,7 @@ function gameLoop(game, timestamp) {
     return ;
   const fps = 60;
   const interval = 1000 / fps;
+
   if (timestamp - game.lastTime >= interval) {
     game.lastTime = timestamp;
     // Update game values
@@ -187,15 +184,21 @@ function ballMovement(game) {
   // Wall collisions
   if (nextY - Ball.ballRadius <= 0) {
     // Place the ball just inside the top boundary
-    Ball.y = Ball.ballRadius;
-    Ball.velocityY *= -1;
+    // Ball.y = Ball.ballRadius;
+    if (Ball.velocityY < 0)
+      Ball.velocityY *= -1;
     game.sound.play("wallhit");
+    Ball.x = nextX;
+    Ball.y = nextY;
     return ;
   } else if (nextY + Ball.ballRadius >= game.boardHeight) {
     // Place the ball just inside the bottom boundary
-    Ball.y = game.boardHeight - Ball.ballRadius;
-    Ball.velocityY *= -1;
+    // Ball.y = game.boardHeight - Ball.ballRadius - 0.1;
+    if (Ball.velocityY > 0)
+      Ball.velocityY *= -1;
     game.sound.play("wallhit");
+    Ball.x = nextX;
+    Ball.y = nextY;
     return ;
   }
 
@@ -457,11 +460,11 @@ function parryCoolDown(player, game) {
 }
 
 function topoob(yPosition) {
-  return yPosition < 0;
+  return yPosition < 0 + 7.5;
 }
 
 function botoob(yPosition, game) {
-  return yPosition + game.playerHeight > game.boardHeight;
+  return yPosition + game.playerHeight > game.boardHeight - 7.5;
 }
 
 function oob(player, game) {
@@ -469,13 +472,13 @@ function oob(player, game) {
 
   if (player.velocityY < 0) {
     if (topoob(newYPosition)) {
-      player.y = 0;
+      player.y = 0 + 7.5;
     } else {
       player.y = newYPosition;
     }
   } else if (player.velocityY > 0) {
     if (botoob(newYPosition, game)) {
-      player.y = game.boardHeight - game.playerHeight;
+      player.y = game.boardHeight - game.playerHeight - 7.5;
     } else {
       player.y = newYPosition;
     }
@@ -500,7 +503,6 @@ function ballCollision(ball, player, game) {
 
     ball.velocityX *= -1;
     ball.velocityY = normalizedHitPoint * 4.1;
-
     // Clamp velocities to the maximum allowed speeds
     ball.velocityX = Math.min(
       Math.max(ball.velocityX, -MAX_SPEED_X),
@@ -652,6 +654,14 @@ function startaiGame(game) {
 
   let lastAiViewTime = performance.now(); // Initialize last AI view timestamp
   let lastAiLogicTime = performance.now(); // Initialize last AI logic timestamp
+
+  // test case 
+  // game.ball.x = game.boardWidth / 2;
+  // game.ball.y = game.boardHeight - game.ball.ballRadius;
+  // game.ball.velocityY = 0;
+  // game.ball.velocityX = -game.defballSpeed;
+  // end of test case
+
 
   // Start the AI loop
   function aiLoop(timestamp) {
