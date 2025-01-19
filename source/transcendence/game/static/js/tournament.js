@@ -202,7 +202,7 @@ async function createTournamentinDB(tournament_type) {
       this.matchCount = 0;
     }
 
-    checkGameStatus = (players, newTournamentGame, gameCanvas, playersNames) => {
+    checkGameStatus = (players, newTournamentGame, gameCanvas, warningMessage, playersNames) => {
       if (!newTournamentGame.game.drawFlag && !window.isGameRunning) {
         const match = {
           player1: players[0].playerName,
@@ -216,12 +216,14 @@ async function createTournamentinDB(tournament_type) {
         };
         this.matchHistory.push(match);
         this.updateTournamentMap(match, playersNames);
+		if(warningMessage)
+			warningMessage.remove();
         gameCanvas.remove();
         return match.winner;
       }
       return new Promise((resolve) => {
         requestAnimationFrame(() => {
-          resolve(this.checkGameStatus(players, newTournamentGame, gameCanvas, playersNames));
+          resolve(this.checkGameStatus(players, newTournamentGame, gameCanvas,warningMessage, playersNames));
         });
       });
     };
@@ -233,9 +235,10 @@ async function createTournamentinDB(tournament_type) {
       await UIManager.waitForModal("nextMatch");
       const pageContainer = document.getElementById("background");
       const gameCanvas = createGameCanvas();
+      const warningMessage = addWarningMessage();
       if (pageContainer) 
 		{
-			pageContainer.appendChild(addWarningMessage());
+			pageContainer.appendChild(warningMessage);
 			pageContainer.appendChild(gameCanvas);
 		}
       return new Promise((resolve, reject) => {
@@ -244,7 +247,7 @@ async function createTournamentinDB(tournament_type) {
 
           let players = newTournamentGame.getPlayers();
           newTournamentGame.startTournamentGame(player1Name, player2Name);
-          resolve(this.checkGameStatus(players, newTournamentGame, gameCanvas,playersNames));
+          resolve(this.checkGameStatus(players, newTournamentGame, gameCanvas, warningMessage,playersNames));
         } catch (error) {
           createToast({type: 'error', error_message: 'Failed to play match', title: 'Game Error!'});
           reject(error);
