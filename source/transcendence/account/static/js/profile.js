@@ -45,7 +45,7 @@ async function UpdateUserInfo() {
     document.getElementById("player_email").textContent = formData.email.slice(0, 20);
     await showSuccessMessage("Profile Information updated successfully");
   } catch (error) {
-    // console.error("Error:", error);
+    createToast({type:'error',error_message:'Failed to update profile info',title:'Error!'})
   }
 }
 
@@ -379,7 +379,7 @@ async function getUserGameHistory(page_number) {
     }
     throw new Error("Failed to get game history");
   } catch (error) {
-    console.error("Error: ", error);
+    createToast({type:'error',error_message:`couldnt get game history`,title:'Error'});
   }
 }
 
@@ -478,32 +478,45 @@ function drawBarGraph() {
           title: {
             display: true,
             text: "Games Played",
+            color: "#84ddfc",
             font: {
               size: 16,
             },
           },
           ticks: {
+            color: "#ffffff",
             stepSize: 1,
+          },
+          grid: {
+            display: false,
           },
         },
         x: {
           title: {
             display: true,
             text: "Game Type",
+            color: "#84ddfc",
             font: {
               size: 16,
             },
+          },
+          ticks: {
+            color: "#ffffff",
+          },
+          grid: {
+            display: false,
           },
         },
       },
       plugins: {
         legend: {
-          display: false, 
+          display: false,
         },
       },
     },
   });
 }
+
 
 
 // Stat charts

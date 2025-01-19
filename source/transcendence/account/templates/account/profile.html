@@ -31,7 +31,7 @@
                 <h3 id="player_full_name" class="mb-1 nav_profile_pic" data-fullname="{{ player.full_name }}">{% if player.full_name|length > 15 %}{{player.full_name|slice:':12'}}...{%else%}{{player.full_name}}{%endif%}</h3>
                 <p id="player_username" class="text-muted mb-1" data-username="{{ player.username }}">@{% if player.username|length > 13 %}{{player.username|slice:':10'}}...{%else%}{{player.username}}{%endif%}</p>
                 <p class="text-muted small mb-3">
-                  <i class="fas fa-envelope me-2"></i><span id="player_email" data-email={{player.email}}>{% if player.email|length > 20 %}{{player.email|slice:':17'}}...{%else%}{{player.email}}{%endif%}</span>
+                  <i class="fas fa-envelope me-2"></i><span id="player_email" data-email={{player.email}}>{% if player.email|length > 30 %}{{player.email|slice:':30'}}...{%else%}{{player.email}}{%endif%}</span>
                 </p>
               </div>
 

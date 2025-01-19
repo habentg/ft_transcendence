@@ -480,7 +480,6 @@ function optionLocalGameModal() {
   // Event Listeners
   document.getElementById("aiGameBtn").addEventListener("click", () => {
     //  Send to AI game page (1 vs AI)
-    console.log("Creating AI game");
     closeModal("localGameModal");
     // For now, page is refreshing. Need to fix.
     // window.location.href = "/game/?isAI=true";
@@ -488,7 +487,6 @@ function optionLocalGameModal() {
   });
   document.getElementById("playFriends").addEventListener("click", () => {
     // Send to localgame game page (1 vs 1)
-    console.log("Creating local game");
     closeModal("localGameModal");
   });
 
@@ -727,8 +725,8 @@ function gameRulesModal() {
   modal.className = "modal fade show";
   modal.style.display = "block";
   modal.innerHTML = `
-    <div class="modal-dialog modal-dialog-centered modal-md">
-      <div class="modal-content text-white">
+    <div class="modal-dialog modal-dialog-centered modal-md" >
+      <div class="modal-content text-white" style="background: black;">
         <div class="modal-header border-0 py-3">
           <h5 class="modal-title">
             <i class="fas fa-book me-2"></i> Game Rules

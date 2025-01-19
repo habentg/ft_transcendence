@@ -53,7 +53,7 @@ async function handlePassResetSubmit(e) {
     });
 
   } catch (error) {
-  //   console.error('Error:', error);
+    createToast({ type: "error", title: "Error", error_message: "An error occurred. Please try again later"});
   }
 }
 
@@ -101,7 +101,7 @@ async function handlePassChangeSubmit(e) {
     localStorage.removeItem('token');
   }
   catch (error) {
-    console.error('Error:', error);
+    createToast({ type: "error", title: "Error", error_message: "An error occurred. Please try again later."});
   }
 }
 

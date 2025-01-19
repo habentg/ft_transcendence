@@ -1,9 +1,8 @@
-
 .sign_in_page .background-image {
   display: flex;
   align-items: center;
   justify-content: center;
-  background-image: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.7)), url('/static/images/download.jpeg');
+  background-image: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.7)), url('/static/images/background1.jpeg');
   background-size: cover;
   background-position: center;
 
@@ -141,6 +140,7 @@
   .background-image {
     height: 100vh;
   }
+
   .form-cont {
     padding: 1.25rem;
     margin: 0.5rem;
@@ -163,20 +163,20 @@
 
 /* Styles for the password toggle button */
 .input-group .toggle-password {
-    border-color: rgba(255, 255, 255, 0.2);
-    color: rgba(255, 255, 255, 0.7);
+  border-color: rgba(255, 255, 255, 0.2);
+  color: rgba(255, 255, 255, 0.7);
 }
 
 .input-group .toggle-password:hover {
-    background: rgba(255, 255, 255, 0.1);
-    color: white;
+  background: rgba(255, 255, 255, 0.1);
+  color: white;
 }
 
 .input-group .toggle-password:focus {
-    box-shadow: none;
-    border-color: #84ddfc;
+  box-shadow: none;
+  border-color: #84ddfc;
 }
 
-.input-group .form-control:focus + .toggle-password {
-    border-color: #84ddfc;
+.input-group .form-control:focus+.toggle-password {
+  border-color: #84ddfc;
 }

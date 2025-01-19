@@ -36,7 +36,6 @@ async function handleOTPSubmit(event) {
 }
 
 async function resendOtp() {
-  console.log("Resend OTP");
   showLoadingAnimation("Resending OTP..."); // Show animation
   const m_csrf_token = await getCSRFToken();
   const response = await fetch("/2fa/", {
@@ -48,7 +47,6 @@ async function resendOtp() {
     },
     body: JSON.stringify({email : document.getElementById("2fa_player_email").textContent}),
   });
-  console.log(response);
   if (!response.ok) {
     const responseData = await response.json();
     displayError(responseData);

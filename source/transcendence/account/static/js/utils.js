@@ -29,7 +29,11 @@ async function getCSRFToken() {
         throw new Error("Failed to fetch CSRF token");
       }
     } catch (error) {
-      console.error("Failed to fetch CSRF token:", error);
+      createToast({
+        type: "error",
+        title: "Error",
+        error_message: "Failed to fetch CSRF token",
+      });
     }
   }
   return cookieValue;
@@ -72,7 +76,11 @@ async function handle42Login() {
     window.location.href = resposeData.authorization_url;
 
   } catch (error) {
-    console.error("Error in handle42Login:", error);
+    createToast({
+      type: "error",
+      title: "Error",
+      error_message: "Failed to authenticate",
+    });
   }
 }
 
@@ -253,7 +261,6 @@ async function handleSignOut() {
       throw new Error("Failed to sign out");
     }
   } catch (error) {
-    console.error("Error:", error);
     displayError({ error_msg: "Failed to sign out" });
   }
 }
@@ -392,7 +399,6 @@ function createToast(content) {
   } else {
     toastBody.textContent = `Some kind of notification`;
     toastTitle.textContent = `Dont know what this is`;
-    console.warn("Unknown toast type, defaulting to chat.");
     toastHeader.classList.add("bg-secondary", "text-light");
     toastIcon.className = "fas fa-info-circle";
   }

@@ -66,7 +66,7 @@ async function handleSignInSubmit(e) {
         /* websocket - for real-time updates and chat*/
         createWebSockets();
     } catch (error) {
-        console.error('Error:', error);
+        createToast({ type: 'error', title: 'Error', error_message: 'Failed to authenticate' });
     }
 }
 
@@ -88,6 +88,6 @@ async function getTwoFactorAuth(username) {
         throw new Error("Failed to load 2FA page content");
     }
     catch (error) {
-        console.error('2 FA - Error:', error);
+        createToast({ type: 'error', error_message: 'Failed to load 2FA page content', title: 'Error' });
     }
 }

@@ -1,4 +1,3 @@
-//Returns a tournament map html
 function createTournamentMap() {
   const tournamentWrapper = document.createElement("div");
   tournamentWrapper.className = "tournamentWrapper";
@@ -203,7 +202,6 @@ function createTournamentMap() {
   return tournamentWrapper;
 }
 
-//this returns canvas for the ping-pong game
 function createGameCanvas() {
   const gameBoard = document.createElement("div");
   gameBoard.id = "gameContent";
@@ -227,22 +225,25 @@ function createGameCanvas() {
   return gameBoard;
 }
 
-//Displays modal displaying who is going to play next in upcoming match
 function nextMatchModal(player1, player2) {
   const existingModal = document.getElementById("nextMatch");
   if (existingModal) existingModal.remove();
-  const modalHTML = `
-	  <div class="modal fade" id="nextMatch" tabindex="-1" role="dialog" aria-labelledby="modalTitle" aria-hidden="true">
-		<div class="modal-dialog modal-dialog-centered modal-md" role="document">
-		  <div class="card modal-card shadow-lg  position-relative nextgame">
-			<div class="card-body text-center nextgame"> 
-			  <h6 class="modal-title " id="modalTitle2"> Next Match </h6>
-			  <h2 class="modal-text winner-text mt-3"> ${player1} vs ${player2} </h2>	
+	const modalHTML = `
+		<div class="modal fade" id="nextMatch" tabindex="-1" role="dialog" aria-labelledby="modalTitle" aria-hidden="true">
+			<div class="modal-dialog modal-dialog-centered modal-md" role="document">
+				<div class="card modal-card shadow-lg position-relative nextgame">
+					<div class="card-body text-center nextgame">
+						<div class="modal-background mb-3">
+							<i class="fas fa-trophy fa-3x text-warning"></i> 
+						</div>
+						<h6 class="modal-title mb-2" id="modalTitle2">Next Match</h6>
+						<h2 class="modal-text winner-text mt-3"> ${player1} vs ${player2} </h2>
+					</div>
+				</div>
 			</div>
-		  </div>
 		</div>
-	  </div>
-	  `;
+	`;
+
   // Append the modal to the body
 //   const body = document.querySelector("body");
   const modalContainer = document.createElement("div");
@@ -252,9 +253,7 @@ function nextMatchModal(player1, player2) {
   modal.show();
 }
 
-//displays after every game to show who won and who moves on the next round
 function gameWinnerModal(playerName) {
-  // Create the modal structure
   const existingModal = document.getElementById("gameClosing");
   if (existingModal) existingModal.remove();
   const modalHTML = `
@@ -262,15 +261,17 @@ function gameWinnerModal(playerName) {
 		  <div class="modal-dialog modal-dialog-centered modal-md" role="document">
 			  <div class="card modal-card shadow-lg position-relative">
 				  <div class="card-body text-center"> 
-					  <h3 class="modal-title" id="modalTitle2"> ${playerName} wins the game! </h3>
-					  <p class="modal-text winner-text mt-3"> ${playerName} passes to the next round </p>
+						<div class="modal-background mb-3">
+							<i class="fas fa-trophy fa-3x text-warning"></i> 
+			  			</div>
+					  <h6 class="modal-title" id="modalTitle2"> ${playerName} wins the game! </h6>
+					  <h2 class="modal-text winner-text mt-3"> ${playerName} passes to the next round </h2>
 				  </div>
 			  </div>
 		  </div>
 	  </div>
 	  `;
 
-  // Append the modal to the body
   const body = document.querySelector("body");
   const modalContainer = document.createElement("div");
   modalContainer.innerHTML = modalHTML;
@@ -280,7 +281,6 @@ function gameWinnerModal(playerName) {
 
 }
 
-//This is for the final end of the tournament to display the winner and second place
 function tournamentClosingModal(winner, secondplace) {
   const existingModal = document.getElementById("congratsModal");
   if (existingModal) existingModal.remove();
@@ -293,7 +293,7 @@ function tournamentClosingModal(winner, secondplace) {
 						  onclick="closeModal('congratsModal')" 
 						  aria-label="Close"></button>
 				  <div class="card-body text-center"> 
-					  <h2 class="modal-title" id="modalTitle">🎉 Congratulations ${winner}! 🎉</h2>
+					  <h2 class="modal-title1" id="modalTitle">🎉 Congratulations ${winner}! 🎉</h2>
 					  <img src="https://img.icons8.com/bubbles/200/000000/trophy.png" alt="Trophy" class="modal-trophy">
 					  <p class="modal-text">The winner of the tournament is <strong>${winner}</strong>. 🏆🏆🏆</p>
 					  <p class="modal-text">2nd place goes to <strong>${secondplace}</strong>. 🥈🥈🥈</p>
@@ -304,13 +304,10 @@ function tournamentClosingModal(winner, secondplace) {
 		  </div>
 	  </div>`;
 
-  // Append the modal to the body
   const body = document.querySelector("body");
   const modalContainer = document.createElement("div");
   modalContainer.innerHTML = modalHTML;
   if (body) body.appendChild(modalContainer);
-
-  // Show the modal (requires Bootstrap JS to work)
   const modal = new bootstrap.Modal(document.getElementById("congratsModal"));
   modal.show();
 }
@@ -319,18 +316,15 @@ function updateTournamentMapAfterFinal(tournamentContainer, tournamentElement) {
   const continueButton = tournamentElement.querySelector(".continueButton");
   continueButton.innerHTML = `<i class="fas fa-home me-2"></i>Return Home`;
   continueButton.addEventListener("click", () => updateUI("/home"));
-  // Clone the continue button
   const restartButton = continueButton.cloneNode(true);
   restartButton.innerHTML = `<i class="fas fa-trophy me-1"></i>New Tournament`;
   restartButton.classList.remove("continueButton");
   restartButton.classList.remove("btn-primary");
   restartButton.classList.add("restartButton");
-  restartButton.style.marginLeft = "10px"; // Add space between buttons
+  restartButton.style.marginLeft = "10px";
   restartButton.style.backgroundColor = "#A1F037"; 
   restartButton.addEventListener("click", () => updateUI("/tournament"));
-  // Insert restart button after continue button
   continueButton.insertAdjacentElement("afterend", restartButton);
-  // Insert restart button after continue button
   continueButton.insertAdjacentElement("afterend", restartButton);
   if (tournamentContainer) tournamentContainer.appendChild(tournamentElement);
 }

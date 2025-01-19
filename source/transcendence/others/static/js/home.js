@@ -56,11 +56,11 @@ async function search(query_parameter, url) {
     else if (response.status === 302) {
       updateUI("/signin");
     } else {
-      console.error("Failed to load -- ", query_parameter, "-- search content");
+      createToast({ type: "error", title: "Error", error_message: "Failed to load search content" });
     }
 
   } catch (error) {
-    console.error(`Failed to load -- ${query_parameter} -- profile content:`, error);
+    createToast({ type: "error", title: "Error", error_message: "Failed to load profile content" });
   }
 }
 
@@ -72,35 +72,18 @@ for searched profiles, we need to attach event listeners to the buttons
 
 function searchingSystem() {
 
-  // const localGameBtn = document.getElementById("localGameBtn");
-  // const createTournamentBtn = document.getElementById("createTournamentBtn");
-
-  // if (localGameBtn) {
-  //   localGameBtn.addEventListener("click", () => {
-  //     createLocalGameModal();
+  // const home_friendrequest_search = document.getElementById("friend_requests_btn");
+  // const home_friends_search = document.getElementById("friends_btn");
+  // if (home_friendrequest_search) {
+  //   home_friendrequest_search.addEventListener("click", () => {
+  //     search("friend_requests")
   //   });
   // }
-
-  // if (createTournamentBtn) {
-  //   createTournamentBtn.addEventListener("click", () => {
-  //     createTournamentModal();
+  // if (home_friends_search) {
+  //   home_friends_search.addEventListener("click", () => {
+  //     search("friends")
   //   });
   // }
-  /* search related eventlistners */
-  // createToast("error", "This is a test ", "This is an error toast message");
-  // createToast("chat", "This is a test ", "This is an chat toast message");
-  const home_friendrequest_search = document.getElementById("friend_requests_btn");
-  const home_friends_search = document.getElementById("friends_btn");
-  if (home_friendrequest_search) {
-    home_friendrequest_search.addEventListener("click", () => {
-      search("friend_requests")
-    });
-  }
-  if (home_friends_search) {
-    home_friends_search.addEventListener("click", () => {
-      search("friends")
-    });
-  }
   const home_searchIcon = document.getElementById("searchIcon");
   if (home_searchIcon) {
     home_searchIcon.addEventListener("click", () => {
@@ -153,35 +136,6 @@ function attachSearchEventListners() {
     - when clicked, it will send a request to the server to accept the friend request
     - the 'false' paramenter is just boolean to indicate that the request is not from the friend profile page
   */
-  // const acceptFriendRequestBtn = document.getElementsByClassName("acc_req_btn"); // could be multiple
-  // if (acceptFriendRequestBtn) {
-  //   for (let i = 0; i < acceptFriendRequestBtn.length; i++) {
-  //     acceptFriendRequestBtn[i].addEventListener("click", (event) => {
-  //       event.stopPropagation()
-  //       const toBeFriend = document
-  //         .getElementsByClassName("acc_req_btn")[i]
-  //         .getAttribute("data-username");
-  //       // console.log("accepting friend request from: ", toBeFriend);
-  //       searchedFriendRequestResponce(event, "accept", toBeFriend);
-  //       console.log("R: ", toBeFriend);
-  //     });
-  //   }
-  // }
-  // const declineFriendRequestBtn = document.getElementsByClassName("rej_req_btn"); // could be multiple
-  // if (declineFriendRequestBtn) {
-  //   for (let i = 0; i < declineFriendRequestBtn.length; i++) {
-  //     declineFriendRequestBtn[i].addEventListener("click", (event) => {
-  //       event.stopPropagation();
-  //       const toBeFriend = document
-  //       .getElementsByClassName("rej_req_btn")[i]
-  //       .getAttribute("data-username");
-  //       // console.log("declineing friend request from: ", toBeFriend);
-  //       searchedFriendRequestResponce(event, "decline", toBeFriend);
-  //       // alert(" --- sfa -- asdf -as ")
-  //       console.log("R: ", toBeFriend);
-  //     });
-  //   }
-  // }
   const chatFriendBtn = document.getElementsByClassName("chat_btn"); // could be multiple
   if (chatFriendBtn) {
     for (let i = 0; i < chatFriendBtn.length; i++) {
@@ -189,7 +143,6 @@ function attachSearchEventListners() {
         const toBeFriend = document
           .getElementsByClassName("chat_btn")[i]
           .getAttribute("data-username");
-        console.log("I will send create chatroom request directly from friendlist with: ", toBeFriend);
         // await create_chatroom(toBeFriend);
       });
     }
@@ -207,41 +160,6 @@ function createLocalGameModal() {
   }
 
   optionLocalGameModal();
-
-  // const modal = optionLocalGameModal();
-  // document.body.appendChild(modal);
-
-  // // Event Listeners
-  // document.getElementById("aiGameBtn").addEventListener("click", () => {
-  //   //  Send to AI game page (1 vs AI)
-  //   console.log("Creating AI game");
-  //   closeModal("localGameModal");
-  //   // For now, page is refreshing. Need to fix.
-  //   // window.location.href = "/game/?isAI=true";
-
-  // });
-  // document.getElementById("playFriends").addEventListener("click", () => {
-  //   // Send to localgame game page (1 vs 1)
-  //   console.log("Creating local game");
-  //   closeModal("localGameModal");
-
-  //   // For now, page is refreshing. Need to fix.
-  //   // updateUI("/game?isAI=false");
-  //   // window.location.href = "/game/?isAI=false";
-  // });
-
-  // // close the modal when the close button is clicked
-  // document.querySelector("#localGameModal .btn-close").addEventListener("click", () => {
-  //   closeModal("localGameModal");
-  // });
-
-  // // close the modal when the modal is clicked outside
-  // modal.addEventListener("click", (event) => {
-  //   if (event.target === modal) {
-  //     closeModal("localGameModal");
-  //   }
-  // });
-
 }
 
 // Create a modal for creating a tournament

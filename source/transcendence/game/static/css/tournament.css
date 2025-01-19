@@ -270,23 +270,6 @@ span.score-value {
   color: #b02c98;
 }
 
-/* .vertical-line {
-	position: relative;
-	display: flex;
-	flex-direction: column;
-	align-items: center;
-	margin-top: 20px;
-}
-
-.vertical-line::before {
-	content: '';
-	position: absolute;
-	width: 2px;
-	height: 100%;
-	background-color: #b02c98;
-	z-index: 0;
-} */
-
 .game5 {
   position: absolute;
   top: 30%;
@@ -448,7 +431,7 @@ span.score-value {
   text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
 }
 
-.modal-title {
+.modal-title1 {
   font-size: 2rem;
   color: #f1c40f; /* Golden color for winners */
   text-shadow: 2px 2px 3px rgba(0, 0, 0, 0.5);

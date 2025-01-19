@@ -68,7 +68,6 @@ class Catch_All(BaseView):
 	template_name = 'others/404.html'
 	title = 'Error Page'
 	css = ['css/404.css']
-	js = ['js/404.js']
 
 	def get(self, request, path=None, *args, **kwargs):
 		return super().get(request)
