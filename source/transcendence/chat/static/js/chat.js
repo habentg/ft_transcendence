@@ -135,7 +135,6 @@ function sendMessage(message, recipient, chat_id) {
     chatMessages.scrollTop = chatMessages.scrollHeight;
   } else {
     createToast({ type: 'error', error_message: 'WebSocket is not open. Unable to send message.', title: 'Websocket Not Open!' });
-    // createWebSockets();
   }
 }
 

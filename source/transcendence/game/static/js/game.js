@@ -8,8 +8,6 @@ async function createGameInDB(game) {
     startgame_data["type"] = "TOURNAMENT";
     startgame_data["tournament_id"] = `${game.tournament_id}`;
   }
-  // console.table(startgame_data);
-  console.log("------- start ---- Game Data -------");
   try {
     const response = await fetch("/game/", {
       method: "POST",
@@ -27,13 +25,13 @@ async function createGameInDB(game) {
         startaiGame(game);
       else if (game.tournamentFlag)
         return 'start_tournament';
-      else 
+      else
         startGame(game);
       return;
     }
     throw new Error("Failed to load gameApiPOSTFunction");
   } catch (error) {
-    createToast({type: 'error', error_message: 'Failed to create game', title: 'Game Creating Error!'});
+    createToast({ type: 'error', error_message: 'Failed to create game', title: 'Game Creating Error!' });
     return false;
   }
 }
@@ -55,30 +53,37 @@ async function updateGameInDB(endgame_data, game_id) {
     }
     throw new Error(`Failed to update game with id: ${game_id} : ${response.status} : ${response.error}`);
   } catch (error) {
-    createToast({type: 'error', error_message: error, title: 'Game Updating Error!'});
+    createToast({ type: 'error', error_message: error, title: 'Game Updating Error!' });
   }
 }
 
 function showGameRules() {
-	const modal = gameRulesModal();
-	document.body.appendChild(modal);
+  const modal = gameRulesModal();
+  document.body.appendChild(modal);
 
-	modal.querySelector(".btn-close").addEventListener("click", () => {
-		modal.remove();
-	});
-	modal.addEventListener("click", (event) => {
-	if (event.target === modal) {
-		modal.remove();
-	}
-	});
-	modal.querySelector(".closeButton").addEventListener("click", () => {
-		modal.remove();
-	});
+  modal.querySelector(".btn-close").addEventListener("click", () => {
+    modal.remove();
+  });
+  modal.addEventListener("click", (event) => {
+    if (event.target === modal) {
+      modal.remove();
+    }
+  });
+  modal.querySelector(".closeButton").addEventListener("click", () => {
+    modal.remove();
+  });
 }
 
 async function loadGame() {
   //starting the game by getting game settings and intializingthe struct.
   // make game obj.
+  if (!isInDesktop()) {
+    const warningMessage = document.getElementById("warningMessage");
+    const gameContent = document.getElementById("gameContent");
+    warningMessage.classList.remove("d-none");
+    gameContent.classList.add("d-none");
+    return;
+  }
   const game = new Game();
   window.addEventListener("resize", () => checkScreenSize(game));
   game.initializeBoard("board"); //initialize the board
@@ -94,8 +99,7 @@ async function loadGame() {
   if (document.getElementById("startButton")) {
     document
       .getElementById("startButton")
-      .addEventListener("click", async () => {
-        console.log("Inside start button"); 
+      .addEventListener("click", async () => { 
         game.loadSettings(game.players[0].playerName);
         game.resetValues();
         await createGameInDB(game);
@@ -104,7 +108,6 @@ async function loadGame() {
 
   if (document.getElementById("aiButton")) {
     document.getElementById("aiButton").addEventListener("click", async () => {
-      console.log("Before load and randomizeServe");
       game.loadSettings(game.players[0].playerName);
       game.resetValues();
       await createGameInDB(game);
@@ -127,9 +130,10 @@ function startGame(game) {
 
 function gameLoop(game, timestamp) {
   if (!window.isGameRunning)
-    return ;
+    return;
   const fps = 60;
   const interval = 1000 / fps;
+
   if (timestamp - game.lastTime >= interval) {
     game.lastTime = timestamp;
     // Update game values
@@ -187,15 +191,21 @@ function ballMovement(game) {
   // Wall collisions
   if (nextY - Ball.ballRadius <= 0) {
     // Place the ball just inside the top boundary
-    Ball.y = Ball.ballRadius;
-    Ball.velocityY *= -1;
+    // Ball.y = Ball.ballRadius;
+    if (Ball.velocityY < 0)
+      Ball.velocityY *= -1;
     game.sound.play("wallhit");
+    Ball.x = nextX;
+    Ball.y = nextY;
     return ;
   } else if (nextY + Ball.ballRadius >= game.boardHeight) {
     // Place the ball just inside the bottom boundary
-    Ball.y = game.boardHeight - Ball.ballRadius;
-    Ball.velocityY *= -1;
+    // Ball.y = game.boardHeight - Ball.ballRadius - 0.1;
+    if (Ball.velocityY > 0)
+      Ball.velocityY *= -1;
     game.sound.play("wallhit");
+    Ball.x = nextX;
+    Ball.y = nextY;
     return ;
   }
 
@@ -437,7 +447,7 @@ function isParry(player, game) {
   const ballNearPlayer =
     player.x < game.boardWidth / 2 // Check which side the player is on
       ? game.ball.x - game.ball.ballRadius <=
-        player.x + player.width + parryRange // Near Player 1
+      player.x + player.width + parryRange // Near Player 1
       : game.ball.x + game.ball.ballRadius >= player.x - parryRange; // Near Player 2
   const withinVerticalRange =
     game.ball.y + game.ball.ballRadius > player.y &&
@@ -457,11 +467,11 @@ function parryCoolDown(player, game) {
 }
 
 function topoob(yPosition) {
-  return yPosition < 0;
+  return yPosition < 0 + 7.5;
 }
 
 function botoob(yPosition, game) {
-  return yPosition + game.playerHeight > game.boardHeight;
+  return yPosition + game.playerHeight > game.boardHeight - 7.5;
 }
 
 function oob(player, game) {
@@ -469,13 +479,13 @@ function oob(player, game) {
 
   if (player.velocityY < 0) {
     if (topoob(newYPosition)) {
-      player.y = 0;
+      player.y = 0 + 7.5;
     } else {
       player.y = newYPosition;
     }
   } else if (player.velocityY > 0) {
     if (botoob(newYPosition, game)) {
-      player.y = game.boardHeight - game.playerHeight;
+      player.y = game.boardHeight - game.playerHeight - 7.5;
     } else {
       player.y = newYPosition;
     }
@@ -500,7 +510,6 @@ function ballCollision(ball, player, game) {
 
     ball.velocityX *= -1;
     ball.velocityY = normalizedHitPoint * 4.1;
-
     // Clamp velocities to the maximum allowed speeds
     ball.velocityX = Math.min(
       Math.max(ball.velocityX, -MAX_SPEED_X),
@@ -653,6 +662,14 @@ function startaiGame(game) {
   let lastAiViewTime = performance.now(); // Initialize last AI view timestamp
   let lastAiLogicTime = performance.now(); // Initialize last AI logic timestamp
 
+  // test case 
+  // game.ball.x = game.boardWidth / 2;
+  // game.ball.y = game.boardHeight - game.ball.ballRadius;
+  // game.ball.velocityY = 0;
+  // game.ball.velocityX = -game.defballSpeed;
+  // end of test case
+
+
   // Start the AI loop
   function aiLoop(timestamp) {
     if (!window.isGameRunning) return; // Stop if the game is no longer running
@@ -694,18 +711,18 @@ function aiLogic(player2, game, aiHelper) {
     const middlePos = game.boardHeight / 2;
     const paddleCenter = player2.y + player2.height / 2;
 
-    if (paddleCenter > middlePos - (game.paddleSpeed * 2) && paddleCenter < middlePos + (game.paddleSpeed * 2)){
+    if (paddleCenter > middlePos - (game.paddleSpeed * 2) && paddleCenter < middlePos + (game.paddleSpeed * 2)) {
       aikeyEvents("stop", aiHelper);
-      return ;
+      return;
     }
-    if (paddleCenter < middlePos + game.paddleSpeed){
+    if (paddleCenter < middlePos + game.paddleSpeed) {
       aikeyEvents("down", aiHelper);
     }
-    else if (paddleCenter > middlePos - game.paddleSpeed){
+    else if (paddleCenter > middlePos - game.paddleSpeed) {
       aikeyEvents("up", aiHelper);
     } else
-        aikeyEvents("stop", aiHelper);
-    return ;
+      aikeyEvents("stop", aiHelper);
+    return;
   }
 
   let tolerance = 40; // Allow a small margin of error
@@ -717,18 +734,18 @@ function aiLogic(player2, game, aiHelper) {
   const time = (player2.x - game.ball.x - player2.width) / game.ball.velocityX;
 
   if (game.parryFlag && aiHelper.velocityX > 0 && !player2.cooldownFlag)
-      aiparryChance(aiHelper, time);
+    aiparryChance(aiHelper, time);
   //predicts y location based on the time. this variable would exceed the board size. exceeding board size would mean its supposed to hit wall
   const yChange = game.ball.velocityY * time;
   let yHit = game.ball.y + yChange;
-  
+
   //sets the expected y hit back to the board size if it exceeded board size
   if (yHit < 0) {
     yHit *= -1;
   } else if (yHit > game.boardHeight) {
     yHit -= (game.boardHeight * 2);
   }
-  
+
   let target = Math.abs(yHit - player2.height / 2);
   if (target > player2.y - tolerance && target < player2.y + 40) {
     // If the AI is close enough to the target Y position, stop moving
@@ -742,7 +759,7 @@ function aiLogic(player2, game, aiHelper) {
   }
 }
 
-function aiparryChance(aiHelper, time){
+function aiparryChance(aiHelper, time) {
 
   const deficit = Math.max(0, aiHelper.scoreDeficit);
   let aiparryChance = 0.8; //set the ai's parry chance by 80% default
@@ -752,7 +769,7 @@ function aiparryChance(aiHelper, time){
     setTimeout(() => {
       aikeyEvents("parry", aiHelper);
     }, time * 60);
-  } else 
+  } else
     setTimeout(() => {
       aikeyEvents("parry", aiHelper);
     }, (time * 60) + 60);
@@ -845,8 +862,6 @@ function aikeyEvents(moveDirection, aiHelper) {
   }
 }
 
-// settings
-
 function checkScreenSize(game = null) {
   const MIN_WINDOW_WIDTH = 820;
   const MIN_WINDOW_HEIGHT = 700;
@@ -872,6 +887,7 @@ function checkScreenSize(game = null) {
   }
 }
 
+// settings
 function changeSetting(game) {
   const modal = gameSettingsModal();
 

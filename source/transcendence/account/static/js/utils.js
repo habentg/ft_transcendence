@@ -73,12 +73,9 @@ async function handle42Login() {
 
     const resposeData = await response.json();
 
-    const authUrl = resposeData.authorization_url;
-    
-    hideLoadingAnimation(); // Hide animation
-    window.location.href = authUrl;
+    window.location.href = resposeData.authorization_url;
+
   } catch (error) {
-    hideLoadingAnimation(); // Hide animation
     createToast({
       type: "error",
       title: "Error",

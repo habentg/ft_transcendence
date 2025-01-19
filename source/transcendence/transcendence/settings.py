@@ -24,6 +24,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 SECRET_KEY = os.environ.get('SECRET_KEY')
 DOMAIN_NAME = os.environ.get('DOMAIN_NAME')
+# DOMAIN_NAME = f'https://{LOCAL_IP}'
 FOURTYTWO_OAUTH_CLIENT_ID = os.environ.get('CLIENT_ID')
 FOURTYTWO_OAUTH_CLIENT_SECRET = os.environ.get('CLIENT_SECRET')
 REDIS_URL = os.environ.get('REDIS_URL')
@@ -40,16 +41,11 @@ REDIS_HOST = os.getenv('REDIS_HOST')
 REDIS_PORT = os.getenv('REDIS_PORT')
 REDIS_DB_JWT_INVAL = os.getenv('REDIS_DB_JWT_INVAL')
 REDIS_DB_CHANNELS = os.getenv('REDIS_DB_CHANNELS')
+LOCAL_IP = os.getenv('LOCAL_IP')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = [
-    'localhost',
-]
-
-
 # Application definition
-
 INSTALLED_APPS = [
     'daphne',
     'django.contrib.admin',
@@ -80,22 +76,36 @@ MIDDLEWARE = [
     'corsheaders.middleware.CorsMiddleware',
 ]
 
-CORS_ALLOW_CREDENTIALS = True
+CORS_ALLOW_CREDENTIALS = True # to allow cookies to be sent with the requests
+
+""" 
+    Specifies the list of domain names or IP addresses your Django application will respond to.
+ """
+ALLOWED_HOSTS = [
+    LOCAL_IP,
+    'localhost',
+]
+
+""" 
+  specifies the list of domain names or IP addresses that can make cross-site HTTP requests to your Django application.  
+"""
 CORS_ALLOWED_ORIGINS = [
-    "https://localhost",  # Add trusted urls here
+    f"https://{LOCAL_IP}",
+    "https://localhost"
 ]
 
+"""  """
 CSRF_TRUSTED_ORIGINS = [
-    "https://localhost",  # Add trusted urls here
+    f"https://{LOCAL_IP}",
+    "https://localhost"
 ]
-
 
 ROOT_URLCONF = 'transcendence.urls'
 
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [BASE_DIR / 'templates'], # for html templates
+        'DIRS': [BASE_DIR / 'templates'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
