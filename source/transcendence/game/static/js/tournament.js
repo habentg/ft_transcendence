@@ -37,24 +37,7 @@ async function createTournamentinDB(tournament_type) {
       this.game.createPlayer(player2Name, "right");
       this.game.drawFlag = true;
       this.game.setupeventListeners();
-      const player1NameElement = document.getElementById("player1Name");
-      if (player1NameElement) {
-        player1NameElement.textContent = "@ " + player1Name;
-        player1NameElement.style.display = "block";
-      }
-      const player2NameElement = document.getElementById("player2Name");
-      if (player2NameElement) {
-        player2NameElement.textContent = "@ " + player2Name;
-        player2NameElement.style.display = "block";
-      }
-      const player1Element = document.getElementById("player1");
-      if (player1Element) {
-        player1Element.classList.remove("d-none");
-      }
-      const player2Element = document.getElementById("player2");
-      if (player2Element) {
-        player2Element.classList.remove("d-none");
-      }
+	  addPlayerTitles(player1Name, player2Name)
       const tournament_id = document.getElementById("background").getAttribute("data-tournamentId");
       this.game.tournament_id = tournament_id;
       const ret = await createGameInDB(this.game);
@@ -65,7 +48,7 @@ async function createTournamentinDB(tournament_type) {
       }
       else {
         createToast({type: 'error', error_message: 'Failed to start Tournament games', title: 'Game Creating Error!'});
-        return;
+        return ;
       }
     }
     getPlayers() {
@@ -94,13 +77,7 @@ async function createTournamentinDB(tournament_type) {
 
     createPlayerButtonWithRemoveOption(playerName) {
       const playerButton = document.createElement("button");
-      playerButton.classList.add(
-        "menu-item",
-        "d-flex",
-        "justify-content-between",
-        "align-items-center",
-        "p-3"
-      );
+      playerButton.classList.add( "menu-item", "d-flex", "justify-content-between", "align-items-center", "p-3");
       const nameContainer = document.createElement("div");
       nameContainer.classList.add("d-flex", "align-items-center", "mx-auto");
       nameContainer.innerHTML = `
@@ -472,7 +449,6 @@ async function createTournamentinDB(tournament_type) {
         const continueButton = document.querySelector(buttonClass);
         if (!continueButton) {
           reject("Not working");
-          console.error("Continue button not found in the DOM.");
           return;
         }
         const handleClick = () => {
