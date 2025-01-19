@@ -119,7 +119,8 @@ async function initApp() {
     await loadContent(route);
   });
 
-  window.baseUrl = "https://localhost";
+  // window.baseUrl = `https://${window.location.hostname}`;
+  window.baseUrl = window.location.origin;
   window.isGameRunning = false;
 }
 

@@ -25,13 +25,13 @@ async function createGameInDB(game) {
         startaiGame(game);
       else if (game.tournamentFlag)
         return 'start_tournament';
-      else 
+      else
         startGame(game);
       return;
     }
     throw new Error("Failed to load gameApiPOSTFunction");
   } catch (error) {
-    createToast({type: 'error', error_message: 'Failed to create game', title: 'Game Creating Error!'});
+    createToast({ type: 'error', error_message: 'Failed to create game', title: 'Game Creating Error!' });
     return false;
   }
 }
@@ -53,30 +53,37 @@ async function updateGameInDB(endgame_data, game_id) {
     }
     throw new Error(`Failed to update game with id: ${game_id} : ${response.status} : ${response.error}`);
   } catch (error) {
-    createToast({type: 'error', error_message: error, title: 'Game Updating Error!'});
+    createToast({ type: 'error', error_message: error, title: 'Game Updating Error!' });
   }
 }
 
 function showGameRules() {
-	const modal = gameRulesModal();
-	document.body.appendChild(modal);
+  const modal = gameRulesModal();
+  document.body.appendChild(modal);
 
-	modal.querySelector(".btn-close").addEventListener("click", () => {
-		modal.remove();
-	});
-	modal.addEventListener("click", (event) => {
-	if (event.target === modal) {
-		modal.remove();
-	}
-	});
-	modal.querySelector(".closeButton").addEventListener("click", () => {
-		modal.remove();
-	});
+  modal.querySelector(".btn-close").addEventListener("click", () => {
+    modal.remove();
+  });
+  modal.addEventListener("click", (event) => {
+    if (event.target === modal) {
+      modal.remove();
+    }
+  });
+  modal.querySelector(".closeButton").addEventListener("click", () => {
+    modal.remove();
+  });
 }
 
 async function loadGame() {
   //starting the game by getting game settings and intializingthe struct.
   // make game obj.
+  if (!isInDesktop()) {
+    const warningMessage = document.getElementById("warningMessage");
+    const gameContent = document.getElementById("gameContent");
+    warningMessage.classList.remove("d-none");
+    gameContent.classList.add("d-none");
+    return;
+  }
   const game = new Game();
   window.addEventListener("resize", () => checkScreenSize(game));
   game.initializeBoard("board"); //initialize the board
@@ -123,7 +130,7 @@ function startGame(game) {
 
 function gameLoop(game, timestamp) {
   if (!window.isGameRunning)
-    return ;
+    return;
   const fps = 60;
   const interval = 1000 / fps;
   if (timestamp - game.lastTime >= interval) {
@@ -175,7 +182,7 @@ function ballMovement(game) {
   game.ball.y += game.ball.velocityY;
 
   // makes the ball bounce from the walls
-  if ((game.ball.y - game.ball.ballRadius <= 0) || (game.ball.y+ game.ball.ballRadius >= game.boardHeight)){
+  if ((game.ball.y - game.ball.ballRadius <= 0) || (game.ball.y + game.ball.ballRadius >= game.boardHeight)) {
     game.ball.velocityY *= -1;
     game.sound.play("wallhit");
   }
@@ -393,7 +400,7 @@ function isParry(player, game) {
   const ballNearPlayer =
     player.x < game.boardWidth / 2 // Check which side the player is on
       ? game.ball.x - game.ball.ballRadius <=
-        player.x + player.width + parryRange // Near Player 1
+      player.x + player.width + parryRange // Near Player 1
       : game.ball.x + game.ball.ballRadius >= player.x - parryRange; // Near Player 2
   const withinVerticalRange =
     game.ball.y + game.ball.ballRadius > player.y &&
@@ -662,18 +669,18 @@ function aiLogic(player2, game, aiHelper) {
     const middlePos = game.boardHeight / 2;
     const paddleCenter = player2.y + player2.height / 2;
 
-    if (paddleCenter > middlePos - (game.paddleSpeed * 2) && paddleCenter < middlePos + (game.paddleSpeed * 2)){
+    if (paddleCenter > middlePos - (game.paddleSpeed * 2) && paddleCenter < middlePos + (game.paddleSpeed * 2)) {
       aikeyEvents("stop", aiHelper);
-      return ;
+      return;
     }
-    if (paddleCenter < middlePos + game.paddleSpeed){
+    if (paddleCenter < middlePos + game.paddleSpeed) {
       aikeyEvents("down", aiHelper);
     }
-    else if (paddleCenter > middlePos - game.paddleSpeed){
+    else if (paddleCenter > middlePos - game.paddleSpeed) {
       aikeyEvents("up", aiHelper);
     } else
-        aikeyEvents("stop", aiHelper);
-    return ;
+      aikeyEvents("stop", aiHelper);
+    return;
   }
 
   let tolerance = 50; // Allow a small margin of error
@@ -686,18 +693,18 @@ function aiLogic(player2, game, aiHelper) {
   const time = (player2.x - game.ball.x - player2.width) / game.ball.velocityX;
 
   if (game.parryFlag && aiHelper.velocityX > 0 && !player2.cooldownFlag)
-      aiparryChance(aiHelper, time);
+    aiparryChance(aiHelper, time);
   //predicts y location based on the time. this variable would exceed the board size. exceeding board size would mean its supposed to hit wall
   const yChange = game.ball.velocityY * time;
   let yHit = game.ball.y + yChange;
-  
+
   //sets the expected y hit back to the board size if it exceeded board size
   if (yHit < 0) {
     yHit *= -1;
   } else if (yHit > game.boardHeight) {
     yHit -= (game.boardHeight * 2);
   }
-  
+
   let target = Math.abs(yHit - player2.height / 2);
   if (target > player2.y - tolerance && target < player2.y + 40) {
     // If the AI is close enough to the target Y position, stop moving
@@ -711,7 +718,7 @@ function aiLogic(player2, game, aiHelper) {
   }
 }
 
-function aiparryChance(aiHelper, time){
+function aiparryChance(aiHelper, time) {
 
   const deficit = Math.max(0, aiHelper.scoreDeficit);
   let aiparryChance = 0.8; //set the ai's parry chance by 80% default
@@ -721,7 +728,7 @@ function aiparryChance(aiHelper, time){
     setTimeout(() => {
       aikeyEvents("parry", aiHelper);
     }, time * 60);
-  } else 
+  } else
     setTimeout(() => {
       aikeyEvents("parry", aiHelper);
     }, (time * 60) + 60);
@@ -814,7 +821,16 @@ function aikeyEvents(moveDirection, aiHelper) {
   }
 }
 
-// settings
+function getDeviceType() {
+  const width = window.innerWidth;
+  if (width < 768) {
+    return 'mobile';
+  }
+  if (width < 1024) {
+    return 'tablet';
+  }
+  return 'desktop';
+}
 
 function checkScreenSize(game = null) {
   const MIN_WINDOW_WIDTH = 820;
@@ -824,9 +840,10 @@ function checkScreenSize(game = null) {
   const gameContent = document.getElementById("gameContent");
 
   if (window.innerWidth < MIN_WINDOW_WIDTH || window.innerHeight < MIN_WINDOW_HEIGHT) {
+    console.log("Screen size too small");
     warningMessage.classList.remove("d-none");
-	  if(gameContent)
-		  gameContent.classList.add("d-none");
+    if (gameContent)
+      gameContent.classList.add("d-none");
     game.drawFlag = false;
   } else {
     if (warningMessage) {
@@ -840,6 +857,7 @@ function checkScreenSize(game = null) {
   }
 }
 
+// settings
 function changeSetting(game) {
   const modal = gameSettingsModal();
 

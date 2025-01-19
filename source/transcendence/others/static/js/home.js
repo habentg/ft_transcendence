@@ -277,4 +277,33 @@ function createLocalGameModal() {
 
 // }
 
-searchingSystem();
+
+function initHome() {
+  searchingSystem();
+  const createtournamentBtn = document.getElementById("createTournamentBtn");
+
+  if (createtournamentBtn) {
+    createtournamentBtn.addEventListener("click", async () => {
+      if (!isInDesktop()) {
+        createToast({ type: "error", title: "Mobile not supported!!!!", error_message: "Please use a desktop to create a tournament!" });
+        return;
+      }
+      await updateUI("/tournament");
+    });
+  }
+
+  const localGameBtn = document.getElementById("localGameBtn");
+
+  if (localGameBtn) {
+    localGameBtn.addEventListener("click", async () => {
+      if (!isInDesktop()) {
+        createToast({ type: "error", title: "Mobile not supported!!!!", error_message: "Please use a desktop to play a game!" });
+        return;
+      }
+      console.log("Creating local game -- desktop");
+      createLocalGameModal();
+    });
+  }
+}
+
+initHome();
