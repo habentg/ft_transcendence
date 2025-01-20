@@ -26,7 +26,7 @@ async function updateUI(path) {
   showLoadingAnimation(); // Show animation
   if (!path.includes(`${window.location.origin}`))
     path = `${window.location.origin}${path}`;
-  history.pushState(null, "", `${path}`);
+    history.pushState({}, "", `${path}`);
   try {
     await loadContent(`${path}`);
   } catch (error) {
@@ -95,7 +95,8 @@ async function loadContent(route) {
 
 async function initApp() {
   // browser back/forward buttons
-  window.addEventListener("popstate", async () => {
+  window.addEventListener("popstate", async (event) => {
+    event.preventDefault();
     let all_modals = document.querySelectorAll(".modal");
 
     for (let i = 0; i < all_modals.length; i++) {
@@ -106,12 +107,14 @@ async function initApp() {
 
     if (window.isGameRunning)
       window.isGameRunning = false;
+    
     const route = window.location.href;
     await loadContent(route);
   });
 
   // Handling initial load
-  window.addEventListener("load", async () => {
+  window.addEventListener("load", async (event) => {
+    event.preventDefault();
     isInitialLoad = true;
     if (isInitialLoad) {
       // if its initial load ... page will come already loaded from the server

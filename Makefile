@@ -1,6 +1,5 @@
 
-COMPOSE 		= cd ./source && docker-compose
-COMPOSE_FILE 	= docker-compose.yaml
+COMPOSE 		= docker-compose -f  docker-compose.yaml
 
 # ----------------------- creating services --------------------------
 all: build up
@@ -10,36 +9,36 @@ keygen:
 	@python3 ./source/containers/nginx/tools/get_host_ip.py
 
 up: keygen
-	$(COMPOSE) -f $(COMPOSE_FILE) up -d --remove-orphans
+	$(COMPOSE) up -d --remove-orphans
 
 create_users:
-	$(COMPOSE) -f $(COMPOSE_FILE) exec neon_pong sh create_alot_of_users_for_testing.sh
+	$(COMPOSE) exec neon_pong sh create_alot_of_users_for_testing.sh
 
 build:
-	$(COMPOSE) -f $(COMPOSE_FILE) build
+	$(COMPOSE) build
 
 down:
-	$(COMPOSE) -f $(COMPOSE_FILE) down
+	$(COMPOSE) down
 
 re: down up # rebuilding the services without deleting the persistent storages
 
 # ---------------------------- django related Operattions -------------------------------
 
 collectstatic:
-	$(COMPOSE) -f $(COMPOSE_FILE) exec neon_pong python manage.py collectstatic --noinput
+	$(COMPOSE) exec neon_pong python manage.py collectstatic --noinput
 
 migrate:
-	$(COMPOSE) -f $(COMPOSE_FILE) exec neon_pong python manage.py makemigrations
-	$(COMPOSE) -f $(COMPOSE_FILE) exec neon_pong python manage.py migrate
+	$(COMPOSE) exec neon_pong python manage.py makemigrations
+	$(COMPOSE) exec neon_pong python manage.py migrate
 
 
 # ----------------------- restarting services --------------------------
 
 start:
-	$(COMPOSE) -f $(COMPOSE_FILE) start
+	$(COMPOSE) start
 
 stop:
-	$(COMPOSE) -f $(COMPOSE_FILE) stop
+	$(COMPOSE) stop
 
 restart: stop start # restarting the services (volumes, network, and images stay the same)
 

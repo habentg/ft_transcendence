@@ -21,7 +21,6 @@ async function search(query_parameter, url) {
       return;
     }
     if (response.ok) {
-      // history.pushState({ query_parameter }, "", route_url);
       const responseData = await response.json();
       /* activating the div */
       document.getElementById("searchResults").classList.remove("d-none");
