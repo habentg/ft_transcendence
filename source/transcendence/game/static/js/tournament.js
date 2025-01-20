@@ -435,12 +435,14 @@ async function createTournamentinDB(tournament_type) {
 
   class UIManager {
     static closeModal(modalId) {
-      const modal = document.getElementById(modalId);
-      if (modal) {
-        let backdrop = document.querySelector(".modal-backdrop");
-        if (backdrop) backdrop.remove();
-        modal.remove();
-        document.body.classList.remove("modal-open");
+      // const modal = document.getElementById(modalId);
+      const modalElement = document.getElementById(modalId);
+      if (modalElement) {
+          const modal = bootstrap.Modal.getInstance(modalElement);
+          if (modal) {
+              modal.hide();
+          }
+          modalElement.remove();
       }
     }
 
@@ -472,7 +474,7 @@ async function createTournamentinDB(tournament_type) {
         const continueButton = document.querySelector(buttonClass);
         if (!continueButton) {
           reject("Not working");
-          console.error("Continue button not found in the DOM.");
+          // console.error("Continue button not found in the DOM.");
           return;
         }
         const handleClick = () => {
