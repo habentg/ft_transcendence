@@ -13,15 +13,32 @@
   min-height: fit-content;
   height: 100vh;
 }
-/* 
-/* make window not flow over html and body width */
-html, body {
-  overflow-x: hidden;
-}
 
 .playerListContainer {
   width: 80%;
   max-width: 1200px;
+  max-height: 700px;
+  overflow-y: auto;
+  overflow-x: hidden;
+  scrollbar-width: thin;
+  scrollbar-color: #888888 #bebbbb;
+}
+
+.playerListContainer::-webkit-scrollbar {
+  width: 8px;
+}
+
+.playerListContainer::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+.playerListContainer::-webkit-scrollbar-thumb {
+  background: #888888;
+  border-radius: 4px;
+}
+
+.playerListContainer::-webkit-scrollbar-thumb:hover {
+  background: #707070;
 }
 
 .content {

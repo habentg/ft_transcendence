@@ -192,7 +192,7 @@ function createTournamentMap() {
 							<i class="fas fa-book me-2"></i>
 							How to play
 						</button>
-						<button id="startButton" class="btn btn-primary continueButton btn-md  ms-2" style="display: flex; align-items: center">
+						<button id="startButton" class="btn btn-primary continueButton btn-md  ms-2 me-4" style="display: flex; align-items: center">
 							<i class="fa-solid fa-play me-2"></i>
 							Continue
 						</button>
