@@ -110,7 +110,7 @@ class Game {
       this.ball.velocityY = 2 * (Math.random() > 0.5 ? 1 : -1) * 0.5;
     } else {
       // Use normal initial speed
-      this.ball.velocityX = direction * Math.abs(this.defballSpeed);
+      this.ball.velocityX = direction * Math.abs(this.defballSpeed) * 0.7;
       this.ball.velocityY = 2 * (Math.random() > 0.5 ? 1 : -1);
     }
   }
@@ -120,7 +120,7 @@ class Game {
       this.ball.velocityX = (Math.random() > 0.5 ? this.defballSpeed * 0.5: -this.defballSpeed * 0.5)
       this.ball.velocityY = 2 * (Math.random() > 0.5 ? 1 : -1);
     } else {
-      this.ball.velocityX = (Math.random() > 0.5 ? this.defballSpeed : -this.defballSpeed)
+      this.ball.velocityX = (Math.random() > 0.5 ? this.defballSpeed * 0.7 : -this.defballSpeed * 0.7)
       this.ball.velocityY = 2 * (Math.random() > 0.5 ? 1 : -1);
     }
   }
@@ -135,11 +135,6 @@ class Game {
   createPlayer(name, position) {
     const player = new Player(name, position, this);
     this.players.push(player);
-  }
-
-  updateParryFlag() {
-    this.parryFlag = document.getElementById("slowServe").checked;
-    return this.parryFlag;
   }
 
   move = (event) => {
@@ -216,7 +211,7 @@ async function getFullTournamentView(tournament_id) {
     }
     throw new Error("Failed to load retrieveAllGamesOfaTournament");
   } catch (error) {
-    console.error("ERROR: ", error);
+    createToast({type:'error', error_message:'Failed to retrieve tournament view!', title:'Error'})
   }
 }
 
@@ -287,11 +282,6 @@ class Sound {
       this.sounds[name] = audio;
     };
 
-    // Event listener for loading errors
-    audio.onerror = () => {
-      console.error(`Failed to load sound "${name}" from "${path}".`);
-    };
-
     // Start loading the audio
     audio.load(); // Explicitly start loading
   }
@@ -301,8 +291,6 @@ class Sound {
     if (sound) {
       sound.currentTime = 0; // Reset for replay
       sound.play();
-    } else {
-      console.warn(`Sound "${name}" not found.`);
     }
   }
 }

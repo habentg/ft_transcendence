@@ -82,8 +82,6 @@ function showGameRules() {
 }
 
 async function loadGame() {
-  //starting the game by getting game settings and intializingthe struct.
-  // make game obj.
   const game = new Game();
   window.addEventListener("resize", () => checkScreenSize(game));
   game.initializeBoard("board"); //initialize the board
@@ -151,10 +149,6 @@ function updategameValues(player1, player2, game) {
   updatePaddleVelocities(player1, player2, game);
 
   ballMovement(game);
-
-  // Check ball collision with players
-  // ballCollision(game.ball, player1, game);
-  // ballCollision(game.ball, player2, game);
 
   //check for scores
   if (game.ball.x - game.ball.ballRadius < 0) {
@@ -271,16 +265,6 @@ function drawBall(game) {
   game.context.closePath();
 }
 
-// function drawNum(game, num){
-//   game.context.clearRect(0, 0, game.board.width, game.board.height);
-//   game.context.fillStyle = "#ffffff";
-//   game.context.font = "40px Orbitron";
-//   game.context.textAlign = "center";
-//   game.context.textBaseline = "middle"
-
-//   game.context.fillText(num, game.board.width / 2, game.board.height / 2);
-// }
-
 function displayScores(player1, player2, game) {
   game.context.fillStyle = "#ffffff";
   game.context.font = "40px Orbitron";
@@ -391,32 +375,6 @@ function updatePaddleVelocities(player1, player2, game) {
     }
   }
 }
-
-// function pauseState(game) {
-//   if (game.activeKeys["KeyP"] && game.drawflag) {
-//     pauseGame(game);
-//   } else {
-//     game.context.clearRect(0, 0, game.board.width, game.board.height);
-//     game.drawFlag = true;
-//   }
-// }
-
-// function pauseGame(game) {
-//   game.drawFlag = false;
-//   let countdown = 15;
-
-//   function updateCountdown() {
-//     if (countdown > 0) {
-//       drawNum(game, countdown); // Draw the current number
-//       countdown--;
-//       setTimeout(updateCountdown, 1000);
-//     } else {
-//       game.context.clearRect(0, 0, game.board.width, game.board.height);
-//       game.drawFlag = true;
-//     }
-//   }
-//   updateCountdown(); // Start the countdown
-// }
 
 function isParry(player, game) {
   const parryRange = 20; // Adjust as needed
@@ -782,8 +740,6 @@ function aiLogic(player2, game, aiHelper) {
     aiMiddle(aiHelper, game, player2);
   }
 
-  // const time = (player2.x - aiHelper.x - player2.width) / aiHelper.velocityX;
-
   if (game.parryFlag && aiHelper.velocityX > 0 && !aiHelper.aiParry)
     aiparryChance(aiHelper, aiHelper.time, game.fps);
 
@@ -795,7 +751,7 @@ function aiLogic(player2, game, aiHelper) {
   let yHit = adjustYhit(aiHelper, aiHelper.time, game.boardHeight);
 
   let target = Math.abs(yHit - player2.height / 2);
-  if ((game.paddleSpeed * 2) + target > player2.y - tolerance && target < player2.y + (tolerance - game.paddleSpeed *)) {
+  if (target > player2.y - tolerance && target < player2.y + tolerance) {
     // If the AI is close enough to the target Y position, stop moving
     aikeyEvents("stop", aiHelper);
     return;
@@ -851,18 +807,17 @@ function aiparryChance(aiHelper, time, fps) {
 
   // Calculate ideal parry timing
   const idealParryTime = time * fps;
-  // console.log("parry time", idealParryTime);
   if (Math.random() < aiparryChance) {
-    setTimeout(() => {
-      aikeyEvents("parry", aiHelper);
-    }, idealParryTime);
-	} else {
-        // for imitating missed parry
-        const missDelay = 100 + Math.random() * 100; // 100-200ms too late
-        setTimeout(() => {
-            aikeyEvents("parry", aiHelper);
-        }, idealParryTime + missDelay);
-    }
+      setTimeout(() => {
+          aikeyEvents("parry", aiHelper);
+      }, idealParryTime);
+  } else {
+      // for imitating missed parry
+      const missDelay = 100 + Math.random() * 100; // 100-200ms too late
+      setTimeout(() => {
+          aikeyEvents("parry", aiHelper);
+      }, idealParryTime + missDelay);
+  }
 }
 
 // function to check/store balls last position every 1 second.
@@ -890,8 +845,8 @@ function aiView(game, aiHelper) {
     aiHelper.tolInc++;
     aiHelper.time =
       Ball.velocityX > 0
-        ? (ai.x - Ball.x - 20) / Ball.velocityX
-        : Math.abs((ai.x + Ball.x - 20) / Ball.velocityX);
+        ? (ai.x - Ball.x - 16) / Ball.velocityX
+        : Math.abs(((Ball.x - player.x) + (player.x + ai.x - 16)) / Ball.velocityX);
   }
 }
 
@@ -1001,14 +956,13 @@ function checkScreenSize(game = null) {
       game.players[1].parryCooldown += pauseTime + Date.now();
     }
     game.drawFlag = true;
-    // window.isGameRunning = true;
   }
 }
 
 function changeSetting(game) {
   const modal = gameSettingsModal();
 
-  if (document.body.appendChild(modal)) console.log("Child appended");
+  if (document.body.appendChild(modal))
 
   // Event Listeners
   modal.querySelector("#applyButton").addEventListener("click", () => {
