@@ -149,8 +149,8 @@ function updategameValues(player1, player2, game) {
   ballMovement(game);
 
   // Check ball collision with players
-  ballCollision(game.ball, player1, game);
-  ballCollision(game.ball, player2, game);
+  // ballCollision(game.ball, player1, game);
+  // ballCollision(game.ball, player2, game);
 
   //check for scores
   if (game.ball.x - game.ball.ballRadius < 0) {
@@ -171,63 +171,63 @@ function updategameValues(player1, player2, game) {
 }
 
 
-function ballMovement(game) {
-  const Ball = game.ball;
-  const left = game.players[0];
-  const right = game.players[1];
+// function ballMovement(game) {
+//   const Ball = game.ball;
+//   const left = game.players[0];
+//   const right = game.players[1];
 
 
-  // Predict the ball's next position
-  let nextX = Ball.x + Ball.velocityX;
-  let nextY = Ball.y + Ball.velocityY;
+//   // Predict the ball's next position
+//   let nextX = Ball.x + Ball.velocityX;
+//   let nextY = Ball.y + Ball.velocityY;
 
-  // Wall collisions
-  if (nextY - Ball.ballRadius <= 0) {
-    // Place the ball just inside the top boundary
-    // Ball.y = Ball.ballRadius;
-    if (Ball.velocityY < 0)
-      Ball.velocityY *= -1;
-    game.sound.play("wallhit");
-    Ball.x = nextX;
-    Ball.y = nextY;
-    return ;
-  } else if (nextY + Ball.ballRadius >= game.boardHeight) {
-    // Place the ball just inside the bottom boundary
-    // Ball.y = game.boardHeight - Ball.ballRadius - 0.1;
-    if (Ball.velocityY > 0)
-      Ball.velocityY *= -1;
-    game.sound.play("wallhit");
-    Ball.x = nextX;
-    Ball.y = nextY;
-    return ;
-  }
+//   // Wall collisions
+//   if (nextY - Ball.ballRadius <= 0) {
+//     // Place the ball just inside the top boundary
+//     // Ball.y = Ball.ballRadius;
+//     if (Ball.velocityY < 0)
+//       Ball.velocityY *= -1;
+//     game.sound.play("wallhit");
+//     Ball.x = nextX;
+//     Ball.y = nextY;
+//     return ;
+//   } else if (nextY + Ball.ballRadius >= game.boardHeight) {
+//     // Place the ball just inside the bottom boundary
+//     // Ball.y = game.boardHeight - Ball.ballRadius - 0.1;
+//     if (Ball.velocityY > 0)
+//       Ball.velocityY *= -1;
+//     game.sound.play("wallhit");
+//     Ball.x = nextX;
+//     Ball.y = nextY;
+//     return ;
+//   }
 
-  // Check for overlap with the left paddle
-  if (
-    nextX - Ball.ballRadius < left.x + left.width &&
-    nextY + Ball.ballRadius > left.y &&
-    nextY - Ball.ballRadius < left.y + left.height
-  ) {
-    // Adjust ball's position and velocity
-    nextX = left.x + left.width + Ball.ballRadius;
-    game.sound.play("paddlehit");
-  }
+//   // Check for overlap with the left paddle
+//   if (
+//     nextX - Ball.ballRadius < left.x + left.width &&
+//     nextY + Ball.ballRadius > left.y &&
+//     nextY - Ball.ballRadius < left.y + left.height
+//   ) {
+//     // Adjust ball's position and velocity
+//     nextX = left.x + left.width + Ball.ballRadius;
+//     game.sound.play("paddlehit");
+//   }
 
-  // Check for overlap with the right paddle
-  if (
-    nextX + Ball.ballRadius > right.x &&
-    nextY + Ball.ballRadius > right.y &&
-    nextY - Ball.ballRadius < right.y + right.height
-  ) {
-    // Adjust ball's position and velocity
-    nextX = right.x - Ball.ballRadius;
-    game.sound.play("paddlehit");
-  }
+//   // Check for overlap with the right paddle
+//   if (
+//     nextX + Ball.ballRadius > right.x &&
+//     nextY + Ball.ballRadius > right.y &&
+//     nextY - Ball.ballRadius < right.y + right.height
+//   ) {
+//     // Adjust ball's position and velocity
+//     nextX = right.x - Ball.ballRadius;
+//     game.sound.play("paddlehit");
+//   }
 
-  // Update the ball's actual position
-  Ball.x = nextX;
-  Ball.y = nextY;
-}
+//   // Update the ball's actual position
+//   Ball.x = nextX;
+//   Ball.y = nextY;
+// }
 
 function draw(player1, player2, game) {
   if (!game.drawFlag) return;
@@ -326,6 +326,16 @@ function drawBall(game) {
   game.context.closePath();
 }
 
+// function drawNum(game, num){
+//   game.context.clearRect(0, 0, game.board.width, game.board.height);
+//   game.context.fillStyle = "#ffffff";
+//   game.context.font = "40px Orbitron";
+//   game.context.textAlign = "center";
+//   game.context.textBaseline = "middle"
+
+//   game.context.fillText(num, game.board.width / 2, game.board.height / 2);
+// }
+
 function displayScores(player1, player2, game) {
   game.context.fillStyle = "#ffffff";
   game.context.font = "40px Orbitron";
@@ -417,23 +427,51 @@ function updatePaddleVelocities(player1, player2, game) {
 
   if (game.parryFlag) {
     if (game.activeKeys["Space"] && !player1.cooldownFlag) {
-      if (isParry(player1, game)) {
-        game.ball.velocityX *= 1.5;
+      if (isParry(player1, game) && game.ball.velocityX < 0) {
+        game.ball.velocityX *= 1.3;
+        game.ball.velocityY *= 1.2;
         game.ball.x = player1.x + player1.width + game.ball.ballRadius + 2;
-        game.sound.play("parry");
       }
+      game.sound.play("parry");
       parryCoolDown(player1, game);
     }
     if (game.activeKeys["Numpad0"] && !player2.cooldownFlag) {
-      if (isParry(player2, game)) {
-        game.ball.velocityX *= -1.5;
-        game.ball.x = player2.x + player2.width + game.ball.ballRadius - 2;
-        game.sound.play("parry");
+      if (isParry(player2, game) && game.ball.velocityX > 0) {
+        game.ball.velocityX *= -1.3;
+        game.ball.velocityY *= 1.2;
+        game.ball.x = player2.x - player2.width + game.ball.ballRadius - 2;
       }
+      game.sound.play("parry");
       parryCoolDown(player2, game);
     }
   }
 }
+
+// function pauseState(game) {
+//   if (game.activeKeys["KeyP"] && game.drawflag) {
+//     pauseGame(game);
+//   } else {
+//     game.context.clearRect(0, 0, game.board.width, game.board.height);
+//     game.drawFlag = true;
+//   }
+// }
+
+// function pauseGame(game) {
+//   game.drawFlag = false;
+//   let countdown = 15;
+
+//   function updateCountdown() {
+//     if (countdown > 0) {
+//       drawNum(game, countdown); // Draw the current number
+//       countdown--;
+//       setTimeout(updateCountdown, 1000);
+//     } else {
+//       game.context.clearRect(0, 0, game.board.width, game.board.height);
+//       game.drawFlag = true;
+//     }
+//   }
+//   updateCountdown(); // Start the countdown
+// }
 
 function isParry(player, game) {
   const parryRange = 20; // Adjust as needed
@@ -485,38 +523,159 @@ function oob(player, game) {
   }
 }
 
-function ballCollision(ball, player, game) {
-  // Define the maximum speed for the ball
-  const MAX_SPEED_X = 10; // Maximum horizontal speed
-  const MAX_SPEED_Y = 10; // Maximum vertical speed
+function ballMovement(game) {
+  const Ball = game.ball;
+  const left = game.players[0];
+  const right = game.players[1];
 
-  // Check for collision with the paddle
-  if (
-    ball.x - ball.ballRadius <= player.x + player.width && // Ball overlaps paddle on x-axis
-    ball.x + ball.ballRadius >= player.x && // Ball overlaps paddle on x-axis
-    ball.y + ball.ballRadius >= player.y && // Ball overlaps paddle on y-axis
-    ball.y - ball.ballRadius <= player.y + player.height // Ball overlaps paddle on y-axis
-  ) {
+  // Predict the ball's next position
+  let nextX = Ball.x + Ball.velocityX;
+  let nextY = Ball.y + Ball.velocityY;
 
-    const hitPosition = ball.y - (player.y + player.height / 2);
-    const normalizedHitPoint = hitPosition / (player.height / 2);
+  // Wall collisions
+  if (nextY - Ball.ballRadius <= 0) {
+      // Place the ball just inside the top boundary
+      Ball.y = Ball.ballRadius;
+      if (Ball.velocityY < 0) Ball.velocityY *= -1;
+      game.sound.play("wallhit");
+      return;
+  } else if (nextY + Ball.ballRadius >= game.boardHeight) {
+      // Place the ball just inside the bottom boundary
+      Ball.y = game.boardHeight - Ball.ballRadius;
+      if (Ball.velocityY > 0) Ball.velocityY *= -1;
+      game.sound.play("wallhit");
+      return;
+  }
 
-    ball.velocityX *= -1;
-    ball.velocityY = normalizedHitPoint * 4.1;
-    // Clamp velocities to the maximum allowed speeds
-    ball.velocityX = Math.min(
-      Math.max(ball.velocityX, -MAX_SPEED_X),
-      MAX_SPEED_X
-    );
-    ball.velocityY = Math.min(
-      Math.max(ball.velocityY, -MAX_SPEED_Y),
-      MAX_SPEED_Y
-    );
-
-    // Play paddle hit sound
-    game.sound.play("paddlehit");
+  // Check for paddle collisions
+  if (checkPaddleCollision(Ball, left, nextX, nextY)) {
+      handlePaddleCollision(Ball, left, game, true);
+  } else if (checkPaddleCollision(Ball, right, nextX, nextY)) {
+      handlePaddleCollision(Ball, right, game, false);
+  } else {
+      // No collision, update position normally
+      Ball.x = nextX;
+      Ball.y = nextY;
   }
 }
+
+function handlePaddleCollision(ball, paddle, game, isLeftPaddle) {
+  const MAX_SPEED_X = 13;
+  const MIN_SPEED_X = 8;
+  const MAX_SPEED_Y = 13;
+  const MIN_SPEED_Y = 10;
+  
+  // Calculate hit position relative to paddle center (-1 to 1)
+  const hitPosition = (ball.y - (paddle.y + paddle.height / 2)) / (paddle.height / 2);
+  
+  // Determine if the ball hit near the edge (top or bottom 25% of paddle)
+  const isEdgeHit = Math.abs(hitPosition) > 0.75;
+  
+  // Calculate new velocities with edge adjustments
+  let newVelocityX;
+  let newVelocityY;
+  
+  if (isEdgeHit) {
+      // For edge hits, prioritize vertical movement over horizontal repositioning
+      const baseSpeedX = Math.abs(ball.velocityX) * 0.7;
+      newVelocityX = Math.max(baseSpeedX, MIN_SPEED_X) * (isLeftPaddle ? 1 : -1);
+      newVelocityY = hitPosition * 5.5;
+      
+      // For edge hits, only adjust position if ball is significantly overlapping
+      const overlap = isLeftPaddle ? 
+          (paddle.x + paddle.width - (ball.x - ball.ballRadius)) :
+          ((ball.x + ball.ballRadius) - paddle.x);
+          
+      if (overlap > ball.ballRadius * 0.5) {
+          // Reduce position adjustment for edge hits
+          if (isLeftPaddle) {
+              ball.x = paddle.x + paddle.width + (ball.ballRadius * 0.5);
+          } else {
+              ball.x = paddle.x - (ball.ballRadius * 0.5);
+          }
+      }
+  } else {
+      // Normal hit behavior with minimum speed
+      newVelocityX = Math.max(Math.abs(ball.velocityX), MIN_SPEED_X) * (isLeftPaddle ? 1 : -1);
+      newVelocityY = hitPosition * 4.1;
+      
+      // Normal position adjustment for center hits
+      if (isLeftPaddle) {
+          ball.x = paddle.x + paddle.width + ball.ballRadius;
+      } else {
+          ball.x = paddle.x - ball.ballRadius;
+      }
+  }
+
+  // Ensure minimum vertical velocity for edge hits
+  if (isEdgeHit) {
+      const minVerticalSpeed = Math.max(Math.abs(newVelocityY), MIN_SPEED_Y);
+      newVelocityY = newVelocityY < 0 ? -minVerticalSpeed : minVerticalSpeed;
+  }
+
+  // Apply new velocities with speed limits
+  ball.velocityX = Math.min(Math.max(newVelocityX, -MAX_SPEED_X), MAX_SPEED_X);
+  ball.velocityY = Math.min(Math.max(newVelocityY, -MAX_SPEED_Y), MAX_SPEED_Y);
+
+  // Calculate total speed and adjust if too slow
+  const totalSpeed = Math.sqrt(ball.velocityX * ball.velocityX + ball.velocityY * ball.velocityY);
+  const MIN_TOTAL_SPEED = 7;
+  
+  if (totalSpeed < MIN_TOTAL_SPEED) {
+      const scaleFactor = MIN_TOTAL_SPEED / totalSpeed;
+      ball.velocityX *= scaleFactor;
+      ball.velocityY *= scaleFactor;
+  }
+
+  game.sound.play("paddlehit");
+}
+
+function checkPaddleCollision(ball, paddle, nextX, nextY) {
+  // Calculate the closest point on the paddle to the ball's center
+  const closestX = Math.max(paddle.x, Math.min(nextX, paddle.x + paddle.width));
+  const closestY = Math.max(paddle.y, Math.min(nextY, paddle.y + paddle.height));
+
+  // Calculate the distance between the closest point and the ball's center
+  const distanceX = nextX - closestX;
+  const distanceY = nextY - closestY;
+  const distanceSquared = (distanceX * distanceX) + (distanceY * distanceY);
+
+  // Check if the distance is less than the ball's radius
+  return distanceSquared <= (ball.ballRadius * ball.ballRadius);
+}
+
+// function ballCollision(ball, player, game) {
+//   // Define the maximum speed for the ball
+//   const MAX_SPEED_X = 10; // Maximum horizontal speed
+//   const MAX_SPEED_Y = 10; // Maximum vertical speed
+
+//   // Check for collision with the paddle
+//   if (
+//     ball.x - ball.ballRadius <= player.x + player.width && // Ball overlaps paddle on x-axis
+//     ball.x + ball.ballRadius >= player.x && // Ball overlaps paddle on x-axis
+//     ball.y + ball.ballRadius >= player.y && // Ball overlaps paddle on y-axis
+//     ball.y - ball.ballRadius <= player.y + player.height // Ball overlaps paddle on y-axis
+//   ) {
+
+//     const hitPosition = ball.y - (player.y + player.height / 2);
+//     const normalizedHitPoint = hitPosition / (player.height / 2);
+
+//     ball.velocityX *= -1;
+//     ball.velocityY = normalizedHitPoint * 4.1;
+//     // Clamp velocities to the maximum allowed speeds
+//     ball.velocityX = Math.min(
+//       Math.max(ball.velocityX, -MAX_SPEED_X),
+//       MAX_SPEED_X
+//     );
+//     ball.velocityY = Math.min(
+//       Math.max(ball.velocityY, -MAX_SPEED_Y),
+//       MAX_SPEED_Y
+//     );
+
+//     // Play paddle hit sound
+//     game.sound.play("paddlehit");
+//   }
+// }
 
 
 async function resetGame(player1, player2, direction, game) {
@@ -662,6 +821,7 @@ function startaiGame(game) {
   // game.ball.velocityX = -game.defballSpeed;
   // end of test case
 
+  aikeyEvents("stop", aiHelper);
 
   // Start the AI loop
   function aiLoop(timestamp) {
@@ -700,7 +860,8 @@ function startaiGame(game) {
 function aiLogic(player2, game, aiHelper) {
   if (!game.drawFlag)
     return;
-  if (aiHelper.velocityX < 0 && aiHelper.scoreDeficit > 0) {
+
+  if (aiHelper.velocityX < 0 && aiHelper.scoreDeficit < 0) {
     const middlePos = game.boardHeight / 2;
     const paddleCenter = player2.y + player2.height / 2;
 
@@ -719,10 +880,10 @@ function aiLogic(player2, game, aiHelper) {
   }
 
   let tolerance = 40; // Allow a small margin of error
-  if (aiHelper.scoreDeficit > 0)
-    tolerance += (aiHelper.scoreDeficit * 10);
-  else if (aiHelper.scoreDeficit < 0)
-    tolerance -= (aiHelper.scoreDeficit * 10);
+  if (aiHelper.scoreDeficit > 0) // player is winning
+    tolerance = Math.max(40, tolerance + (aiHelper.scoreDeficit * 10));
+  else if (aiHelper.scoreDeficit < 0) // ai is losing
+    tolerance = Math.max(0, tolerance - (aiHelper.scoreDeficit * -10));
 
   const time = (player2.x - game.ball.x - player2.width) / game.ball.velocityX;
 
@@ -752,20 +913,27 @@ function aiLogic(player2, game, aiHelper) {
   }
 }
 
-function aiparryChance(aiHelper, time){
-
+function aiparryChance(aiHelper, time) {
   const deficit = Math.max(0, aiHelper.scoreDeficit);
-  let aiparryChance = 0.8; //set the ai's parry chance by 80% default
+  let aiparryChance = 0.8; // 80% base chance to parry
 
+  // Reduce parry chance based on score deficit
   aiparryChance -= deficit * 0.1;
+
+  // Calculate ideal parry timing
+  const idealParryTime = time * 60;
+
   if (Math.random() < aiparryChance) {
-    setTimeout(() => {
-      aikeyEvents("parry", aiHelper);
-    }, time * 60);
-  } else 
-    setTimeout(() => {
-      aikeyEvents("parry", aiHelper);
-    }, (time * 60) + 60);
+      setTimeout(() => {
+          aikeyEvents("parry", aiHelper);
+      }, idealParryTime);
+  } else {
+      // for imitating missed parry
+      const missDelay = 100 + Math.random() * 100; // 100-200ms too late
+      setTimeout(() => {
+          aikeyEvents("parry", aiHelper);
+      }, idealParryTime + missDelay);
+  }
 }
 
 // function to check/store balls last position every 1 second.
@@ -776,7 +944,7 @@ function aiView(game, aiHelper) {
     aiHelper.velocityX = game.ball.velocityX;
     aiHelper.velocityY = game.ball.velocityY;
     // if the player is losing increase scoredificit
-    aiHelper.scoreDeficit = game.players[0].score < game.players[1].score ? game.players[1].score - game.players[0].score : game.players[0].score - game.players[1].score;
+    aiHelper.scoreDeficit = game.players[0].score < game.players[1].score ? game.players[1].score - game.players[0].score : game.players[1].score - game.players[0].score;
   }
 }
 
@@ -851,7 +1019,7 @@ function aikeyEvents(moveDirection, aiHelper) {
       const releaseEvent = createAIKeyEvent("keyup", "Numpad0", "Numpad0", 96);
       releaseEvent.isAI = true;
       document.dispatchEvent(releaseEvent);
-    }, 50);
+    }, 10);
   }
 }
 

@@ -14,7 +14,7 @@ class Game {
     this.context = null;
     this.boardWidth = 800;
     this.boardHeight = 500;
-    this.playerWidth = 15;
+    this.playerWidth = 16;
     this.playerHeight = 80;
 
     //players
@@ -40,9 +40,11 @@ class Game {
       y: this.boardHeight / 2,
       velocityX: this.defballSpeed,
       velocityY: this.defballSpeed,
-      ballRadius: 7,
+      ballRadius: 8,
     };
+
     this.sound = new Sound();
+    this.pauseKey = "KeyP";
   }
 
   getboardWidth() {
@@ -65,8 +67,8 @@ class Game {
     this.stopeventListeners();
     this.ball.x = this.boardWidth / 2;
     this.ball.y = this.boardWidth / 2;
-    this.players[0].y = this.boardHeight / 2 - this.playerWidth / 2;
-    this.players[1].y = this.boardHeight / 2 - this.playerWidth / 2;
+    this.players[0].y = (this.boardHeight / 2) - this.playerHeight / 2;
+    this.players[1].y = (this.boardHeight / 2) - this.playerHeight / 2;
     this.players[0].velocityY = 0;
     this.players[1].velocityY = 0;
     this.randomizeServe();
@@ -154,6 +156,7 @@ class Game {
       paddleSpeed: this.paddleSpeed,
       maxScore: this.maxScore,
       slowServe: this.slowServe,
+      parryFlag: this.parryFlag
     };
     localStorage.setItem(key, JSON.stringify(settings));
   }
@@ -167,6 +170,7 @@ class Game {
       this.paddleSpeed = savedSettings.paddleSpeed || this.paddleSpeed;
       this.maxScore = savedSettings.maxScore || this.maxScore;
       this.slowServe = savedSettings.slowServe || this.slowServe;
+      this.parryFlag = savedSettings.parryFlag || this.parryFlag;
     }
   }
 }
