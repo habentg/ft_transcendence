@@ -1,6 +1,6 @@
 .body,
 html {
-    overflow: auto;
+    overflow: hidden;
 }
 
 .gamePage .background-image {
