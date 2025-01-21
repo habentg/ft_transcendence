@@ -43,6 +43,7 @@ class Game {
       ballRadius: 8,
     };
 
+    this.fps = 0;
     this.sound = new Sound();
     this.pauseKey = "KeyP";
   }
