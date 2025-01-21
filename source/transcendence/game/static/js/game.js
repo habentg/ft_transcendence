@@ -21,17 +21,18 @@ async function createGameInDB(game) {
     if (response.ok) {
       const responseData = await response.json();
       game.game_id = responseData.game_id;
-      if (game.aiFlag)
-        startaiGame(game);
-      else if (game.tournamentFlag)
-        return 'start_tournament';
-      else
-        startGame(game);
+      if (game.aiFlag) startaiGame(game);
+      else if (game.tournamentFlag) return "start_tournament";
+      else startGame(game);
       return;
     }
     throw new Error("Failed to load gameApiPOSTFunction");
   } catch (error) {
-    createToast({ type: 'error', error_message: 'Failed to create game', title: 'Game Creating Error!' });
+    createToast({
+      type: "error",
+      error_message: "Failed to create game",
+      title: "Game Creating Error!",
+    });
     return false;
   }
 }
@@ -55,7 +56,11 @@ async function updateGameInDB(endgame_data, game_id) {
       `Failed to update game with id: ${game_id} : ${response.status} : ${response.error}`
     );
   } catch (error) {
-    createToast({ type: 'error', error_message: error, title: 'Game Updating Error!' });
+    createToast({
+      type: "error",
+      error_message: error,
+      title: "Game Updating Error!",
+    });
   }
 }
 
@@ -126,22 +131,28 @@ function startGame(game) {
   document.getElementById("settingButton").disabled = true;
   document.getElementById("gameRulesButton").disabled = true;
 
+  // requestAnimationFrame(() => gameLoop(game));
   requestAnimationFrame((timestamp) => gameLoop(game, timestamp));
 }
 
 function gameLoop(game, timestamp) {
-  if (!window.isGameRunning)
-    return;
-  const fps = 60;
-  const interval = 1000 / fps;
+  if (!window.isGameRunning) return;
 
-  if (timestamp - game.lastTime >= interval) {
-    game.lastTime = timestamp;
-    // Update game values
+  const fps = 60;
+  const interval = 1000 / fps; // Target time between frames in milliseconds
+  game.lastTime = game.lastTime || timestamp;
+
+  // Calculate time elapsed
+  const deltaTime = timestamp - game.lastTime;
+
+  if (deltaTime >= interval) {
+    // Update the game state and redraw
+    game.lastTime = timestamp - (deltaTime % interval); // Reset lastTime to account for missed frames
     updategameValues(game.players[0], game.players[1], game);
-    // Draw the game
     draw(game.players[0], game.players[1], game);
   }
+
+  // Request the next frame
   requestAnimationFrame((newTimestamp) => gameLoop(game, newTimestamp));
 }
 
@@ -386,7 +397,7 @@ function isParry(player, game) {
   const ballNearPlayer =
     player.x < game.boardWidth / 2 // Check which side the player is on
       ? game.ball.x - game.ball.ballRadius <=
-      player.x + player.width + parryRange // Near Player 1
+        player.x + player.width + parryRange // Near Player 1
       : game.ball.x + game.ball.ballRadius >= player.x - parryRange; // Near Player 2
   const withinVerticalRange =
     game.ball.y + game.ball.ballRadius > player.y &&
@@ -543,7 +554,6 @@ function handlePaddleCollision(ball, paddle, game, isLeftPaddle) {
   game.sound.play("paddlehit");
 }
 
-
 function checkPaddleCollision(ball, paddle, nextX, nextY) {
   // Calculate the closest point on the paddle to the ball's center
   const closestX = Math.max(paddle.x, Math.min(nextX, paddle.x + paddle.width));
@@ -560,7 +570,6 @@ function checkPaddleCollision(ball, paddle, nextX, nextY) {
   // Check if the distance is less than the ball's radius
   return distanceSquared <= ball.ballRadius * ball.ballRadius;
 }
-
 
 async function resetGame(player1, player2, direction, game) {
   //bring back ball to the middle
@@ -701,52 +710,55 @@ function startaiGame(game) {
   window.isGameRunning = true;
 
   let lastAiViewTime = performance.now(); // Timestamp for AI viewing logic
-  let lastFrameTime = performance.now(); // Timestamp for FPS calculation
-
+  let lastlogicTime = performance.now();
   aikeyEvents("stop", aiHelper);
 
   // Start the AI loop
   function aiLoop(timestamp) {
     if (!window.isGameRunning) return; // Stop if the game is no longer running
-
+    const fps = 60;
+    const interval = 1000 / fps;
     // Calculate elapsed time for FPS and AI view
-    const deltaTimeView = timestamp - lastAiViewTime;
-    const deltaTimeFrame = timestamp - lastFrameTime; // Frame time
-    lastFrameTime = timestamp;
-
-    // Calculate FPS
-    if (deltaTimeFrame > 0) {
-      game.fps = 1000 / deltaTimeFrame;
-    }
+    const deltaTime = timestamp - lastAiViewTime;
 
     // Run `aiView` every 1000 ms
-    if (deltaTimeView >= 1000) {
+    if (deltaTime >= 1000) {
       aiView(game, aiHelper);
-      lastAiViewTime = timestamp; // Reset view timer
+      lastAiViewTime = timestamp - (deltaTime ); // Reset view timer
     }
-    aiLogic(game.players[1], game, aiHelper);
-
+    if (deltaTime >= interval) {
+      lastlogicTime = timestamp - (deltaTime % interval);
+      aiLogic(game.players[1], game, aiHelper);
+    }
     // Continue the AI loop
-    requestAnimationFrame(aiLoop);
+    requestAnimationFrame((newTimestamp) => aiLoop(newTimestamp));
   }
   // Start the AI loop
-  requestAnimationFrame(aiLoop);
+  requestAnimationFrame((timestamp) => aiLoop(timestamp));
 
   // Start the shared game loop (assuming it's already defined elsewhere)
-  requestAnimationFrame((timestamp) => {
-    gameLoop(game, timestamp);
-  });
+  // requestAnimationFrame((timestamp) => {
+  //   gameLoop(game, timestamp);
+  // });
+  requestAnimationFrame((timestamp) => gameLoop(game, timestamp));
 }
+
 
 function aiLogic(player2, game, aiHelper) {
   if (!game.drawFlag) return;
 
   if (aiHelper.velocityX < 0 && aiHelper.scoreDeficit < 0) {
     aiMiddle(aiHelper, game, player2);
+    return;
   }
 
-  if (game.parryFlag && aiHelper.velocityX > 0 && !aiHelper.aiParry && aiHelper.playerParry)
-    aiparryChance(aiHelper, aiHelper.time, game.fps);
+  if (
+    game.parryFlag &&
+    aiHelper.velocityX > 0 &&
+    !aiHelper.aiParry &&
+    aiHelper.playerParry
+  )
+    aiparryChance(aiHelper, aiHelper.time, 60);
 
   let tolerance = 30 + aiHelper.tolInc / 10; // Allow a small margin of error
   tolerance += aiHelper.scoreDeficit * 10; // Increase or decrease based on score
@@ -805,7 +817,7 @@ function aiMiddle(aiHelper, game, player2) {
 
 function aiparryChance(aiHelper, time, fps) {
   const deficit = Math.max(0, aiHelper.scoreDeficit);
-  let aiparryChance = 1; // 80% base chance to parry
+  let aiparryChance = 0.8; // 80% base chance to parry
 
   // Reduce parry chance based on score deficit
   aiparryChance -= deficit * 0.1;
@@ -851,7 +863,9 @@ function aiView(game, aiHelper) {
     aiHelper.time =
       Ball.velocityX > 0
         ? (ai.x - Ball.x - 16) / Ball.velocityX
-        : Math.abs(((Ball.x - player.x) + (player.x + ai.x - 16)) / Ball.velocityX);
+        : Math.abs(
+            (Ball.x - player.x + (player.x + ai.x - 16)) / Ball.velocityX
+          );
   }
 }
 
@@ -943,7 +957,7 @@ function checkScreenSize(game = null) {
     window.innerWidth < MIN_WINDOW_WIDTH ||
     window.innerHeight < MIN_WINDOW_HEIGHT
   ) {
-    warningMessage.classList.remove("d-none");
+    if (warningMessage) warningMessage.classList.remove("d-none");
     if (gameContent) gameContent.classList.add("d-none");
     if (game.parryFlag) pauseTime = new Date();
     game.drawFlag = false;

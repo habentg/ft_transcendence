@@ -55,13 +55,15 @@ class GameView(APIView, BaseView):
         serializer = GameSerializer(data=data)
         if serializer.is_valid():
             new_game = serializer.save()
+            response = Response({'game_id': new_game.id}, status=status.HTTP_201_CREATED)
+            response.set_cookie('access_token', generate_access_token(self.request.COOKIES.get('refresh_token')), httponly=True, samesite='Lax', secure=True)
             if data.get('type') == 'TOURNAMENT':
                 tournament = Tournament.objects.get(id=data['tournament_id'])
                 new_game.tournament_id = tournament.id
                 new_game.save()
                 tournament.add_game(new_game)
                 tournament.save()
-            return JsonResponse({'game_id': new_game.id})
+            return response
         return JsonResponse({'error': 'Invalid data'}, status=400)
     
     def patch(self, request):
