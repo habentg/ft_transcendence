@@ -36,7 +36,7 @@
                     {% if search_type == 'friends' %}
                       <button class="btn btn-primary btn-sm me-2 chat_btn" data-username="{{ player.username }}"><i class="fas fa-comments me-2"></i>Chat</button>
                     {% elif search_type == 'friend_requests' %}
-                      <button type="button" class="btn btn-success btn-sm me-2 acc_req_btn" data-username="{{ player.username }}" style="display: inline;"  onclick="searchedFriendRequestResponce(event, 'accept', '{{ player.username }}')"><i class="fas fa-check me-2"></i>Accept</button>
+                      <button type="button" class="btn btn-success btn-sm me-2 acc_req_btn" data-username="{{ player.username }}" style="display: inline;"><i class="fas fa-check me-2"></i>Accept</button>
                       <button type="button" class="btn btn-danger btn-sm rej_req_btn" data-username="{{ player.username }}" style="display: inline;"><i class="fas fa-times me-2"></i>Reject</button>
                     {% else %}
                       <i id="profileIcon" class="fas fa-user me-2"></i>

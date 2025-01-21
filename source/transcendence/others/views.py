@@ -186,7 +186,6 @@ class PaginatedSearch(APIView, BaseView):
 	throttle_classes = []
 	template_name = 'friendship/search_result.html'
 	css = ['css/search.css']
-	js = ['js/friend.js']
 
 	def handle_exception(self, exception):
 		if isinstance(exception, AuthenticationFailed):

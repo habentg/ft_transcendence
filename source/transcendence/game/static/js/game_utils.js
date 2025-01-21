@@ -304,10 +304,10 @@ class Sound {
 // Check if mobile using window.navigator.userAgent
 function isInDesktop() {
   const mobileDevices = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+  const isLargeScreen = window.innerWidth >= 820 && window.innerHeight >= 700; 
   // const isInDesktop = /(Chrome|Safari|Firefox|Edge|Opera|MSIE|Trident)/i.test(navigator.userAgent);
-
-  // Check for touch capabilities (common on mobile)
+  
   const isTouchDevice = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
 
-  return !mobileDevices && !isTouchDevice;
+  return ((!mobileDevices && isTouchDevice) || isLargeScreen);
 }
