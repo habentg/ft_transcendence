@@ -328,6 +328,15 @@ async function handleNotificationBellClick(action) {
 
 // Create a function to create a toast div and append it to the body
 function createToast(content) {
+  const existingToast = document.getElementById("toast");
+  if (existingToast) {
+    const existingBsToast = bootstrap.Toast.getInstance(existingToast);
+    if (existingBsToast) {
+      existingBsToast.dispose();
+    }
+    existingToast.remove();
+  }
+
   const toast = document.createElement("div");
   toast.id = "toast";
   toast.classList.add("toast");
