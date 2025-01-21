@@ -826,7 +826,7 @@ function startaiGame(game) {
     lastscoreDef: 0,
     aiMovingDown: false,
     aiMovingUp: false,
-    time: performance.now(), // Initialize time for AI timing logic
+    time: 0 // Initialize time for AI timing logic
   };
 
   game.drawFlag = true;
@@ -878,21 +878,20 @@ function aiLogic(player2, game, aiHelper) {
   
   if (aiHelper.velocityX < 0 && aiHelper.scoreDeficit < 0){
     aiMiddle(aiHelper, game, player2);
-    return ;
   } 
 
-  const time = (player2.x - aiHelper.x - player2.width) / aiHelper.velocityX;
+  // const time = (player2.x - aiHelper.x - player2.width) / aiHelper.velocityX;
   
   // if (game.parryFlag && aiHelper.velocityX > 0 && !player2.cooldownFlag)
   //   aiparryChance(aiHelper, time, game.fps);
 
   if (game.parryFlag && aiHelper.velocityX > 0 && !aiHelper.aiParry){
     if (aiHelper.scoreDeficit >= 0) {
-      aiparryChance(aiHelper, time);
+      aiparryChance(aiHelper, aiHelper.time);
       // console.log("Just parry");
     }
     else if(aiHelper.scoreDeficit < 0 && aiHelper.playerParry){
-      aiparryChance(aiHelper, time);
+      aiparryChance(aiHelper, aiHelper.time);
       // console.log("Parry if the playerflag is true", aiHelper.playerParry);
     }
   }
@@ -902,7 +901,7 @@ function aiLogic(player2, game, aiHelper) {
   tolerance = Math.max(0, Math.min(100, tolerance)); // Clamp to reasonable range
   
   //predicts y location based on the time. this variable would exceed the board size. exceeding board size would mean its supposed to hit wall
-  let yHit = adjustYhit(aiHelper, time, game.boardHeight);
+  let yHit = adjustYhit(aiHelper, aiHelper.time, game.boardHeight);
   
   let target = Math.abs(yHit - player2.height / 2);
   if (target > player2.y - tolerance && target < player2.y + tolerance) {
@@ -997,6 +996,7 @@ function aiView(game, aiHelper) {
       aiHelper.lastscoreDef = aiHelper.scoreDeficit;
     }
     aiHelper.tolInc++;
+    aiHelper.time = Ball.velocityX > 0 ? (ai.x - Ball.x - 20) / Ball.velocityX : Math.abs((ai.x + Ball.x - 20) / Ball.velocityX);
   }
 }
 
