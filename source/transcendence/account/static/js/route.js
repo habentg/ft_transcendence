@@ -57,7 +57,6 @@ async function appRouter(event) {
 
 // Load the content of the page
 async function loadContent(route) {
-  console.log("-> routing to : ", route)
   try {
     const response = await fetch(`${route}`, {
       method: "GET",
@@ -68,7 +67,6 @@ async function loadContent(route) {
 
     if (!response.ok) {
       if (response.status == 302) {
-        console.log("are we in 302 routing - ", route)
         return;
       }
       throw new Error({

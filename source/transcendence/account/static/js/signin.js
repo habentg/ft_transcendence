@@ -32,7 +32,7 @@ async function handleSignInSubmit(e) {
         password: document.getElementById("password").value,
     };
     if (!inputValidator(formData.username) || formData.username.length < 4 || formData.username.length > 100) {
-        displayError({ invalid_chars: "Invalid Username detected: Only AlphNumericals and underscore between 4 and 100 long!" });
+        displayError({ invalid_chars: "Invalid Username: Only AlphNumericals and underscore at least 4 characters long!" });
         return;
     }
     if (formData.password.length < 3 || formData.password.length > 150) {

@@ -60,7 +60,7 @@ async function handleSignupSubmit(e) {
     confirm_password: document.getElementById("confirm-password").value,
   };
   if (!inputValidator(formData.username) || formData.username.length < 4 || formData.username.length > 100) {
-    displayError({ invalid_chars: "Invalid Username detected: Only AlphNumericals and underscore between 4 and 100 long!" });
+    displayError({ invalid_chars: "Invalid Username: Only AlphNumericals and underscore al least 4 characters long!" });
     return;
   }
   if (document.getElementById('firstName').value.length > 150 || document.getElementById('lastName').value.length > 150) {

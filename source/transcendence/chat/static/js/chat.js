@@ -259,7 +259,6 @@ async function clearConvo() {
 
 function inviteToGame() {
   const [active_chat_recipient, chat_id] = getActiveChatIdandRecipient();
-  // console.log(active_chat_recipient)
   if (window.ws && window.ws.readyState === WebSocket.OPEN) {
     window.ws.send(JSON.stringify({
       type: "invite_to_game",

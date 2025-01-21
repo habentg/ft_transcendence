@@ -161,40 +161,6 @@ function createLocalGameModal() {
   optionLocalGameModal();
 }
 
-// Create a modal for creating a tournament
-// function createTournamentModal() {
-//   const existingModal = document.getElementById("tournamentModal");
-//   if (existingModal) {
-//     existingModal.remove();
-//   }
-
-
-//   const modal = getPlayerNumberModal();
-//   document.body.appendChild(modal);
-
-//   // Event Listeners
-//   document.getElementById("submitPlayerNumBtn").addEventListener("click", () => {
-//     const playersNumber = document.getElementById("playersNumber").value;
-//     console.log("Creating tournament with ", playersNumber, " players");
-//     // createTournament(playersNumber);
-//     closeModal("tournamentModal");
-//   });
-
-//   // close the modal when the close button is clicked
-//   document.querySelector("#tournamentModal .btn-close").addEventListener("click", () => {
-//     closeModal("tournamentModal");
-//   });
-
-//   // close the modal when the modal is clicked outside
-//   modal.addEventListener("click", (event) => {
-//     if (event.target === modal) {
-//       closeModal("tournamentModal");
-//     }
-//   });
-
-// }
-
-
 function initHome() {
   searchingSystem();
   const createtournamentBtn = document.getElementById("createTournamentBtn");
@@ -217,7 +183,6 @@ function initHome() {
         createToast({ type: "error", title: "Mobile not supported!!!!", error_message: "Please use a desktop to play a game!" });
         return;
       }
-      console.log("Creating local game -- desktop");
       createLocalGameModal();
     });
   }

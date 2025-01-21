@@ -252,13 +252,13 @@ async function anonAccountModal() {
 
   let anon_confirmaion_modal = null;
   const anonTextBtn = document.getElementById("anon_text");
-  anon_action = anonTextBtn.textContent === "Anonymize Account" ? "anon" : "deanon";
-  console.log("WTF - anon action: ", anon_action);
+  
+  anon_action = anonTextBtn.textContent === "De-anonymize Account" ? "deanon" : "anon";
   if (anon_action === "anon") {
     anon_confirmaion_modal = anonymizeModal('Anonymize', 'Are you sure you want to anonymize your account?');
   }
   else {
-    anon_confirmaion_modal = anonymizeModal('De-anonymize', 'Are you sure you want to de-anonymize your account?');
+    anon_confirmaion_modal = anonymizeModal('De-anonymize', 'Are you sure you want to De-anonymize your account?');
   }
   document.body.appendChild(anon_confirmaion_modal);
   document.body.classList.add("modal-open");
@@ -281,14 +281,13 @@ async function anonAccountModal() {
   });
 }
 
-/* anonymize account */
+/* Anonymize Account */
 async function anonAccount() {
   // Close the modal
   closeModal("anon-account-modal");
 
   const anonTextBtn = document.getElementById("anon_text");
-  anon_action = anonTextBtn.textContent === "Anonymize Account" ? "anon" : "deanon";
-  console.log("anon action: ", anon_action);
+  anon_action = anonTextBtn.textContent === 'Anonymize Account' ? "anon" : "deanon";
   try {
     const response = await fetch(`/anonymize?anon_action=${anon_action}`, {
       method: 'POST',
@@ -299,7 +298,7 @@ async function anonAccount() {
     });
 
     if (!response.ok) {
-      throw new Error("Failed to anonymize account");
+      throw new Error("Failed to Anonymize Account");
     }
     if (anon_action === "anon") {
       anonTextBtn.textContent = "De-anonymize Account";
@@ -311,10 +310,10 @@ async function anonAccount() {
       anonTextBtn.textContent = "Anonymize Account";
       document.getElementsByClassName("anon_i")[0].classList.remove('fa-user');
       document.getElementsByClassName("anon_i")[0].classList.add('fa-user-secret');
-      await showSuccessMessage("Account de-anonymized successfully!", 2000);
+      await showSuccessMessage("Account De-anonymized successfully!", 2000);
     }
   } catch (error) {
-    createToast({ type: "error", title: "Error", error_message: "Failed to anonymize account" });
+    createToast({ type: "error", title: "Error", error_message: "Failed to Anonymize Account" });
   }
 }
 

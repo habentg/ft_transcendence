@@ -892,8 +892,7 @@ function changeSetting(game) {
   const modal = gameSettingsModal();
 
   if (document.body.appendChild(modal))
-    console.log("Child appended");
-
+  
   // Event Listeners
   modal.querySelector("#applyButton").addEventListener("click", () => {
     if (applySetting(game) === 0) {

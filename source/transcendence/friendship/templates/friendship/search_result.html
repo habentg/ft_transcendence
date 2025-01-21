@@ -25,7 +25,11 @@
                         <img src="{{ player.profile_picture }}" alt="Profile Picture" class="rounded-circle" style="width: 40px; height: 40px;" />
                       {% endif %}
                     {% else %}
-                      <img src="{% static 'images/default_profile_pic.jpeg' %}" alt="Default Profile Picture" class="rounded-circle" style="width: 40px; height: 40px;" />
+                      {% if player.is_anonymous %}
+                        <img src="{% static 'images/anon.jpeg' %}" alt="Anon Profile Picture" class="rounded-circle" style="width: 40px; height: 40px;" />
+                      {% else %}
+                        <img src="{% static 'images/default_profile_pic.jpeg' %}" alt="Default Profile Picture" class="rounded-circle" style="width: 40px; height: 40px;" />
+                      {% endif %}
                     {% endif %}
                   </div>
 
@@ -44,7 +48,7 @@
                     {% if search_type == 'friends' %}
                       <button class="btn btn-primary btn-sm me-2 chat_btn" data-username="{{ player.username }}"><i class="fas fa-comments me-2"></i>Chat</button>
                     {% elif search_type == 'friend_requests' %}
-                      <button type="button" class="btn btn-success btn-sm me-2 acc_req_btn" data-username="{{ player.username }}" style="display: inline;" onclick="searchedFriendRequestResponce(event, 'accept', '{{ player.username }}')"><i class="fas fa-check me-2"></i>Accept</button>
+                      <button type="button" class="btn btn-success btn-sm me-2 acc_req_btn" data-username="{{ player.username }}" style="display: inline;"><i class="fas fa-check me-2"></i>Accept</button>
                       <button type="button" class="btn btn-danger btn-sm rej_req_btn" data-username="{{ player.username }}" style="display: inline;"><i class="fas fa-times me-2"></i>Reject</button>
                     {% else %}
                       <i id="profileIcon" class="fas fa-user me-2"></i>
