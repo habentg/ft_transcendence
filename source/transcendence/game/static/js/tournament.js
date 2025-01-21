@@ -37,24 +37,7 @@ async function createTournamentinDB(tournament_type) {
       this.game.createPlayer(player2Name, "right");
       this.game.drawFlag = true;
       this.game.setupeventListeners();
-      const player1NameElement = document.getElementById("player1Name");
-      if (player1NameElement) {
-        player1NameElement.textContent = "@ " + player1Name;
-        player1NameElement.style.display = "block";
-      }
-      const player2NameElement = document.getElementById("player2Name");
-      if (player2NameElement) {
-        player2NameElement.textContent = "@ " + player2Name;
-        player2NameElement.style.display = "block";
-      }
-      const player1Element = document.getElementById("player1");
-      if (player1Element) {
-        player1Element.classList.remove("d-none");
-      }
-      const player2Element = document.getElementById("player2");
-      if (player2Element) {
-        player2Element.classList.remove("d-none");
-      }
+	  addPlayerTitles(player1Name, player2Name)
       const tournament_id = document.getElementById("background").getAttribute("data-tournamentId");
       this.game.tournament_id = tournament_id;
       const ret = await createGameInDB(this.game);
@@ -65,7 +48,7 @@ async function createTournamentinDB(tournament_type) {
       }
       else {
         createToast({type: 'error', error_message: 'Failed to start Tournament games', title: 'Game Creating Error!'});
-        return;
+        return ;
       }
     }
     getPlayers() {
@@ -94,13 +77,7 @@ async function createTournamentinDB(tournament_type) {
 
     createPlayerButtonWithRemoveOption(playerName) {
       const playerButton = document.createElement("button");
-      playerButton.classList.add(
-        "menu-item",
-        "d-flex",
-        "justify-content-between",
-        "align-items-center",
-        "p-3"
-      );
+      playerButton.classList.add( "menu-item", "d-flex", "justify-content-between", "align-items-center", "p-3");
       const nameContainer = document.createElement("div");
       nameContainer.classList.add("d-flex", "align-items-center", "mx-auto");
       nameContainer.innerHTML = `
@@ -225,7 +202,7 @@ async function createTournamentinDB(tournament_type) {
       this.matchCount = 0;
     }
 
-    checkGameStatus = (players, newTournamentGame, gameCanvas, playersNames) => {
+    checkGameStatus = (players, newTournamentGame, gameCanvas, warningMessage, playersNames) => {
       if (!newTournamentGame.game.drawFlag && !window.isGameRunning) {
         const match = {
           player1: players[0].playerName,
@@ -239,12 +216,14 @@ async function createTournamentinDB(tournament_type) {
         };
         this.matchHistory.push(match);
         this.updateTournamentMap(match, playersNames);
+		if(warningMessage)
+			warningMessage.remove();
         gameCanvas.remove();
         return match.winner;
       }
       return new Promise((resolve) => {
         requestAnimationFrame(() => {
-          resolve(this.checkGameStatus(players, newTournamentGame, gameCanvas, playersNames));
+          resolve(this.checkGameStatus(players, newTournamentGame, gameCanvas,warningMessage, playersNames));
         });
       });
     };
@@ -256,14 +235,19 @@ async function createTournamentinDB(tournament_type) {
       await UIManager.waitForModal("nextMatch");
       const pageContainer = document.getElementById("background");
       const gameCanvas = createGameCanvas();
-      if (pageContainer) pageContainer.appendChild(gameCanvas);
+      const warningMessage = addWarningMessage();
+      if (pageContainer) 
+		{
+			pageContainer.appendChild(warningMessage);
+			pageContainer.appendChild(gameCanvas);
+		}
       return new Promise((resolve, reject) => {
         try {
           let newTournamentGame = new GameBoard();
 
           let players = newTournamentGame.getPlayers();
           newTournamentGame.startTournamentGame(player1Name, player2Name);
-          resolve(this.checkGameStatus(players, newTournamentGame, gameCanvas,playersNames));
+          resolve(this.checkGameStatus(players, newTournamentGame, gameCanvas, warningMessage,playersNames));
         } catch (error) {
           createToast({type: 'error', error_message: 'Failed to play match', title: 'Game Error!'});
           reject(error);
@@ -474,7 +458,6 @@ async function createTournamentinDB(tournament_type) {
         const continueButton = document.querySelector(buttonClass);
         if (!continueButton) {
           reject("Not working");
-          // console.error("Continue button not found in the DOM.");
           return;
         }
         const handleClick = () => {

@@ -1,31 +1,13 @@
 {% load static %}
 
-<div class="page">
+<div class="tournamentPage">
   <div id="background" class="background-image home-btn w-100" data-tournamentId="" data-username="">
-    <div id="warningMessage" class="d-none text-center text-light p-2"> 
-      <h3 class="mb-4 mt-2">Screen too small to play</h3>
-      <h5>
-        Please switch to a laptop or desktop with a larger screen for the best
-        experience.
-      </h5>
-    </div>
     <div class="playerListContainer py-5 flex-direction: column">
       <!-- Player List Section Where you can add players -->
       <div class="row justify-content-center mb-4">
         <div class="col-lg-8">
           <div class="content p-4">
-            <div class="row g-3">
-              <!-- Player List section -->
-              <div
-                style="
-                  display: flex;
-                  align-items: center;
-                  margin: auto;
-                  margin-top: 36px;
-                  margin-bottom: 36px;
-                  flex-direction: column;
-                "
-              >
+            <div class="playerHeaderContainer row g-3">
                 <h1 class="text-center mb-5">Tournament Player List</h1>
                 <div class="input-group">
                   <input
@@ -43,7 +25,6 @@
                   class="text-danger small mt-2"
                   style="display: none"
                 ></div>
-              </div>
             </div>
             <div
               id="playerContainer"

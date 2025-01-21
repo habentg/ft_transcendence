@@ -1,4 +1,4 @@
-.page .background-image,
+.background-image,
 .tournamentPage .background-image {
   display: flex;
   justify-content: center;
@@ -13,7 +13,6 @@
   min-height: fit-content;
   height: 100vh;
 }
-
 
 .playerListContainer {
   width: 80%;
@@ -58,6 +57,15 @@
   align-items: center;
   flex-direction: column;
   justify-content: center;
+}
+
+.playerHeaderContainer {
+	display: flex;
+	align-items: center;
+	margin: auto;
+	margin-top: 36px;
+	margin-bottom: 36px;
+	flex-direction: column;
 }
 
 .menu-item {
