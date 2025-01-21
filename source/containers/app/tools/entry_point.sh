@@ -29,7 +29,7 @@ try:
     FriendList.objects.create(player=player)
     player.save()
 except:
-    print('root already exists')
+    pass
 EOF
 
 # Run server

@@ -69,7 +69,6 @@ class SignUpView(APIView, BaseView):
 				FriendList.objects.create(player=new_player)
 				return response
 			return Response({'error_msg': 'Couldn\'t create the player'}, status=status.HTTP_422_UNPROCESSABLE_ENTITY)
-		print("Error in signup: ", serializer.errors, flush=True)
 		return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 	def get_context_data(self, request):
@@ -109,7 +108,6 @@ class SignInView(APIView, BaseView):
 			player.save()
 			return response
 		error_message = serializer.errors.get('non_field_errors', ['No specific error'])[0]
-		print("Error in sign in: ", serializer.errors, flush=True)
 		return Response({'error_msg': error_message}, status=status.HTTP_400_BAD_REQUEST)
 
 	def get_context_data(self, request):
@@ -379,7 +377,6 @@ class TwoFactorAuth(APIView, BaseView):
 			player = Player.objects.get(email=player_email)
 			if player.tfa:
 				if send_2fa_code(player):
-					print("OTP sent successfully", flush=True)
 					return Response({'success': 'OTP sent successfully'}, status=status.HTTP_200_OK)
 				else:
 					return Response({'error_msg': 'Couldn\'t send OTP to the given Email'}, 
@@ -631,7 +628,6 @@ class AnonymizePlayer(APIView):
 	def post(self, request):
 		player = request.user
 		anon_action = request.GET.get('anon_action', '')
-		print("Anon action: ", anon_action, flush=True)
 		if anon_action == 'anon':
 			player.is_anonymous = True
 		else:

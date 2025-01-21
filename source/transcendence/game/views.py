@@ -284,7 +284,6 @@ class TournamentRetrievalView(APIView):
             except Tournament.DoesNotExist:
                 return Response({"error": "Tournament not found"}, status=404)
             except Exception as e:
-                print("error", str(e))
                 return Response({"error": str(e)}, status=400)
         else:
             tournaments = Tournament.objects.values("id", "name")

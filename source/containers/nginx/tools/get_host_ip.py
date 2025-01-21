@@ -15,7 +15,6 @@ def get_network_ip():
             cmd = ['ip', 'addr', 'show']
             pattern = r'inet (\d+\.\d+\.\d+\.\d+).*global'
         else:
-            print(f"Unsupported operating system: {system}")
             return 'localhost'
 
         output = subprocess.check_output(cmd).decode('utf-8')

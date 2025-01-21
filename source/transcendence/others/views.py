@@ -56,7 +56,6 @@ class BaseView(View):
 				resources['user'] = PlayerSerializer(getPlayerFromToken(request.COOKIES.get('refresh_token'))).data
 			if request.user.is_authenticated:
 				resources['user'] = PlayerSerializer(request.user).data
-			print("are we fucking rendering it!", flush=True)
 			return render(request, 'others/base.html', resources)
 
 	def get_context_data(self, request, **kwargs):
@@ -222,7 +221,6 @@ class PaginatedSearch(APIView, BaseView):
 		"""
 		if search_param == 'friends':
 			players = request.user.friend_list.friends.all()
-			print("all my friends", players, flush=True)
 		elif search_param == 'friend_requests':
 			friend_requests = request.user.received_requests.all()
 			players = [fr.sender for fr in friend_requests]  # Extracting the users who sent requests
