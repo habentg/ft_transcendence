@@ -206,7 +206,7 @@ async function deleteAccount() {
     if (response.status === 200) {
       closeModal("delete-account-modal");
       updateNavBar(false);
-      updateUI("");
+      await updateUI("/");
     } else {
       throw new Error("Failed to delete account");
     }
@@ -250,7 +250,16 @@ async function anonAccountModal() {
   const existingModal = document.getElementById("anon-account-modal");
   if (existingModal) existingModal.remove();
 
-  const anon_confirmaion_modal = anonymizeModal();
+  let anon_confirmaion_modal = null;
+  const anonTextBtn = document.getElementById("anon_text");
+  anon_action = anonTextBtn.textContent === "Anonymize Account" ? "anon" : "deanon";
+  console.log("WTF - anon action: ", anon_action);
+  if (anon_action === "anon") {
+    anon_confirmaion_modal = anonymizeModal('Anonymize', 'Are you sure you want to anonymize your account?');
+  }
+  else {
+    anon_confirmaion_modal = anonymizeModal('De-anonymize', 'Are you sure you want to de-anonymize your account?');
+  }
   document.body.appendChild(anon_confirmaion_modal);
   document.body.classList.add("modal-open");
 
@@ -263,11 +272,12 @@ async function anonAccountModal() {
     .addEventListener("click", () => closeModal("anon-account-modal"));
   anon_confirmaion_modal
     .querySelector("#anon-acc-confirm")
-    .addEventListener("click", anonAccount);
+    .addEventListener("click", async() => {await anonAccount()});
 
   // Close modal when clicking outside
   anon_confirmaion_modal.addEventListener("click", (e) => {
-    if (e.target === anon_confirmaion_modal) closeModal("anon-account-modal");
+    if (e.target === anon_confirmaion_modal)
+      closeModal("anon-account-modal");
   });
 }
 
@@ -276,16 +286,33 @@ async function anonAccount() {
   // Close the modal
   closeModal("anon-account-modal");
 
+  const anonTextBtn = document.getElementById("anon_text");
+  anon_action = anonTextBtn.textContent === "Anonymize Account" ? "anon" : "deanon";
+  console.log("anon action: ", anon_action);
   try {
-    const response = await fetch('/anonymize/');
+    const response = await fetch(`/anonymize?anon_action=${anon_action}`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-CSRFToken': await getCSRFToken(),
+      }
+    });
 
     if (!response.ok) {
       throw new Error("Failed to anonymize account");
     }
-    const responseData = await response.json();
-    await showSuccessMessage("Account anonymized successfully!", 2000);
-    updateNavBar(true, `${responseData['anon_username']}`, '/static/images/anon.jpeg'); // updating navbar
-    await updateUI(`/profile/${responseData['anon_username']}`, false);
+    if (anon_action === "anon") {
+      anonTextBtn.textContent = "De-anonymize Account";
+      document.getElementsByClassName("anon_i")[0].classList.remove('fa-user-secret');
+      document.getElementsByClassName("anon_i")[0].classList.add('fa-user');
+      await showSuccessMessage("Account anonymized successfully!", 2000);
+    }
+    else {
+      anonTextBtn.textContent = "Anonymize Account";
+      document.getElementsByClassName("anon_i")[0].classList.remove('fa-user');
+      document.getElementsByClassName("anon_i")[0].classList.add('fa-user-secret');
+      await showSuccessMessage("Account de-anonymized successfully!", 2000);
+    }
   } catch (error) {
     createToast({ type: "error", title: "Error", error_message: "Failed to anonymize account" });
   }

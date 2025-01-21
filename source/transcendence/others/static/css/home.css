@@ -181,3 +181,8 @@
     align-items: center;
   }
 }
+
+.no-results h3 {
+  color: #84ddfc;
+  font-size: 1.8rem;
+}

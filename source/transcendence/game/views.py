@@ -11,11 +11,9 @@ from rest_framework.exceptions import AuthenticationFailed
 from others.auth_middleware import JWTCookieAuthentication
 from rest_framework.response import Response
 from rest_framework import status
-from django.shortcuts import render
 from django.template.loader import render_to_string
 import urllib.parse
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
-from account.serializers import PlayerSerializer
 
 """ game view """
 class GameView(APIView, BaseView):
@@ -109,14 +107,16 @@ class PlayerGameHistoryView(APIView):
                 response = HttpResponseRedirect(self.request.path)
                 response.set_cookie('access_token', generate_access_token(self.request.COOKIES.get('refresh_token')), httponly=True, samesite='Lax', secure=True)
                 return response
-            signin_url = reverse('signin_page')
-            params = urllib.parse.urlencode({'next': self.request.path})
-            response = HttpResponseRedirect(f'{signin_url}?{params}')
+            response = HttpResponseRedirect(reverse('signin_page'))
             response.delete_cookie('access_token')
             response.delete_cookie('refresh_token')
+            if self.request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+                return JsonResponse({
+                    'redirect': '/signin'
+                }, status=302)
             return response
         return super().handle_exception(exception)
-	
+    
     def get(self, request, **kwargs):
         try:
             player_username = request.GET.get('player', None)
@@ -152,7 +152,6 @@ class LeaderBoardView(APIView, BaseView):
     template_name = 'game/leaderboard.html'
     title = 'Leaderboard'
     css = ['css/leaderboard.css']
-    js = ['js/leaderboard.js']
 
     def handle_exception(self, exception):
         if isinstance(exception, AuthenticationFailed):
@@ -160,11 +159,13 @@ class LeaderBoardView(APIView, BaseView):
                 response = HttpResponseRedirect(self.request.path)
                 response.set_cookie('access_token', generate_access_token(self.request.COOKIES.get('refresh_token')), httponly=True, samesite='Lax', secure=True)
                 return response
-            response = HttpResponseRedirect(reverse('landing'))
+            response = HttpResponseRedirect(reverse('signin_page'))
             response.delete_cookie('access_token')
             response.delete_cookie('refresh_token')
-            response.delete_cookie('csrftoken')
-            response.status_code = 302
+            if self.request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+                return JsonResponse({
+                    'redirect': '/signin'
+                }, status=302)
             return response
         return super().handle_exception(exception)
     
@@ -187,7 +188,6 @@ class LeaderBoardView(APIView, BaseView):
             'page_offset': 10 * (players_page.number - 1), # 0 for first page
         }
         return data
-    
 class TournamentView(APIView, BaseView):
     authentication_classes = [JWTCookieAuthentication]
     permission_classes = [IsAuthenticated]
@@ -203,11 +203,13 @@ class TournamentView(APIView, BaseView):
                 response = HttpResponseRedirect(self.request.path)
                 response.set_cookie('access_token', generate_access_token(self.request.COOKIES.get('refresh_token')), httponly=True, samesite='Lax', secure=True)
                 return response
-            response = HttpResponseRedirect(reverse('landing'))
+            response = HttpResponseRedirect(reverse('signin_page'))
             response.delete_cookie('access_token')
             response.delete_cookie('refresh_token')
-            response.delete_cookie('csrftoken')
-            response.status_code = 302
+            if self.request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+                return JsonResponse({
+                    'redirect': '/signin'
+                }, status=302)
             return response
         return super().handle_exception(exception)
     
@@ -251,11 +253,13 @@ class TournamentRetrievalView(APIView):
                 response = HttpResponseRedirect(self.request.path)
                 response.set_cookie('access_token', generate_access_token(self.request.COOKIES.get('refresh_token')), httponly=True, samesite='Lax', secure=True)
                 return response
-            response = HttpResponseRedirect(reverse('landing'))
+            response = HttpResponseRedirect(reverse('signin_page'))
             response.delete_cookie('access_token')
             response.delete_cookie('refresh_token')
-            response.delete_cookie('csrftoken')
-            response.status_code = 302
+            if self.request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+                return JsonResponse({
+                    'redirect': '/signin'
+                }, status=302)
             return response
         return super().handle_exception(exception)
 

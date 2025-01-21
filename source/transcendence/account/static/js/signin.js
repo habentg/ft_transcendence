@@ -61,7 +61,8 @@ async function handleSignInSubmit(e) {
             return;
         }
         // redirect to the protected page
-        await updateUI(`/`);
+        history.replaceState({}, "", `/home`);
+        await updateUI(`/home`);
         updateNavBar(true); // update the navbar for authenticated users
         /* websocket - for real-time updates and chat*/
         createWebSockets();

@@ -6,7 +6,7 @@ all: build up
 
 keygen:
 	@sh ./source/containers/nginx/tools/self_signed_keygen.sh
-	@python3 ./source/containers/nginx/tools/get_host_ip.py
+# @python3 ./source/containers/nginx/tools/get_host_ip.py
 
 up: keygen
 	$(COMPOSE) up -d --remove-orphans

@@ -24,11 +24,12 @@ async function updateUI(path) {
     return;
   }
   showLoadingAnimation(); // Show animation
-  if (!path.includes(`${window.location.origin}`))
+  if (!path.includes(`${window.location.origin}`)) {
     path = `${window.location.origin}${path}`;
-    history.pushState({}, "", `${path}`);
+  }
   try {
     await loadContent(`${path}`);
+    history.pushState({}, "", `${path}`);
   } catch (error) {
     createToast({ type: "error", title: "Error", error_message: `${error}` });
   }
@@ -37,18 +38,18 @@ async function updateUI(path) {
 
 // routing function
 /* 
-    for click events;
-    creates URL obj with the "href" form the <a>;
-    path extration from the URL obj;
-    if the path is the same as the current path, do nothing - avoiding unnecessary requests;
-    then update the UI;
+for click events;
+creates URL obj with the "href" form the <a>;
+path extration from the URL obj;
+if the path is the same as the current path, do nothing - avoiding unnecessary requests;
+then update the UI;
 */
 async function appRouter(event) {
   event = event || window.event;
   event.preventDefault();
 
   if (window.isGameRunning)
-      window.isGameRunning = false;
+    window.isGameRunning = false;
   const href = event.target.closest("a").href;
   if (href === window.location.href) return;
   await updateUI(href);
@@ -56,6 +57,7 @@ async function appRouter(event) {
 
 // Load the content of the page
 async function loadContent(route) {
+  console.log("-> routing to : ", route)
   try {
     const response = await fetch(`${route}`, {
       method: "GET",
@@ -65,6 +67,10 @@ async function loadContent(route) {
     });
 
     if (!response.ok) {
+      if (response.status == 302) {
+        console.log("are we in 302 routing - ", route)
+        return;
+      }
       throw new Error({
         status: response.status,
         route: route,
@@ -82,7 +88,7 @@ async function loadContent(route) {
       3000,
       "Error"
     );
-    createToast({type:'error', error_message:`Failed to load -- ${route} -- page content:`,title:'Error'});
+    createToast({ type: 'error', error_message: `Failed to load -- ${route} -- page content:`, title: 'Error' });
   }
 }
 
@@ -107,7 +113,7 @@ async function initApp() {
 
     if (window.isGameRunning)
       window.isGameRunning = false;
-    
+
     const route = window.location.href;
     await loadContent(route);
   });

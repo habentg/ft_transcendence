@@ -25,7 +25,7 @@ async function handleOTPSubmit(event) {
       return;
     }
     updateNavBar(true, responseData.username, responseData.pfp);
-    await updateUI(`/`);
+    await updateUI(`/home`);
   } catch (error) {
     createToast({
       title: "Error",

@@ -4,7 +4,7 @@
 {% if notifications %}
   {% for notification in notifications %}
     <li style="border-bottom: 1px solid #ffffff; padding-bottom: 0.3rem; margin-bottom: 0.3rem;">
-      <a class="dropdown-item" href="/profile/{{ notification.sender_username }}">
+      <a class="dropdown-item" href="/profile/{{ notification.sender_username }}" onclick="appRouter()">
         {% if notification.sender_profile_picture %}
           <img src="{{ notification.sender_profile_picture }}" alt="Profile Picture" class="profile-pic-nav rounded-circle" style="width: 32px; height: 32px" />
         {% else %}

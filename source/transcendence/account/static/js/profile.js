@@ -36,12 +36,12 @@ async function UpdateUserInfo() {
     });
 
     if (!response.ok) {
-      const errorData = await response.json();
-      displayError(errorData);
+      const data = await response.json();
+      displayError(data);
       return;
     }
     closeModal("username-modal");
-    document.getElementById("full_name").textContent = formData.full_name.slice(0, 20);
+    document.getElementById("player_full_name").textContent = formData.full_name.slice(0, 20);
     document.getElementById("player_email").textContent = formData.email.slice(0, 20);
     await showSuccessMessage("Profile Information updated successfully");
   } catch (error) {

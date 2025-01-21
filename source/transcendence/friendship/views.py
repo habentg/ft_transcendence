@@ -33,9 +33,7 @@ class FriendRequestView(APIView):
 				response = HttpResponseRedirect(self.request.path)
 				response.set_cookie('access_token', generate_access_token(self.request.COOKIES.get('refresh_token')), httponly=True, samesite='Lax', secure=True)
 				return response
-			signin_url = reverse('signin_page')
-			params = urllib.parse.urlencode({'next': self.request.path})
-			response = HttpResponseRedirect(f'{signin_url}?{params}')
+			response = HttpResponseRedirect(reverse('signin_page'))
 			response.delete_cookie('access_token')
 			response.delete_cookie('refresh_token')
 			return response
@@ -155,9 +153,7 @@ class FriendRequestResponseView(APIView):
 				response = HttpResponseRedirect(self.request.path)
 				response.set_cookie('access_token', generate_access_token(self.request.COOKIES.get('refresh_token')), httponly=True, samesite='Lax', secure=True)
 				return response
-			signin_url = reverse('signin_page')
-			params = urllib.parse.urlencode({'next': self.request.path})
-			response = HttpResponseRedirect(f'{signin_url}?{params}')
+			response = HttpResponseRedirect(reverse('signin_page'))
 			response.delete_cookie('access_token')
 			response.delete_cookie('refresh_token')
 			return response
@@ -238,9 +234,7 @@ class NotificationViewSet(viewsets.ViewSet):
 				response = HttpResponseRedirect(self.request.path)
 				response.set_cookie('access_token', generate_access_token(self.request.COOKIES.get('refresh_token')), httponly=True, samesite='Lax', secure=True)
 				return response
-			signin_url = reverse('signin_page')
-			params = urllib.parse.urlencode({'next': self.request.path})
-			response = HttpResponseRedirect(f'{signin_url}?{params}')
+			response = HttpResponseRedirect(reverse('signin_page'))
 			response.delete_cookie('access_token')
 			response.delete_cookie('refresh_token')
 			return response
