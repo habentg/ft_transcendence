@@ -2,11 +2,11 @@
 COMPOSE 		= docker-compose -f  docker-compose.yaml
 
 # ----------------------- creating services --------------------------
-all: build up
+all: build up collectstatic
 
 keygen:
 	@sh ./source/containers/nginx/tools/self_signed_keygen.sh
-# @python3 ./source/containers/nginx/tools/get_host_ip.py
+	@python3 ./source/containers/nginx/tools/get_host_ip.py
 
 up: keygen
 	$(COMPOSE) up -d --remove-orphans
