@@ -1017,7 +1017,7 @@ function applySetting(game) {
   const MIN_PADDLE_SPEED = 6,
     MAX_PADDLE_SPEED = 10;
   const MIN_MAX_SCORE = 3,
-    MAX_MAX_SCORE = 20;
+    MAX_MAX_SCORE = 10;
 
   const paddleSpeedInput = parseInt(
     document.getElementById("paddleSpeed").value
