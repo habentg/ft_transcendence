@@ -716,30 +716,32 @@ function startaiGame(game) {
   // Start the AI loop
   function aiLoop(timestamp) {
     if (!window.isGameRunning) return; // Stop if the game is no longer running
+  
     const fps = 60;
-    const interval = 1000 / fps;
-    // Calculate elapsed time for FPS and AI view
-    const deltaTime = timestamp - lastAiViewTime;
-
-    // Run `aiView` every 1000 ms
-    if (deltaTime >= 1000) {
+    const interval = 1000 / fps; // Interval for AI logic (16.67 ms for 60 FPS)
+  
+    const aiViewInterval = 1000; // 1 second (1000 ms)
+  
+    // Calculate elapsed time for AI viewing logic
+    const deltaAiView = timestamp - lastAiViewTime;
+    if (deltaAiView >= aiViewInterval) {
       aiView(game, aiHelper);
-      lastAiViewTime = timestamp - (deltaTime ); // Reset view timer
+      lastAiViewTime = timestamp; // Reset `lastAiViewTime`
     }
-    if (deltaTime >= interval) {
-      lastlogicTime = timestamp - (deltaTime % interval);
+  
+    // Calculate elapsed time for AI logic
+    const deltaLogic = timestamp - lastlogicTime;
+    if (deltaLogic >= interval) {
       aiLogic(game.players[1], game, aiHelper);
+      lastlogicTime = timestamp; // Reset `lastlogicTime`
     }
+  
     // Continue the AI loop
-    requestAnimationFrame((newTimestamp) => aiLoop(newTimestamp));
+    requestAnimationFrame(aiLoop);
   }
   // Start the AI loop
   requestAnimationFrame((timestamp) => aiLoop(timestamp));
 
-  // Start the shared game loop (assuming it's already defined elsewhere)
-  // requestAnimationFrame((timestamp) => {
-  //   gameLoop(game, timestamp);
-  // });
   requestAnimationFrame((timestamp) => gameLoop(game, timestamp));
 }
 
@@ -749,23 +751,22 @@ function aiLogic(player2, game, aiHelper) {
 
   if (aiHelper.velocityX < 0 && aiHelper.scoreDeficit < 0) {
     aiMiddle(aiHelper, game, player2);
-    return;
   }
 
-  if (
-    game.parryFlag &&
-    aiHelper.velocityX > 0 &&
-    !aiHelper.aiParry &&
-    aiHelper.playerParry
-  )
-    aiparryChance(aiHelper, aiHelper.time, 60);
+  const time = aiHelper.velocityX > 0 ? (aiHelper.aiX - aiHelper.x - game.playerWidth) / aiHelper.velocityX : Math.abs((aiHelper.x - aiHelper.playerX) + (aiHelper.playerX + aiHelper.aiX - 16) / aiHelper.velocityX)
+
+  if (game.parryFlag && !aiHelper.aiParry) {
+    if (aiHelper.scoreDeficit > 0)
+      aiparryChance(aiHelper, time, 60);
+    else if (aiHelper.scoreDeficit < 0 && aiHelper.playerParry)
+      aiparryChance(aiHelper, time, 60);
+  }
 
   let tolerance = 30 + aiHelper.tolInc / 10; // Allow a small margin of error
   tolerance += aiHelper.scoreDeficit * 10; // Increase or decrease based on score
   tolerance = Math.max(0, Math.min(100, tolerance)); // Clamp to reasonable range
-
   //predicts y location based on the time. this variable would exceed the board size. exceeding board size would mean its supposed to hit wall
-  let yHit = adjustYhit(aiHelper, aiHelper.time, game.boardHeight);
+  let yHit = adjustYhit(aiHelper, time, game.boardHeight);
 
   let target = Math.abs(yHit - player2.height / 2);
   if (target > player2.y - tolerance && target < player2.y + tolerance) {
@@ -846,6 +847,9 @@ function aiView(game, aiHelper) {
 
     aiHelper.x = Ball.x;
     aiHelper.y = Ball.y;
+    aiHelper.aiX = ai.x;
+    aiHelper.aiY = ai.y;
+    aiHelper.playerX = player.x;
     aiHelper.velocityX = Ball.velocityX;
     aiHelper.velocityY = Ball.velocityY;
     aiHelper.aiParry = ai.cooldownFlag;
@@ -860,12 +864,7 @@ function aiView(game, aiHelper) {
       aiHelper.lastscoreDef = aiHelper.scoreDeficit;
     }
     aiHelper.tolInc++;
-    aiHelper.time =
-      Ball.velocityX > 0
-        ? (ai.x - Ball.x - 16) / Ball.velocityX
-        : Math.abs(
-            (Ball.x - player.x + (player.x + ai.x - 16)) / Ball.velocityX
-          );
+    console.log("Ai view increase", aiHelper.tolInc);
   }
 }
 
