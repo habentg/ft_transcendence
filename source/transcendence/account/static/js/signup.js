@@ -48,8 +48,6 @@ async function handleSignupSubmit(e) {
   e.preventDefault();
 
   const formData = {
-    // first_name: document.getElementById('firstName').value,
-    // last_name: document.getElementById('lastName').value,
     username: document.getElementById("username").value,
     email: document.getElementById("email").value,
     password: document.getElementById("password").value,
