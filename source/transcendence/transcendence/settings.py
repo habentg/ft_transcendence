@@ -43,7 +43,7 @@ REDIS_DB_JWT_INVAL = os.getenv('REDIS_DB_JWT_INVAL')
 REDIS_DB_CHANNELS = os.getenv('REDIS_DB_CHANNELS')
 LOCAL_IP = os.getenv('LOCAL_IP')
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 # Application definition
 INSTALLED_APPS = [
