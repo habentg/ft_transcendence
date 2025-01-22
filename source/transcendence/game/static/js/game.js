@@ -507,7 +507,6 @@ function handlePaddleCollision(ball, paddle, game, isLeftPaddle) {
       : ball.x + ball.ballRadius - paddle.x;
 
     if (overlap > ball.ballRadius * 0.5) {
-      // More aggressive position correction when paddle is moving
       const correctionFactor = paddle.velocityY ? 1.2 : 0.5;
       if (isLeftPaddle) {
         ball.x = paddle.x + paddle.width + ball.ballRadius * correctionFactor;
@@ -753,13 +752,13 @@ function aiLogic(player2, game, aiHelper) {
     aiMiddle(aiHelper, game, player2);
   }
 
-  const time = aiHelper.velocityX > 0 ? (aiHelper.aiX - aiHelper.x - game.playerWidth) / aiHelper.velocityX : Math.abs((aiHelper.x - aiHelper.playerX) + (aiHelper.playerX + aiHelper.aiX - 16) / aiHelper.velocityX)
+  const time = aiHelper.velocityX > 0 ? (aiHelper.aiX - aiHelper.x - game.playerWidth) / aiHelper.velocityX : Math.abs((aiHelper.x - aiHelper.playerX) + (aiHelper.playerX + aiHelper.aiX - 16) / aiHelper.velocityX);
 
   if (game.parryFlag && !aiHelper.aiParry) {
-    if (aiHelper.scoreDeficit > 0)
-      aiparryChance(aiHelper, time, 60);
+    if (aiHelper.scoreDeficit >= 0)
+      aiparryChance(aiHelper, time, 100);
     else if (aiHelper.scoreDeficit < 0 && aiHelper.playerParry)
-      aiparryChance(aiHelper, time, 60);
+      aiparryChance(aiHelper, time, 100);
   }
 
   let tolerance = 30 + aiHelper.tolInc / 10; // Allow a small margin of error
