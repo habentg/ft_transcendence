@@ -711,10 +711,6 @@ function startaiGame(game) {
   aikeyEvents("stop", aiHelper);
   let lastAiViewTime = performance.now(); // Timestamp for AI viewing logic
   let lastlogicTime = performance.now();
-  let lastFrameTime = performance.now(); // Timestamp for FPS calculation
-
-  let frameCount = 0; // remove
-  let fps = 0; // remove
 
   // Start the AI loop
   function aiLoop(timestamp) {
@@ -739,16 +735,6 @@ function startaiGame(game) {
       lastlogicTime = timestamp; // Reset `lastlogicTime`
     }
 
-     // Calculate FPS
-    frameCount++;
-    const deltaFrame = timestamp - lastFrameTime;
-    if (deltaFrame >= 1000) {
-      fps = frameCount; // FPS is the number of frames in 1second
-      frameCount = 0; // Reset frame count
-      lastFrameTime = timestamp; // Reset timestamp
-      console.log(`FPS: ${fps}`); // Output FPS to the console
-    }
-
     // Continue the AI loop
     requestAnimationFrame(aiLoop);
   }
@@ -762,14 +748,18 @@ function startaiGame(game) {
 function aiLogic(player2, game, aiHelper) {
   if (!game.drawFlag) return;
 
+  if (aiHelper.velocityX === 0)
+    return ;
   if (aiHelper.velocityX < 0 && aiHelper.scoreDeficit < 0) {
     aiMiddle(aiHelper, game, player2);
     return ;
   }
-
-  // const time = aiHelper.velocityX > 0 ? (aiHelper.aiX - aiHelper.x - game.playerWidth) / aiHelper.velocityX : Math.abs((aiHelper.x - aiHelper.playerX) + (aiHelper.playerX + aiHelper.aiX - 16) / aiHelper.velocityX);
-
-  const time = (aiHelper.aiX - aiHelper.x) / aiHelper.velocityX;
+  let time = 0;
+  if (aiHelper.scoreDeficit < 0){
+    time = aiHelper.velocityX > 0 ? (aiHelper.aiX - aiHelper.x - game.playerWidth) / aiHelper.velocityX : Math.abs((aiHelper.x - aiHelper.playerX) + (aiHelper.playerX + aiHelper.aiX - 16) / aiHelper.velocityX);
+  }
+  else
+    time = (aiHelper.aiX - aiHelper.x) / aiHelper.velocityX;
 
   if (game.parryFlag && !aiHelper.aiParry && aiHelper.velocityX > 0) {
     if (aiHelper.scoreDeficit >= 0)
@@ -778,9 +768,10 @@ function aiLogic(player2, game, aiHelper) {
       aiparryChance(aiHelper, time, 60);
   }
 
-  let tolerance = 30 + aiHelper.tolInc / 10; // Allow a small margin of error
+  let tolerance = 45 + aiHelper.tolInc / 10; // Allow a small margin of error
   tolerance += aiHelper.scoreDeficit * 10; // Increase or decrease based on score
   tolerance = Math.max(0, Math.min(100, tolerance)); // Clamp to reasonable range
+  
   //predicts y location based on the time. this variable would exceed the board size. exceeding board size would mean its supposed to hit wall
   let yHit = adjustYhit(aiHelper, time, game.boardHeight);
 
