@@ -73,6 +73,7 @@ async function handle42Login() {
 
     const resposeData = await response.json();
 
+    hideLoadingAnimation();
     window.location.href = resposeData.authorization_url;
 
   } catch (error) {

@@ -41,8 +41,13 @@ async function UpdateUserInfo() {
       return;
     }
     closeModal("username-modal");
-    document.getElementById("player_full_name").textContent = formData.full_name.slice(0, 20);
-    document.getElementById("player_email").textContent = formData.email.slice(0, 20);
+    const player_full_name = document.getElementById("player_full_name");
+    player_full_name.textContent = formData.full_name.slice(0, 20);
+    player_full_name.setAttribute("data-fullname", formData.full_name);
+    const player_email = document.getElementById("player_email");
+    player_email.textContent = formData.email.slice(0, 20);
+    player_email.setAttribute("data-email", formData.email);
+
     await showSuccessMessage("Profile Information updated successfully");
   } catch (error) {
     createToast({type:'error',error_message:'Failed to update profile info',title:'Error!'})
