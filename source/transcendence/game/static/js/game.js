@@ -392,6 +392,7 @@ function updatePaddleVelocities(player1, player2, game) {
   }
 }
 
+// Checks if the ball is good to parry
 function isParry(player, game) {
   const parryRange = 20; // Adjust as needed
   const ballNearPlayer =
@@ -405,11 +406,13 @@ function isParry(player, game) {
   return ballNearPlayer && withinVerticalRange;
 }
 
+// Sets cooldown to false enabling the player to parry again
 function parryRefresh(player) {
   if (player.cooldownFlag && Date.now() > player.parryCooldown)
     player.cooldownFlag = false;
 }
 
+//Sets the parry on Cooldown
 function parryCoolDown(player, game) {
   player.cooldownFlag = true;
   player.parryCooldown = Date.now() + game.cooldownTime;
@@ -423,6 +426,7 @@ function botoob(yPosition, game) {
   return yPosition + game.playerHeight > game.boardHeight - 7.5;
 }
 
+// Checks if the player is out of bounds the board and adjusts its position
 function oob(player, game) {
   const newYPosition = player.y + player.velocityY;
 
@@ -470,6 +474,8 @@ function ballMovement(game) {
     handlePaddleCollision(Ball, left, game, true);
   else if (checkPaddleCollision(Ball, right, nextX, nextY))
     handlePaddleCollision(Ball, right, game, false);
+
+  // Move the balls location to its next expected location
   Ball.x = nextX;
   Ball.y = nextY;
 }
@@ -581,16 +587,6 @@ async function resetGame(player1, player2, direction, game) {
     player2.parryCooldown = 0;
   }
 
-  if (game.slowServe) {
-    // Apply reduced speed if slow serve is enabled
-    game.ball.velocityX = direction * Math.abs(game.defballSpeed) * 0.5;
-    game.ball.velocityY = 2 * (Math.random() > 0.5 ? 1 : -1) * 0.5;
-  } else {
-    // Use normal initial speed
-    game.ball.velocityX = direction * Math.abs(game.defballSpeed);
-    game.ball.velocityY = 2 * (Math.random() > 0.5 ? 1 : -1);
-  }
-
   if (isGameOver(player1, player2, game)) {
     game.stopeventListeners();
     game.drawFlag = false;
@@ -662,8 +658,8 @@ function displayGameOver(player1, player2, game) {
   );
 }
 
+// Draw dotted line in the middle
 function drawLine(game) {
-  // Draw dotted line in the middle
   game.context.setLineDash([10, 20]); // Pattern: 5px dash, 15px space
   game.context.strokeStyle = "white"; // Line color
   game.context.lineWidth = 5; // Line thickness
@@ -757,8 +753,7 @@ function aiLogic(player2, game, aiHelper) {
   let time = 0;
   if (aiHelper.scoreDeficit < 0){
     time = aiHelper.velocityX > 0 ? (aiHelper.aiX - aiHelper.x - game.playerWidth) / aiHelper.velocityX : Math.abs((aiHelper.x - aiHelper.playerX) + (aiHelper.playerX + aiHelper.aiX - 16) / aiHelper.velocityX);
-  }
-  else
+  } else
     time = (aiHelper.aiX - aiHelper.x) / aiHelper.velocityX;
 
   if (game.parryFlag && !aiHelper.aiParry && aiHelper.velocityX > 0) {
@@ -788,12 +783,12 @@ function aiLogic(player2, game, aiHelper) {
   }
 }
 
-//adjusts predicted y hit back inside the board
+//adjusts predicted yhit back inside the board
 function adjustYhit(aiHelper, time, boardHeight) {
   let yChange = aiHelper.velocityY * time;
   let yHit = aiHelper.y + yChange;
 
-  // Handle wall bounces more accurately
+  // calculates all the wall bounces until the target pos goes back inside the board
   while (yHit < 0 || yHit > boardHeight) {
     if (yHit < 0) {
       yHit = -yHit; // Bounce off top wall
@@ -805,6 +800,9 @@ function adjustYhit(aiHelper, time, boardHeight) {
   return yHit;
 }
 
+
+/* function to put the ai back to the middle.
+ Whenever he's not expecting a ball coming to him and if the ai is losing */
 function aiMiddle(aiHelper, game, player2) {
   const middlePos = game.boardHeight / 2;
   const paddleCenter = player2.y + player2.height / 2;
@@ -866,6 +864,7 @@ function aiView(game, aiHelper) {
       player.score < ai.score
         ? ai.score - player.score
         : ai.score - player.score;
+    //if statement for resetting tolInc(variable for ai making mistakes)
     if (aiHelper.lastscoreDef != aiHelper.scoreDeficit) {
       aiHelper.tolInc = 0;
       aiHelper.lastscoreDef = aiHelper.scoreDeficit;
