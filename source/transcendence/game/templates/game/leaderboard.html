@@ -49,7 +49,7 @@
                               <img src="{% static 'images/default_profile_pic.jpeg' %}" alt="Default Profile Picture" class="profile-pic rounded-circle" style="width:30px;height: 30px;" />
                             {% endif %}
                           {% endif %}
-                          <span>{{ player.username|slice:':10' }}</span>
+                          <span><a onclick="appRouter()" href="/profile/{{ player.username }}">{{ player.username|slice:':10' }}</a></span>
                         </div>
                       </td>
                       <td>{{ player.games_played_count }}</td>
