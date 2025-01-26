@@ -131,7 +131,6 @@ function startGame(game) {
   document.getElementById("settingButton").disabled = true;
   document.getElementById("gameRulesButton").disabled = true;
 
-  // requestAnimationFrame(() => gameLoop(game));
   requestAnimationFrame((timestamp) => gameLoop(game, timestamp));
 }
 
@@ -155,6 +154,43 @@ function gameLoop(game, timestamp) {
   // Request the next frame
   requestAnimationFrame((newTimestamp) => gameLoop(game, newTimestamp));
 }
+
+// gameLoop for testing purposes
+// function gameLoop(game, timestamp) {
+//   if (!window.isGameRunning) return;
+
+//   const fps = 60;
+//   const interval = 1000 / fps;
+//   game.lastTime = game.lastTime || timestamp;
+
+//   // Performance tracking (only count rendered frames)
+//   game.frameCount = game.frameCount || 0;
+//   if (!game.fpsStartTime) game.fpsStartTime = timestamp;
+
+//   const deltaTime = timestamp - game.lastTime;
+
+//   if (deltaTime >= interval) {
+//     game.lastTime = timestamp - (deltaTime % interval);
+//     updategameValues(game.players[0], game.players[1], game);
+//     draw(game.players[0], game.players[1], game);
+
+//     // Increment frame count only for rendered frames
+//     game.frameCount++;
+//   }
+
+//   // Calculate and log FPS every second
+//   if (timestamp - game.fpsStartTime >= 1000) {
+//     const actualFps = game.frameCount * 1000 / (timestamp - game.fpsStartTime);
+//     // console.log(`Current FPS: ${actualFps.toFixed(2)}`);
+    
+//     // Reset tracking
+//     game.frameCount = 0;
+//     game.fpsStartTime = timestamp;
+//   }
+
+//   requestAnimationFrame((newTimestamp) => gameLoop(game, newTimestamp));
+// }
+
 
 function updategameValues(player1, player2, game) {
   //checks if player movement is inside the board then moves it.
@@ -373,8 +409,8 @@ function updatePaddleVelocities(player1, player2, game) {
   if (game.parryFlag) {
     if (game.activeKeys["Space"] && !player1.cooldownFlag) {
       if (isParry(player1, game) && game.ball.velocityX < 0) {
-        game.ball.velocityX *= 1.6;
-        game.ball.velocityY *= 1.4;
+        game.ball.velocityX *= -1.5;
+        game.ball.velocityY *= -1;
         game.ball.x = player1.x + player1.width + game.ball.ballRadius + 2;
       }
       game.sound.play("parry");
@@ -382,8 +418,9 @@ function updatePaddleVelocities(player1, player2, game) {
     }
     if (game.activeKeys["Numpad0"] && !player2.cooldownFlag) {
       if (isParry(player2, game) && game.ball.velocityX > 0) {
-        game.ball.velocityX *= -1.6;
-        game.ball.velocityY *= 1.4;
+        console.log("Good Parry from player 2");
+        game.ball.velocityX *= -1.5;
+        game.ball.velocityY *= -1;
         game.ball.x = player2.x - player2.width + game.ball.ballRadius - 2;
       }
       game.sound.play("parry");
@@ -394,15 +431,17 @@ function updatePaddleVelocities(player1, player2, game) {
 
 // Checks if the ball is good to parry
 function isParry(player, game) {
-  const parryRange = 20; // Adjust as needed
-  const ballNearPlayer =
-    player.x < game.boardWidth / 2 // Check which side the player is on
-      ? game.ball.x - game.ball.ballRadius <=
-        player.x + player.width + parryRange // Near Player 1
-      : game.ball.x + game.ball.ballRadius >= player.x - parryRange; // Near Player 2
-  const withinVerticalRange =
+  const parryRange = 50; // Adjustable proximity range for parry
+
+  // Determine parry conditions based on player's side
+  const ballNearPlayer = player.x < game.boardWidth / 2
+    ? game.ball.x - game.ball.ballRadius <= player.x + player.width + parryRange
+    : game.ball.x + game.ball.ballRadius >= player.x - parryRange;
+
+  const withinVerticalRange = 
     game.ball.y + game.ball.ballRadius > player.y &&
     game.ball.y - game.ball.ballRadius < player.y + player.height;
+
   return ballNearPlayer && withinVerticalRange;
 }
 
@@ -698,7 +737,7 @@ function startaiGame(game) {
     lastscoreDef: 0,
     aiMovingDown: false,
     aiMovingUp: false,
-    time: 0, // Initialize time for AI timing logic
+    lastTime: 0, // Initialize time for AI timing logic
   };
 
   game.drawFlag = true;
@@ -732,7 +771,7 @@ function startaiGame(game) {
     }
 
     // Continue the AI loop
-    requestAnimationFrame(aiLoop);
+    requestAnimationFrame(aiLoop); 
   }
   // Start the AI loop
   requestAnimationFrame((timestamp) => aiLoop(timestamp));
@@ -744,42 +783,39 @@ function startaiGame(game) {
 function aiLogic(player2, game, aiHelper) {
   if (!game.drawFlag) return;
 
-  if (aiHelper.velocityX === 0)
-    return ;
   if (aiHelper.velocityX < 0 && aiHelper.scoreDeficit < 0) {
     aiMiddle(aiHelper, game, player2);
     return ;
   }
-  let time = 0;
-  if (aiHelper.scoreDeficit < 0){
-    time = aiHelper.velocityX > 0 ? (aiHelper.aiX - aiHelper.x - game.playerWidth) / aiHelper.velocityX : Math.abs((aiHelper.x - aiHelper.playerX) + (aiHelper.playerX + aiHelper.aiX - 16) / aiHelper.velocityX);
-  } else
-    time = (aiHelper.aiX - aiHelper.x) / aiHelper.velocityX;
 
+  // calculate time when x would reach ai.x
+  let time = Math.abs((aiHelper.aiX - aiHelper.x) / aiHelper.velocityX);
+  if (aiHelper.scoreDeficit < 0)
+    time = aiHelper.velocityX > 0 ? (aiHelper.aiX - aiHelper.x) / aiHelper.velocityX : Math.abs((aiHelper.x - aiHelper.playerX) + (aiHelper.playerX + aiHelper.aiX - 16) / aiHelper.velocityX);
+    
+
+  // Handle parry logic
   if (game.parryFlag && !aiHelper.aiParry && aiHelper.velocityX > 0) {
-    if (aiHelper.scoreDeficit >= 0)
-      aiparryChance(aiHelper, time, 60); 
-    else if (aiHelper.scoreDeficit < 0 && aiHelper.playerParry)
-      aiparryChance(aiHelper, time, 60);
+      aiParry(aiHelper, game);
+    // aiparryChance(aiHelper, time, 60);
   }
 
-  let tolerance = 45 + aiHelper.tolInc / 10; // Allow a small margin of error
-  tolerance += aiHelper.scoreDeficit * 10; // Increase or decrease based on score
-  tolerance = Math.max(0, Math.min(100, tolerance)); // Clamp to reasonable range
-  
-  //predicts y location based on the time. this variable would exceed the board size. exceeding board size would mean its supposed to hit wall
+  // Movement and targeting logic
+  let tolerance = 45 + aiHelper.tolInc / 10;
+  tolerance += aiHelper.scoreDeficit * 10;
+  tolerance = Math.max(0, Math.min(100, tolerance));
+
   let yHit = adjustYhit(aiHelper, time, game.boardHeight);
 
   let target = Math.abs(yHit - player2.height / 2);
   if (target > player2.y - tolerance && target < player2.y + tolerance) {
-    // If the AI is close enough to the target Y position, stop moving
     aikeyEvents("stop", aiHelper);
     return;
   }
   if (player2.y + tolerance < target) {
-    aikeyEvents("down", aiHelper); // Keep moving down until target is reached
+    aikeyEvents("down", aiHelper);
   } else if (player2.y - tolerance > target) {
-    aikeyEvents("up", aiHelper); // Keep moving up until target is reached
+    aikeyEvents("up", aiHelper);
   }
 }
 
@@ -799,7 +835,6 @@ function adjustYhit(aiHelper, time, boardHeight) {
 
   return yHit;
 }
-
 
 /* function to put the ai back to the middle.
  Whenever he's not expecting a ball coming to him and if the ai is losing */
@@ -821,25 +856,42 @@ function aiMiddle(aiHelper, game, player2) {
   return;
 }
 
+function aiParry(aiHelper, game) {
+  // Check if parry has already been predicted
+  if (!game.drawFlag) return;
+
+  const currentTime = performance.now();
+  const timeSinceLastUpdate = currentTime - aiHelper.lastTime;
+  const elapsedFrames = Math.floor((timeSinceLastUpdate / 1000) * 60);
+
+  const predictedX = aiHelper.x + aiHelper.velocityX * elapsedFrames;
+  let time = (aiHelper.aiX - predictedX - 32) / aiHelper.velocityX;
+
+  aiparryChance(aiHelper, time, 59);
+}
+
 function aiparryChance(aiHelper, time, fps) {
   const deficit = Math.max(0, aiHelper.scoreDeficit);
-  let aiparryChance = 0.8; // 80% base chance to parry
+  let aiparryChance = 1; // 80% base chance to parry
 
   // Reduce parry chance based on score deficit
   aiparryChance -= deficit * 0.1;
 
   // Calculate ideal parry timing
-  const idealParryTime = time * fps;
+  const idealParryTime = Math.floor(time * fps);
   if (Math.random() < aiparryChance) {
-    setTimeout(() => {
-      aikeyEvents("parry", aiHelper);
-    }, idealParryTime);
+    // if (aiHelper.velocityX > 0)
+      setTimeout(() => {
+        aikeyEvents("parry", aiHelper);
+      }, idealParryTime);
   } else {
     // for imitating missed parry
-    const missDelay = 100 + Math.random() * 100; // 100-200ms too late
-    setTimeout(() => {
-      aikeyEvents("parry", aiHelper);
-    }, idealParryTime + missDelay);
+    if (aiHelper.velocityX > 0) {
+      const missDelay = 100 + Math.random() * 100; // 100-200ms too late
+      setTimeout(() => {
+        aikeyEvents("parry", aiHelper);
+      }, idealParryTime + missDelay);
+    }
   }
 }
 
@@ -850,6 +902,7 @@ function aiView(game, aiHelper) {
     const player = game.players[0];
     const ai = game.players[1];
 
+    aiHelper.lastTime = performance.now();
     aiHelper.x = Ball.x;
     aiHelper.y = Ball.y;
     aiHelper.aiX = ai.x;
