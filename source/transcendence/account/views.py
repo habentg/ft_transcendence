@@ -26,7 +26,6 @@ from others.auth_middleware import *
 from django.middleware.csrf import get_token
 from rest_framework.response import Response
 from rest_framework.exceptions import AuthenticationFailed
-import urllib.parse
 from django.core.files import File
 from urllib.request import urlopen
 from tempfile import NamedTemporaryFile
@@ -69,7 +68,6 @@ class SignUpView(APIView, BaseView):
 				FriendList.objects.create(player=new_player)
 				return response
 			return Response({'error_msg': 'Couldn\'t create the player'}, status=status.HTTP_422_UNPROCESSABLE_ENTITY)
-		print("Error in signup: ", serializer.errors, flush=True)
 		return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 	def get_context_data(self, request):
@@ -109,7 +107,6 @@ class SignInView(APIView, BaseView):
 			player.save()
 			return response
 		error_message = serializer.errors.get('non_field_errors', ['No specific error'])[0]
-		print("Error in sign in: ", serializer.errors, flush=True)
 		return Response({'error_msg': error_message}, status=status.HTTP_400_BAD_REQUEST)
 
 	def get_context_data(self, request):
@@ -126,9 +123,7 @@ class SignOutView(APIView, BaseView):
 				response = HttpResponseRedirect(self.request.path)
 				response.set_cookie('access_token', generate_access_token(self.request.COOKIES.get('refresh_token')), httponly=True, samesite='Lax', secure=True)
 				return response
-			signin_url = reverse('signin_page')
-			params = urllib.parse.urlencode({'next': self.request.path})
-			response = HttpResponseRedirect(f'{signin_url}?{params}')
+			response = HttpResponseRedirect(reverse('signin_page'))
 			response.delete_cookie('access_token')
 			response.delete_cookie('refresh_token')
 			return response
@@ -381,7 +376,6 @@ class TwoFactorAuth(APIView, BaseView):
 			player = Player.objects.get(email=player_email)
 			if player.tfa:
 				if send_2fa_code(player):
-					print("OTP sent successfully", flush=True)
 					return Response({'success': 'OTP sent successfully'}, status=status.HTTP_200_OK)
 				else:
 					return Response({'error_msg': 'Couldn\'t send OTP to the given Email'}, 
@@ -408,14 +402,12 @@ class TwoFactorSetUpToggle(APIView):
 				response = HttpResponseRedirect(self.request.path)
 				response.set_cookie('access_token', generate_access_token(self.request.COOKIES.get('refresh_token')), httponly=True, samesite='Lax', secure=True)
 				return response
-			signin_url = reverse('signin_page')
-			params = urllib.parse.urlencode({'next': self.request.path})
-			response = HttpResponseRedirect(f'{signin_url}?{params}')
+			response = HttpResponseRedirect(reverse('signin_page'))
 			response.delete_cookie('access_token')
 			response.delete_cookie('refresh_token')
 			if self.request.headers.get('X-Requested-With') == 'XMLHttpRequest':
 				return JsonResponse({
-					'redirect': f'{signin_url}?{params}'
+					'redirect': '/signin'
 				}, status=302)
 			return response
 		return super().handle_exception(exception)
@@ -446,9 +438,7 @@ class PlayerProfileView(APIView, BaseView):
 				response = HttpResponseRedirect(self.request.path)
 				response.set_cookie('access_token', generate_access_token(self.request.COOKIES.get('refresh_token')), httponly=True, samesite='Lax', secure=True)
 				return response
-			signin_url = reverse('signin_page')
-			params = urllib.parse.urlencode({'next': self.request.path})
-			response = HttpResponseRedirect(f'{signin_url}?{params}')
+			response = HttpResponseRedirect(reverse('signin_page'))
 			response.delete_cookie('access_token')
 			response.delete_cookie('refresh_token')
 			return response
@@ -513,9 +503,7 @@ class PlayerProfileUpdatingView(APIView):
 				response = HttpResponseRedirect(self.request.path)
 				response.set_cookie('access_token', generate_access_token(self.request.COOKIES.get('refresh_token')), httponly=True, samesite='Lax', secure=True)
 				return response
-			signin_url = reverse('signin_page')
-			params = urllib.parse.urlencode({'next': self.request.path})
-			response = HttpResponseRedirect(f'{signin_url}?{params}')
+			response = HttpResponseRedirect(reverse('signin_page'))
 			response.delete_cookie('access_token')
 			response.delete_cookie('refresh_token')
 			return response
@@ -578,7 +566,7 @@ class SettingsView(APIView, BaseView):
 	permission_classes = [IsAuthenticated]
 	throttle_classes = []
 	template_name = 'account/settings.html'
-	title = 'settings'
+	title = 'Settings'
 	css = ['css/settings.css']
 	js = ['js/settings.js']
 
@@ -588,9 +576,7 @@ class SettingsView(APIView, BaseView):
 				response = HttpResponseRedirect(self.request.path)
 				response.set_cookie('access_token', generate_access_token(self.request.COOKIES.get('refresh_token')), httponly=True, samesite='Lax', secure=True)
 				return response
-			signin_url = reverse('signin_page')
-			params = urllib.parse.urlencode({'next': self.request.path})
-			response = HttpResponseRedirect(f'{signin_url}?{params}')
+			response = HttpResponseRedirect(reverse('signin_page'))
 			response.delete_cookie('access_token')
 			response.delete_cookie('refresh_token')
 			response.delete_cookie('csrftoken')
@@ -632,26 +618,18 @@ class AnonymizePlayer(APIView):
 				response = HttpResponseRedirect(self.request.path)
 				response.set_cookie('access_token', generate_access_token(self.request.COOKIES.get('refresh_token')), httponly=True, samesite='Lax', secure=True)
 				return response
-			signin_url = reverse('signin_page')
-			params = urllib.parse.urlencode({'next': self.request.path})
-			response = HttpResponseRedirect(f'{signin_url}?{params}')
+			response = HttpResponseRedirect(reverse('signin_page'))
 			response.delete_cookie('access_token')
 			response.delete_cookie('refresh_token')
 			return response
 		return super().handle_exception(exception)
 
-	def get(self, request):
-		token_string = request.COOKIES.get('access_token')
-		if token_string:
-			try:
-				add_token_to_blacklist(token_string)
-			except Exception as e:
-				return HttpResponseRedirect(reverse('landing'))
-		# create a new anonymous player
-		anon = createGuestPlayer()
-		new_jwts = RefreshToken.for_user(anon)
-		response = Response({'anon_username': anon.username}, status=status.HTTP_200_OK)
-		response.set_cookie('access_token', str(new_jwts.access_token), httponly=True, samesite='Lax', secure=True)
-		response.set_cookie('refresh_token', str(new_jwts), httponly=True, samesite='Lax', secure=True)
-		anon.save()
-		return response
+	def post(self, request):
+		player = request.user
+		anon_action = request.GET.get('anon_action', '')
+		if anon_action == 'anon':
+			player.is_anonymous = True
+		else:
+			player.is_anonymous = False
+		player.save()
+		return Response({'is_anonymous': player.is_anonymous}, status=status.HTTP_200_OK)

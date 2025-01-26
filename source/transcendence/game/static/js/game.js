@@ -2,7 +2,7 @@ async function createGameInDB(game) {
   const startgame_data = {
     player_one: game.players[0].playerName,
     player_two: game.players[1].playerName,
-    type: game.aiFlag ? "AI" : "VERSUS"
+    type: game.aiFlag ? "AI" : "VERSUS",
   };
   if (game.tournamentFlag) {
     startgame_data["type"] = "TOURNAMENT";
@@ -21,17 +21,18 @@ async function createGameInDB(game) {
     if (response.ok) {
       const responseData = await response.json();
       game.game_id = responseData.game_id;
-      if (game.aiFlag)
-        startaiGame(game);
-      else if (game.tournamentFlag)
-        return 'start_tournament';
-      else
-        startGame(game);
+      if (game.aiFlag) startaiGame(game);
+      else if (game.tournamentFlag) return "start_tournament";
+      else startGame(game);
       return;
     }
     throw new Error("Failed to load gameApiPOSTFunction");
   } catch (error) {
-    createToast({ type: 'error', error_message: 'Failed to create game', title: 'Game Creating Error!' });
+    createToast({
+      type: "error",
+      error_message: "Failed to create game",
+      title: "Game Creating Error!",
+    });
     return false;
   }
 }
@@ -51,9 +52,15 @@ async function updateGameInDB(endgame_data, game_id) {
     if (response.ok) {
       return;
     }
-    throw new Error(`Failed to update game with id: ${game_id} : ${response.status} : ${response.error}`);
+    throw new Error(
+      `Failed to update game with id: ${game_id} : ${response.status} : ${response.error}`
+    );
   } catch (error) {
-    createToast({ type: 'error', error_message: error, title: 'Game Updating Error!' });
+    createToast({
+      type: "error",
+      error_message: error,
+      title: "Game Updating Error!",
+    });
   }
 }
 
@@ -99,7 +106,7 @@ async function loadGame() {
   if (document.getElementById("startButton")) {
     document
       .getElementById("startButton")
-      .addEventListener("click", async () => { 
+      .addEventListener("click", async () => {
         game.loadSettings(game.players[0].playerName);
         game.resetValues();
         await createGameInDB(game);
@@ -113,51 +120,51 @@ async function loadGame() {
       await createGameInDB(game);
     });
   }
-
 }
 
 function startGame(game) {
   game.drawFlag = true;
-  window.isGameRunning = true
+  window.isGameRunning = true;
 
   game.setupeventListeners();
   document.getElementById("startButton").disabled = true;
   document.getElementById("settingButton").disabled = true;
   document.getElementById("gameRulesButton").disabled = true;
 
+  // requestAnimationFrame(() => gameLoop(game));
   requestAnimationFrame((timestamp) => gameLoop(game, timestamp));
 }
 
 function gameLoop(game, timestamp) {
-  if (!window.isGameRunning)
-    return;
-  const fps = 60;
-  const interval = 1000 / fps;
+  if (!window.isGameRunning) return;
 
-  if (timestamp - game.lastTime >= interval) {
-    game.lastTime = timestamp;
-    // Update game values
+  const fps = 60;
+  const interval = 1000 / fps; // Target time between frames in milliseconds
+  game.lastTime = game.lastTime || timestamp;
+
+  // Calculate time elapsed
+  const deltaTime = timestamp - game.lastTime;
+
+  if (deltaTime >= interval) {
+    // Update the game state and redraw
+    game.lastTime = timestamp - (deltaTime % interval); // Reset lastTime to account for missed frames
     updategameValues(game.players[0], game.players[1], game);
-    // Draw the game
     draw(game.players[0], game.players[1], game);
   }
+
+  // Request the next frame
   requestAnimationFrame((newTimestamp) => gameLoop(game, newTimestamp));
 }
 
 function updategameValues(player1, player2, game) {
   //checks if player movement is inside the board then moves it.
-  if (!game.drawFlag)
-    return;
+  if (!game.drawFlag) return;
   oob(player1, game);
   oob(player2, game);
 
   updatePaddleVelocities(player1, player2, game);
 
   ballMovement(game);
-
-  // Check ball collision with players
-  ballCollision(game.ball, player1, game);
-  ballCollision(game.ball, player2, game);
 
   //check for scores
   if (game.ball.x - game.ball.ballRadius < 0) {
@@ -177,73 +184,14 @@ function updategameValues(player1, player2, game) {
   }
 }
 
-
-function ballMovement(game) {
-  const Ball = game.ball;
-  const left = game.players[0];
-  const right = game.players[1];
-
-
-  // Predict the ball's next position
-  let nextX = Ball.x + Ball.velocityX;
-  let nextY = Ball.y + Ball.velocityY;
-
-  // Wall collisions
-  if (nextY - Ball.ballRadius <= 0) {
-    // Place the ball just inside the top boundary
-    // Ball.y = Ball.ballRadius;
-    if (Ball.velocityY < 0)
-      Ball.velocityY *= -1;
-    game.sound.play("wallhit");
-    Ball.x = nextX;
-    Ball.y = nextY;
-    return ;
-  } else if (nextY + Ball.ballRadius >= game.boardHeight) {
-    // Place the ball just inside the bottom boundary
-    // Ball.y = game.boardHeight - Ball.ballRadius - 0.1;
-    if (Ball.velocityY > 0)
-      Ball.velocityY *= -1;
-    game.sound.play("wallhit");
-    Ball.x = nextX;
-    Ball.y = nextY;
-    return ;
-  }
-
-  // Check for overlap with the left paddle
-  if (
-    nextX - Ball.ballRadius < left.x + left.width &&
-    nextY + Ball.ballRadius > left.y &&
-    nextY - Ball.ballRadius < left.y + left.height
-  ) {
-    // Adjust ball's position and velocity
-    nextX = left.x + left.width + Ball.ballRadius;
-    game.sound.play("paddlehit");
-  }
-
-  // Check for overlap with the right paddle
-  if (
-    nextX + Ball.ballRadius > right.x &&
-    nextY + Ball.ballRadius > right.y &&
-    nextY - Ball.ballRadius < right.y + right.height
-  ) {
-    // Adjust ball's position and velocity
-    nextX = right.x - Ball.ballRadius;
-    game.sound.play("paddlehit");
-  }
-
-  // Update the ball's actual position
-  Ball.x = nextX;
-  Ball.y = nextY;
-}
-
 function draw(player1, player2, game) {
   if (!game.drawFlag) return;
 
   // Clear board
   game.context.clearRect(0, 0, game.board.width, game.board.height);
   drawLine(game); //draw line in the middle
-  drawPlayers(player1, player2, game); //draw players
   drawBall(game); // draw the ball obviously
+  drawPlayers(player1, player2, game); //draw players
   displayScores(player1, player2, game);
 }
 
@@ -377,10 +325,10 @@ function initializeModal(game) {
       const secondPlayerName = modal.querySelector("#secondPlayerName").value;
       if (secondPlayerName === "" || secondPlayerName.length > 20) {
         const errorMsg = document.getElementById("local-game-error-msg");
-        errorMsg.textContent = "Player name should be greate between 1 and 20 Characters.";
+        errorMsg.textContent =
+          "Player name should be greate between 1 and 20 Characters.";
         errorMsg.style.display = "block";
-      }
-      else {
+      } else {
         game.defp2Name = secondPlayerName;
         document.getElementById(
           "player2Name"
@@ -424,19 +372,21 @@ function updatePaddleVelocities(player1, player2, game) {
 
   if (game.parryFlag) {
     if (game.activeKeys["Space"] && !player1.cooldownFlag) {
-      if (isParry(player1, game)) {
-        game.ball.velocityX *= 1.5;
+      if (isParry(player1, game) && game.ball.velocityX < 0) {
+        game.ball.velocityX *= 1.6;
+        game.ball.velocityY *= 1.4;
         game.ball.x = player1.x + player1.width + game.ball.ballRadius + 2;
-        game.sound.play("parry");
       }
+      game.sound.play("parry");
       parryCoolDown(player1, game);
     }
     if (game.activeKeys["Numpad0"] && !player2.cooldownFlag) {
-      if (isParry(player2, game)) {
-        game.ball.velocityX *= -1.5;
-        game.ball.x = player2.x + player2.width + game.ball.ballRadius - 2;
-        game.sound.play("parry");
+      if (isParry(player2, game) && game.ball.velocityX > 0) {
+        game.ball.velocityX *= -1.6;
+        game.ball.velocityY *= 1.4;
+        game.ball.x = player2.x - player2.width + game.ball.ballRadius - 2;
       }
+      game.sound.play("parry");
       parryCoolDown(player2, game);
     }
   }
@@ -447,7 +397,7 @@ function isParry(player, game) {
   const ballNearPlayer =
     player.x < game.boardWidth / 2 // Check which side the player is on
       ? game.ball.x - game.ball.ballRadius <=
-      player.x + player.width + parryRange // Near Player 1
+        player.x + player.width + parryRange // Near Player 1
       : game.ball.x + game.ball.ballRadius >= player.x - parryRange; // Near Player 2
   const withinVerticalRange =
     game.ball.y + game.ball.ballRadius > player.y &&
@@ -456,9 +406,8 @@ function isParry(player, game) {
 }
 
 function parryRefresh(player) {
-  if (player.cooldownFlag && Date.now() > player.parryCooldown) {
+  if (player.cooldownFlag && Date.now() > player.parryCooldown)
     player.cooldownFlag = false;
-  }
 }
 
 function parryCoolDown(player, game) {
@@ -492,39 +441,134 @@ function oob(player, game) {
   }
 }
 
-function ballCollision(ball, player, game) {
-  // Define the maximum speed for the ball
-  const MAX_SPEED_X = 10; // Maximum horizontal speed
-  const MAX_SPEED_Y = 10; // Maximum vertical speed
+function ballMovement(game) {
+  const Ball = game.ball;
+  const left = game.players[0];
+  const right = game.players[1];
 
-  // Check for collision with the paddle
-  if (
-    ball.x - ball.ballRadius <= player.x + player.width && // Ball overlaps paddle on x-axis
-    ball.x + ball.ballRadius >= player.x && // Ball overlaps paddle on x-axis
-    ball.y + ball.ballRadius >= player.y && // Ball overlaps paddle on y-axis
-    ball.y - ball.ballRadius <= player.y + player.height // Ball overlaps paddle on y-axis
-  ) {
+  // Predict the ball's next position
+  let nextX = Ball.x + Ball.velocityX;
+  let nextY = Ball.y + Ball.velocityY;
 
-    const hitPosition = ball.y - (player.y + player.height / 2);
-    const normalizedHitPoint = hitPosition / (player.height / 2);
-
-    ball.velocityX *= -1;
-    ball.velocityY = normalizedHitPoint * 4.1;
-    // Clamp velocities to the maximum allowed speeds
-    ball.velocityX = Math.min(
-      Math.max(ball.velocityX, -MAX_SPEED_X),
-      MAX_SPEED_X
-    );
-    ball.velocityY = Math.min(
-      Math.max(ball.velocityY, -MAX_SPEED_Y),
-      MAX_SPEED_Y
-    );
-
-    // Play paddle hit sound
-    game.sound.play("paddlehit");
+  // Wall collisions
+  if (nextY - Ball.ballRadius <= 0) {
+    // Place the ball just inside the top boundary
+    Ball.y = Ball.ballRadius;
+    if (Ball.velocityY < 0) Ball.velocityY *= -1;
+    game.sound.play("wallhit");
+    return;
+  } else if (nextY + Ball.ballRadius >= game.boardHeight) {
+    // Place the ball just inside the bottom boundary
+    Ball.y = game.boardHeight - Ball.ballRadius;
+    if (Ball.velocityY > 0) Ball.velocityY *= -1;
+    game.sound.play("wallhit");
+    return;
   }
+
+  // Check for paddle collisions
+  if (checkPaddleCollision(Ball, left, nextX, nextY))
+    handlePaddleCollision(Ball, left, game, true);
+  else if (checkPaddleCollision(Ball, right, nextX, nextY))
+    handlePaddleCollision(Ball, right, game, false);
+  Ball.x = nextX;
+  Ball.y = nextY;
 }
 
+function handlePaddleCollision(ball, paddle, game, isLeftPaddle) {
+  const MAX_SPEED_X = 10;
+  const MIN_SPEED_X = 6;
+  const MAX_SPEED_Y = 10;
+  const MIN_SPEED_Y = 8;
+
+  // Calculate hit position relative to paddle center (-1 to 1)
+  const hitPosition =
+    (ball.y - (paddle.y + paddle.height / 2)) / (paddle.height / 2);
+
+  // Determine if the ball hit near the edge (top or bottom 25% of paddle)
+  const isEdgeHit = Math.abs(hitPosition) > 0.75;
+
+  // Add paddle velocity to ball velocity (assuming paddle has velocityY property)
+  const paddleVelocityImpact = paddle.velocityY ? paddle.velocityY * 0.7 : 0;
+
+  // Calculate new velocities with edge adjustments
+  let newVelocityX;
+  let newVelocityY;
+
+  if (isEdgeHit) {
+    // For edge hits, prioritize vertical movement over horizontal repositioning
+    const baseSpeedX = Math.abs(ball.velocityX) * 0.7;
+    newVelocityX = Math.max(baseSpeedX, MIN_SPEED_X) * (isLeftPaddle ? 1 : -1);
+    // Add paddle velocity impact to the vertical component
+    newVelocityY = hitPosition * 5.5 + paddleVelocityImpact;
+
+    // Enhanced overlap detection considering paddle movement
+    const overlap = isLeftPaddle
+      ? paddle.x + paddle.width - (ball.x - ball.ballRadius)
+      : ball.x + ball.ballRadius - paddle.x;
+
+    if (overlap > ball.ballRadius * 0.5) {
+      const correctionFactor = paddle.velocityY ? 1.2 : 0.5;
+      if (isLeftPaddle) {
+        ball.x = paddle.x + paddle.width + ball.ballRadius * correctionFactor;
+      } else {
+        ball.x = paddle.x - ball.ballRadius * correctionFactor;
+      }
+    }
+  } else {
+    // Normal hit behavior with paddle velocity influence
+    newVelocityX =
+      Math.max(Math.abs(ball.velocityX), MIN_SPEED_X) * (isLeftPaddle ? 1 : -1);
+    newVelocityY = hitPosition * 4.1 + paddleVelocityImpact;
+
+    // Immediate position correction for center hits
+    if (isLeftPaddle) {
+      ball.x = paddle.x + paddle.width + ball.ballRadius;
+    } else {
+      ball.x = paddle.x - ball.ballRadius;
+    }
+  }
+
+  // Ensure minimum vertical velocity for edge hits
+  if (isEdgeHit) {
+    const minVerticalSpeed = Math.max(Math.abs(newVelocityY), MIN_SPEED_Y);
+    newVelocityY = newVelocityY < 0 ? -minVerticalSpeed : minVerticalSpeed;
+  }
+
+  // Apply new velocities with speed limits
+  ball.velocityX = Math.min(Math.max(newVelocityX, -MAX_SPEED_X), MAX_SPEED_X);
+  ball.velocityY = Math.min(Math.max(newVelocityY, -MAX_SPEED_Y), MAX_SPEED_Y);
+
+  // Calculate total speed and adjust if too slow
+  const totalSpeed = Math.sqrt(
+    ball.velocityX * ball.velocityX + ball.velocityY * ball.velocityY
+  );
+  const MIN_TOTAL_SPEED = 7;
+
+  if (totalSpeed < MIN_TOTAL_SPEED) {
+    const scaleFactor = MIN_TOTAL_SPEED / totalSpeed;
+    ball.velocityX *= scaleFactor;
+    ball.velocityY *= scaleFactor;
+  }
+
+  game.sound.play("paddlehit");
+}
+
+function checkPaddleCollision(ball, paddle, nextX, nextY) {
+  // Calculate the closest point on the paddle to the ball's center
+  const closestX = Math.max(paddle.x, Math.min(nextX, paddle.x + paddle.width));
+  const closestY = Math.max(
+    paddle.y,
+    Math.min(nextY, paddle.y + paddle.height)
+  );
+
+  // Calculate the distance between the closest point and the ball's center
+  const distanceX = nextX - closestX;
+  const distanceY = nextY - closestY;
+  const distanceSquared = distanceX * distanceX + distanceY * distanceY;
+
+  // Check if the distance is less than the ball's radius
+  return distanceSquared <= ball.ballRadius * ball.ballRadius;
+}
 
 async function resetGame(player1, player2, direction, game) {
   //bring back ball to the middle
@@ -551,7 +595,6 @@ async function resetGame(player1, player2, direction, game) {
     game.stopeventListeners();
     game.drawFlag = false;
     window.isGameRunning = false;
-    // game.aiFlag = false;
     const endgame_stuff = {
       player1_username: player1.playerName,
       player2_username: player2.playerName,
@@ -562,8 +605,7 @@ async function resetGame(player1, player2, direction, game) {
 
     if (document.getElementById("aiButton")) {
       document.getElementById("aiButton").disabled = false;
-    }
-    else if (document.getElementById("startButton")) {
+    } else if (document.getElementById("startButton")) {
       document.getElementById("startButton").disabled = false;
     }
     if (document.getElementById("settingButton")) {
@@ -651,103 +693,90 @@ function startaiGame(game) {
     y: 0,
     velocityX: 0,
     velocityY: 0,
-    aiMovingUp: false,
+    aiX: 0,
+    aiY: 0,
+    aiParry: false,
+    playerParry: false,
+    scoreDeficit: 0,
+    tolInc: 0,
+    lastscoreDef: 0,
     aiMovingDown: false,
-    scoreDeficit: 0
+    aiMovingUp: false,
+    time: 0, // Initialize time for AI timing logic
   };
 
   game.drawFlag = true;
   window.isGameRunning = true;
-
-  let lastAiViewTime = performance.now(); // Initialize last AI view timestamp
-  let lastAiLogicTime = performance.now(); // Initialize last AI logic timestamp
-
-  // test case 
-  // game.ball.x = game.boardWidth / 2;
-  // game.ball.y = game.boardHeight - game.ball.ballRadius;
-  // game.ball.velocityY = 0;
-  // game.ball.velocityX = -game.defballSpeed;
-  // end of test case
-
+  
+  aikeyEvents("stop", aiHelper);
+  let lastAiViewTime = performance.now(); // Timestamp for AI viewing logic
+  let lastlogicTime = performance.now();
 
   // Start the AI loop
   function aiLoop(timestamp) {
     if (!window.isGameRunning) return; // Stop if the game is no longer running
-
-    // Calculate elapsed time
-    let currentTime = timestamp;
-    let deltaTimeView = currentTime - lastAiViewTime;
-    let deltaTimeLogic = currentTime - lastAiLogicTime;
-
-    // Run `aiView` every 1000 ms
-    if (deltaTimeView >= 1000) {
+  
+    const fpsTarget = 60;
+    const interval = 1000 / fpsTarget; // Interval for AI logic (16.67 ms for 60 FPS)
+  
+    const aiViewInterval = 1000; // 1 second (1000 ms)
+  
+    // Calculate elapsed time for AI viewing logic
+    const deltaAiView = timestamp - lastAiViewTime;
+    if (deltaAiView >= aiViewInterval) {
       aiView(game, aiHelper);
-      lastAiViewTime = currentTime; // Reset timer
+      lastAiViewTime = timestamp; // Reset `lastAiViewTime`
     }
-
-    // Run `aiLogic` every 50 ms
-    if (deltaTimeLogic >= 50) {
+  
+    // Calculate elapsed time for AI logic
+    const deltaLogic = timestamp - lastlogicTime;
+    if (deltaLogic >= interval) {
       aiLogic(game.players[1], game, aiHelper);
-      lastAiLogicTime = currentTime; // Reset timer
+      lastlogicTime = timestamp; // Reset `lastlogicTime`
     }
 
-    requestAnimationFrame(aiLoop); // Continue the AI loop
+    // Continue the AI loop
+    requestAnimationFrame(aiLoop);
   }
-
   // Start the AI loop
-  requestAnimationFrame(aiLoop);
+  requestAnimationFrame((timestamp) => aiLoop(timestamp));
 
-  // Start the shared game loop (assuming it's already defined elsewhere)
-  requestAnimationFrame((timestamp) => {
-    gameLoop(game, timestamp);
-  });
+  requestAnimationFrame((timestamp) => gameLoop(game, timestamp));
 }
 
 
 function aiLogic(player2, game, aiHelper) {
-  if (!game.drawFlag)
-    return;
-  if (aiHelper.velocityX < 0 && aiHelper.scoreDeficit > 0) {
-    const middlePos = game.boardHeight / 2;
-    const paddleCenter = player2.y + player2.height / 2;
+  if (!game.drawFlag) return;
 
-    if (paddleCenter > middlePos - (game.paddleSpeed * 2) && paddleCenter < middlePos + (game.paddleSpeed * 2)) {
-      aikeyEvents("stop", aiHelper);
-      return;
-    }
-    if (paddleCenter < middlePos + game.paddleSpeed) {
-      aikeyEvents("down", aiHelper);
-    }
-    else if (paddleCenter > middlePos - game.paddleSpeed) {
-      aikeyEvents("up", aiHelper);
-    } else
-      aikeyEvents("stop", aiHelper);
-    return;
+  if (aiHelper.velocityX === 0)
+    return ;
+  if (aiHelper.velocityX < 0 && aiHelper.scoreDeficit < 0) {
+    aiMiddle(aiHelper, game, player2);
+    return ;
+  }
+  let time = 0;
+  if (aiHelper.scoreDeficit < 0){
+    time = aiHelper.velocityX > 0 ? (aiHelper.aiX - aiHelper.x - game.playerWidth) / aiHelper.velocityX : Math.abs((aiHelper.x - aiHelper.playerX) + (aiHelper.playerX + aiHelper.aiX - 16) / aiHelper.velocityX);
+  }
+  else
+    time = (aiHelper.aiX - aiHelper.x) / aiHelper.velocityX;
+
+  if (game.parryFlag && !aiHelper.aiParry && aiHelper.velocityX > 0) {
+    if (aiHelper.scoreDeficit >= 0)
+      aiparryChance(aiHelper, time, 60); 
+    else if (aiHelper.scoreDeficit < 0 && aiHelper.playerParry)
+      aiparryChance(aiHelper, time, 60);
   }
 
-  let tolerance = 40; // Allow a small margin of error
-  if (aiHelper.scoreDeficit > 0)
-    tolerance += (aiHelper.scoreDeficit * 10);
-  else if (aiHelper.scoreDeficit < 0)
-    tolerance -= (aiHelper.scoreDeficit * 10);
-
-  const time = (player2.x - game.ball.x - player2.width) / game.ball.velocityX;
-
-  if (game.parryFlag && aiHelper.velocityX > 0 && !player2.cooldownFlag)
-    aiparryChance(aiHelper, time);
+  let tolerance = 45 + aiHelper.tolInc / 10; // Allow a small margin of error
+  tolerance += aiHelper.scoreDeficit * 10; // Increase or decrease based on score
+  tolerance = Math.max(0, Math.min(100, tolerance)); // Clamp to reasonable range
+  
   //predicts y location based on the time. this variable would exceed the board size. exceeding board size would mean its supposed to hit wall
-  const yChange = game.ball.velocityY * time;
-  let yHit = game.ball.y + yChange;
-
-  //sets the expected y hit back to the board size if it exceeded board size
-  if (yHit < 0) {
-    yHit *= -1;
-  } else if (yHit > game.boardHeight) {
-    yHit -= (game.boardHeight * 2);
-  }
+  let yHit = adjustYhit(aiHelper, time, game.boardHeight);
 
   let target = Math.abs(yHit - player2.height / 2);
-  if (target > player2.y - tolerance && target < player2.y + 40) {
+  if (target > player2.y - tolerance && target < player2.y + tolerance) {
     // If the AI is close enough to the target Y position, stop moving
     aikeyEvents("stop", aiHelper);
     return;
@@ -759,36 +788,94 @@ function aiLogic(player2, game, aiHelper) {
   }
 }
 
-function aiparryChance(aiHelper, time) {
+//adjusts predicted y hit back inside the board
+function adjustYhit(aiHelper, time, boardHeight) {
+  let yChange = aiHelper.velocityY * time;
+  let yHit = aiHelper.y + yChange;
 
+  // Handle wall bounces more accurately
+  while (yHit < 0 || yHit > boardHeight) {
+    if (yHit < 0) {
+      yHit = -yHit; // Bounce off top wall
+    } else if (yHit > boardHeight) {
+      yHit = boardHeight - (yHit - boardHeight); // Bounce off bottom wall
+    }
+  }
+
+  return yHit;
+}
+
+function aiMiddle(aiHelper, game, player2) {
+  const middlePos = game.boardHeight / 2;
+  const paddleCenter = player2.y + player2.height / 2;
+  if (
+    paddleCenter > middlePos - game.paddleSpeed * 2 &&
+    paddleCenter < middlePos + game.paddleSpeed * 2
+  ) {
+    aikeyEvents("stop", aiHelper);
+    return;
+  }
+  if (paddleCenter < middlePos + game.paddleSpeed) {
+    aikeyEvents("down", aiHelper);
+  } else if (paddleCenter > middlePos - game.paddleSpeed) {
+    aikeyEvents("up", aiHelper);
+  } else aikeyEvents("stop", aiHelper);
+  return;
+}
+
+function aiparryChance(aiHelper, time, fps) {
   const deficit = Math.max(0, aiHelper.scoreDeficit);
-  let aiparryChance = 0.8; //set the ai's parry chance by 80% default
+  let aiparryChance = 0.8; // 80% base chance to parry
 
+  // Reduce parry chance based on score deficit
   aiparryChance -= deficit * 0.1;
+
+  // Calculate ideal parry timing
+  const idealParryTime = time * fps;
   if (Math.random() < aiparryChance) {
     setTimeout(() => {
       aikeyEvents("parry", aiHelper);
-    }, time * 60);
-  } else
+    }, idealParryTime);
+  } else {
+    // for imitating missed parry
+    const missDelay = 100 + Math.random() * 100; // 100-200ms too late
     setTimeout(() => {
       aikeyEvents("parry", aiHelper);
-    }, (time * 60) + 60);
+    }, idealParryTime + missDelay);
+  }
 }
 
 // function to check/store balls last position every 1 second.
 function aiView(game, aiHelper) {
   if (game.drawFlag) {
-    aiHelper.x = game.ball.x;
-    aiHelper.y = game.ball.y;
-    aiHelper.velocityX = game.ball.velocityX;
-    aiHelper.velocityY = game.ball.velocityY;
+    const Ball = game.ball;
+    const player = game.players[0];
+    const ai = game.players[1];
+
+    aiHelper.x = Ball.x;
+    aiHelper.y = Ball.y;
+    aiHelper.aiX = ai.x;
+    aiHelper.aiY = ai.y;
+    aiHelper.playerX = player.x;
+    aiHelper.velocityX = Ball.velocityX;
+    aiHelper.velocityY = Ball.velocityY;
+    aiHelper.aiParry = ai.cooldownFlag;
+    aiHelper.playerParry = player.cooldownFlag;
     // if the player is losing increase scoredificit
-    aiHelper.scoreDeficit = game.players[0].score < game.players[1].score ? game.players[1].score - game.players[0].score : game.players[0].score - game.players[1].score;
+    aiHelper.scoreDeficit =
+      player.score < ai.score
+        ? ai.score - player.score
+        : ai.score - player.score;
+    if (aiHelper.lastscoreDef != aiHelper.scoreDeficit) {
+      aiHelper.tolInc = 0;
+      aiHelper.lastscoreDef = aiHelper.scoreDeficit;
+    }
+    aiHelper.tolInc++;
   }
 }
 
 function isaiKey(event) {
-  const keys = ["ArrowUp", "ArrowDown", "Numpad0"]
+  const keys = ["ArrowUp", "ArrowDown", "Numpad0"];
   return keys.includes(event.key);
 }
 
@@ -858,7 +945,7 @@ function aikeyEvents(moveDirection, aiHelper) {
       const releaseEvent = createAIKeyEvent("keyup", "Numpad0", "Numpad0", 96);
       releaseEvent.isAI = true;
       document.dispatchEvent(releaseEvent);
-    }, 50);
+    }, 10);
   }
 }
 
@@ -869,11 +956,15 @@ function checkScreenSize(game = null) {
   const warningMessage = document.getElementById("warningMessage");
   const gameContent = document.getElementById("gameContent");
 
-  if (window.innerWidth < MIN_WINDOW_WIDTH || window.innerHeight < MIN_WINDOW_HEIGHT) {
-    if (warningMessage)
-      warningMessage.classList.remove("d-none");
-	  if(gameContent)
-		  gameContent.classList.add("d-none");
+  let pauseTime = 0;
+
+  if (
+    window.innerWidth < MIN_WINDOW_WIDTH ||
+    window.innerHeight < MIN_WINDOW_HEIGHT
+  ) {
+    if (warningMessage) warningMessage.classList.remove("d-none");
+    if (gameContent) gameContent.classList.add("d-none");
+    if (game.parryFlag) pauseTime = new Date();
     game.drawFlag = false;
   } else {
     if (warningMessage) {
@@ -882,8 +973,11 @@ function checkScreenSize(game = null) {
     if (gameContent) {
       gameContent.classList.remove("d-none");
     }
+    if (game.parryFlag) {
+      game.players[0].parryCooldown += pauseTime + Date.now();
+      game.players[1].parryCooldown += pauseTime + Date.now();
+    }
     game.drawFlag = true;
-    // window.isGameRunning = true;
   }
 }
 
@@ -891,8 +985,7 @@ function checkScreenSize(game = null) {
 function changeSetting(game) {
   const modal = gameSettingsModal();
 
-  if (document.body.appendChild(modal))
-    console.log("Child appended");
+  document.body.appendChild(modal);
 
   // Event Listeners
   modal.querySelector("#applyButton").addEventListener("click", () => {
@@ -918,14 +1011,13 @@ function changeSetting(game) {
   modal.addEventListener("click", (e) => {
     if (e.target === modal) closeModal("gameSettingsModal");
   });
-
 }
 
 function applySetting(game) {
-  const MIN_PADDLE_SPEED = 1,
+  const MIN_PADDLE_SPEED = 6,
     MAX_PADDLE_SPEED = 10;
-  const MIN_MAX_SCORE = 1,
-    MAX_MAX_SCORE = 20;
+  const MIN_MAX_SCORE = 3,
+    MAX_MAX_SCORE = 10;
 
   const paddleSpeedInput = parseInt(
     document.getElementById("paddleSpeed").value
@@ -934,12 +1026,24 @@ function applySetting(game) {
   const slowServeInput = document.getElementById("slowServe").checked;
   const parryInput = document.getElementById("parryMode").checked;
 
-  if (paddleSpeedInput < MIN_PADDLE_SPEED || paddleSpeedInput > MAX_PADDLE_SPEED || !paddleSpeedInput) {
-    displayError({ error_msg: `Paddle Speed must be between ${MIN_PADDLE_SPEED} and ${MAX_PADDLE_SPEED}.` });
+  if (
+    paddleSpeedInput < MIN_PADDLE_SPEED ||
+    paddleSpeedInput > MAX_PADDLE_SPEED ||
+    !paddleSpeedInput
+  ) {
+    displayError({
+      error_msg: `Paddle Speed must be between ${MIN_PADDLE_SPEED} and ${MAX_PADDLE_SPEED}.`,
+    });
     return 1;
   }
-  if (maxScoreInput < MIN_MAX_SCORE || maxScoreInput > MAX_MAX_SCORE || !maxScoreInput) {
-    displayError({ error_msg: `Winning Score must be between ${MIN_MAX_SCORE} and ${MAX_MAX_SCORE}.` });
+  if (
+    maxScoreInput < MIN_MAX_SCORE ||
+    maxScoreInput > MAX_MAX_SCORE ||
+    !maxScoreInput
+  ) {
+    displayError({
+      error_msg: `Winning Score must be between ${MIN_MAX_SCORE} and ${MAX_MAX_SCORE}.`,
+    });
     return 1;
   }
 

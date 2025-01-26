@@ -73,6 +73,7 @@ async function handle42Login() {
 
     const resposeData = await response.json();
 
+    hideLoadingAnimation();
     window.location.href = resposeData.authorization_url;
 
   } catch (error) {
@@ -179,15 +180,15 @@ function updateNavBar(isAuthenticated, givenUsername = null, givenProfilePic = n
     navbar.innerHTML = `
     <ul class="navbar-nav ms-auto align-items-center">
       <li class="nav-item">
-        <a nclick="appRouter()" href="/leaderboard" class="nav-link"><i class="fas fa-trophy me-2"></i>Leaderboard</a>
+        <a onclick="appRouter()" href="/leaderboard" class="nav-link"><i class="fas fa-trophy me-2"></i>Leaderboard</a>
       </li>
       <li class="nav-item">
-      <a href="/chat" class="nav-link" onclick="appRouter()"><i class="fas fa-comments me-2"></i>Chat</a>
-    </li>
-    <li id="notification_dropdown_list" class="nav-item ms-lg-2 dropdown">
-      <a onclick="handleNotificationBellClick()" class="nav-link position-relative notification-badge" role="button" id="notificationDropdown" data-bs-toggle="dropdown" aria-expanded="false"><i class="fas fa-bell"></i></a>
-      <ul id="notification_ul" class="dropdown-menu dropdown-menu-end" aria-labelledby="notificationDropdown" style="width: 300px;"></ul>
-    </li>
+        <a href="/chat" class="nav-link" onclick="appRouter()"><i class="fas fa-comments me-2"></i>Chat</a>
+      </li>
+      <li id="notification_dropdown_list" class="nav-item ms-lg-2 dropdown">
+        <a onclick="handleNotificationBellClick()" class="nav-link position-relative notification-badge" role="button" id="notificationDropdown" data-bs-toggle="dropdown" aria-expanded="false"><i class="fas fa-bell"></i></a>
+        <ul id="notification_ul" class="dropdown-menu dropdown-menu-end" aria-labelledby="notificationDropdown" style="width: 300px;"></ul>
+      </li>
       <li class="nav-item ms-lg-2 dropdown">
         <a class="nav-link profile-link" href="#" role="button" id="profileDropdown" 
            data-bs-toggle="dropdown" aria-expanded="false">
@@ -256,6 +257,10 @@ async function handleSignOut() {
       closeSignOutModal();
       removeResource();
       updateNavBar(false);
+      if (window.ws_chat)
+      window.ws_chat.close() 
+      if (window.ws)
+      window.ws.close() 
       await updateUI(``);
     } else {
       throw new Error("Failed to sign out");

@@ -220,7 +220,7 @@ function twoFactorModal(button) {
 }
 
 /* anon modal */
-function anonymizeModal() {
+function anonymizeModal(buttonText, AnonText) {
   const existingModal = document.getElementById("anon-account-modal");
   if (existingModal) {
     existingModal.remove();
@@ -237,17 +237,17 @@ function anonymizeModal() {
 		<div class="content modal-content">
 		  <div class="modal-header border-0 py-3">
 			<h5 class="modal-title text-danger">
-			  <i class="fas fa-exclamation-triangle me-2"></i>Anonymize Account
+			  <i class="fas fa-exclamation-triangle me-2"></i>${buttonText}
 			</h5>
 			<button type="button" class="btn-close btn-close-white" id="close-anon-modal"></button>
 		  </div>
 		  <div class="modal-body
 		  px-3 py-2">
-			<p class="text-white mb-0">This action will log you out and switch to a temporary account. Are you sure you want to proceed? </p>
+			<p class="text-white mb-0">${AnonText}</p>
 		  </div>
 		  <div class="modal-footer border-0 py-3">
 			<button id="anon-acc-confirm" class="btn btn-danger btn-sm">
-			  <i class="fas fa-user-secret me-2"></i>Anonymize
+			  <i class="fas fa-user-secret me-2"></i>${buttonText}
 			</button>
 			<button id="anon-acc-cancel" class="btn btn-outline-light btn-sm">
 			  Cancel

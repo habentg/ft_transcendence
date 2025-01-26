@@ -1,9 +1,9 @@
 function createTournamentMap() {
-  const tournamentWrapper = document.createElement("div");
-  tournamentWrapper.className = "tournamentWrapper";
-  tournamentWrapper.id = "tournamentWrapper";
+	const tournamentWrapper = document.createElement("div");
+	tournamentWrapper.className = "tournamentWrapper";
+	tournamentWrapper.id = "tournamentWrapper";
 
-  tournamentWrapper.innerHTML = `
+	tournamentWrapper.innerHTML = `
 					<h1 class="text-center mb-5">Tournament Map</h1>
 					<div class="row d-flex position-relative ">
 						<!-- First Round -->
@@ -199,14 +199,14 @@ function createTournamentMap() {
 				  	</div>
 		`;
 
-  return tournamentWrapper;
+	return tournamentWrapper;
 }
 
 function createGameCanvas() {
-  const gameBoard = document.createElement("div");
-  gameBoard.id = "gameContent";
-  gameBoard.className = " py-5 flex-direction: column";
-  gameBoard.innerHTML = `
+	const gameBoard = document.createElement("div");
+	gameBoard.id = "gameContent";
+	gameBoard.className = " py-5 flex-direction: column";
+	gameBoard.innerHTML = `
 		<div class="justify-content-center mb-5">
 		</div>
 		<div class="gamePlayers d-flex justify-content-between">
@@ -222,12 +222,10 @@ function createGameCanvas() {
 		</div>
 		`;
 
-  return gameBoard;
+	return gameBoard;
 }
 
 function nextMatchModal(player1, player2) {
-  const existingModal = document.getElementById("nextMatch");
-  if (existingModal) existingModal.remove();
 	const modalHTML = `
 		<div class="modal fade" id="nextMatch" tabindex="-1" role="dialog" aria-labelledby="modalTitle" aria-hidden="true">
 			<div class="modal-dialog modal-dialog-centered modal-md" role="document">
@@ -244,19 +242,20 @@ function nextMatchModal(player1, player2) {
 		</div>
 	`;
 
-  // Append the modal to the body
-//   const body = document.querySelector("body");
-  const modalContainer = document.createElement("div");
-  modalContainer.innerHTML = modalHTML;
-  document.body.appendChild(modalContainer);
-  const modal = new bootstrap.Modal(document.getElementById("nextMatch"));
-  modal.show();
+	// Append the modal to the body
+	//   const body = document.querySelector("body");
+	const modalContainer = document.createElement("div");
+	modalContainer.innerHTML = modalHTML;
+	modalContainer.id = "nextMatch_modal";
+	document.body.appendChild(modalContainer);
+	const modal = new bootstrap.Modal(document.getElementById("nextMatch"));
+	modal.show();
 }
 
 function gameWinnerModal(playerName) {
-  const existingModal = document.getElementById("gameClosing");
-  if (existingModal) existingModal.remove();
-  const modalHTML = `
+	const existingModal = document.getElementById("gameClosing");
+	if (existingModal) existingModal.remove();
+	const modalHTML = `
 	  <div class="modal fade" id="gameClosing" tabindex="-1" role="dialog" aria-labelledby="modalTitle" aria-hidden="true">
 		  <div class="modal-dialog modal-dialog-centered modal-md" role="document">
 			  <div class="card modal-card shadow-lg position-relative">
@@ -272,19 +271,20 @@ function gameWinnerModal(playerName) {
 	  </div>
 	  `;
 
-  const body = document.querySelector("body");
-  const modalContainer = document.createElement("div");
-  modalContainer.innerHTML = modalHTML;
-  if (body) body.appendChild(modalContainer);
-  const modal = new bootstrap.Modal(document.getElementById("gameClosing"));
-  modal.show();
+	const body = document.querySelector("body");
+	const modalContainer = document.createElement("div");
+	modalContainer.id = "gameClosing_modal";
+	modalContainer.innerHTML = modalHTML;
+	if (body) body.appendChild(modalContainer);
+	const modal = new bootstrap.Modal(document.getElementById("gameClosing"));
+	modal.show();
 
 }
 
 function tournamentClosingModal(winner, secondplace) {
-  const existingModal = document.getElementById("congratsModal");
-  if (existingModal) existingModal.remove();
-  const modalHTML = `
+	const existingModal = document.getElementById("congratsModal");
+	if (existingModal) existingModal.remove();
+	const modalHTML = `
 	  <div class="modal fade" id="congratsModal" tabindex="-1" role="dialog" aria-labelledby="modalTitle" aria-hidden="true">
 		  <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
 			  <div class="card modal-card position-relative">
@@ -304,51 +304,50 @@ function tournamentClosingModal(winner, secondplace) {
 		  </div>
 	  </div>`;
 
-  const body = document.querySelector("body");
-  const modalContainer = document.createElement("div");
-  modalContainer.innerHTML = modalHTML;
-  if (body) body.appendChild(modalContainer);
-  const modal = new bootstrap.Modal(document.getElementById("congratsModal"));
-  modal.show();
+	const body = document.querySelector("body");
+	const modalContainer = document.createElement("div");
+	modalContainer.innerHTML = modalHTML;
+	if (body) body.appendChild(modalContainer);
+	const modal = new bootstrap.Modal(document.getElementById("congratsModal"));
+	modal.show();
 }
 
 function updateTournamentMapAfterFinal(tournamentContainer, tournamentElement) {
-  const continueButton = tournamentElement.querySelector(".continueButton");
-  continueButton.innerHTML = `<i class="fas fa-home me-2"></i>Return Home`;
-  continueButton.addEventListener("click", () => updateUI("/home"));
-  const restartButton = continueButton.cloneNode(true);
-  restartButton.innerHTML = `<i class="fas fa-trophy me-1"></i>New Tournament`;
-  restartButton.classList.remove("continueButton");
-  restartButton.classList.remove("btn-primary");
-  restartButton.classList.add("restartButton");
-  restartButton.style.marginLeft = "10px";
-  restartButton.style.backgroundColor = "#A1F037"; 
-  restartButton.addEventListener("click", () => updateUI("/tournament"));
-  continueButton.insertAdjacentElement("afterend", restartButton);
-  continueButton.insertAdjacentElement("afterend", restartButton);
-  if (tournamentContainer) tournamentContainer.appendChild(tournamentElement);
+	const continueButton = tournamentElement.querySelector(".continueButton");
+	continueButton.innerHTML = `<i class="fas fa-home me-2"></i>Return Home`;
+	continueButton.addEventListener("click", () => updateUI("/home"));
+	const restartButton = continueButton.cloneNode(true);
+	restartButton.innerHTML = `<i class="fas fa-trophy me-1"></i>New Tournament`;
+	restartButton.classList.remove("continueButton");
+	restartButton.classList.remove("btn-primary");
+	restartButton.classList.add("restartButton");
+	restartButton.style.marginLeft = "10px";
+	restartButton.style.backgroundColor = "#A1F037";
+	restartButton.addEventListener("click", () => updateUI("/tournament"));
+	continueButton.insertAdjacentElement("afterend", restartButton);
+	continueButton.insertAdjacentElement("afterend", restartButton);
+	if (tournamentContainer) tournamentContainer.appendChild(tournamentElement);
 }
 
 
-function addPlayerTitles(player1Name, player2Name)
-{
+function addPlayerTitles(player1Name, player2Name) {
 	const player1NameElement = document.getElementById("player1Name");
 	if (player1NameElement) {
-	  player1NameElement.textContent = "@ " + player1Name;
-	  player1NameElement.style.display = "block";
+		player1NameElement.textContent = "@ " + player1Name;
+		player1NameElement.style.display = "block";
 	}
 	const player2NameElement = document.getElementById("player2Name");
 	if (player2NameElement) {
-	  player2NameElement.textContent = "@ " + player2Name;
-	  player2NameElement.style.display = "block";
+		player2NameElement.textContent = "@ " + player2Name;
+		player2NameElement.style.display = "block";
 	}
 	const player1Element = document.getElementById("player1");
 	if (player1Element) {
-	  player1Element.classList.remove("d-none");
+		player1Element.classList.remove("d-none");
 	}
 	const player2Element = document.getElementById("player2");
 	if (player2Element) {
-	  player2Element.classList.remove("d-none");
+		player2Element.classList.remove("d-none");
 	}
 }
 
@@ -357,18 +356,18 @@ function addWarningMessage() {
 	const warningMessage = document.createElement("div");
 	warningMessage.id = "warningMessage";
 	warningMessage.className = "d-none text-center text-light p-2";
-  
+
 	const heading = document.createElement("h3");
 	heading.className = "mb-4 mt-2";
 	heading.textContent = "Screen too small to play";
-  
+
 	const subheading = document.createElement("h5");
 	subheading.textContent =
-	  "Please switch to a laptop or desktop with a larger screen for the best experience.";
-  
+		"Please switch to a laptop or desktop with a larger screen for the best experience.";
+
 	warningMessage.appendChild(heading);
 	warningMessage.appendChild(subheading);
-  
+
 	return warningMessage;
-  }
-  
+}
+

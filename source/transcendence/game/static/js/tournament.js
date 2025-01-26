@@ -233,6 +233,7 @@ async function createTournamentinDB(tournament_type) {
       if (tournamentDiv) tournamentDiv.remove();
       nextMatchModal(player1Name, player2Name);
       await UIManager.waitForModal("nextMatch");
+      document.getElementById("nextMatch_modal").remove();
       const pageContainer = document.getElementById("background");
       const gameCanvas = createGameCanvas();
       const warningMessage = addWarningMessage();
@@ -390,6 +391,8 @@ async function createTournamentinDB(tournament_type) {
           const winner = await this.playMatch(currentPlayers[i], currentPlayers[i + 1],playersNames);
           gameWinnerModal(winner);
           setTimeout(() => { UIManager.closeModal("gameClosing"); }, 1750);
+          if (document.getElementById("gameClosing_modal"))
+            document.getElementById("gameClosing_modal").remove();
           quarterFinalWinners.push(winner);
           if (tournamentContainer)
             tournamentContainer.appendChild(this.tournamentElement);
@@ -404,6 +407,8 @@ async function createTournamentinDB(tournament_type) {
         semiFinalWinners.push(winner);
         gameWinnerModal(winner);
         setTimeout(() => { UIManager.closeModal("gameClosing");}, 2000);
+        if (document.getElementById("gameClosing_modal"))
+            document.getElementById("gameClosing_modal").remove();
         if (tournamentContainer)
           tournamentContainer.appendChild(this.tournamentElement);
       }

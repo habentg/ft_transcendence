@@ -1,6 +1,6 @@
 #!/bin/sh
 
-SECRETS_DIR=./secrets
+SECRETS_DIR=./source/nginx/tools/secrets
 
 mkdir -p ${SECRETS_DIR}
 

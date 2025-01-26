@@ -17,7 +17,7 @@
 .playerListContainer {
   width: 80%;
   max-width: 1200px;
-  max-height: 700px;
+  max-height: 775px;
   overflow-y: auto;
   overflow-x: hidden;
   scrollbar-width: thin;

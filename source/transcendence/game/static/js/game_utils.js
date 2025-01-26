@@ -14,7 +14,7 @@ class Game {
     this.context = null;
     this.boardWidth = 800;
     this.boardHeight = 500;
-    this.playerWidth = 15;
+    this.playerWidth = 16;
     this.playerHeight = 80;
 
     //players
@@ -32,7 +32,7 @@ class Game {
     this.slowServe = false;
 
     // Parry variables
-    this.cooldownTime = 5000;
+    this.cooldownTime = 7000;
     this.parryFlag = false;
 
     this.ball = {
@@ -40,8 +40,9 @@ class Game {
       y: this.boardHeight / 2,
       velocityX: this.defballSpeed,
       velocityY: this.defballSpeed,
-      ballRadius: 7,
+      ballRadius: 8,
     };
+
     this.sound = new Sound();
   }
 
@@ -65,8 +66,8 @@ class Game {
     this.stopeventListeners();
     this.ball.x = this.boardWidth / 2;
     this.ball.y = this.boardWidth / 2;
-    this.players[0].y = this.boardHeight / 2 - this.playerWidth / 2;
-    this.players[1].y = this.boardHeight / 2 - this.playerWidth / 2;
+    this.players[0].y = (this.boardHeight / 2) - this.playerHeight / 2;
+    this.players[1].y = (this.boardHeight / 2) - this.playerHeight / 2;
     this.players[0].velocityY = 0;
     this.players[1].velocityY = 0;
     this.randomizeServe();
@@ -107,7 +108,7 @@ class Game {
       this.ball.velocityY = 2 * (Math.random() > 0.5 ? 1 : -1) * 0.5;
     } else {
       // Use normal initial speed
-      this.ball.velocityX = direction * Math.abs(this.defballSpeed);
+      this.ball.velocityX = direction * Math.abs(this.defballSpeed) * 0.7;
       this.ball.velocityY = 2 * (Math.random() > 0.5 ? 1 : -1);
     }
   }
@@ -117,7 +118,7 @@ class Game {
       this.ball.velocityX = (Math.random() > 0.5 ? this.defballSpeed * 0.5: -this.defballSpeed * 0.5)
       this.ball.velocityY = 2 * (Math.random() > 0.5 ? 1 : -1);
     } else {
-      this.ball.velocityX = (Math.random() > 0.5 ? this.defballSpeed : -this.defballSpeed)
+      this.ball.velocityX = (Math.random() > 0.5 ? this.defballSpeed * 0.7 : -this.defballSpeed * 0.7)
       this.ball.velocityY = 2 * (Math.random() > 0.5 ? 1 : -1);
     }
   }
@@ -132,11 +133,6 @@ class Game {
   createPlayer(name, position) {
     const player = new Player(name, position, this);
     this.players.push(player);
-  }
-
-  updateParryFlag() {
-    this.parryFlag = document.getElementById("slowServe").checked;
-    return this.parryFlag;
   }
 
   move = (event) => {
@@ -154,6 +150,7 @@ class Game {
       paddleSpeed: this.paddleSpeed,
       maxScore: this.maxScore,
       slowServe: this.slowServe,
+      parryFlag: this.parryFlag
     };
     localStorage.setItem(key, JSON.stringify(settings));
   }
@@ -167,6 +164,7 @@ class Game {
       this.paddleSpeed = savedSettings.paddleSpeed || this.paddleSpeed;
       this.maxScore = savedSettings.maxScore || this.maxScore;
       this.slowServe = savedSettings.slowServe || this.slowServe;
+      this.parryFlag = savedSettings.parryFlag || this.parryFlag;
     }
   }
 }
@@ -296,7 +294,6 @@ class Sound {
     if (sound) {
       sound.currentTime = 0; // Reset for replay
       sound.play();
-    } else {
     }
   }
 }
@@ -304,10 +301,10 @@ class Sound {
 // Check if mobile using window.navigator.userAgent
 function isInDesktop() {
   const mobileDevices = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+  const isLargeScreen = window.innerWidth >= 820 && window.innerHeight >= 700; 
   // const isInDesktop = /(Chrome|Safari|Firefox|Edge|Opera|MSIE|Trident)/i.test(navigator.userAgent);
-
-  // Check for touch capabilities (common on mobile)
+  
   const isTouchDevice = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
 
-  return !mobileDevices && !isTouchDevice;
+  return ((!mobileDevices && isTouchDevice) || isLargeScreen);
 }

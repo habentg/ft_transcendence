@@ -113,11 +113,9 @@ function initNotificationWebsocket() {
   window.ws = new WebSocket(wsUrl);
 
   window.ws.onopen = () => {
-    console.log("Notification WebSocket connected");
   };
 
   window.ws.onclose = () => {
-    console.log("Notification WebSocket disconnected");
   };
 
   window.ws.onerror = (error) => {
@@ -205,11 +203,9 @@ function initChatWebsocket() {
   window.ws_chat = new WebSocket(wsUrl);
 
   window.ws_chat.onopen = () => {
-    console.log("Chat WebSocket connected");
   };
 
   window.ws_chat.onclose = () => {
-    console.log("Chat WebSocket disconnected");
   };
 
   window.ws_chat.onerror = (error) => {
@@ -250,7 +246,6 @@ function initChatWebsocket() {
       }
     }
     else if (data.type === "room_deleted_notification") {
-      // remove the chatroom from the list
       clearConvoHandler(data);
     }
   }
