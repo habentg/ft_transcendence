@@ -950,10 +950,12 @@ function aikeyEvents(moveDirection, aiHelper) {
 
 function checkScreenSize(game = null) {
   const MIN_WINDOW_WIDTH = 820;
-  const MIN_WINDOW_HEIGHT = 700;
+  const MIN_WINDOW_HEIGHT = 725;
 
   const warningMessage = document.getElementById("warningMessage");
   const gameContent = document.getElementById("gameContent");
+  const playerListContainer = document.querySelector(".playerListContainer");
+  const tournamentwrapper = document.querySelector(".tournamentWrapper");
 
   let pauseTime = 0;
 
@@ -963,6 +965,8 @@ function checkScreenSize(game = null) {
   ) {
     if (warningMessage) warningMessage.classList.remove("d-none");
     if (gameContent) gameContent.classList.add("d-none");
+    if (playerListContainer) playerListContainer.classList.add("d-none");
+    if (tournamentwrapper) tournamentwrapper.classList.add("d-none");
     if (game.parryFlag) pauseTime = new Date();
     game.drawFlag = false;
   } else {
@@ -971,6 +975,12 @@ function checkScreenSize(game = null) {
     }
     if (gameContent) {
       gameContent.classList.remove("d-none");
+    }
+    if (playerListContainer) {
+      playerListContainer.classList.remove("d-none");
+    }
+    if (tournamentwrapper) {
+      tournamentwrapper.classList.remove("d-none");
     }
     if (game.parryFlag) {
       game.players[0].parryCooldown += pauseTime + Date.now();
