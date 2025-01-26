@@ -95,6 +95,7 @@ class HomeView(APIView, BaseView):
 		if isinstance(exception, AuthenticationFailed):
 			""" is refresh token not expired """
 			if 'access token is invalid but refresh token is valid' in str(exception):
+				
 				response = HttpResponseRedirect(self.request.path)
 				response.set_cookie('access_token', generate_access_token(self.request.COOKIES.get('refresh_token')), httponly=True, samesite='Lax', secure=True)
 				return response
@@ -185,6 +186,7 @@ class PaginatedSearch(APIView, BaseView):
 	throttle_classes = []
 	template_name = 'friendship/search_result.html'
 	css = ['css/search.css']
+	js = ['js/friend.js']
 
 	def handle_exception(self, exception):
 		if isinstance(exception, AuthenticationFailed):
@@ -193,7 +195,9 @@ class PaginatedSearch(APIView, BaseView):
 				response = HttpResponseRedirect(self.request.path)
 				response.set_cookie('access_token', generate_access_token(self.request.COOKIES.get('refresh_token')), httponly=True, samesite='Lax', secure=True)
 				return response
-			response = HttpResponseRedirect(reverse('signin_page'))
+			signin_url = reverse('signin_page')
+			params = urllib.parse.urlencode({'next': self.request.path})
+			response = HttpResponseRedirect(f'{signin_url}?{params}')
 			response.delete_cookie('access_token')
 			response.delete_cookie('refresh_token')
 			response.delete_cookie('csrftoken')

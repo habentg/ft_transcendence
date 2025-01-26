@@ -7,24 +7,47 @@
       <div class="row justify-content-center mb-4">
         <div class="col-lg-8">
           <div class="content p-4">
-            <div class="playerHeaderContainer row g-2">
-              <h1 class="text-center ">Tournament Player List</h1>
-              <div class="input-group">
-                <input type="text" id="playerInput" class="form-control" placeholder="Add new player..." />
-                <button id="playerIcon" class="btn btn-primary"><i class="fa-solid fa fa-plus-circle"></i></button>
-              </div>
-              <div id="player-name-error-msg" class="text-danger small mt-2" style="display: none"></div>
+            <div class="playerHeaderContainer row g-3">
+                <h1 class="text-center mb-5">Tournament Player List</h1>
+                <div class="input-group">
+                  <input
+                    type="text"
+                    id="playerInput"
+                    class="form-control"
+                    placeholder="Add new player..."
+                  />
+                  <button id="playerIcon" class="btn btn-primary">
+                    <i class="fa-solid fa fa-plus-circle"></i>
+                  </button>
+                </div>
+                <div
+                  id="player-name-error-msg"
+                  class="text-danger small mt-2"
+                  style="display: none"
+                ></div>
             </div>
-            <div id="playerContainer" class="col-md-6 button-holder d-flex" style="margin-bottom: 36px; gap: 12px; flex-direction: column">
-              <button class="menu-item d-flex justify-content-center align-items-center p-3">
+            <div
+              id="playerContainer"
+              class="col-md-6 button-holder d-flex"
+              style="margin-bottom: 36px; gap: 12px; flex-direction: column"
+            >
+              <button
+                class="menu-item d-flex justify-content-center align-items-center p-3"
+              >
                 <i class="fas fa-user fa-1x me-2"></i>
-                <!-- This is to be replaced with the usersname -->
-                <h6 class="mb-0">{{ username|slice:':10' }}</h6>
+				<!-- This is to be replaced with the usersname -->
+                <h6 class="mb-0">{{username|slice:":10"}}</h6>
               </button>
             </div>
-            <!-- This is the button to move to the next section, to create the tournament -->
+			<!-- This is the button to move to the next section, to create the tournament -->
             <div>
-              <button id="initTournamentButton" class="btn btn-success btn-md" style="display: flex; align-items: center"><i class="fas fa-trophy me-1"></i>Start Tournament</button>
+              <button
+                id="initTournamentButton"
+                class="btn btn-success btn-md"
+                style="display: flex; align-items: center"
+              >
+              <i class="fas fa-trophy me-1"></i>Start Tournament
+              </button>
             </div>
           </div>
         </div>

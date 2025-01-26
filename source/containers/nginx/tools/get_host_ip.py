@@ -15,6 +15,7 @@ def get_network_ip():
             cmd = ['ip', 'addr', 'show']
             pattern = r'inet (\d+\.\d+\.\d+\.\d+).*global'
         else:
+            print(f"Unsupported operating system: {system}")
             return 'localhost'
 
         output = subprocess.check_output(cmd).decode('utf-8')
@@ -31,7 +32,7 @@ def get_network_ip():
 
 def update_env_file(ip_address):
     """Append LOCAL_IP to .env file"""
-    env_path = Path('.env')
+    env_path = Path('./source/.env')
     
     # First remove any existing LOCAL_IP line if it exists
     if env_path.exists():

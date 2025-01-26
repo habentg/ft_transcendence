@@ -32,7 +32,7 @@ async function handleSignInSubmit(e) {
         password: document.getElementById("password").value,
     };
     if (!inputValidator(formData.username) || formData.username.length < 4 || formData.username.length > 100) {
-        displayError({ invalid_chars: "Invalid Username: Only AlphNumericals and underscore at least 4 characters long!" });
+        displayError({ invalid_chars: "Invalid Username detected: Only AlphNumericals and underscore between 4 and 100 long!" });
         return;
     }
     if (formData.password.length < 3 || formData.password.length > 150) {
@@ -61,8 +61,7 @@ async function handleSignInSubmit(e) {
             return;
         }
         // redirect to the protected page
-        history.replaceState({}, "", `/home`);
-        await updateUI(`/home`);
+        await updateUI(`/`);
         updateNavBar(true); // update the navbar for authenticated users
         /* websocket - for real-time updates and chat*/
         createWebSockets();

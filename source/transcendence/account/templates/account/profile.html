@@ -10,19 +10,11 @@
             <div class="text-center mb-4 profile_info_container">
               <div class="profile-pic-container position-relative d-inline-block">
                 {% if player.profile_picture %}
-                  {% if not is_self and player.is_anonymous %}
-                    <img src="{% static 'images/anon.jpeg' %}" alt="Anon Profile Picture" class="profile-pic rounded-circle" />
-                  {% else %}
-                    <img src="{{ player.profile_picture }}" alt="Profile Picture" class="profile-pic rounded-circle" />
-                  {% endif %}
+                  <img src="{{ player.profile_picture }}" alt="Profile Picture" class="profile-pic rounded-circle" />
                 {% elif player.is_guest %}
                   <img src="{% static 'images/anon.jpeg' %}" alt="Anon Profile Picture" class="profile-pic rounded-circle" />
                 {% else %}
-                  {% if not is_self and player.is_anonymous %}
-                    <img src="{% static 'images/anon.jpeg' %}" alt="Anon Profile Picture" class="profile-pic rounded-circle" />
-                  {% else %}
-                    <img src="{% static 'images/default_profile_pic.jpeg' %}" alt="Default Profile Picture" class="profile-pic rounded-circle" />
-                  {% endif %}
+                <img src="{% static 'images/default_profile_pic.jpeg' %}" alt="Default Profile Picture" class="profile-pic rounded-circle" />
                 {% endif %}
                 {% if is_self %}
                   <button id="change-profile-pic" class="btn btn-light btn-sm position-absolute bottom-0 end-0" onclick="updateProfilePic()"><i class="fa-solid fa-pen"></i></button>
@@ -36,19 +28,11 @@
               </div>
 
               <div id="pfp_from_profile" class="profile-info mt-3" data-pfp="{{ player.profile_picture }}">
-                {% if player.is_anonymous and not is_self %}
-              <h3 id="player_full_name" class="mb-1 nav_profile_pic" data-fullname="{{ player.full_name }}">Neon Player</h3>
-                <p id="player_username" class="text-muted mb-1" data-username="{{ player.username }}">@{% if player.username|length > 13 %}{{player.username|slice:':10'}}...{%else%}{{player.username}}{%endif%}</p>
-                <p class="text-muted small mb-3">
-                  <i class="fas fa-envelope me-2"></i><span id="player_email" data-email="{{player.email}}">anonymous@neon.com</span>
-                </p>
-                {%else%}
                 <h3 id="player_full_name" class="mb-1 nav_profile_pic" data-fullname="{{ player.full_name }}">{% if player.full_name|length > 15 %}{{player.full_name|slice:':12'}}...{%else%}{{player.full_name}}{%endif%}</h3>
                 <p id="player_username" class="text-muted mb-1" data-username="{{ player.username }}">@{% if player.username|length > 13 %}{{player.username|slice:':10'}}...{%else%}{{player.username}}{%endif%}</p>
                 <p class="text-muted small mb-3">
-                  <i class="fas fa-envelope me-2"></i><span id="player_email" data-email="{{player.email}}">{% if player.email|length > 30 %}{{player.email|slice:':30'}}...{%else%}{{player.email}}{%endif%}</span>
+                  <i class="fas fa-envelope me-2"></i><span id="player_email" data-email={{player.email}}>{% if player.email|length > 30 %}{{player.email|slice:':30'}}...{%else%}{{player.email}}{%endif%}</span>
                 </p>
-                {%endif%}
               </div>
 
               <div class="d-flex justify-content-center gap-4 mb-3">

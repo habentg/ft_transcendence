@@ -24,12 +24,11 @@ async function updateUI(path) {
     return;
   }
   showLoadingAnimation(); // Show animation
-  if (!path.includes(`${window.location.origin}`)) {
+  if (!path.includes(`${window.location.origin}`))
     path = `${window.location.origin}${path}`;
-  }
+  history.pushState(null, "", `${path}`);
   try {
     await loadContent(`${path}`);
-    history.pushState({}, "", `${path}`);
   } catch (error) {
     createToast({ type: "error", title: "Error", error_message: `${error}` });
   }
@@ -38,18 +37,18 @@ async function updateUI(path) {
 
 // routing function
 /* 
-for click events;
-creates URL obj with the "href" form the <a>;
-path extration from the URL obj;
-if the path is the same as the current path, do nothing - avoiding unnecessary requests;
-then update the UI;
+    for click events;
+    creates URL obj with the "href" form the <a>;
+    path extration from the URL obj;
+    if the path is the same as the current path, do nothing - avoiding unnecessary requests;
+    then update the UI;
 */
 async function appRouter(event) {
   event = event || window.event;
   event.preventDefault();
 
   if (window.isGameRunning)
-    window.isGameRunning = false;
+      window.isGameRunning = false;
   const href = event.target.closest("a").href;
   if (href === window.location.href) return;
   await updateUI(href);
@@ -66,9 +65,6 @@ async function loadContent(route) {
     });
 
     if (!response.ok) {
-      if (response.status == 302) {
-        return;
-      }
       throw new Error({
         status: response.status,
         route: route,
@@ -86,7 +82,7 @@ async function loadContent(route) {
       3000,
       "Error"
     );
-    createToast({ type: 'error', error_message: `Failed to load -- ${route} -- page content:`, title: 'Error' });
+    createToast({type:'error', error_message:`Failed to load -- ${route} -- page content:`,title:'Error'});
   }
 }
 
@@ -99,8 +95,7 @@ async function loadContent(route) {
 
 async function initApp() {
   // browser back/forward buttons
-  window.addEventListener("popstate", async (event) => {
-    event.preventDefault();
+  window.addEventListener("popstate", async () => {
     let all_modals = document.querySelectorAll(".modal");
 
     for (let i = 0; i < all_modals.length; i++) {
@@ -111,14 +106,12 @@ async function initApp() {
 
     if (window.isGameRunning)
       window.isGameRunning = false;
-
     const route = window.location.href;
     await loadContent(route);
   });
 
   // Handling initial load
-  window.addEventListener("load", async (event) => {
-    event.preventDefault();
+  window.addEventListener("load", async () => {
     isInitialLoad = true;
     if (isInitialLoad) {
       // if its initial load ... page will come already loaded from the server

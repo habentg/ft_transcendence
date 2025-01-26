@@ -29,7 +29,9 @@ class chatMessagesView(APIView):
 				response = HttpResponseRedirect(self.request.path)
 				response.set_cookie('access_token', generate_access_token(self.request.COOKIES.get('refresh_token')), httponly=True, samesite='Lax', secure=True)
 				return response
-			response = HttpResponseRedirect(reverse('signin_page'))
+			signin_url = reverse('signin_page')
+			params = urllib.parse.urlencode({'next': self.request.path})
+			response = HttpResponseRedirect(f'{signin_url}?{params}')
 			response.delete_cookie('access_token')
 			response.delete_cookie('refresh_token')
 			return response
@@ -75,12 +77,14 @@ class ChatRoomsView(APIView, BaseView):
 				response = HttpResponseRedirect(self.request.path)
 				response.set_cookie('access_token', generate_access_token(self.request.COOKIES.get('refresh_token')), httponly=True, samesite='Lax', secure=True)
 				return response
-			response = HttpResponseRedirect(reverse('signin_page'))
+			signin_url = reverse('signin_page')
+			params = urllib.parse.urlencode({'next': self.request.path})
+			response = HttpResponseRedirect(f'{signin_url}?{params}')
 			response.delete_cookie('access_token')
 			response.delete_cookie('refresh_token')
 			if self.request.headers.get('X-Requested-With') == 'XMLHttpRequest':
 				return JsonResponse({
-					'redirect': '/signin'
+					'redirect': f'{signin_url}?{params}'
 				}, status=302)
 			return response
 		return super().handle_exception(exception)

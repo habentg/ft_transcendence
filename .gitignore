@@ -1,5 +1,5 @@
 # Ignore .env file in the source directory
-.env
+source/.env
 
 # Ignore __pycache__ directories
 **/__pycache__/
@@ -13,6 +13,9 @@
 # Ignore .git files
 .git/
 
+# Ignore profile pictures
+source/transcendence/profile_pics/
+
 # Ignore migration files
 **/migrations/
 
@@ -20,4 +23,4 @@
 **/profile_pics/
 
 # ignore secret dir
-source/nginx/tools/secrets/
+secrets/

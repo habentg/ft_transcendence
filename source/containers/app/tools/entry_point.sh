@@ -10,6 +10,7 @@ python manage.py migrate
 # python manage.py collectstatic --no-input
 # updating requirements.txt
 echo "UPDATING REQUIREMENTS.TXT"
+pip freeze > /setup/requirements.txt
 
 # Create superuser
 echo "CREATING SUPER-USER"
@@ -29,10 +30,10 @@ try:
     FriendList.objects.create(player=player)
     player.save()
 except:
-    pass
+    print('root already exists')
 EOF
 
 # Run server
 echo "RUNNING SERVER"
-daphne -b 0.0.0.0 -p 8000 transcendence.asgi:application
-# python manage.py runserver 0.0.0.0:8000
+# daphne -b 0.0.0.0 -p 8000 transcendence.asgi:application
+python manage.py runserver 0.0.0.0:8000

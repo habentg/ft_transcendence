@@ -1,41 +1,45 @@
 
-COMPOSE = docker-compose -f  docker-compose.yaml
+COMPOSE 		= cd ./source && docker-compose
+COMPOSE_FILE 	= docker-compose.yaml
 
 # ----------------------- creating services --------------------------
-all: build up collectstatic
+all: build up
 
 keygen:
-	@sh ./source/nginx/tools/self_signed_keygen.sh
-	@python3 ./source/nginx/tools/get_host_ip.py
+	@sh ./source/containers/nginx/tools/self_signed_keygen.sh
+	@python3 ./source/containers/nginx/tools/get_host_ip.py
 
-up:
-	$(COMPOSE) up -d --remove-orphans
+up: keygen
+	$(COMPOSE) -f $(COMPOSE_FILE) up -d --remove-orphans
 
-build: keygen
-	$(COMPOSE) build
+create_users:
+	$(COMPOSE) -f $(COMPOSE_FILE) exec neon_pong sh create_alot_of_users_for_testing.sh
+
+build:
+	$(COMPOSE) -f $(COMPOSE_FILE) build
 
 down:
-	$(COMPOSE) down
+	$(COMPOSE) -f $(COMPOSE_FILE) down
 
 re: down up # rebuilding the services without deleting the persistent storages
 
 # ---------------------------- django related Operattions -------------------------------
 
 collectstatic:
-	$(COMPOSE) exec neon_pong python manage.py collectstatic --noinput
+	$(COMPOSE) -f $(COMPOSE_FILE) exec neon_pong python manage.py collectstatic --noinput
 
 migrate:
-	$(COMPOSE) exec neon_pong python manage.py makemigrations
-	$(COMPOSE) exec neon_pong python manage.py migrate
+	$(COMPOSE) -f $(COMPOSE_FILE) exec neon_pong python manage.py makemigrations
+	$(COMPOSE) -f $(COMPOSE_FILE) exec neon_pong python manage.py migrate
 
 
 # ----------------------- restarting services --------------------------
 
 start:
-	$(COMPOSE) start
+	$(COMPOSE) -f $(COMPOSE_FILE) start
 
 stop:
-	$(COMPOSE) stop
+	$(COMPOSE) -f $(COMPOSE_FILE) stop
 
 restart: stop start # restarting the services (volumes, network, and images stay the same)
 
@@ -48,10 +52,10 @@ clean: down
 	@yes | docker images -q | grep -v $$(docker images redis:6-alpine -q) | grep -v $$(docker images postgres:15-alpine -q) | xargs docker rmi -f || true
 	@yes | docker volume ls -q | grep -q . && docker volume rm $$(docker volume ls -q) || true 
 
-fclean:
+fclean: down
 	@rm -rf ./secrets
-	@yes | docker container ls -q | grep -q . &&  docker stop $$(docker ps -a -q) || true
-	@yes | docker system prune --all --volumes
+	@yes | docker system prune --all
+	@docker volume ls -q | grep -q . && docker volume rm $$(docker volume ls -q) || true 
 
 rebuild: clean all
 

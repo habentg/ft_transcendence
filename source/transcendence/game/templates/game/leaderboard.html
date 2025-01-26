@@ -24,30 +24,22 @@
                       <td>
                         <div>
                           {% if forloop.counter|add:page_offset == 1 %}
-                            <i class="fas fa-crown me-2" style="color: gold;">1</i>
-                          {% elif forloop.counter|add:page_offset == 2 %}
-                            <i class="fas fa-medal me-2" style="color: silver;">2</i>
-                          {% elif forloop.counter|add:page_offset == 3 %}
-                            <i class="fas fa-medal me-2" style="color: #cd7f32;">3</i>
-                          {% else %}
-                            <span>{{ forloop.counter|add:page_offset }}</span>
-                          {% endif %}
+                          <i class="fas fa-crown me-2" style="color: gold;"> 1 </i>
+                        {% elif forloop.counter|add:page_offset == 2 %}
+                          <i class="fas fa-medal me-2" style="color: silver;"> 2 </i>
+                        {% elif forloop.counter|add:page_offset == 3 %}
+                          <i class="fas fa-medal me-2" style="color: #cd7f32;"> 3 </i> 
+                        {% else %}
+                          <span>{{ forloop.counter|add:page_offset }}</span>
+                        {% endif %}
                         </div>
                       </td>
                       <td>
                         <div>
                           {% if player.profile_picture %}
-                            {% if player.is_anonymous %}
-                              <img src="{% static 'images/anon.jpeg' %}" alt="Anon Profile Picture" class="profile-pic rounded-circle" style="width:30px;height: 30px;" />
-                            {% else %}
-                              <img src="{{ player.profile_picture.url }}" alt="Profile Picture" class="profile-pic rounded-circle" style="width:30px;height: 30px;" />
-                            {% endif %}
+                            <img src="{{ player.profile_picture.url }}" alt="Profile Picture" class="profile-pic rounded-circle" style="width:30px;height: 30px;" />
                           {% else %}
-                            {% if not is_self and player.is_anonymous %}
-                              <img src="{% static 'images/anon.jpeg' %}" alt="Anon Profile Picture" class="profile-pic rounded-circle" style="width:30px;height: 30px;" />
-                            {% else %}
-                              <img src="{% static 'images/default_profile_pic.jpeg' %}" alt="Default Profile Picture" class="profile-pic rounded-circle" style="width:30px;height: 30px;" />
-                            {% endif %}
+                            <img src="{% static 'images/default_profile_pic.jpeg' %}" alt="Default Profile Picture" class="profile-pic rounded-circle" style="width:30px;height: 30px;" />
                           {% endif %}
                           <span>{{ player.username|slice:':10' }}</span>
                         </div>

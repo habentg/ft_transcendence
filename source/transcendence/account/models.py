@@ -68,7 +68,6 @@ class Player(AbstractUser):
     blocked_players = models.ManyToManyField('self', symmetrical=False, blank=True, related_name="players_blocked_list")
     last_password_change = models.DateTimeField(blank=True, null=True)
     is_42_student = models.BooleanField(default=False)
-    is_anonymous = models.BooleanField(default=False)
 
     # Fields removed
     first_name = None
