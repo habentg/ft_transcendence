@@ -37,7 +37,7 @@ services:
     container_name: neon_pong
     image: neon_pong_img
     build:
-      context: ./source/containers/app/.
+      context: ./source/transcendence/.
       dockerfile: Dockerfile
     restart: unless-stopped
     depends_on:
@@ -53,7 +53,6 @@ services:
       DATABASE_URL: postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}
       REDIS_URL: redis://redis:6379/0
     volumes:
-      - ./source/transcendence:/app
       - media_static_vol:/media_static
     healthcheck:
       test: [ "CMD", "curl", "-f", "http://localhost:8000/health/" ]
@@ -66,7 +65,7 @@ services:
     container_name: nginx
     image: nginx_img
     build:
-      context: ./source/containers/nginx/.
+      context: ./source/nginx/.
       dockerfile: Dockerfile
     restart: unless-stopped
     depends_on:
@@ -77,9 +76,7 @@ services:
     ports:
       - "443:443"
     volumes:
-      - ./source/containers/nginx/conf/nginx.conf:/etc/nginx/nginx.conf:ro
       - media_static_vol:/media_static
-      - ./secrets/.:/etc/nginx/certs/.:ro
 
 volumes:
   db_data:
@@ -87,7 +84,6 @@ volumes:
   redis_data:
     driver: local
   media_static_vol:
-    #media_static_vol - acts as a bridge between your App and Nginx services allowing uploaded media and static files through Django to be immediately available for Nginx to serve. (needs to do do collectstatic for the static files to be available)
     driver: local
 
 networks:
