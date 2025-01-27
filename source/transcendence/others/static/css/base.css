@@ -59,19 +59,7 @@ h6,
 	letter-spacing: 0.5px;
 }
 
-/* Ensure the navbar is scrollable */
-.navbar {
-    overflow-x: auto;
-    overflow-y: auto;
-    max-height: 100vh; 
-    max-width: 100vw;  
-}
 
-/* Style for the dropdown menu */
-.navbar .dropdown-menu {
-    max-height: 100vh; 
-    overflow-y: auto; 
-}
 
 
 .navbar::-webkit-scrollbar {
@@ -515,6 +503,20 @@ td {
 }
 
 @media (max-width: 576px) {
+	/* Ensure the navbar is scrollable */
+	.navbar {
+		overflow-x: auto;
+		overflow-y: auto;
+		max-height: 100vh; 
+		max-width: 100vw;  
+	}
+
+	/* Style for the dropdown menu */
+	.navbar .dropdown-menu {
+		max-height: 100vh; 
+		overflow-y: auto; 
+	}
+
 	.custom-navbar {
 		width: 98%;
 		/* margin: 5px auto; */
