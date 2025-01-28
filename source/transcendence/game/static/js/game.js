@@ -432,7 +432,7 @@ function updatePaddleVelocities(player1, player2, game) {
 
 // Checks if the ball is good to parry
 function isParry(player, game) {
-  const parryRange = 50; // Adjustable proximity range for parry
+  const parryRange = 40; // Adjustable proximity range for parry
 
   // Determine parry conditions based on player's side
   const ballNearPlayer = player.x < game.boardWidth / 2
@@ -564,7 +564,7 @@ function handlePaddleCollision(ball, paddle, game, isLeftPaddle) {
     // Normal hit behavior with paddle velocity influence
     newVelocityX =
       Math.max(Math.abs(ball.velocityX), MIN_SPEED_X) * (isLeftPaddle ? 1 : -1);
-    newVelocityY = hitPosition * 4.1 + paddleVelocityImpact;
+    newVelocityY = hitPosition * 4.12 + paddleVelocityImpact;
 
     // Immediate position correction for center hits
     if (isLeftPaddle) {
@@ -784,8 +784,6 @@ function startaiGame(game) {
 function aiLogic(player2, game, aiHelper) {
   if (!game.drawFlag) return;
 
-  if (aiHelper.velocityX === 0)
-    return ;
   if (aiHelper.velocityX < 0 && aiHelper.scoreDeficit < 0) {
     aiMiddle(aiHelper, game, player2);
     return ;
@@ -804,7 +802,7 @@ function aiLogic(player2, game, aiHelper) {
   }
 
   // Movement and targeting logic
-  let tolerance = 45 + aiHelper.tolInc / 10;
+  let tolerance = 45 + aiHelper.tolInc / 10; //tolerance is added 
   tolerance += aiHelper.scoreDeficit * 10;
   tolerance = Math.max(0, Math.min(100, tolerance));
   let yHit = adjustYhit(aiHelper, time, game.boardHeight);
@@ -814,9 +812,9 @@ function aiLogic(player2, game, aiHelper) {
     aikeyEvents("stop", aiHelper);
     return;
   }
-  if (player2.y + tolerance < target) {
+  if (player2.y < target) {
     aikeyEvents("down", aiHelper);
-  } else if (player2.y - tolerance > target) {
+  } else if (player2.y > target) {
     aikeyEvents("up", aiHelper);
   }
 }
@@ -1081,7 +1079,7 @@ function applySetting(game) {
   const MIN_PADDLE_SPEED = 6,
     MAX_PADDLE_SPEED = 10;
   const MIN_MAX_SCORE = 3,
-    MAX_MAX_SCORE = 20;
+    MAX_MAX_SCORE = 10;
 
   const paddleSpeedInput = parseInt(
     document.getElementById("paddleSpeed").value
