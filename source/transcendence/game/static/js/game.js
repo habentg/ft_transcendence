@@ -156,43 +156,6 @@ function gameLoop(game, timestamp) {
   requestAnimationFrame((newTimestamp) => gameLoop(game, newTimestamp));
 }
 
-// gameLoop for testing purposes
-// function gameLoop(game, timestamp) {
-//   if (!window.isGameRunning) return;
-
-//   const fps = 60;
-//   const interval = 1000 / fps;
-//   game.lastTime = game.lastTime || timestamp;
-
-//   // Performance tracking (only count rendered frames)
-//   game.frameCount = game.frameCount || 0;
-//   if (!game.fpsStartTime) game.fpsStartTime = timestamp;
-
-//   const deltaTime = timestamp - game.lastTime;
-
-//   if (deltaTime >= interval) {
-//     game.lastTime = timestamp - (deltaTime % interval);
-//     updategameValues(game.players[0], game.players[1], game);
-//     draw(game.players[0], game.players[1], game);
-
-//     // Increment frame count only for rendered frames
-//     game.frameCount++;
-//   }
-
-//   // Calculate and log FPS every second
-//   if (timestamp - game.fpsStartTime >= 1000) {
-//     const actualFps = game.frameCount * 1000 / (timestamp - game.fpsStartTime);
-//     // console.log(`Current FPS: ${actualFps.toFixed(2)}`);
-    
-//     // Reset tracking
-//     game.frameCount = 0;
-//     game.fpsStartTime = timestamp;
-//   }
-
-//   requestAnimationFrame((newTimestamp) => gameLoop(game, newTimestamp));
-// }
-
-
 function updategameValues(player1, player2, game) {
   //checks if player movement is inside the board then moves it.
   if (!game.drawFlag) return;
@@ -419,7 +382,6 @@ function updatePaddleVelocities(player1, player2, game) {
     }
     if (game.activeKeys["Numpad0"] && !player2.cooldownFlag) {
       if (isParry(player2, game) && game.ball.velocityX > 0) {
-        console.log("Good Parry from player 2");
         game.ball.velocityX *= -1.5;
         game.ball.velocityY *= -1;
         game.ball.x = player2.x - player2.width + game.ball.ballRadius - 2;
