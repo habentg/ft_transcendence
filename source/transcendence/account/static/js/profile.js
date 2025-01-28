@@ -91,9 +91,9 @@ async function handleUpload() {
     }
 
     // Validate file size
-    const maxSize = 10 * 1024 * 1024; // 10MB
+    const maxSize = 5 * 1024 * 1024; // 5MB
     if (profilePicFile.size > maxSize) {
-      errorMsg.textContent = "File size exceeds 10MB";
+      errorMsg.textContent = "File size exceeds 5MB";
       errorMsg.style.display = "block";
       return;
     }

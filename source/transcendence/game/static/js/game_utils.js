@@ -94,12 +94,14 @@ class Game {
   }
   
   stopeventListeners() {
+    // remove active keys
     while (this.activeKeys.length > 0) this.activeKeys.pop();
     document.removeEventListener("keydown", this.move);
     document.removeEventListener("keyup", this.stopMovement);
   }
 
   resetBall(direction) {
+    // puts ball back to the middle
     this.ball.x = this.boardWidth / 2;
     this.ball.y = this.boardHeight / 2;
     if (this.slowServe) {
@@ -144,6 +146,7 @@ class Game {
   }
 
   saveSettings(user) {
+    //method function to save settings username is used as a key
     const key = `gameSetting_${user}`;
     const settings = {
       defballSpeed: this.defballSpeed,
