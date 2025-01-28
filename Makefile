@@ -1,20 +1,17 @@
 
-COMPOSE 		= docker-compose -f  docker-compose.yaml
+COMPOSE = docker-compose -f  docker-compose.yaml
 
 # ----------------------- creating services --------------------------
-all: build up
+all: build up collectstatic
 
 keygen:
-	@sh ./source/containers/nginx/tools/self_signed_keygen.sh
-# @python3 ./source/containers/nginx/tools/get_host_ip.py
+	@sh ./source/nginx/tools/self_signed_keygen.sh
+	@python3 ./source/nginx/tools/get_host_ip.py
 
-up: keygen
+up:
 	$(COMPOSE) up -d --remove-orphans
 
-create_users:
-	$(COMPOSE) exec neon_pong sh create_alot_of_users_for_testing.sh
-
-build:
+build: keygen
 	$(COMPOSE) build
 
 down:
@@ -45,16 +42,14 @@ restart: stop start # restarting the services (volumes, network, and images stay
 
 # ----------------------- Deleting resources and rebuilding --------------------------
 clean: down
-	@rm -rf ./secrets
 	@yes | docker container prune
 	@yes | docker network prune
 	@yes | docker images -q | grep -v $$(docker images redis:6-alpine -q) | grep -v $$(docker images postgres:15-alpine -q) | xargs docker rmi -f || true
 	@yes | docker volume ls -q | grep -q . && docker volume rm $$(docker volume ls -q) || true 
 
-fclean: down
-	@rm -rf ./secrets
-	@yes | docker system prune --all
-	@docker volume ls -q | grep -q . && docker volume rm $$(docker volume ls -q) || true 
+fclean:
+	@yes | docker container ls -q | grep -q . &&  docker stop $$(docker ps -a -q) || true
+	@yes | docker system prune --all --volumes
 
 rebuild: clean all
 
