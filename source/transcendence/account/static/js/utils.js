@@ -157,45 +157,40 @@ const loadCssandJS = (data, remove_prev_resources) => {
 };
 
 // update the Navbar for authenticated users && for signout and deleted users
-async function updateNavBar(isAuthenticated, givenUsername = null, givenProfilePic = null) {
+function updateNavBar(isAuthenticated, givenUsername = null, givenProfilePic = null) {
   const navbar = document.getElementById("navbarNavDropdown");
   if (isAuthenticated) {
-    let profilePic = "/static/images/default_profile_pic.jpeg";
-    let username = "";
-    if (!window.profilePic) {
-      const user_profile_pic =
-        document.getElementById("nav_profile_pic") ||
-        document.getElementById("pfp_from_profile");
-      const profile_btn = document.getElementById("profile_btn");
-      // check if profile_btn has data-username
-      if (profile_btn) {
-        username = profile_btn.dataset.username;
-      }
-      if (user_profile_pic) {
-        profilePic = user_profile_pic.dataset.pfp; // Same as user_profile_pic.getAttribute("data-pfp");
-      }
-      if (givenUsername)
-        username = givenUsername;
-      if (givenProfilePic)
-        profilePic = givenProfilePic;
-      window.profilePic = profilePic;
-      window.username = username;
-    } else {
-      profilePic = window.profilePic;
-      username = window.username;
-    }
+    let profilePic = localStorage.getItem("profile_pic");
+    let username = localStorage.getItem("username");
+    console.log(profilePic, username);
+    
+    // const user_profile_pic =
+    //   document.getElementById("nav_profile_pic") ||
+    //   document.getElementById("pfp_from_profile");
+    // const profile_btn = document.getElementById("profile_btn");
+    // // check if profile_btn has data-username
+    // if (profile_btn) {
+    //   username = profile_btn.dataset.username;
+    // }
+    // if (user_profile_pic) {
+    //   profilePic = user_profile_pic.dataset.pfp; // Same as user_profile_pic.getAttribute("data-pfp");
+    // }
+    // if (givenUsername)
+    //   username = givenUsername;
+    // if (givenProfilePic)
+    //   profilePic = givenProfilePic;
     navbar.innerHTML = `
     <ul class="navbar-nav ms-auto align-items-center">
       <li class="nav-item">
-        <a onclick="appRouter()" href="/leaderboard" class="nav-link"><i class="fas fa-trophy me-2"></i>Leaderboard</a>
+        <a nclick="appRouter()" href="/leaderboard" class="nav-link"><i class="fas fa-trophy me-2"></i>Leaderboard</a>
       </li>
       <li class="nav-item">
-        <a href="/chat" class="nav-link" onclick="appRouter()"><i class="fas fa-comments me-2"></i>Chat</a>
-      </li>
-      <li id="notification_dropdown_list" class="nav-item ms-lg-2 dropdown">
-        <a onclick="handleNotificationBellClick()" class="nav-link position-relative notification-badge" role="button" id="notificationDropdown" data-bs-toggle="dropdown" aria-expanded="false"><i class="fas fa-bell"></i></a>
-        <ul id="notification_ul" class="dropdown-menu dropdown-menu-end" aria-labelledby="notificationDropdown" style="width: 300px;"></ul>
-      </li>
+      <a href="/chat" class="nav-link" onclick="appRouter()"><i class="fas fa-comments me-2"></i>Chat</a>
+    </li>
+    <li id="notification_dropdown_list" class="nav-item ms-lg-2 dropdown">
+      <a onclick="handleNotificationBellClick()" class="nav-link position-relative notification-badge" role="button" id="notificationDropdown" data-bs-toggle="dropdown" aria-expanded="false"><i class="fas fa-bell"></i></a>
+      <ul id="notification_ul" class="dropdown-menu dropdown-menu-end" aria-labelledby="notificationDropdown" style="width: 300px;"></ul>
+    </li>
       <li class="nav-item ms-lg-2 dropdown">
         <a class="nav-link profile-link" href="#" role="button" id="profileDropdown" 
            data-bs-toggle="dropdown" aria-expanded="false">
@@ -223,8 +218,6 @@ async function updateNavBar(isAuthenticated, givenUsername = null, givenProfileP
     </ul>
     `;
   } else {
-    window.username = null;
-    window.profilePic = null;
     navbar.innerHTML = `
     <ul class="navbar-nav ms-auto align-items-center">
 
@@ -270,8 +263,6 @@ async function handleSignOut() {
         window.ws_chat.close()
       if (window.ws)
         window.ws.close()
-      window.username = null;
-      window.profilePic = null;
       await updateUI(``);
     } else {
       throw new Error("Failed to sign out");

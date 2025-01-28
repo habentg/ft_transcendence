@@ -35,7 +35,7 @@
                 {% endif %}
               </div>
 
-              <div id="pfp_from_profile" class="profile-info mt-3" data-pfp="{{ player.profile_picture }}">
+              <div id="pfp_from_profile" class="profile-info mt-3" data-pfp="{{ player.profile_picture }}" data-username="{{ player.username }}">
                 {% if player.is_anonymous and not is_self %}
               <h3 id="player_full_name" class="mb-1 nav_profile_pic" data-fullname="{{ player.full_name }}">Neon Player</h3>
                 <p id="player_username" class="text-muted mb-1" data-username="{{ player.username }}">@{% if player.username|length > 13 %}{{player.username|slice:':10'}}...{%else%}{{player.username}}{%endif%}</p>

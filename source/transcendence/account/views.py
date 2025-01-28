@@ -61,7 +61,10 @@ class SignUpView(APIView, BaseView):
 				new_player.is_logged_in = True
 				new_player.save()
 				refresh = RefreshToken.for_user(new_player)
-				response = Response(status=status.HTTP_201_CREATED)
+				response = Response({
+					'username': new_player.username,
+					'profile_pic': new_player.profile_picture.url if new_player.profile_picture else '/static/images/default_profile_pic.jpeg'
+				}, status=status.HTTP_201_CREATED)
 				response.set_cookie('access_token', str(refresh.access_token), httponly=True, samesite='Lax', secure=True)
 				response.set_cookie('refresh_token', str(refresh), httponly=True, samesite='Lax', secure=True)
 				FriendList.objects.create(player=new_player)
@@ -99,7 +102,11 @@ class SignInView(APIView, BaseView):
 					return Response({'error_msg': 'Couldn\'t send OTP to the given Email'}, 
 								status=status.HTTP_422_UNPROCESSABLE_ENTITY)
 			refresh = RefreshToken.for_user(player)
-			response = Response(status=status.HTTP_200_OK)
+			response = Response({
+					'username': player.username,
+					'profile_pic': player.profile_picture.url if player.profile_picture else '/static/images/default_profile_pic.jpeg'
+				},
+				status=status.HTTP_200_OK)
 			response.set_cookie('access_token', str(refresh.access_token), httponly=True, samesite='Lax', secure=True)
 			response.set_cookie('refresh_token', str(refresh), httponly=True, samesite='Lax', secure=True)
 			player.is_logged_in = True

@@ -67,7 +67,7 @@ async function loadContent(route) {
 
     if (!response.ok) {
       if (response.status == 302) {
-        updateNavBar(false);
+        updateNavBar(data.is_authenticated);
         let data = await response.json();
         if (data.redirect === "/signin")
           await updateUI(`${window.baseUrl}/signin`);
@@ -84,7 +84,7 @@ async function loadContent(route) {
     loadCssandJS(data, true); // load the css and js of the page - remove the previous ones(true)
     document.title = `${data.title} | PONG`;
     document.getElementById("content").innerHTML = data.html;
-    await updateNavBar(data.is_authenticated);
+    updateNavBar(data.is_authenticated);
     history.pushState({}, "", `${response.url}`);
   } catch (error) {
     showErrorMessage(

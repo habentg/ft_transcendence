@@ -90,10 +90,12 @@ async function handleSignupSubmit(e) {
       displayError(responseData);
       return;
     }
+
+    let data = await response.json();
+    localStorage.setItem("profile_pic", data.profile_pic);
+    localStorage.setItem("username", data.username);
     // redirect to the protected page
     await updateUI(`/home`);
-    // update the navbar
-    updateNavBar(true);
     createWebSockets();
   } catch (error) {
     createToast({

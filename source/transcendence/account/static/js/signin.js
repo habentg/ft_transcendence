@@ -61,7 +61,10 @@ async function handleSignInSubmit(e) {
             return;
         }
         // redirect to the protected page
-        history.replaceState({}, "", `/home`);
+        // history.replaceState({}, "", `/home`);
+        let data = await response.json();
+        localStorage.setItem("profile_pic", data.profile_pic);
+        localStorage.setItem("username", data.username);
         await updateUI(`/home`);
         updateNavBar(true); // update the navbar for authenticated users
         /* websocket - for real-time updates and chat*/

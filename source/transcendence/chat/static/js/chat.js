@@ -77,12 +77,14 @@ function activeChatHeaderUpdate(recipeint_username, activeChatFullname) {
   const header_profile_image = document.getElementById("chatHeaderPFP");
   const liElement = document.getElementById(recipeint_username);
   const imgElement = liElement.querySelector('img');
-  header_profile_image.src = imgElement.src;
-  // hide the icon and display the image
-  header_profile_image.classList.remove("d-none");
-  const headerpfpIcon = document.getElementById("chatHeaderICON");
-  if (headerpfpIcon)
-    headerpfpIcon.classList.add("d-none");
+  if (imgElement) {
+    header_profile_image.src = imgElement.src;
+    // hide the icon and display the image
+    header_profile_image.classList.remove("d-none");
+    const headerpfpIcon = document.getElementById("chatHeaderICON");
+    if (headerpfpIcon)
+      headerpfpIcon.classList.add("d-none");
+  }
 }
 
 // Open chat for a specific friend
