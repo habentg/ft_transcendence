@@ -382,7 +382,6 @@ function updatePaddleVelocities(player1, player2, game) {
     }
     if (game.activeKeys["Numpad0"] && !player2.cooldownFlag) {
       if (isParry(player2, game) && game.ball.velocityX > 0) {
-        console.log("Good Parry from player 2");
         game.ball.velocityX *= -1.5;
         game.ball.velocityY *= -1;
         game.ball.x = player2.x - player2.width + game.ball.ballRadius - 2;
