@@ -312,6 +312,7 @@ async function createTournamentinDB(tournament_type) {
     prepTournament4() {
       let game3 = document.getElementsByClassName("game3");
       let game4 = document.getElementsByClassName("game4");
+      let game_5 = document.getElementById("game5");
       let game6 = document.getElementsByClassName("game6");
       let game7 = document.getElementsByClassName("game7");
 
@@ -332,6 +333,10 @@ async function createTournamentinDB(tournament_type) {
       for (let i = 0; i < connection57.length; i++) {
         connection57[i].style.display = "none";
       }
+	  if(game_5)
+	  {
+		  game_5.textContent = "FINAL";
+	  }
       let game5 = document.getElementsByClassName("game5");
       if (game5) {
         game5[0].style.top = "85%";
