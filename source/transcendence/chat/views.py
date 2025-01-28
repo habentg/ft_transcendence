@@ -22,18 +22,23 @@ class chatMessagesView(APIView):
 	throttle_classes = []
 	template_name = 'chat/chat_messages.html'
 
+	""" get method to get all the chatrooms that the user is a participant in """
 	def handle_exception(self, exception):
 		if isinstance(exception, AuthenticationFailed):
 			if 'access token is invalid but refresh token is valid' in str(exception):
-				
 				response = HttpResponseRedirect(self.request.path)
 				response.set_cookie('access_token', generate_access_token(self.request.COOKIES.get('refresh_token')), httponly=True, samesite='Lax', secure=True)
 				return response
 			response = HttpResponseRedirect(reverse('signin_page'))
 			response.delete_cookie('access_token')
 			response.delete_cookie('refresh_token')
+			if self.request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+				return JsonResponse({
+					'redirect': '/signin'
+				}, status=302)
 			return response
 		return super().handle_exception(exception)
+
 	
 	def get(self, request):
 		room_name = request.GET.get('room', '')

@@ -19,6 +19,7 @@ from django.urls import reverse
 import urllib.parse
 from rest_framework.exceptions import AuthenticationFailed
 from others.auth_middleware import generate_access_token
+from django.http import JsonResponse
 
 # FRIEND REQUESTS - FROM SENDER PERSPECTIVE
 class FriendRequestView(APIView):
@@ -26,18 +27,23 @@ class FriendRequestView(APIView):
 	permission_classes = [IsAuthenticated]
 	throttle_classes = []
 
+	""" get method to get all the chatrooms that the user is a participant in """
 	def handle_exception(self, exception):
 		if isinstance(exception, AuthenticationFailed):
 			if 'access token is invalid but refresh token is valid' in str(exception):
-				
 				response = HttpResponseRedirect(self.request.path)
 				response.set_cookie('access_token', generate_access_token(self.request.COOKIES.get('refresh_token')), httponly=True, samesite='Lax', secure=True)
 				return response
 			response = HttpResponseRedirect(reverse('signin_page'))
 			response.delete_cookie('access_token')
 			response.delete_cookie('refresh_token')
+			if self.request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+				return JsonResponse({
+					'redirect': '/signin'
+				}, status=302)
 			return response
 		return super().handle_exception(exception)
+
 
 	def get_player(self, username):
 		return Player.objects.filter(username=username).first()
@@ -147,6 +153,7 @@ class FriendRequestResponseView(APIView):
 	permission_classes = [IsAuthenticated]
 	throttle_classes = []
 
+	""" get method to get all the chatrooms that the user is a participant in """
 	def handle_exception(self, exception):
 		if isinstance(exception, AuthenticationFailed):
 			if 'access token is invalid but refresh token is valid' in str(exception):
@@ -156,6 +163,10 @@ class FriendRequestResponseView(APIView):
 			response = HttpResponseRedirect(reverse('signin_page'))
 			response.delete_cookie('access_token')
 			response.delete_cookie('refresh_token')
+			if self.request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+				return JsonResponse({
+					'redirect': '/signin'
+				}, status=302)
 			return response
 		return super().handle_exception(exception)
 
@@ -228,6 +239,7 @@ class NotificationViewSet(viewsets.ViewSet):
 	throttle_classes = []
 	template_name = 'friendship/notification.html'
 
+	""" get method to get all the chatrooms that the user is a participant in """
 	def handle_exception(self, exception):
 		if isinstance(exception, AuthenticationFailed):
 			if 'access token is invalid but refresh token is valid' in str(exception):
@@ -237,8 +249,13 @@ class NotificationViewSet(viewsets.ViewSet):
 			response = HttpResponseRedirect(reverse('signin_page'))
 			response.delete_cookie('access_token')
 			response.delete_cookie('refresh_token')
+			if self.request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+				return JsonResponse({
+					'redirect': '/signin'
+				}, status=302)
 			return response
 		return super().handle_exception(exception)
+
 
 	def list(self, request):
 		notifications = Notification.objects.all().filter(player=request.user).order_by('-created_at')

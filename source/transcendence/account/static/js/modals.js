@@ -662,7 +662,7 @@ async function showSuccessMessage(message, timeout = 3000, successHeader=`Succes
 }
 
 // Create a modal for displaying error messages
-function showErrorMessage(message, timeout = 3000, errorHeader=`Error`) {
+async function showErrorMessage(message, timeout = 3000, errorHeader=`Error`) {
   // create and show error modal
   const existingModal = document.getElementById("error-modal");
   if (existingModal) existingModal.remove();
@@ -710,7 +710,7 @@ function showErrorMessage(message, timeout = 3000, errorHeader=`Error`) {
   );
   // Close modal after 3 seconds
   setTimeout(() => {
-    closeModal("error-modal");
+    closeModal("success-modal");
   }, timeout);
 }
 

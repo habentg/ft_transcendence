@@ -205,6 +205,8 @@ async function deleteAccount() {
 
     if (response.status === 200) {
       closeModal("delete-account-modal");
+      window.username = null;
+      window.profilePic = null;
       updateNavBar(false);
       await updateUI("/");
     } else {

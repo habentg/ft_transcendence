@@ -8,7 +8,6 @@ from account.serializers import *
 from rest_framework_simplejwt.tokens import RefreshToken
 from django.views.decorators.csrf import csrf_protect
 import json
-import os
 from django.conf import settings
 import requests
 from .models import Player
@@ -117,6 +116,7 @@ class SignOutView(APIView, BaseView):
 	permission_classes = [IsAuthenticated]
 	throttle_classes = []
 
+	""" get method to get all the chatrooms that the user is a participant in """
 	def handle_exception(self, exception):
 		if isinstance(exception, AuthenticationFailed):
 			if 'access token is invalid but refresh token is valid' in str(exception):
@@ -126,8 +126,13 @@ class SignOutView(APIView, BaseView):
 			response = HttpResponseRedirect(reverse('signin_page'))
 			response.delete_cookie('access_token')
 			response.delete_cookie('refresh_token')
+			if self.request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+				return JsonResponse({
+					'redirect': '/signin'
+				}, status=302)
 			return response
 		return super().handle_exception(exception)
+
 
 	def get(self, request):
 		player = request.user
@@ -432,6 +437,7 @@ class PlayerProfileView(APIView, BaseView):
 	css = ['css/profile.css']
 	js = ['js/profile.js']
 
+	""" get method to get all the chatrooms that the user is a participant in """
 	def handle_exception(self, exception):
 		if isinstance(exception, AuthenticationFailed):
 			if 'access token is invalid but refresh token is valid' in str(exception):
@@ -441,8 +447,13 @@ class PlayerProfileView(APIView, BaseView):
 			response = HttpResponseRedirect(reverse('signin_page'))
 			response.delete_cookie('access_token')
 			response.delete_cookie('refresh_token')
+			if self.request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+				return JsonResponse({
+					'redirect': '/signin'
+				}, status=302)
 			return response
 		return super().handle_exception(exception)
+
 
 	def get_player(self, username):
 		return Player.objects.filter(username=username).first()
@@ -570,6 +581,7 @@ class SettingsView(APIView, BaseView):
 	css = ['css/settings.css']
 	js = ['js/settings.js']
 
+	""" get method to get all the chatrooms that the user is a participant in """
 	def handle_exception(self, exception):
 		if isinstance(exception, AuthenticationFailed):
 			if 'access token is invalid but refresh token is valid' in str(exception):
@@ -579,10 +591,13 @@ class SettingsView(APIView, BaseView):
 			response = HttpResponseRedirect(reverse('signin_page'))
 			response.delete_cookie('access_token')
 			response.delete_cookie('refresh_token')
-			response.delete_cookie('csrftoken')
-			response.status_code = 302
+			if self.request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+				return JsonResponse({
+					'redirect': '/signin'
+				}, status=302)
 			return response
 		return super().handle_exception(exception)
+
 	
 	def get_context_data(self, request):
 		player = request.user
@@ -612,6 +627,7 @@ class AnonymizePlayer(APIView):
 	permission_classes = [IsAuthenticated]
 	throttle_classes = []
 
+	""" get method to get all the chatrooms that the user is a participant in """
 	def handle_exception(self, exception):
 		if isinstance(exception, AuthenticationFailed):
 			if 'access token is invalid but refresh token is valid' in str(exception):
@@ -621,8 +637,13 @@ class AnonymizePlayer(APIView):
 			response = HttpResponseRedirect(reverse('signin_page'))
 			response.delete_cookie('access_token')
 			response.delete_cookie('refresh_token')
+			if self.request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+				return JsonResponse({
+					'redirect': '/signin'
+				}, status=302)
 			return response
 		return super().handle_exception(exception)
+
 
 	def post(self, request):
 		player = request.user

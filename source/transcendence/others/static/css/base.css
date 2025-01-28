@@ -526,3 +526,15 @@ td {
 	}
 
 }
+
+.modal.fade {
+	transition: opacity 0.15s linear;
+  }
+  
+  .modal.fade:not(.show) {
+	opacity: 0;
+  }
+  
+  .modal.show {
+	opacity: 1;
+  }
