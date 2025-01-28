@@ -533,3 +533,6 @@ async function createTournamentinDB(tournament_type) {
   const newTournament = new GameController();
   newTournament.initializeTournament();
 }
+
+// call checkScreenSize function when the window is resized
+window.addEventListener("resize", () => checkScreenSize(new Game()));

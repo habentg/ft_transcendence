@@ -131,6 +131,7 @@ function startGame(game) {
   document.getElementById("settingButton").disabled = true;
   document.getElementById("gameRulesButton").disabled = true;
 
+  // requestAnimationFrame(() => gameLoop(game));
   requestAnimationFrame((timestamp) => gameLoop(game, timestamp));
 }
 
@@ -439,8 +440,8 @@ function isParry(player, game) {
     : game.ball.x + game.ball.ballRadius >= player.x - parryRange;
 
   const withinVerticalRange = 
-    game.ball.y + game.ball.ballRadius > player.y &&
-    game.ball.y - game.ball.ballRadius < player.y + player.height;
+  game.ball.y + game.ball.ballRadius > player.y &&
+  game.ball.y - game.ball.ballRadius < player.y + player.height;
 
   return ballNearPlayer && withinVerticalRange;
 }
@@ -783,6 +784,8 @@ function startaiGame(game) {
 function aiLogic(player2, game, aiHelper) {
   if (!game.drawFlag) return;
 
+  if (aiHelper.velocityX === 0)
+    return ;
   if (aiHelper.velocityX < 0 && aiHelper.scoreDeficit < 0) {
     aiMiddle(aiHelper, game, player2);
     return ;
@@ -804,7 +807,6 @@ function aiLogic(player2, game, aiHelper) {
   let tolerance = 45 + aiHelper.tolInc / 10;
   tolerance += aiHelper.scoreDeficit * 10;
   tolerance = Math.max(0, Math.min(100, tolerance));
-
   let yHit = adjustYhit(aiHelper, time, game.boardHeight);
 
   let target = Math.abs(yHit - player2.height / 2);
@@ -872,7 +874,7 @@ function aiParry(aiHelper, game) {
 
 function aiparryChance(aiHelper, time, fps) {
   const deficit = Math.max(0, aiHelper.scoreDeficit);
-  let aiparryChance = 1; // 80% base chance to parry
+  let aiparryChance = 0.8; // 80% base chance to parry
 
   // Reduce parry chance based on score deficit
   aiparryChance -= deficit * 0.1;
@@ -1003,10 +1005,12 @@ function aikeyEvents(moveDirection, aiHelper) {
 
 function checkScreenSize(game = null) {
   const MIN_WINDOW_WIDTH = 820;
-  const MIN_WINDOW_HEIGHT = 700;
+  const MIN_WINDOW_HEIGHT = 725;
 
   const warningMessage = document.getElementById("warningMessage");
   const gameContent = document.getElementById("gameContent");
+  const playerListContainer = document.querySelector(".playerListContainer");
+  const tournamentwrapper = document.querySelector(".tournamentWrapper");
 
   let pauseTime = 0;
 
@@ -1016,6 +1020,8 @@ function checkScreenSize(game = null) {
   ) {
     if (warningMessage) warningMessage.classList.remove("d-none");
     if (gameContent) gameContent.classList.add("d-none");
+    if (playerListContainer) playerListContainer.classList.add("d-none");
+    if (tournamentwrapper) tournamentwrapper.classList.add("d-none");
     if (game.parryFlag) pauseTime = new Date();
     game.drawFlag = false;
   } else {
@@ -1024,6 +1030,12 @@ function checkScreenSize(game = null) {
     }
     if (gameContent) {
       gameContent.classList.remove("d-none");
+    }
+    if (playerListContainer) {
+      playerListContainer.classList.remove("d-none");
+    }
+    if (tournamentwrapper) {
+      tournamentwrapper.classList.remove("d-none");
     }
     if (game.parryFlag) {
       game.players[0].parryCooldown += pauseTime + Date.now();
