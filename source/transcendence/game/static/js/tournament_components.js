@@ -4,8 +4,8 @@ function createTournamentMap() {
 	tournamentWrapper.id = "tournamentWrapper";
 
 	tournamentWrapper.innerHTML = `
-					<h1 class="text-center mb-5">Tournament Map</h1>
-					<div class="row d-flex position-relative ">
+					<h1 class="text-center">Tournament Map</h1>
+					<div class="row d-flex position-relative " style="height: 80%;">
 						<!-- First Round -->
 						<div class="col-4 d-flex justify-content-center align-items-end">
 							<div class="round first-round mb-5">
@@ -105,7 +105,7 @@ function createTournamentMap() {
 	
 						<!-- Second Round -->
 						<div class="col-4 d-flex flex-start ">
-							<div class="round second-round mb-5">
+							<div class="round second-round">
 								<!-- <h6 class="text-center">Second Round</h6> -->
 								<div class="vertical-line ">
 									<!-- Game 5 -->
@@ -131,7 +131,7 @@ function createTournamentMap() {
 										<div class="connection-line connection-5-7"></div>
 									</div>
 									<!-- Game 6 -->
-									<div class="game game6 mb-5">
+									<div class="game game6">
 										<div class="card">
 											<div class="card-body-custom">
 												<h5 id="game6" class="card-title game-6">Game 6</h5>
@@ -187,7 +187,7 @@ function createTournamentMap() {
 							</div>
 						</div>
 					</div>
-					<div class="d-flex justify-content-center">
+					<div class="d-flex justify-content-center mb-5">
 						<button id="gameRulesButton" type="button" class="btn btn-info me-4" onclick="showGameRules()" >
 							<i class="fas fa-book me-2"></i>
 							How to play

@@ -8,7 +8,6 @@ from account.serializers import *
 from rest_framework_simplejwt.tokens import RefreshToken
 from django.views.decorators.csrf import csrf_protect
 import json
-import os
 from django.conf import settings
 import requests
 from .models import Player
@@ -62,7 +61,10 @@ class SignUpView(APIView, BaseView):
 				new_player.is_logged_in = True
 				new_player.save()
 				refresh = RefreshToken.for_user(new_player)
-				response = Response(status=status.HTTP_201_CREATED)
+				response = Response({
+					'username': new_player.username,
+					'profile_pic': new_player.profile_picture.url if new_player.profile_picture else '/static/images/default_profile_pic.jpeg'
+				}, status=status.HTTP_201_CREATED)
 				response.set_cookie('access_token', str(refresh.access_token), httponly=True, samesite='Lax', secure=True)
 				response.set_cookie('refresh_token', str(refresh), httponly=True, samesite='Lax', secure=True)
 				FriendList.objects.create(player=new_player)
@@ -100,7 +102,11 @@ class SignInView(APIView, BaseView):
 					return Response({'error_msg': 'Couldn\'t send OTP to the given Email'}, 
 								status=status.HTTP_422_UNPROCESSABLE_ENTITY)
 			refresh = RefreshToken.for_user(player)
-			response = Response(status=status.HTTP_200_OK)
+			response = Response({
+					'username': player.username,
+					'profile_pic': player.profile_picture.url if player.profile_picture else '/static/images/default_profile_pic.jpeg'
+				},
+				status=status.HTTP_200_OK)
 			response.set_cookie('access_token', str(refresh.access_token), httponly=True, samesite='Lax', secure=True)
 			response.set_cookie('refresh_token', str(refresh), httponly=True, samesite='Lax', secure=True)
 			player.is_logged_in = True
@@ -117,6 +123,7 @@ class SignOutView(APIView, BaseView):
 	permission_classes = [IsAuthenticated]
 	throttle_classes = []
 
+	""" get method to get all the chatrooms that the user is a participant in """
 	def handle_exception(self, exception):
 		if isinstance(exception, AuthenticationFailed):
 			if 'access token is invalid but refresh token is valid' in str(exception):
@@ -126,8 +133,13 @@ class SignOutView(APIView, BaseView):
 			response = HttpResponseRedirect(reverse('signin_page'))
 			response.delete_cookie('access_token')
 			response.delete_cookie('refresh_token')
+			if self.request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+				return JsonResponse({
+					'redirect': '/signin'
+				}, status=302)
 			return response
 		return super().handle_exception(exception)
+
 
 	def get(self, request):
 		player = request.user
@@ -432,6 +444,7 @@ class PlayerProfileView(APIView, BaseView):
 	css = ['css/profile.css']
 	js = ['js/profile.js']
 
+	""" get method to get all the chatrooms that the user is a participant in """
 	def handle_exception(self, exception):
 		if isinstance(exception, AuthenticationFailed):
 			if 'access token is invalid but refresh token is valid' in str(exception):
@@ -441,8 +454,13 @@ class PlayerProfileView(APIView, BaseView):
 			response = HttpResponseRedirect(reverse('signin_page'))
 			response.delete_cookie('access_token')
 			response.delete_cookie('refresh_token')
+			if self.request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+				return JsonResponse({
+					'redirect': '/signin'
+				}, status=302)
 			return response
 		return super().handle_exception(exception)
+
 
 	def get_player(self, username):
 		return Player.objects.filter(username=username).first()
@@ -529,8 +547,13 @@ class PlayerProfileUpdatingView(APIView):
 	def patch(self, request):
 		serializer = PlayerProfileSerializer(request.user, data=request.data, partial=True)
 		if serializer.is_valid():
-			serializer.save()  # Use the serializer to update the player object
-			return Response({'username': request.user.username}, status=status.HTTP_200_OK)
+			player = serializer.save()  # Use the serializer to update the player object
+			# return Response({'username': request.user.username}, status=status.HTTP_200_OK)
+			return Response( {
+						'username': player.username,
+						'profile_pic': player.profile_picture.url if player.profile_picture else '/static/images/default_profile_pic.jpeg'
+					}, status=200)
+		
 		return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 	# updating user password
@@ -556,7 +579,7 @@ class PlayerProfileUpdatingView(APIView):
 		player.set_password(serializer.validated_data['new_password'])
 		player.last_password_change = timezone.now()
 		player.save()
-		response = Response({'username': player.username}, status=200)
+		response = Response({'username': player.username, 'success': True}, status=200)
 		response.delete_cookie('access_token')
 		response.delete_cookie('refresh_token')
 		return response
@@ -570,6 +593,7 @@ class SettingsView(APIView, BaseView):
 	css = ['css/settings.css']
 	js = ['js/settings.js']
 
+	""" get method to get all the chatrooms that the user is a participant in """
 	def handle_exception(self, exception):
 		if isinstance(exception, AuthenticationFailed):
 			if 'access token is invalid but refresh token is valid' in str(exception):
@@ -579,10 +603,13 @@ class SettingsView(APIView, BaseView):
 			response = HttpResponseRedirect(reverse('signin_page'))
 			response.delete_cookie('access_token')
 			response.delete_cookie('refresh_token')
-			response.delete_cookie('csrftoken')
-			response.status_code = 302
+			if self.request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+				return JsonResponse({
+					'redirect': '/signin'
+				}, status=302)
 			return response
 		return super().handle_exception(exception)
+
 	
 	def get_context_data(self, request):
 		player = request.user
@@ -612,6 +639,7 @@ class AnonymizePlayer(APIView):
 	permission_classes = [IsAuthenticated]
 	throttle_classes = []
 
+	""" get method to get all the chatrooms that the user is a participant in """
 	def handle_exception(self, exception):
 		if isinstance(exception, AuthenticationFailed):
 			if 'access token is invalid but refresh token is valid' in str(exception):
@@ -621,8 +649,13 @@ class AnonymizePlayer(APIView):
 			response = HttpResponseRedirect(reverse('signin_page'))
 			response.delete_cookie('access_token')
 			response.delete_cookie('refresh_token')
+			if self.request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+				return JsonResponse({
+					'redirect': '/signin'
+				}, status=302)
 			return response
 		return super().handle_exception(exception)
+
 
 	def post(self, request):
 		player = request.user

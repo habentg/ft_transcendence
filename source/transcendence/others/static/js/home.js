@@ -186,6 +186,18 @@ function initHome() {
       createLocalGameModal();
     });
   }
+
+  const nav_profile_pic = document.getElementById("nav_profile_pic");
+  if (nav_profile_pic) {
+    localStorage.setItem("profile_pic", `${nav_profile_pic.dataset.pfp}`);
+    localStorage.setItem("username", `${nav_profile_pic.dataset.username}`);
+  }
+  const anon_pfp = document.getElementById("anon_pic");
+  if (anon_pfp) {
+    localStorage.setItem("profile_pic", `${anon_pfp.dataset.pfp}`);
+    localStorage.setItem("username", `${anon_pfp.dataset.username}`);
+    updateNavBar(true);
+  }
 }
 
 initHome();

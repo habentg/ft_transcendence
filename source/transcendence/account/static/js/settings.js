@@ -53,7 +53,15 @@ async function updatePlayerPassword() {
       return;
     }
     closeModal("password-change-modal");
-    await showSuccessMessage("Password updated successfully. Please log in again with your new password.", 3000);
+    try {
+      const data = await response.json();
+      if (data.success)
+        await showSuccessMessage("Password updated successfully. Please log in again with your new password.", 3000);
+      else
+        await showSuccessMessage("Something Happened!!! Redirecting to signin", 3000, 'Error');
+      }catch(e) {
+        await showSuccessMessage("Something Happened!!! Redirecting to signin", 3000, 'Error');
+    }
     await updateUI(`/signin`);
     updateNavBar(false);
   } catch (error) {
@@ -205,7 +213,6 @@ async function deleteAccount() {
 
     if (response.status === 200) {
       closeModal("delete-account-modal");
-      updateNavBar(false);
       await updateUI("/");
     } else {
       throw new Error("Failed to delete account");

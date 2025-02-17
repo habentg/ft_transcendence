@@ -91,9 +91,9 @@ async function handleUpload() {
     }
 
     // Validate file size
-    const maxSize = 10 * 1024 * 1024; // 10MB
+    const maxSize = 5 * 1024 * 1024; // 5MB
     if (profilePicFile.size > maxSize) {
-      errorMsg.textContent = "File size exceeds 10MB";
+      errorMsg.textContent = "File size exceeds 5MB";
       errorMsg.style.display = "block";
       return;
     }
@@ -126,8 +126,8 @@ async function handleUpload() {
       closeModal("profile-pic-modal");
       // update the user info in the DOM
       const responseData = await response.json();
+      localStorage.setItem("profile_pic", responseData.profile_pic);
       await updateUI(`/profile/${responseData.username}`, false);
-      updateNavBar(true);
       await showSuccessMessage("Profile Picture updated successfully");
     } else {
       throw new Error("Failed to update profile pic");

@@ -35,13 +35,16 @@ class GameView(APIView, BaseView):
                 response = HttpResponseRedirect(redirect_url)
                 response.set_cookie('access_token', generate_access_token(self.request.COOKIES.get('refresh_token')), httponly=True, samesite='Lax', secure=True)
                 return response
-            response = HttpResponseRedirect(reverse('landing'))
+            response = HttpResponseRedirect(reverse('signin_page'))
             response.delete_cookie('access_token')
             response.delete_cookie('refresh_token')
-            response.delete_cookie('csrftoken')
-            response.status_code = 302
+            if self.request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+                return JsonResponse({
+                    'redirect': '/signin'
+                }, status=302)
             return response
         return super().handle_exception(exception)
+    
 
     def get_context_data(self, request, **kwargs):
         is_ai = request.GET.get('isAI', 'false').lower() == 'true'

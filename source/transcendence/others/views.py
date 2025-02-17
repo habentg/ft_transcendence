@@ -47,11 +47,11 @@ class BaseView(View):
 			'css': self.css,
 			'js': self.js,
 			'html': html_content,
+			'is_authenticated': isUserisAuthenticated(request)
 		}
 		if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
 			return JsonResponse(resources)
 		else:
-			resources['is_authenticated'] =  isUserisAuthenticated(request)
 			if resources['is_authenticated'] == True and not request.user.is_authenticated:
 				resources['user'] = PlayerSerializer(getPlayerFromToken(request.COOKIES.get('refresh_token'))).data
 			if request.user.is_authenticated:
@@ -91,18 +91,20 @@ class HomeView(APIView, BaseView):
 	css = ['css/home.css']
 	js = ['js/home.js']
 	
+	""" get method to get all the chatrooms that the user is a participant in """
 	def handle_exception(self, exception):
 		if isinstance(exception, AuthenticationFailed):
-			""" is refresh token not expired """
 			if 'access token is invalid but refresh token is valid' in str(exception):
 				response = HttpResponseRedirect(self.request.path)
 				response.set_cookie('access_token', generate_access_token(self.request.COOKIES.get('refresh_token')), httponly=True, samesite='Lax', secure=True)
 				return response
-			response = HttpResponseRedirect(reverse('landing'))
+			response = HttpResponseRedirect(reverse('signin_page'))
 			response.delete_cookie('access_token')
 			response.delete_cookie('refresh_token')
-			response.delete_cookie('csrftoken')
-			response.status_code = 302
+			if self.request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+				return JsonResponse({
+					'redirect': '/signin'
+				}, status=302)
 			return response
 		return super().handle_exception(exception)
 
@@ -186,18 +188,20 @@ class PaginatedSearch(APIView, BaseView):
 	template_name = 'friendship/search_result.html'
 	css = ['css/search.css']
 
+	""" get method to get all the chatrooms that the user is a participant in """
 	def handle_exception(self, exception):
 		if isinstance(exception, AuthenticationFailed):
 			if 'access token is invalid but refresh token is valid' in str(exception):
-				
 				response = HttpResponseRedirect(self.request.path)
 				response.set_cookie('access_token', generate_access_token(self.request.COOKIES.get('refresh_token')), httponly=True, samesite='Lax', secure=True)
 				return response
 			response = HttpResponseRedirect(reverse('signin_page'))
 			response.delete_cookie('access_token')
 			response.delete_cookie('refresh_token')
-			response.delete_cookie('csrftoken')
-			response.status_code = 302
+			if self.request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+				return JsonResponse({
+					'redirect': '/signin'
+				}, status=302)
 			return response
 		return super().handle_exception(exception)
 
@@ -247,3 +251,20 @@ class PaginatedSearch(APIView, BaseView):
 			'next_page_link': paginator.get_next_link(),
 			'previous_page_link': paginator.get_previous_link(),
 		})
+
+
+class GetPfpAndUsername(APIView):
+	authentication_classes = [JWTCookieAuthentication]
+	permission_classes = [IsAuthenticated]
+	throttle_classes = []
+	
+	def get(self, request, *args, **kwargs):
+		if not request.user.is_authenticated:
+			return Response(status=status.HTTP_401_UNAUTHORIZED)
+		data = {
+			'pfp': request.user.profile_picture.url if request.user.profile_picture else '/static/images/default_profile_pic.jpeg',
+			'username': request.user.username
+		}
+		if (request.user.is_guest or request.user.is_anonymous):
+			data['pfp'] = '/static/images/anon.jpeg'
+		return Response(data)

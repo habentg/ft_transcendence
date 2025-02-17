@@ -24,7 +24,7 @@ function updateProfilePictureModal() {
         <div class="modal-body py-4">
           <div class="file-upload-wrapper">
             <input type="file" id="profile-pic" accept="image/*" class="form-control bg-transparent text-white">
-            <small class="text-muted mt-2 d-block">Supported formats: JPEG ,JPG, PNG, GIF (Max size: 10MB)</small>
+            <small class="text-muted mt-2 d-block">Supported formats: JPEG ,JPG, PNG, GIF (Max size: 5MB)</small>
             <div id="error-msg" class="alert alert-danger mt-2" style="display:none;"></div>
           </div>
         </div>
@@ -662,7 +662,7 @@ async function showSuccessMessage(message, timeout = 3000, successHeader=`Succes
 }
 
 // Create a modal for displaying error messages
-function showErrorMessage(message, timeout = 3000, errorHeader=`Error`) {
+async function showErrorMessage(message, timeout = 3000, errorHeader=`Error`) {
   // create and show error modal
   const existingModal = document.getElementById("error-modal");
   if (existingModal) existingModal.remove();
@@ -710,7 +710,7 @@ function showErrorMessage(message, timeout = 3000, errorHeader=`Error`) {
   );
   // Close modal after 3 seconds
   setTimeout(() => {
-    closeModal("error-modal");
+    closeModal("success-modal");
   }, timeout);
 }
 

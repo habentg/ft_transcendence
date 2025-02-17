@@ -29,7 +29,6 @@ async function updateUI(path) {
   }
   try {
     await loadContent(`${path}`);
-    history.pushState({}, "", `${path}`);
   } catch (error) {
     createToast({ type: "error", title: "Error", error_message: `${error}` });
   }
@@ -51,7 +50,8 @@ async function appRouter(event) {
   if (window.isGameRunning)
     window.isGameRunning = false;
   const href = event.target.closest("a").href;
-  if (href === window.location.href) return;
+  if (href === window.location.href)
+    return;
   await updateUI(href);
 }
 
@@ -67,6 +67,10 @@ async function loadContent(route) {
 
     if (!response.ok) {
       if (response.status == 302) {
+        let data = await response.json();
+        updateNavBar(data.is_authenticated);
+        if (data.redirect === "/signin")
+          await updateUI(`${window.baseUrl}/signin`);
         return;
       }
       throw new Error({
@@ -80,13 +84,10 @@ async function loadContent(route) {
     loadCssandJS(data, true); // load the css and js of the page - remove the previous ones(true)
     document.title = `${data.title} | PONG`;
     document.getElementById("content").innerHTML = data.html;
+    updateNavBar(data.is_authenticated);
+    history.pushState({}, "", `${response.url}`);
   } catch (error) {
-    showErrorMessage(
-      `${error.status} : Error loading '${route}' - ${error.statusText}`,
-      3000,
-      "Error"
-    );
-    createToast({ type: 'error', error_message: `Failed to load -- ${route} -- page content:`, title: 'Error' });
+    await loadContent(`${window.baseUrl}/signin`);
   }
 }
 

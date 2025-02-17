@@ -75,7 +75,6 @@ async function handle42Login() {
 
     hideLoadingAnimation();
     window.location.href = resposeData.authorization_url;
-
   } catch (error) {
     createToast({
       type: "error",
@@ -160,23 +159,9 @@ const loadCssandJS = (data, remove_prev_resources) => {
 function updateNavBar(isAuthenticated, givenUsername = null, givenProfilePic = null) {
   const navbar = document.getElementById("navbarNavDropdown");
   if (isAuthenticated) {
-    let profilePic = "/static/images/default_profile_pic.jpeg";
-    let username = "";
-    const user_profile_pic =
-      document.getElementById("nav_profile_pic") ||
-      document.getElementById("pfp_from_profile");
-    const profile_btn = document.getElementById("profile_btn");
-    // check if profile_btn has data-username
-    if (profile_btn) {
-      username = profile_btn.dataset.username;
-    }
-    if (user_profile_pic) {
-      profilePic = user_profile_pic.dataset.pfp; // Same as user_profile_pic.getAttribute("data-pfp");
-    }
-    if (givenUsername)
-      username = givenUsername;
-    if (givenProfilePic)
-      profilePic = givenProfilePic;
+    let profilePic = localStorage.getItem("profile_pic");
+    let username = localStorage.getItem("username");
+
     navbar.innerHTML = `
     <ul class="navbar-nav ms-auto align-items-center">
       <li class="nav-item">
@@ -258,9 +243,9 @@ async function handleSignOut() {
       removeResource();
       updateNavBar(false);
       if (window.ws_chat)
-      window.ws_chat.close() 
+        window.ws_chat.close()
       if (window.ws)
-      window.ws.close() 
+        window.ws.close()
       await updateUI(``);
     } else {
       throw new Error("Failed to sign out");
@@ -326,7 +311,8 @@ async function handleNotificationBellClick(action) {
     if (notification_indicator)
       notification_indicator.classList.add("d-none");
   } else {
-    createToast({ type: 'error', error_message: 'Failed to Fetch Notifications List', title: "Failed to fetch Notifications!" });
+    await showErrorMessage('Failed to fetch Notifications List! you will be redirected to the home page');
+    await updateUI("");
   }
 
 }

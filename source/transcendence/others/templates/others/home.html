@@ -50,7 +50,9 @@
                 <a id="profile_btn" onclick="appRouter()" class="menu-item d-flex align-items-center p-3" href="/profile/{{ player.username }}" data-username="{{ player.username }}">
                   <i class="fas fa-user fa-2x me-3"></i>
                   {% if player.profile_picture %}
-                    <h5 id="nav_profile_pic" data-pfp="{{ player.profile_picture }}">Profile</h5>
+                    <h5 id="nav_profile_pic" data-pfp="{{ player.profile_picture }}" data-username="{{ player.username }}">Profile</h5>
+                  {% elif player.is_guest %}
+                    <h5 id="anon_pic" class="mb-0"  data-pfp="/static/images/anon.jpeg" data-username="{{ player.username }}">Profile</h5>
                   {% else %}
                     <h5 class="mb-0">Profile</h5>
                   {% endif %}
