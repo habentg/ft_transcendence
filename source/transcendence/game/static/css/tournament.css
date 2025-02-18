@@ -1,4 +1,4 @@
-.page .background-image,
+.background-image,
 .tournamentPage .background-image {
   display: flex;
   justify-content: center;
@@ -14,14 +14,31 @@
   height: 100vh;
 }
 
-/* make window not flow over html and body width */
-html, body {
-  overflow-x: hidden;
-}
-
 .playerListContainer {
   width: 80%;
   max-width: 1200px;
+  max-height: 775px;
+  overflow-y: auto;
+  overflow-x: hidden;
+  scrollbar-width: thin;
+  scrollbar-color: #888888 #bebbbb;
+}
+
+.playerListContainer::-webkit-scrollbar {
+  width: 8px;
+}
+
+.playerListContainer::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+.playerListContainer::-webkit-scrollbar-thumb {
+  background: #888888;
+  border-radius: 4px;
+}
+
+.playerListContainer::-webkit-scrollbar-thumb:hover {
+  background: #707070;
 }
 
 .content {
@@ -40,6 +57,15 @@ html, body {
   align-items: center;
   flex-direction: column;
   justify-content: center;
+}
+
+.playerHeaderContainer {
+	display: flex;
+	align-items: center;
+	margin: auto;
+	margin-top: 36px;
+	margin-bottom: 36px;
+	flex-direction: column;
 }
 
 .menu-item {
@@ -270,23 +296,6 @@ span.score-value {
   color: #b02c98;
 }
 
-/* .vertical-line {
-	position: relative;
-	display: flex;
-	flex-direction: column;
-	align-items: center;
-	margin-top: 20px;
-}
-
-.vertical-line::before {
-	content: '';
-	position: absolute;
-	width: 2px;
-	height: 100%;
-	background-color: #b02c98;
-	z-index: 0;
-} */
-
 .game5 {
   position: absolute;
   top: 30%;
@@ -448,7 +457,7 @@ span.score-value {
   text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
 }
 
-.modal-title {
+.modal-title1 {
   font-size: 2rem;
   color: #f1c40f; /* Golden color for winners */
   text-shadow: 2px 2px 3px rgba(0, 0, 0, 0.5);

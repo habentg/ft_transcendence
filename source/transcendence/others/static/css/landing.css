@@ -1,17 +1,15 @@
-.first-page {
-	height: 100vh;
-	position: relative;
-}
-
-.background-image {
-	background-image: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.7)), url('/static/images/download.jpeg');
-	background-size: cover;
-	background-position: center;
-	background-repeat: no-repeat;
-	height: 100%;
+.first-page .background-image {
 	display: flex;
 	justify-content: center;
 	align-items: center;
+	background-image: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), url('/static/images/background1.jpeg');
+	background-size: cover;
+	background-position: center;
+	background-repeat: no-repeat;
+	padding: 2rem 0;
+  
+	height: fit-content;
+	min-height: 100vh;
 }
 
 .content-wrapper {

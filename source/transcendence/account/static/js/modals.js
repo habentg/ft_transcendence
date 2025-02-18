@@ -24,7 +24,7 @@ function updateProfilePictureModal() {
         <div class="modal-body py-4">
           <div class="file-upload-wrapper">
             <input type="file" id="profile-pic" accept="image/*" class="form-control bg-transparent text-white">
-            <small class="text-muted mt-2 d-block">Supported formats: JPEG ,JPG, PNG, GIF (Max size: 10MB)</small>
+            <small class="text-muted mt-2 d-block">Supported formats: JPEG ,JPG, PNG, GIF (Max size: 5MB)</small>
             <div id="error-msg" class="alert alert-danger mt-2" style="display:none;"></div>
           </div>
         </div>
@@ -50,17 +50,9 @@ function updateProfileModal() {
   }
 
   // Get the text content from spans inside the profile details
-  const full_name = document
-    .querySelector(".profile-info h3")
-    .textContent.trim();
-  const username = document
-    .querySelector(".profile-info p:first-of-type")
-    .textContent.replace("@", "")
-    .trim();
-  const email = document
-    .querySelector(".profile-info p:last-of-type")
-    .textContent.trim();
-
+  const full_name = document.getElementById("player_full_name").getAttribute('data-fullname').trim();
+  const username = document.getElementById("player_username").getAttribute('data-username').trim();
+  const email = document.getElementById("player_email").getAttribute('data-email').trim();
   const modal = document.createElement("div");
   modal.id = "username-modal";
   modal.className = "modal fade show";
@@ -228,7 +220,7 @@ function twoFactorModal(button) {
 }
 
 /* anon modal */
-function anonymizeModal() {
+function anonymizeModal(buttonText, AnonText) {
   const existingModal = document.getElementById("anon-account-modal");
   if (existingModal) {
     existingModal.remove();
@@ -245,17 +237,17 @@ function anonymizeModal() {
 		<div class="content modal-content">
 		  <div class="modal-header border-0 py-3">
 			<h5 class="modal-title text-danger">
-			  <i class="fas fa-exclamation-triangle me-2"></i>Anonymize Account
+			  <i class="fas fa-exclamation-triangle me-2"></i>${buttonText}
 			</h5>
 			<button type="button" class="btn-close btn-close-white" id="close-anon-modal"></button>
 		  </div>
 		  <div class="modal-body
 		  px-3 py-2">
-			<p class="text-white mb-0">This action will log you out and switch to a temporary account. Are you sure you want to proceed? </p>
+			<p class="text-white mb-0">${AnonText}</p>
 		  </div>
 		  <div class="modal-footer border-0 py-3">
 			<button id="anon-acc-confirm" class="btn btn-danger btn-sm">
-			  <i class="fas fa-user-secret me-2"></i>Anonymize
+			  <i class="fas fa-user-secret me-2"></i>${buttonText}
 			</button>
 			<button id="anon-acc-cancel" class="btn btn-outline-light btn-sm">
 			  Cancel
@@ -424,7 +416,7 @@ function getPlayerNumberModal() {
           <h5 class="modal-title">
             <i class="fas fa-trophy me-2"></i> Create Tournament
           </h5>
-          <button type="button" class="btn-close btn-close-white" data-dismiss="modal"></button>
+          <button type="button" class="btn-close btn-close-white" data-dismiss="modal" onclick="closeModal('tournamentModal')" ></button>
         </div>
         <div class="modal-body px-3 py-2">
           <div id="local-game-error-msg" class="alert alert-danger small py-2" style="display:none;"></div>
@@ -488,7 +480,6 @@ function optionLocalGameModal() {
   // Event Listeners
   document.getElementById("aiGameBtn").addEventListener("click", () => {
     //  Send to AI game page (1 vs AI)
-    console.log("Creating AI game");
     closeModal("localGameModal");
     // For now, page is refreshing. Need to fix.
     // window.location.href = "/game/?isAI=true";
@@ -496,7 +487,6 @@ function optionLocalGameModal() {
   });
   document.getElementById("playFriends").addEventListener("click", () => {
     // Send to localgame game page (1 vs 1)
-    console.log("Creating local game");
     closeModal("localGameModal");
   });
 
@@ -672,7 +662,7 @@ async function showSuccessMessage(message, timeout = 3000, successHeader=`Succes
 }
 
 // Create a modal for displaying error messages
-function showErrorMessage(message, timeout = 3000, errorHeader=`Error`) {
+async function showErrorMessage(message, timeout = 3000, errorHeader=`Error`) {
   // create and show error modal
   const existingModal = document.getElementById("error-modal");
   if (existingModal) existingModal.remove();
@@ -720,7 +710,7 @@ function showErrorMessage(message, timeout = 3000, errorHeader=`Error`) {
   );
   // Close modal after 3 seconds
   setTimeout(() => {
-    closeModal("error-modal");
+    closeModal("success-modal");
   }, timeout);
 }
 
@@ -735,8 +725,8 @@ function gameRulesModal() {
   modal.className = "modal fade show";
   modal.style.display = "block";
   modal.innerHTML = `
-    <div class="modal-dialog modal-dialog-centered modal-md">
-      <div class="modal-content text-white">
+    <div class="modal-dialog modal-dialog-centered modal-md" >
+      <div class="modal-content text-white" style="background: black;">
         <div class="modal-header border-0 py-3">
           <h5 class="modal-title">
             <i class="fas fa-book me-2"></i> Game Rules

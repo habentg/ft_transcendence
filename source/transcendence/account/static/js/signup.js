@@ -48,8 +48,6 @@ async function handleSignupSubmit(e) {
   e.preventDefault();
 
   const formData = {
-    // first_name: document.getElementById('firstName').value,
-    // last_name: document.getElementById('lastName').value,
     username: document.getElementById("username").value,
     email: document.getElementById("email").value,
     password: document.getElementById("password").value,
@@ -60,7 +58,7 @@ async function handleSignupSubmit(e) {
     confirm_password: document.getElementById("confirm-password").value,
   };
   if (!inputValidator(formData.username) || formData.username.length < 4 || formData.username.length > 100) {
-    displayError({ invalid_chars: "Invalid Username detected: Only AlphNumericals and underscore between 4 and 100 long!" });
+    displayError({ invalid_chars: "Invalid Username: Only AlphNumericals and underscore al least 4 characters long!" });
     return;
   }
   if (document.getElementById('firstName').value.length > 150 || document.getElementById('lastName').value.length > 150) {
@@ -92,12 +90,18 @@ async function handleSignupSubmit(e) {
       displayError(responseData);
       return;
     }
+
+    let data = await response.json();
+    localStorage.setItem("profile_pic", data.profile_pic);
+    localStorage.setItem("username", data.username);
     // redirect to the protected page
     await updateUI(`/home`);
-    // update the navbar
-    updateNavBar(true);
     createWebSockets();
   } catch (error) {
-    console.error('Error:', error);
+    createToast({
+      type: "error",
+      title: "Error",
+      error_message: "Failed to authenticate",
+    });
   }
 }

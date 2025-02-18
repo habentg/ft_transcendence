@@ -11,12 +11,12 @@ async function createTournamentinDB(tournament_type) {
 		});
 		const responseData = await response.json();
 		if (response.ok) {
-			console.log(`tournament ${responseData.tournament_id} got created!`);
+
 			return responseData.tournament_id;
 		}
 		return 0;
 	} catch (error) {
-		console.error("some kinda error in tournament creation!")
+    createToast({type: 'error', error_message: 'Failed to create tournament', title: 'Tournament Creation Error!'});
 	}
 }
 
@@ -31,42 +31,24 @@ async function createTournamentinDB(tournament_type) {
       this.game.tournamentFlag = true;
 	  this.loadGameCustomisizeSettings();
     }
-    //this is the function that starts the game by calling draw function and displays names at the top of the canvas
+
     async startTournamentGame(player1Name, player2Name) {
       this.game.createPlayer(player1Name, "left");
       this.game.createPlayer(player2Name, "right");
       this.game.drawFlag = true;
       this.game.setupeventListeners();
-      const player1NameElement = document.getElementById("player1Name");
-      if (player1NameElement) {
-        player1NameElement.textContent = "@ " + player1Name;
-        player1NameElement.style.display = "block";
-      }
-      const player2NameElement = document.getElementById("player2Name");
-      if (player2NameElement) {
-        player2NameElement.textContent = "@ " + player2Name;
-        player2NameElement.style.display = "block";
-      }
-      const player1Element = document.getElementById("player1");
-      if (player1Element) {
-        player1Element.classList.remove("d-none");
-      }
-      const player2Element = document.getElementById("player2");
-      if (player2Element) {
-        player2Element.classList.remove("d-none");
-      }
+	  addPlayerTitles(player1Name, player2Name)
       const tournament_id = document.getElementById("background").getAttribute("data-tournamentId");
       this.game.tournament_id = tournament_id;
-      console.log("Tournament ID:", tournament_id);
-      console.log("game: ", this.game);
       const ret = await createGameInDB(this.game);
       if (ret === 'start_tournament'){
         window.isGameRunning = true;
+		this.game.resetValues();
         requestAnimationFrame((timestamp) => gameLoop(this.game, timestamp));
       }
       else {
         createToast({type: 'error', error_message: 'Failed to start Tournament games', title: 'Game Creating Error!'});
-        return;
+        return ;
       }
     }
     getPlayers() {
@@ -83,7 +65,6 @@ async function createTournamentinDB(tournament_type) {
       this.playersNames = [document.getElementById("playerContainer").querySelector("button h6").textContent.trim(),];
       this.maxPlayerNumbers = 0;
 	  document.getElementById("background").setAttribute("data-username", this.playersNames[0])
-      console.log(this.playersNames[0]);
     }
     getPlayerUiElements() {
       return {
@@ -96,13 +77,7 @@ async function createTournamentinDB(tournament_type) {
 
     createPlayerButtonWithRemoveOption(playerName) {
       const playerButton = document.createElement("button");
-      playerButton.classList.add(
-        "menu-item",
-        "d-flex",
-        "justify-content-between",
-        "align-items-center",
-        "p-3"
-      );
+      playerButton.classList.add( "menu-item", "d-flex", "justify-content-between", "align-items-center", "p-3");
       const nameContainer = document.createElement("div");
       nameContainer.classList.add("d-flex", "align-items-center", "mx-auto");
       nameContainer.innerHTML = `
@@ -116,53 +91,49 @@ async function createTournamentinDB(tournament_type) {
     }
 
     createRemovePlayerIcon(playerName) {
-      // Create the icon element for removal
       const deleteIcon = document.createElement("i");
-      deleteIcon.classList.add("fas", "fa-times", "ms-2"); // Add spacing and styles
-      deleteIcon.style.color = "rgba(255, 255, 255, 0.8)"; // Off-white color
-      deleteIcon.style.cursor = "pointer"; // Pointer cursor for better UX
-      // Add an event listener to handle the removal of the player
+      deleteIcon.classList.add("fas", "fa-times", "ms-2"); 
+      deleteIcon.style.color = "rgba(255, 255, 255, 0.8)";
+      deleteIcon.style.cursor = "pointer";
+    
       deleteIcon.addEventListener("click", () => {
-        // Find and remove the player from the players list
+       
         const index = this.playersNames.indexOf(playerName);
         if (index > -1) {
-          this.playersNames.splice(index, 1); // Remove the player from the list
+          this.playersNames.splice(index, 1);
         }
-        // Remove the button from the DOM
+       
         if (deleteIcon.parentElement) {
           deleteIcon.parentElement.remove();
         }
       });
       return deleteIcon;
     }
-    //checks the player name input is correct if so then add to the player list.
+   
     handlePlayerInput(playerInput, playerContainer, maxPlayerNumbers) {
       const playerName = playerInput.value.trim();
       const errorMsgDiv = document.getElementById("player-name-error-msg");
 
-      // Remove any existing error message when input changes
+     
       if (errorMsgDiv) {
         errorMsgDiv.textContent = "";
         errorMsgDiv.style.display = "none";
       }
-      // Validation checks
+     
       if (!playerName) {
         return;
       }
-      // Check if max players reached
+     
       if (this.playersNames.length == maxPlayerNumbers && errorMsgDiv) {
         errorMsgDiv.textContent = "Max Players reached";
         errorMsgDiv.style.display = "block";
         return;
       }
-		// Validate the length of the individual player name
 		if ((playerName.length > 15) && errorMsgDiv) {
 			errorMsgDiv.textContent = "Player name must less than 15 characters.";
 			errorMsgDiv.style.display = "block";
 			return;
-		}
-
-      // Check if name contains only letters
+		}     
 	  const letterRegex = /^[A-Za-z0-9]+$/;
       if (!letterRegex.test(playerName) && errorMsgDiv) {
         errorMsgDiv.textContent = "Player name should contain only letters and numbers!";
@@ -186,7 +157,7 @@ async function createTournamentinDB(tournament_type) {
       }
       return shuffledArray;
     }
-    //creates the player container and elements and adds it to the list
+   
     addPlayerToList(playerName, playerContainer) {
       if (this.playersNames.includes(playerName)) {
         return;
@@ -210,9 +181,8 @@ async function createTournamentinDB(tournament_type) {
         }
       });
       uiElements.initTournamentButton.addEventListener("click", async () => {
-        console.log("Players:", this.playersNames);
         if (this.playersNames.length === parseInt(maxPlayerNumbers)) {
-          console.log("Good to go:", this.playersNames);
+
           const tournament_id = await createTournamentinDB(this.playersNames.length);
           if (tournament_id != 0)
             document.getElementById("background").setAttribute("data-tournamentId", tournament_id);
@@ -232,7 +202,7 @@ async function createTournamentinDB(tournament_type) {
       this.matchCount = 0;
     }
 
-    checkGameStatus = (players, newTournamentGame, gameCanvas, playersNames) => {
+    checkGameStatus = (players, newTournamentGame, gameCanvas, warningMessage, playersNames) => {
       if (!newTournamentGame.game.drawFlag && !window.isGameRunning) {
         const match = {
           player1: players[0].playerName,
@@ -246,12 +216,14 @@ async function createTournamentinDB(tournament_type) {
         };
         this.matchHistory.push(match);
         this.updateTournamentMap(match, playersNames);
+		if(warningMessage)
+			warningMessage.remove();
         gameCanvas.remove();
         return match.winner;
       }
       return new Promise((resolve) => {
         requestAnimationFrame(() => {
-          resolve(this.checkGameStatus(players, newTournamentGame, gameCanvas, playersNames));
+          resolve(this.checkGameStatus(players, newTournamentGame, gameCanvas,warningMessage, playersNames));
         });
       });
     };
@@ -261,19 +233,24 @@ async function createTournamentinDB(tournament_type) {
       if (tournamentDiv) tournamentDiv.remove();
       nextMatchModal(player1Name, player2Name);
       await UIManager.waitForModal("nextMatch");
-      console.log(`The two playing this game ${player1Name} vs. ${player2Name}`);
+      document.getElementById("nextMatch_modal").remove();
       const pageContainer = document.getElementById("background");
       const gameCanvas = createGameCanvas();
-      if (pageContainer) pageContainer.appendChild(gameCanvas);
+      const warningMessage = addWarningMessage();
+      if (pageContainer) 
+		{
+			pageContainer.appendChild(warningMessage);
+			pageContainer.appendChild(gameCanvas);
+		}
       return new Promise((resolve, reject) => {
         try {
           let newTournamentGame = new GameBoard();
-		  console.log(playersNames)
+
           let players = newTournamentGame.getPlayers();
           newTournamentGame.startTournamentGame(player1Name, player2Name);
-          resolve(this.checkGameStatus(players, newTournamentGame, gameCanvas,playersNames));
+          resolve(this.checkGameStatus(players, newTournamentGame, gameCanvas, warningMessage,playersNames));
         } catch (error) {
-          console.error("Error playing match:", error);
+          createToast({type: 'error', error_message: 'Failed to play match', title: 'Game Error!'});
           reject(error);
         }
       });
@@ -335,6 +312,7 @@ async function createTournamentinDB(tournament_type) {
     prepTournament4() {
       let game3 = document.getElementsByClassName("game3");
       let game4 = document.getElementsByClassName("game4");
+      let game_5 = document.getElementById("game5");
       let game6 = document.getElementsByClassName("game6");
       let game7 = document.getElementsByClassName("game7");
 
@@ -351,15 +329,14 @@ async function createTournamentinDB(tournament_type) {
         game7[i].style.display = "none";
       }
 
+      if (game_5)
+        game_5.textContent = "FINAL";
       let connection57 = document.getElementsByClassName("connection-5-7");
       for (let i = 0; i < connection57.length; i++) {
         connection57[i].style.display = "none";
       }
-
-      // Adjust the position of the game 5
       let game5 = document.getElementsByClassName("game5");
       if (game5) {
-        console.log(game5);
         game5[0].style.top = "85%";
         game5[0].style.left = "45%";
         game5[0].style.transform = "translate(-50%, -50%)";
@@ -403,7 +380,7 @@ async function createTournamentinDB(tournament_type) {
       playersNames = PlayerManager.randomisePlayers(playersNames);
       let currentPlayers = [...playersNames];
       const tournamentContainer = document.getElementById("background");
-      this.tournamentElement = this.fillPlayerNames(createTournamentMap(),playersNames); //this is okay cause we importing from another file
+      this.tournamentElement = this.fillPlayerNames(createTournamentMap(),playersNames);
       if (tournamentContainer) {
         tournamentContainer.appendChild(this.tournamentElement);
       }
@@ -417,6 +394,8 @@ async function createTournamentinDB(tournament_type) {
           const winner = await this.playMatch(currentPlayers[i], currentPlayers[i + 1],playersNames);
           gameWinnerModal(winner);
           setTimeout(() => { UIManager.closeModal("gameClosing"); }, 1750);
+          if (document.getElementById("gameClosing_modal"))
+            document.getElementById("gameClosing_modal").remove();
           quarterFinalWinners.push(winner);
           if (tournamentContainer)
             tournamentContainer.appendChild(this.tournamentElement);
@@ -431,13 +410,15 @@ async function createTournamentinDB(tournament_type) {
         semiFinalWinners.push(winner);
         gameWinnerModal(winner);
         setTimeout(() => { UIManager.closeModal("gameClosing");}, 2000);
+        if (document.getElementById("gameClosing_modal"))
+            document.getElementById("gameClosing_modal").remove();
         if (tournamentContainer)
           tournamentContainer.appendChild(this.tournamentElement);
       }
       await UIManager.mapContinueButton(".continueButton");
       const champion = await this.playMatch(semiFinalWinners[0], semiFinalWinners[1], playersNames);
       const runnerUp = champion === semiFinalWinners[0] ? semiFinalWinners[1] : semiFinalWinners[0];
-      tournamentClosingModal(champion, runnerUp); //this is okay cause its coming from the other file
+      tournamentClosingModal(champion, runnerUp);
       await UIManager.waitForModal("congratsModal");
       updateTournamentMapAfterFinal(tournamentContainer, this.tournamentElement);
       return champion;
@@ -446,14 +427,14 @@ async function createTournamentinDB(tournament_type) {
 
   class UIManager {
     static closeModal(modalId) {
-      const modal = document.getElementById(modalId);
-      if (modal) {
-        let backdrop = document.querySelector(".modal-backdrop");
-        if (backdrop) backdrop.remove();
-        modal.remove(); // Remove the modal from the DOM
-        document.body.classList.remove("modal-open"); // Remove the modal-open class from body
-      } else {
-        console.warn(`Modal with id "${modalId}" not found.`);
+      // const modal = document.getElementById(modalId);
+      const modalElement = document.getElementById(modalId);
+      if (modalElement) {
+          const modal = bootstrap.Modal.getInstance(modalElement);
+          if (modal) {
+              modal.hide();
+          }
+          modalElement.remove();
       }
     }
 
@@ -470,13 +451,11 @@ async function createTournamentinDB(tournament_type) {
 			  clearInterval(checker);
 			  resolve(1);
 			} else if (elapsedTime >= timeout) {
-			  console.warn("Modal exists for too long. Closing modal...");
 			  clearInterval(checker);
 			  modal.hide;
 			  UIManager.closeModal(modalId);
 			  resolve(1);
 			} else {
-			  console.log("Modal is still open or body class remains. Continue checking...");
 			  elapsedTime += interval;
 			}
 		  }, interval);
@@ -487,7 +466,6 @@ async function createTournamentinDB(tournament_type) {
         const continueButton = document.querySelector(buttonClass);
         if (!continueButton) {
           reject("Not working");
-          console.error("Continue button not found in the DOM.");
           return;
         }
         const handleClick = () => {
@@ -506,32 +484,27 @@ async function createTournamentinDB(tournament_type) {
       this.currentGame = null;
       this.maxPlayerNumbers = 0;
     }
-    // Initializes a tournament setup modal that prompts for the number of players, validates input, and triggers player addition setup when closed
     initializeTournament() {
       const existingModal = document.getElementById("tournamentModal");
       if (existingModal) {
         existingModal.remove();
       }
-      const modal = getPlayerNumberModal(); //put player number modal, comes from other file
-      document.body.appendChild(modal); //add it to the page
+      const modal = getPlayerNumberModal(); 
+      document.body.appendChild(modal); 
       document.getElementById("tournamentOf4").addEventListener("click", () => {
         this.maxPlayerNumbers = 4;
-        console.log( "Creating tournament with ", this.maxPlayerNumbers, " players");
-        console.log(this.maxPlayerNumbers);
         UIManager.closeModal("tournamentModal");
 		this.setupGameCustomization();
         this.playerManager.setUpPlayerAddition(this.maxPlayerNumbers, this);
       });
       document.getElementById("tournamentOf8").addEventListener("click", () => {
         this.maxPlayerNumbers = 8;
-        console.log( "Creating tournament with ", this.maxPlayerNumbers, " players");
-        console.log(this.maxPlayerNumbers);
         UIManager.closeModal("tournamentModal");
 		this.setupGameCustomization();
         this.playerManager.setUpPlayerAddition(this.maxPlayerNumbers, this);
       });
       document.querySelector(".btn-close").addEventListener("click", async (e) => {
-          console.log("clicked outside");
+
           UIManager.closeModal("tournamentModal");
           await updateUI(`/home`);
       });
@@ -543,7 +516,6 @@ async function createTournamentinDB(tournament_type) {
 		changeSetting(newGame);
 	}
 
-    //This is the main part where we create tournament map and run the tournament
     async startTournament(maxPlayerNumbers, playersNames) {
       if (playersNames.length !== parseInt(maxPlayerNumbers)) {
         const errorMsgDiv = document.getElementById("player-name-error-msg");
@@ -557,14 +529,15 @@ async function createTournamentinDB(tournament_type) {
       document.querySelector(".playerListContainer").remove();
       try {
         const champion = await this.tournament.runTournament(playersNames);
-        console.log("Champion:", champion);
-        console.log(this.tournament.matchHistory);
-      } catch (error)
-	  	{console.error("Tournament error:", error);}
-      console.log("Tournament complete!");
+      } catch (error) {
+	  createToast({type: 'error', error_message: 'Failed to run Tournament', title: 'Tournament Error!'});
+	  }
     }
   }
 
   const newTournament = new GameController();
   newTournament.initializeTournament();
 }
+
+// call checkScreenSize function when the window is resized
+window.addEventListener("resize", () => checkScreenSize(new Game()));

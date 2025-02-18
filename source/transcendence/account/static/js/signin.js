@@ -32,7 +32,7 @@ async function handleSignInSubmit(e) {
         password: document.getElementById("password").value,
     };
     if (!inputValidator(formData.username) || formData.username.length < 4 || formData.username.length > 100) {
-        displayError({ invalid_chars: "Invalid Username detected: Only AlphNumericals and underscore between 4 and 100 long!" });
+        displayError({ invalid_chars: "Invalid Username: Only AlphNumericals and underscore at least 4 characters long!" });
         return;
     }
     if (formData.password.length < 3 || formData.password.length > 150) {
@@ -53,25 +53,23 @@ async function handleSignInSubmit(e) {
         if (!response.ok) {
             const responseData = await response.json();
             if (response.status === 302) {
-                try {
-                    await getTwoFactorAuth(`${formData.username}`);
-                } catch (e){
-                    console.log("some error in 302 sign in")
-                } finally {
-                    hideLoadingAnimation();
-                }
+                await getTwoFactorAuth(`${formData.username}`);
             }
             else
                 displayError(responseData);
+            hideLoadingAnimation();
             return;
         }
         // redirect to the protected page
-        await updateUI(`/`);
-        updateNavBar(true); // update the navbar for authenticated users
+        // history.replaceState({}, "", `/home`);
+        let data = await response.json();
+        localStorage.setItem("profile_pic", data.profile_pic);
+        localStorage.setItem("username", data.username);
+        await updateUI(`/home`);
         /* websocket - for real-time updates and chat*/
         createWebSockets();
     } catch (error) {
-        console.error('Error:', error);
+        createToast({ type: 'error', title: 'Error', error_message: 'Failed to authenticate' });
     }
 }
 
@@ -93,6 +91,6 @@ async function getTwoFactorAuth(username) {
         throw new Error("Failed to load 2FA page content");
     }
     catch (error) {
-        console.error('2 FA - Error:', error);
+        createToast({ type: 'error', error_message: 'Failed to load 2FA page content', title: 'Error' });
     }
 }

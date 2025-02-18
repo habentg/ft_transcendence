@@ -29,7 +29,11 @@ async function getCSRFToken() {
         throw new Error("Failed to fetch CSRF token");
       }
     } catch (error) {
-      console.error("Failed to fetch CSRF token:", error);
+      createToast({
+        type: "error",
+        title: "Error",
+        error_message: "Failed to fetch CSRF token",
+      });
     }
   }
   return cookieValue;
@@ -58,6 +62,7 @@ function displayError(response) {
 /* setting up and initiating an OAuth 2.0 authorization flow with the 42 intranet API. */
 /* Initiating an OAuth 2.0 authorization flow with the 42 intranet API. */
 async function handle42Login() {
+  showLoadingAnimation("Signing in with 42...");
   try {
     const response = await fetch("/auth_42/", {
       method: "GET",
@@ -68,11 +73,14 @@ async function handle42Login() {
 
     const resposeData = await response.json();
 
-    const authUrl = resposeData.authorization_url;
-
-    window.location.href = authUrl;
+    hideLoadingAnimation();
+    window.location.href = resposeData.authorization_url;
   } catch (error) {
-    console.error("Error in handle42Login:", error);
+    createToast({
+      type: "error",
+      title: "Error",
+      error_message: "Failed to authenticate",
+    });
   }
 }
 
@@ -151,35 +159,21 @@ const loadCssandJS = (data, remove_prev_resources) => {
 function updateNavBar(isAuthenticated, givenUsername = null, givenProfilePic = null) {
   const navbar = document.getElementById("navbarNavDropdown");
   if (isAuthenticated) {
-    let profilePic = "/static/images/default_profile_pic.jpeg";
-    let username = "";
-    const user_profile_pic =
-      document.getElementById("nav_profile_pic") ||
-      document.getElementById("pfp_from_profile");
-    const profile_btn = document.getElementById("profile_btn");
-    // check if profile_btn has data-username
-    if (profile_btn) {
-      username = profile_btn.dataset.username;
-    }
-    if (user_profile_pic) {
-      profilePic = user_profile_pic.dataset.pfp; // Same as user_profile_pic.getAttribute("data-pfp");
-    }
-    if (givenUsername)
-      username = givenUsername;
-    if (givenProfilePic)
-      profilePic = givenProfilePic;
+    let profilePic = localStorage.getItem("profile_pic");
+    let username = localStorage.getItem("username");
+
     navbar.innerHTML = `
     <ul class="navbar-nav ms-auto align-items-center">
       <li class="nav-item">
-        <a nclick="appRouter()" href="/leaderboard" class="nav-link"><i class="fas fa-trophy me-2"></i>Leaderboard</a>
+        <a onclick="appRouter()" href="/leaderboard" class="nav-link"><i class="fas fa-trophy me-2"></i>Leaderboard</a>
       </li>
       <li class="nav-item">
-      <a href="/chat" class="nav-link" onclick="appRouter()"><i class="fas fa-comments me-2"></i>Chat</a>
-    </li>
-    <li id="notification_dropdown_list" class="nav-item ms-lg-2 dropdown">
-      <a onclick="handleNotificationBellClick()" class="nav-link position-relative notification-badge" role="button" id="notificationDropdown" data-bs-toggle="dropdown" aria-expanded="false"><i class="fas fa-bell"></i></a>
-      <ul id="notification_ul" class="dropdown-menu dropdown-menu-end" aria-labelledby="notificationDropdown" style="width: 300px;"></ul>
-    </li>
+        <a href="/chat" class="nav-link" onclick="appRouter()"><i class="fas fa-comments me-2"></i>Chat</a>
+      </li>
+      <li id="notification_dropdown_list" class="nav-item ms-lg-2 dropdown">
+        <a onclick="handleNotificationBellClick()" class="nav-link position-relative notification-badge" role="button" id="notificationDropdown" data-bs-toggle="dropdown" aria-expanded="false"><i class="fas fa-bell"></i></a>
+        <ul id="notification_ul" class="dropdown-menu dropdown-menu-end" aria-labelledby="notificationDropdown" style="width: 300px;"></ul>
+      </li>
       <li class="nav-item ms-lg-2 dropdown">
         <a class="nav-link profile-link" href="#" role="button" id="profileDropdown" 
            data-bs-toggle="dropdown" aria-expanded="false">
@@ -248,12 +242,15 @@ async function handleSignOut() {
       closeSignOutModal();
       removeResource();
       updateNavBar(false);
+      if (window.ws_chat)
+        window.ws_chat.close()
+      if (window.ws)
+        window.ws.close()
       await updateUI(``);
     } else {
       throw new Error("Failed to sign out");
     }
   } catch (error) {
-    console.error("Error:", error);
     displayError({ error_msg: "Failed to sign out" });
   }
 }
@@ -314,13 +311,23 @@ async function handleNotificationBellClick(action) {
     if (notification_indicator)
       notification_indicator.classList.add("d-none");
   } else {
-    createToast({ type: 'error', error_message: 'Failed to Fetch Notifications List', title: "Failed to fetch Notifications!" });
+    await showErrorMessage('Failed to fetch Notifications List! you will be redirected to the home page');
+    await updateUI("");
   }
 
 }
 
 // Create a function to create a toast div and append it to the body
 function createToast(content) {
+  const existingToast = document.getElementById("toast");
+  if (existingToast) {
+    const existingBsToast = bootstrap.Toast.getInstance(existingToast);
+    if (existingBsToast) {
+      existingBsToast.dispose();
+    }
+    existingToast.remove();
+  }
+
   const toast = document.createElement("div");
   toast.id = "toast";
   toast.classList.add("toast");
@@ -392,7 +399,6 @@ function createToast(content) {
   } else {
     toastBody.textContent = `Some kind of notification`;
     toastTitle.textContent = `Dont know what this is`;
-    console.warn("Unknown toast type, defaulting to chat.");
     toastHeader.classList.add("bg-secondary", "text-light");
     toastIcon.className = "fas fa-info-circle";
   }

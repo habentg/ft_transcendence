@@ -12,9 +12,6 @@
       </div>
     {% else %}
       <div class="container py-5">
-        <div>
-          <h3 style="color: red;">Hi, {{ user.username }}! Enjoy....</h3>
-        </div>
         <div class="chat-wrapper">
           <!-- Sidebar -->
           <div class="chat-sidebar">
@@ -110,7 +107,7 @@
               <input type="text" id="messageInput" class="form-control me-2 d-none" style="color: black;" placeholder="Type a message..." />
               <button id="chat_send_btn" class="btn btn-primary d-none">Send</button>
               <p id="blocked_msg" class="d-none" style="color:red;">
-                <i class="fas fa-user-lock me-2"></i>you have blocked this player! unblock them to continue chatting...
+                <i class="fas fa-user-lock me-2"></i>you have blocked/deleted this player! unblock them to continue chatting...
               </p>
             </div>
           </div>

@@ -24,8 +24,7 @@ async function handleOTPSubmit(event) {
       displayError(responseData);
       return;
     }
-    updateNavBar(true, responseData.username, responseData.pfp);
-    await updateUI(`/`);
+    await updateUI(`/home`);
   } catch (error) {
     createToast({
       title: "Error",
@@ -33,4 +32,25 @@ async function handleOTPSubmit(event) {
       type: "error",
     });
   }
+}
+
+async function resendOtp() {
+  showLoadingAnimation("Resending OTP..."); // Show animation
+  const m_csrf_token = await getCSRFToken();
+  const response = await fetch("/2fa/", {
+    method: "PATCH",
+    headers: {
+      "X-Requested-With": "XMLHttpRequest",
+      "X-CSRFToken": m_csrf_token,
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({email : document.getElementById("2fa_player_email").textContent}),
+  });
+  if (!response.ok) {
+    const responseData = await response.json();
+    displayError(responseData);
+    return;
+  }
+  hideLoadingAnimation(); // Hide animation
+  await showSuccessMessage("OTP re-sent successfully", 5000, "Resent OTP");
 }

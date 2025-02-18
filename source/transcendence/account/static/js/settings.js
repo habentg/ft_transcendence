@@ -53,11 +53,18 @@ async function updatePlayerPassword() {
       return;
     }
     closeModal("password-change-modal");
-    await showSuccessMessage("Password updated successfully. Please log in again with your new password.", 3000);
+    try {
+      const data = await response.json();
+      if (data.success)
+        await showSuccessMessage("Password updated successfully. Please log in again with your new password.", 3000);
+      else
+        await showSuccessMessage("Something Happened!!! Redirecting to signin", 3000, 'Error');
+      }catch(e) {
+        await showSuccessMessage("Something Happened!!! Redirecting to signin", 3000, 'Error');
+    }
     await updateUI(`/signin`);
     updateNavBar(false);
   } catch (error) {
-    console.error("Error:", error);
     displayError({ error_msg: "An error occurred while updating password" });
   }
 }
@@ -87,16 +94,15 @@ async function handleEnableDisable2FA() {
 
       if (button.id === "enable-2fa") {
         button.id = "disable-2fa";
-        button.className = "btn btn-warning w-100";
-        button.textContent = "Disable 2FA";
-        await showSuccessMessage("Two-Factor Authentication enabled successfully!", 2000);
+        button.className = "btn btn-light w-100";
+        button.innerHTML = `<i class="fas fa-shield-alt me-2"></i>Disable 2FA`;
+        await showSuccessMessage("Two-Factor Authentication enabled successfully!");
       } else {
         button.id = "enable-2fa";
         button.className = "btn btn-success w-100";
-        button.textContent = "Enable 2FA";
-        await showSuccessMessage("Two-Factor Authentication disabled successfully!", 2000);
+        button.innerHTML = `<i class="fas fa-shield-alt me-2"></i>Enable 2FA`;
+        await showSuccessMessage("Two-Factor Authentication disabled successfully!");
       }
-      updateUI("/settings");
     } else {
       if (response.status === 429) {
         const error_content = {
@@ -111,7 +117,7 @@ async function handleEnableDisable2FA() {
       throw new Error("error happed while updating 2fa");
     }
   } catch (error) {
-    console.error("Error:", error);
+    createToast({ title: "Error", error_message: "Failed to update 2FA status", type: "error" });
   }
 }
 
@@ -207,24 +213,15 @@ async function deleteAccount() {
 
     if (response.status === 200) {
       closeModal("delete-account-modal");
-      updateNavBar(false);
-      updateUI("");
+      await updateUI("/");
     } else {
       throw new Error("Failed to delete account");
     }
   } catch (error) {
-    console.error("Error:", error);
     displayError({ error_msg: "Failed to delete account" });
   }
 }
 
-// function closeDeleteAccountModal() {
-//   const modal = document.getElementById("delete-account-modal");
-//   if (modal) {
-//     modal.remove();
-//     document.body.classList.remove("modal-open");
-//   }
-// }
 
 // Function to create and show the 2FA modal
 function show2FAModal() {
@@ -255,20 +252,21 @@ function show2FAModal() {
   });
 }
 
-// function close2FAModal() {
-//   const modal = document.getElementById("2fa-modal");
-//   if (modal) {
-//     modal.remove();
-//     document.body.classList.remove("modal-open");
-//   }
-// }
-
 // Anonymize Account Modal
 async function anonAccountModal() {
   const existingModal = document.getElementById("anon-account-modal");
   if (existingModal) existingModal.remove();
 
-  const anon_confirmaion_modal = anonymizeModal();
+  let anon_confirmaion_modal = null;
+  const anonTextBtn = document.getElementById("anon_text");
+  
+  anon_action = anonTextBtn.textContent === "De-anonymize Account" ? "deanon" : "anon";
+  if (anon_action === "anon") {
+    anon_confirmaion_modal = anonymizeModal('Anonymize', 'Are you sure you want to anonymize your account?');
+  }
+  else {
+    anon_confirmaion_modal = anonymizeModal('De-anonymize', 'Are you sure you want to De-anonymize your account?');
+  }
   document.body.appendChild(anon_confirmaion_modal);
   document.body.classList.add("modal-open");
 
@@ -281,31 +279,48 @@ async function anonAccountModal() {
     .addEventListener("click", () => closeModal("anon-account-modal"));
   anon_confirmaion_modal
     .querySelector("#anon-acc-confirm")
-    .addEventListener("click", anonAccount);
+    .addEventListener("click", async() => {await anonAccount()});
 
   // Close modal when clicking outside
   anon_confirmaion_modal.addEventListener("click", (e) => {
-    if (e.target === anon_confirmaion_modal) closeModal("anon-account-modal");
+    if (e.target === anon_confirmaion_modal)
+      closeModal("anon-account-modal");
   });
 }
 
-/* anonymize account */
+/* Anonymize Account */
 async function anonAccount() {
   // Close the modal
   closeModal("anon-account-modal");
 
+  const anonTextBtn = document.getElementById("anon_text");
+  anon_action = anonTextBtn.textContent === 'Anonymize Account' ? "anon" : "deanon";
   try {
-    const response = await fetch('/anonymize/');
+    const response = await fetch(`/anonymize?anon_action=${anon_action}`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-CSRFToken': await getCSRFToken(),
+      }
+    });
 
     if (!response.ok) {
-      throw new Error("Failed to anonymize account");
+      throw new Error("Failed to Anonymize Account");
     }
-    const responseData = await response.json();
-    await showSuccessMessage("Account anonymized successfully!", 2000);
-    updateNavBar(true, `${responseData['anon_username']}`, '/static/images/anon.jpeg'); // updating navbar
-    await updateUI(`/profile/${responseData['anon_username']}`, false);
+    if (anon_action === "anon") {
+      anonTextBtn.textContent = "De-anonymize Account";
+      document.getElementsByClassName("anon_i")[0].classList.remove('fa-user-secret');
+      document.getElementsByClassName("anon_i")[0].classList.add('fa-user');
+      await showSuccessMessage("Account anonymized successfully!", 2000);
+    }
+    else {
+      anonTextBtn.textContent = "Anonymize Account";
+      document.getElementsByClassName("anon_i")[0].classList.remove('fa-user');
+      document.getElementsByClassName("anon_i")[0].classList.add('fa-user-secret');
+      await showSuccessMessage("Account De-anonymized successfully!", 2000);
+    }
   } catch (error) {
-    console.error("Error:", error);
+    createToast({ type: "error", title: "Error", error_message: "Failed to Anonymize Account" });
   }
 }
 
@@ -320,19 +335,6 @@ function displayError(errorData) {
     }, 3000);
   }
 }
-
-// A generic modal for closing modals passed as an arguments
-// function closeModal(modalId) { // Currently only working for modals in the setting only., If taken to modal.js or utils.js, it requires refresh to work if gone from page profile to settings.
-//   // console.log("closing modal");
-//   const modal = document.getElementById(modalId);
-//   if (modal) {
-//     modal.remove(); // Remove the modal from the DOM
-//     document.body.classList.remove("modal-open"); // Remove the modal-open class from body
-//   } else {
-//     console.warn(`Modal with id "${modalId}" not found.`);
-//   }
-// }
-
 
 // Initialize Settings
 function initSettings() {

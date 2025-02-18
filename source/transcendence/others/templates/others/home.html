@@ -18,8 +18,8 @@
                 </div>
                 <!-- Friend Buttons -->
                 <div class="options col-md-6 d-flex gap-2 justify-content-md-end">
-                  <button id="friends_btn" class="btn btn-outline-light"><i class="fas fa-users me-2"></i>Friends</button>
-                  <button id="friend_requests_btn" class="btn btn-outline-light"><i class="fas fa-user-plus me-2"></i>Requests</button>
+                  <button id="friends_btn" onclick="search(`friends`)" class="btn btn-outline-light"><i class="fas fa-users me-2"></i>Friends</button>
+                  <button id="friend_requests_btn" onclick="search(`friend_requests`)" class="btn btn-outline-light"><i class="fas fa-user-plus me-2"></i>Requests</button>
                 </div>
               </div>
               <div id="searchResults" class="mt-3 d-none">
@@ -27,7 +27,7 @@
                 <div id="pagination_navigation" class="pagination d-flex align-items-center justify-content-center d-none">
                   <button type="button" id="prevPage" class="btn btn-outline-light btn-sm" data-url=""><i class="fas fa-chevron-left d-flex justify-content-center align-items-center" style="color: grey;"></i></button>
                   <span id="pageNumbers"><span id="current_page" class="found-count"></span> of <span id="total_pages" class="found-count"></span> pages</span>
-                  <button type="button" id="nextPage" class="btn btn-outline-light btn-sm" data-url=""><i class="fas fa-chevron-right d-flex justify-content-center align-items-center " style="color: grey;" ></i></button>
+                  <button type="button" id="nextPage" class="btn btn-outline-light btn-sm" data-url=""><i class="fas fa-chevron-right d-flex justify-content-center align-items-center" style="color: grey;"></i></button>
                 </div>
               </div>
             </div>
@@ -41,7 +41,7 @@
           <div class="content p-4">
             <div class="row g-4">
               <div class="col-md-6">
-                <button id="localGameBtn" onclick="createLocalGameModal()" class="menu-item d-flex align-items-center p-3">
+                <button id="localGameBtn" class="menu-item d-flex align-items-center p-3">
                   <i class="fas fa-gamepad fa-2x me-3"></i>
                   <h5 class="mb-0">Local Game</h5>
                 </button>
@@ -50,17 +50,19 @@
                 <a id="profile_btn" onclick="appRouter()" class="menu-item d-flex align-items-center p-3" href="/profile/{{ player.username }}" data-username="{{ player.username }}">
                   <i class="fas fa-user fa-2x me-3"></i>
                   {% if player.profile_picture %}
-                    <h5 id="nav_profile_pic" data-pfp="{{ player.profile_picture }}">Profile</h5>
+                    <h5 id="nav_profile_pic" data-pfp="{{ player.profile_picture }}" data-username="{{ player.username }}">Profile</h5>
+                  {% elif player.is_guest %}
+                    <h5 id="anon_pic" class="mb-0"  data-pfp="/static/images/anon.jpeg" data-username="{{ player.username }}">Profile</h5>
                   {% else %}
                     <h5 class="mb-0">Profile</h5>
                   {% endif %}
                 </a>
               </div>
-              <div id="createTournamentBtn" class="col-md-6">
-                <a onclick="appRouter()" href="/tournament" class="menu-item d-flex align-items-center p-3">
+              <div class="col-md-6">
+                <button id="createTournamentBtn" class="menu-item d-flex align-items-center p-3">
                   <i class="fas fa-trophy fa-2x me-3"></i>
-                  <h5 class="mb-0">Create Tournament</h5>
-                </a>
+                  <h5 class="mb-0">Tournament</h5>
+                </button>
               </div>
               <div class="col-md-6">
                 <a onclick="appRouter()" href="/settings" class="menu-item d-flex align-items-center p-3">

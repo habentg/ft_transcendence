@@ -1,12 +1,11 @@
-//Returns a tournament map html
 function createTournamentMap() {
-  const tournamentWrapper = document.createElement("div");
-  tournamentWrapper.className = "tournamentWrapper";
-  tournamentWrapper.id = "tournamentWrapper";
+	const tournamentWrapper = document.createElement("div");
+	tournamentWrapper.className = "tournamentWrapper";
+	tournamentWrapper.id = "tournamentWrapper";
 
-  tournamentWrapper.innerHTML = `
-					<h1 class="text-center mb-5">Tournament Map</h1>
-					<div class="row d-flex position-relative ">
+	tournamentWrapper.innerHTML = `
+					<h1 class="text-center">Tournament Map</h1>
+					<div class="row d-flex position-relative " style="height: 80%;">
 						<!-- First Round -->
 						<div class="col-4 d-flex justify-content-center align-items-end">
 							<div class="round first-round mb-5">
@@ -106,7 +105,7 @@ function createTournamentMap() {
 	
 						<!-- Second Round -->
 						<div class="col-4 d-flex flex-start ">
-							<div class="round second-round mb-5">
+							<div class="round second-round">
 								<!-- <h6 class="text-center">Second Round</h6> -->
 								<div class="vertical-line ">
 									<!-- Game 5 -->
@@ -132,7 +131,7 @@ function createTournamentMap() {
 										<div class="connection-line connection-5-7"></div>
 									</div>
 									<!-- Game 6 -->
-									<div class="game game6 mb-5">
+									<div class="game game6">
 										<div class="card">
 											<div class="card-body-custom">
 												<h5 id="game6" class="card-title game-6">Game 6</h5>
@@ -188,26 +187,26 @@ function createTournamentMap() {
 							</div>
 						</div>
 					</div>
-					<div class="d-flex justify-content-center">
-					<button
-					  id="startButton"
-					  class="btn btn-primary continueButton btn-md"
-					  style="display: flex; align-items: center"
-					>
-					  Continue
-					</button>
-				  </div>
+					<div class="d-flex justify-content-center mb-5">
+						<button id="gameRulesButton" type="button" class="btn btn-info me-4" onclick="showGameRules()" >
+							<i class="fas fa-book me-2"></i>
+							How to play
+						</button>
+						<button id="startButton" class="btn btn-primary continueButton btn-md  ms-2 me-4" style="display: flex; align-items: center">
+							<i class="fa-solid fa-play me-2"></i>
+							Continue
+						</button>
+				  	</div>
 		`;
 
-  return tournamentWrapper;
+	return tournamentWrapper;
 }
 
-//this returns canvas for the ping-pong game
 function createGameCanvas() {
-  const gameBoard = document.createElement("div");
-  gameBoard.id = "gameContent";
-  gameBoard.className = " py-5 flex-direction: column";
-  gameBoard.innerHTML = `
+	const gameBoard = document.createElement("div");
+	gameBoard.id = "gameContent";
+	gameBoard.className = " py-5 flex-direction: column";
+	gameBoard.innerHTML = `
 		<div class="justify-content-center mb-5">
 		</div>
 		<div class="gamePlayers d-flex justify-content-between">
@@ -223,67 +222,69 @@ function createGameCanvas() {
 		</div>
 		`;
 
-  return gameBoard;
+	return gameBoard;
 }
 
-//Displays modal displaying who is going to play next in upcoming match
 function nextMatchModal(player1, player2) {
-  const existingModal = document.getElementById("nextMatch");
-  if (existingModal) existingModal.remove();
-  const modalHTML = `
-	  <div class="modal fade" id="nextMatch" tabindex="-1" role="dialog" aria-labelledby="modalTitle" aria-hidden="true">
-		<div class="modal-dialog modal-dialog-centered modal-md" role="document">
-		  <div class="card modal-card shadow-lg  position-relative nextgame">
-			<div class="card-body text-center nextgame"> 
-			  <h6 class="modal-title " id="modalTitle2"> Next Match </h6>
-			  <h2 class="modal-text winner-text mt-3"> ${player1} vs ${player2} </h2>	
+	const modalHTML = `
+		<div class="modal fade" id="nextMatch" tabindex="-1" role="dialog" aria-labelledby="modalTitle" aria-hidden="true">
+			<div class="modal-dialog modal-dialog-centered modal-md" role="document">
+				<div class="card modal-card shadow-lg position-relative nextgame">
+					<div class="card-body text-center nextgame">
+						<div class="modal-background mb-3">
+							<i class="fas fa-trophy fa-3x text-warning"></i> 
+						</div>
+						<h6 class="modal-title mb-2" id="modalTitle2">Next Match</h6>
+						<h2 class="modal-text winner-text mt-3"> ${player1} vs ${player2} </h2>
+					</div>
+				</div>
 			</div>
-		  </div>
 		</div>
-	  </div>
-	  `;
-  // Append the modal to the body
-//   const body = document.querySelector("body");
-  const modalContainer = document.createElement("div");
-  modalContainer.innerHTML = modalHTML;
-  document.body.appendChild(modalContainer);
-  const modal = new bootstrap.Modal(document.getElementById("nextMatch"));
-  modal.show();
+	`;
+
+	// Append the modal to the body
+	//   const body = document.querySelector("body");
+	const modalContainer = document.createElement("div");
+	modalContainer.innerHTML = modalHTML;
+	modalContainer.id = "nextMatch_modal";
+	document.body.appendChild(modalContainer);
+	const modal = new bootstrap.Modal(document.getElementById("nextMatch"));
+	modal.show();
 }
 
-//displays after every game to show who won and who moves on the next round
 function gameWinnerModal(playerName) {
-  // Create the modal structure
-  const existingModal = document.getElementById("gameClosing");
-  if (existingModal) existingModal.remove();
-  const modalHTML = `
+	const existingModal = document.getElementById("gameClosing");
+	if (existingModal) existingModal.remove();
+	const modalHTML = `
 	  <div class="modal fade" id="gameClosing" tabindex="-1" role="dialog" aria-labelledby="modalTitle" aria-hidden="true">
 		  <div class="modal-dialog modal-dialog-centered modal-md" role="document">
 			  <div class="card modal-card shadow-lg position-relative">
 				  <div class="card-body text-center"> 
-					  <h3 class="modal-title" id="modalTitle2"> ${playerName} wins the game! </h3>
-					  <p class="modal-text winner-text mt-3"> ${playerName} passes to the next round </p>
+						<div class="modal-background mb-3">
+							<i class="fas fa-trophy fa-3x text-warning"></i> 
+			  			</div>
+					  <h6 class="modal-title" id="modalTitle2"> ${playerName} wins the game! </h6>
+					  <h2 class="modal-text winner-text mt-3"> ${playerName} passes to the next round </h2>
 				  </div>
 			  </div>
 		  </div>
 	  </div>
 	  `;
 
-  // Append the modal to the body
-  const body = document.querySelector("body");
-  const modalContainer = document.createElement("div");
-  modalContainer.innerHTML = modalHTML;
-  if (body) body.appendChild(modalContainer);
-  const modal = new bootstrap.Modal(document.getElementById("gameClosing"));
-  modal.show();
+	const body = document.querySelector("body");
+	const modalContainer = document.createElement("div");
+	modalContainer.id = "gameClosing_modal";
+	modalContainer.innerHTML = modalHTML;
+	if (body) body.appendChild(modalContainer);
+	const modal = new bootstrap.Modal(document.getElementById("gameClosing"));
+	modal.show();
 
 }
 
-//This is for the final end of the tournament to display the winner and second place
 function tournamentClosingModal(winner, secondplace) {
-  const existingModal = document.getElementById("congratsModal");
-  if (existingModal) existingModal.remove();
-  const modalHTML = `
+	const existingModal = document.getElementById("congratsModal");
+	if (existingModal) existingModal.remove();
+	const modalHTML = `
 	  <div class="modal fade" id="congratsModal" tabindex="-1" role="dialog" aria-labelledby="modalTitle" aria-hidden="true">
 		  <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
 			  <div class="card modal-card position-relative">
@@ -292,7 +293,7 @@ function tournamentClosingModal(winner, secondplace) {
 						  onclick="closeModal('congratsModal')" 
 						  aria-label="Close"></button>
 				  <div class="card-body text-center"> 
-					  <h2 class="modal-title" id="modalTitle">🎉 Congratulations ${winner}! 🎉</h2>
+					  <h2 class="modal-title1" id="modalTitle">🎉 Congratulations ${winner}! 🎉</h2>
 					  <img src="https://img.icons8.com/bubbles/200/000000/trophy.png" alt="Trophy" class="modal-trophy">
 					  <p class="modal-text">The winner of the tournament is <strong>${winner}</strong>. 🏆🏆🏆</p>
 					  <p class="modal-text">2nd place goes to <strong>${secondplace}</strong>. 🥈🥈🥈</p>
@@ -303,33 +304,70 @@ function tournamentClosingModal(winner, secondplace) {
 		  </div>
 	  </div>`;
 
-  // Append the modal to the body
-  const body = document.querySelector("body");
-  const modalContainer = document.createElement("div");
-  modalContainer.innerHTML = modalHTML;
-  if (body) body.appendChild(modalContainer);
-
-  // Show the modal (requires Bootstrap JS to work)
-  const modal = new bootstrap.Modal(document.getElementById("congratsModal"));
-  modal.show();
+	const body = document.querySelector("body");
+	const modalContainer = document.createElement("div");
+	modalContainer.innerHTML = modalHTML;
+	if (body) body.appendChild(modalContainer);
+	const modal = new bootstrap.Modal(document.getElementById("congratsModal"));
+	modal.show();
 }
 
 function updateTournamentMapAfterFinal(tournamentContainer, tournamentElement) {
-  const continueButton = tournamentElement.querySelector(".continueButton");
-  continueButton.innerHTML = `<i class="fas fa-home me-2"></i>Return Home`;
-  continueButton.addEventListener("click", () => updateUI("/home"));
-  // Clone the continue button
-  const restartButton = continueButton.cloneNode(true);
-  restartButton.innerHTML = `<i class="fas fa-trophy me-1"></i>New Tournament`;
-  restartButton.classList.remove("continueButton");
-  restartButton.classList.remove("btn-primary");
-  restartButton.classList.add("restartButton");
-  restartButton.style.marginLeft = "10px"; // Add space between buttons
-  restartButton.style.backgroundColor = "#A1F037"; 
-  restartButton.addEventListener("click", () => updateUI("/tournament"));
-  // Insert restart button after continue button
-  continueButton.insertAdjacentElement("afterend", restartButton);
-  // Insert restart button after continue button
-  continueButton.insertAdjacentElement("afterend", restartButton);
-  if (tournamentContainer) tournamentContainer.appendChild(tournamentElement);
+	const continueButton = tournamentElement.querySelector(".continueButton");
+	continueButton.innerHTML = `<i class="fas fa-home me-2"></i>Return Home`;
+	continueButton.addEventListener("click", () => updateUI("/home"));
+	const restartButton = continueButton.cloneNode(true);
+	restartButton.innerHTML = `<i class="fas fa-trophy me-1"></i>New Tournament`;
+	restartButton.classList.remove("continueButton");
+	restartButton.classList.remove("btn-primary");
+	restartButton.classList.add("restartButton");
+	restartButton.style.marginLeft = "10px";
+	restartButton.style.backgroundColor = "#A1F037";
+	restartButton.addEventListener("click", () => updateUI("/tournament"));
+	continueButton.insertAdjacentElement("afterend", restartButton);
+	continueButton.insertAdjacentElement("afterend", restartButton);
+	if (tournamentContainer) tournamentContainer.appendChild(tournamentElement);
 }
+
+
+function addPlayerTitles(player1Name, player2Name) {
+	const player1NameElement = document.getElementById("player1Name");
+	if (player1NameElement) {
+		player1NameElement.textContent = "@ " + player1Name;
+		player1NameElement.style.display = "block";
+	}
+	const player2NameElement = document.getElementById("player2Name");
+	if (player2NameElement) {
+		player2NameElement.textContent = "@ " + player2Name;
+		player2NameElement.style.display = "block";
+	}
+	const player1Element = document.getElementById("player1");
+	if (player1Element) {
+		player1Element.classList.remove("d-none");
+	}
+	const player2Element = document.getElementById("player2");
+	if (player2Element) {
+		player2Element.classList.remove("d-none");
+	}
+}
+
+
+function addWarningMessage() {
+	const warningMessage = document.createElement("div");
+	warningMessage.id = "warningMessage";
+	warningMessage.className = "d-none text-center text-light p-2";
+
+	const heading = document.createElement("h3");
+	heading.className = "mb-4 mt-2";
+	heading.textContent = "Screen too small to play";
+
+	const subheading = document.createElement("h5");
+	subheading.textContent =
+		"Please switch to a laptop or desktop with a larger screen for the best experience.";
+
+	warningMessage.appendChild(heading);
+	warningMessage.appendChild(subheading);
+
+	return warningMessage;
+}
+

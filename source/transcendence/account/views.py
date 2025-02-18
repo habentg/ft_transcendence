@@ -8,7 +8,6 @@ from account.serializers import *
 from rest_framework_simplejwt.tokens import RefreshToken
 from django.views.decorators.csrf import csrf_protect
 import json
-import os
 from django.conf import settings
 import requests
 from .models import Player
@@ -26,7 +25,6 @@ from others.auth_middleware import *
 from django.middleware.csrf import get_token
 from rest_framework.response import Response
 from rest_framework.exceptions import AuthenticationFailed
-import urllib.parse
 from django.core.files import File
 from urllib.request import urlopen
 from tempfile import NamedTemporaryFile
@@ -63,13 +61,15 @@ class SignUpView(APIView, BaseView):
 				new_player.is_logged_in = True
 				new_player.save()
 				refresh = RefreshToken.for_user(new_player)
-				response = Response(status=status.HTTP_201_CREATED)
+				response = Response({
+					'username': new_player.username,
+					'profile_pic': new_player.profile_picture.url if new_player.profile_picture else '/static/images/default_profile_pic.jpeg'
+				}, status=status.HTTP_201_CREATED)
 				response.set_cookie('access_token', str(refresh.access_token), httponly=True, samesite='Lax', secure=True)
 				response.set_cookie('refresh_token', str(refresh), httponly=True, samesite='Lax', secure=True)
 				FriendList.objects.create(player=new_player)
 				return response
 			return Response({'error_msg': 'Couldn\'t create the player'}, status=status.HTTP_422_UNPROCESSABLE_ENTITY)
-		print("Error in signup: ", serializer.errors, flush=True)
 		return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 	def get_context_data(self, request):
@@ -93,7 +93,6 @@ class SignInView(APIView, BaseView):
 
 	def post(self, request):
 		serializer = PlayerSigninSerializer(data=request.data)
-		print("Request data: ", request.data, flush=True)
 		if serializer.is_valid():
 			player = serializer.validated_data['player']
 			if player.tfa:
@@ -103,14 +102,17 @@ class SignInView(APIView, BaseView):
 					return Response({'error_msg': 'Couldn\'t send OTP to the given Email'}, 
 								status=status.HTTP_422_UNPROCESSABLE_ENTITY)
 			refresh = RefreshToken.for_user(player)
-			response = Response(status=status.HTTP_200_OK)
+			response = Response({
+					'username': player.username,
+					'profile_pic': player.profile_picture.url if player.profile_picture else '/static/images/default_profile_pic.jpeg'
+				},
+				status=status.HTTP_200_OK)
 			response.set_cookie('access_token', str(refresh.access_token), httponly=True, samesite='Lax', secure=True)
 			response.set_cookie('refresh_token', str(refresh), httponly=True, samesite='Lax', secure=True)
 			player.is_logged_in = True
 			player.save()
 			return response
 		error_message = serializer.errors.get('non_field_errors', ['No specific error'])[0]
-		print("Error in sign in: ", serializer.errors, flush=True)
 		return Response({'error_msg': error_message}, status=status.HTTP_400_BAD_REQUEST)
 
 	def get_context_data(self, request):
@@ -121,19 +123,23 @@ class SignOutView(APIView, BaseView):
 	permission_classes = [IsAuthenticated]
 	throttle_classes = []
 
+	""" get method to get all the chatrooms that the user is a participant in """
 	def handle_exception(self, exception):
 		if isinstance(exception, AuthenticationFailed):
 			if 'access token is invalid but refresh token is valid' in str(exception):
 				response = HttpResponseRedirect(self.request.path)
 				response.set_cookie('access_token', generate_access_token(self.request.COOKIES.get('refresh_token')), httponly=True, samesite='Lax', secure=True)
 				return response
-			signin_url = reverse('signin_page')
-			params = urllib.parse.urlencode({'next': self.request.path})
-			response = HttpResponseRedirect(f'{signin_url}?{params}')
+			response = HttpResponseRedirect(reverse('signin_page'))
 			response.delete_cookie('access_token')
 			response.delete_cookie('refresh_token')
+			if self.request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+				return JsonResponse({
+					'redirect': '/signin'
+				}, status=302)
 			return response
 		return super().handle_exception(exception)
+
 
 	def get(self, request):
 		player = request.user
@@ -228,14 +234,19 @@ class OauthCallback(View):
 				raise Exception('Player already exists!')
 		except Exception as e:
 			return render(request, 'others/base.html', {'css':['css/404.css'],'html': render_to_string('others/404.html', {'status_code': '400', 'error_msg_header': 'BAD REQUEST', 'error_msg': 'Either your username/email is already in use!'})})
-		ft_player.is_logged_in = True
-		ft_player.save()
-		refresh = RefreshToken.for_user(ft_player)
-		response = HttpResponseRedirect(reverse('home_page'))
-		# secure=True
-		response.set_cookie('access_token', str(refresh.access_token), httponly=True, samesite='Lax', secure=True)
-		response.set_cookie('refresh_token', str(refresh), httponly=True, samesite='Lax', secure=True)
-		return response
+		if ft_player.tfa:
+			if send_2fa_code(ft_player):
+				return render(request, 'others/base.html', {'css':['css/2fa.css'],'js':['js/2fa.js'],'html': render_to_string('account/2fa.html', {'email': ft_player.email})})
+			else:
+				return render(request, 'others/base.html', {'css':['css/404.css'],'html': render_to_string('others/404.html', {'status_code': '400', 'error_msg_header': 'Bad Request', 'error_msg': 'Failed to send OTP to the given Email!'})})
+		else:
+			ft_player.is_logged_in = True
+			ft_player.save()
+			refresh = RefreshToken.for_user(ft_player)
+			response = HttpResponseRedirect(reverse('home_page'))
+			response.set_cookie('access_token', str(refresh.access_token), httponly=True, samesite='Lax', secure=True)
+			response.set_cookie('refresh_token', str(refresh), httponly=True, samesite='Lax', secure=True)
+			return response
 
 class PasswordReset(BaseView):
 	authentication_classes = []
@@ -276,11 +287,10 @@ class PasswordReset(BaseView):
 		c = {
 			'email': player.email,
 			'domain': settings.DOMAIN_NAME,
-			'site_name': 'Haben Pong',
+			'site_name': 'Neon Pong',
 			'uid': urlsafe_base64_encode(force_bytes(player.pk)),
 			'user': player,
 			'token': default_token_generator.make_token(player),
-			'protocol': 'https',
 		}
 		email_body = render_to_string(email_template_name, c)
 		send_mail(subject, email_body, from_email, recipient_list, fail_silently=False)
@@ -335,6 +345,7 @@ class PassResetNewPass(View):
 			return JsonResponse({'error_msg': 'Invalid password reset request'}, status=status.HTTP_400_BAD_REQUEST)
 
 # 2FA - Two Factor Authentication
+@method_decorator(csrf_protect, name='dispatch')
 class TwoFactorAuth(APIView, BaseView):
 	authentication_classes = []
 	permission_classes = []
@@ -354,9 +365,9 @@ class TwoFactorAuth(APIView, BaseView):
 	
 	def post(self, request):
 		data = json.loads(request.body)
-		player = Player.objects.filter(email=data['email']).first()
+		player = Player.objects.get(email=data['email'])
 		if player:
-			totp = pyotp.TOTP(player.secret, interval=300)
+			totp = pyotp.TOTP(player.secret, interval=600)
 			if totp.verify(data['otp']):
 				player.verified = True
 				refresh = RefreshToken.for_user(player)
@@ -370,6 +381,21 @@ class TwoFactorAuth(APIView, BaseView):
 			else:
 				return JsonResponse({'error_msg': 'Invalid OTP!'}, status=status.HTTP_401_UNAUTHORIZED)
 		return JsonResponse({'failure': 'no player found with that email!'}, status=status.HTTP_401_UNAUTHORIZED)
+	
+	def patch(self, request):
+		try:
+			player_email = request.data.get('email')
+			player = Player.objects.get(email=player_email)
+			if player.tfa:
+				if send_2fa_code(player):
+					return Response({'success': 'OTP sent successfully'}, status=status.HTTP_200_OK)
+				else:
+					return Response({'error_msg': 'Couldn\'t send OTP to the given Email'}, 
+								status=status.HTTP_422_UNPROCESSABLE_ENTITY)
+			else:
+				return Response({'error_msg': '2FA is not enabled for this player!'}, status=status.HTTP_400_BAD_REQUEST)
+		except Exception as e:
+			return Response({'error_msg': str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
 class TwoFactorSetUpToggle(APIView):
 	authentication_classes = [JWTCookieAuthentication]
@@ -388,14 +414,12 @@ class TwoFactorSetUpToggle(APIView):
 				response = HttpResponseRedirect(self.request.path)
 				response.set_cookie('access_token', generate_access_token(self.request.COOKIES.get('refresh_token')), httponly=True, samesite='Lax', secure=True)
 				return response
-			signin_url = reverse('signin_page')
-			params = urllib.parse.urlencode({'next': self.request.path})
-			response = HttpResponseRedirect(f'{signin_url}?{params}')
+			response = HttpResponseRedirect(reverse('signin_page'))
 			response.delete_cookie('access_token')
 			response.delete_cookie('refresh_token')
 			if self.request.headers.get('X-Requested-With') == 'XMLHttpRequest':
 				return JsonResponse({
-					'redirect': f'{signin_url}?{params}'
+					'redirect': '/signin'
 				}, status=302)
 			return response
 		return super().handle_exception(exception)
@@ -420,19 +444,23 @@ class PlayerProfileView(APIView, BaseView):
 	css = ['css/profile.css']
 	js = ['js/profile.js']
 
+	""" get method to get all the chatrooms that the user is a participant in """
 	def handle_exception(self, exception):
 		if isinstance(exception, AuthenticationFailed):
 			if 'access token is invalid but refresh token is valid' in str(exception):
 				response = HttpResponseRedirect(self.request.path)
 				response.set_cookie('access_token', generate_access_token(self.request.COOKIES.get('refresh_token')), httponly=True, samesite='Lax', secure=True)
 				return response
-			signin_url = reverse('signin_page')
-			params = urllib.parse.urlencode({'next': self.request.path})
-			response = HttpResponseRedirect(f'{signin_url}?{params}')
+			response = HttpResponseRedirect(reverse('signin_page'))
 			response.delete_cookie('access_token')
 			response.delete_cookie('refresh_token')
+			if self.request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+				return JsonResponse({
+					'redirect': '/signin'
+				}, status=302)
 			return response
 		return super().handle_exception(exception)
+
 
 	def get_player(self, username):
 		return Player.objects.filter(username=username).first()
@@ -452,37 +480,34 @@ class PlayerProfileView(APIView, BaseView):
 			games_page = paginator.page(1)
 		except EmptyPage:
 			games_page = paginator.page(paginator.num_pages)
-		data = {}
+		base_data = {
+			'player': PlayerSerializer(queried_user).data,
+			'games': GameSerializer(games_page.object_list, many=True).data,
+			'num_of_games': games.count(),
+			'games_won': games.filter(outcome='WIN').count(),
+			'games_lost': games.filter(outcome='LOSE').count(),
+			'ai_games': games.filter(type='AI').exclude(outcome='CANCELLED').count(),
+			'1v1_games': games.filter(type='VERSUS').exclude(outcome='CANCELLED').count(),
+			'tournament_games': games.filter(type='TOURNAMENT').exclude(outcome='CANCELLED').count(),
+		}
+
+		# Additional data specific to user type
 		if queried_user.is_guest:
-			data = {
-				'player': PlayerSerializer(queried_user).data,
+			specific_data = {
 				'is_self': False,
 				'is_guest': True,
-				'games': GameSerializer(games_page.object_list, many=True).data,
-				'num_of_games': games.count(),
-				'games_won': games.filter(outcome='WIN').count(),
-				'games_lost': games.filter(outcome='LOSE').count(),
-				'ai_games':games.filter(type='AI').exclude(outcome='CANCELLED').count(),
-				'1v1_games':games.filter(type='VERSUS').exclude(outcome='CANCELLED').count(),
-				'tournament_games':games.filter(type='TOURNAMENT').exclude(outcome='CANCELLED').count(),
 			}
 		else:
-			data = {
-				'player': PlayerSerializer(queried_user).data,
+			specific_data = {
 				'is_friend': request.user.friend_list.friends.filter(username=queried_user.username).exists(),
 				'is_requested_by_me': request.user.sent_requests.filter(receiver=queried_user).exists(),
 				'am_i_requested': request.user.received_requests.filter(sender=queried_user).exists(),
 				'is_self': queried_user == request.user,
 				'num_of_friends': queried_user.friend_list.friends.count(),
-				'games': GameSerializer(games_page.object_list, many=True).data,
-				'num_of_games': games.count(),
-				'games_won': games.filter(outcome='WIN').count(),
-				'games_lost': games.filter(outcome='LOSE').count(),
-				'ai_games':games.filter(type='AI').exclude(outcome='CANCELLED').count(),
-				'1v1_games':games.filter(type='VERSUS').exclude(outcome='CANCELLED').count(),
-				'tournament_games':games.filter(type='TOURNAMENT').exclude(outcome='CANCELLED').count(),
 			}
-		return data
+
+		# Combine the dictionaries
+		return {**base_data, **specific_data}
 
 # profile view
 class PlayerProfileUpdatingView(APIView):
@@ -496,9 +521,7 @@ class PlayerProfileUpdatingView(APIView):
 				response = HttpResponseRedirect(self.request.path)
 				response.set_cookie('access_token', generate_access_token(self.request.COOKIES.get('refresh_token')), httponly=True, samesite='Lax', secure=True)
 				return response
-			signin_url = reverse('signin_page')
-			params = urllib.parse.urlencode({'next': self.request.path})
-			response = HttpResponseRedirect(f'{signin_url}?{params}')
+			response = HttpResponseRedirect(reverse('signin_page'))
 			response.delete_cookie('access_token')
 			response.delete_cookie('refresh_token')
 			return response
@@ -524,8 +547,13 @@ class PlayerProfileUpdatingView(APIView):
 	def patch(self, request):
 		serializer = PlayerProfileSerializer(request.user, data=request.data, partial=True)
 		if serializer.is_valid():
-			serializer.save()  # Use the serializer to update the player object
-			return Response({'username': request.user.username}, status=status.HTTP_200_OK)
+			player = serializer.save()  # Use the serializer to update the player object
+			# return Response({'username': request.user.username}, status=status.HTTP_200_OK)
+			return Response( {
+						'username': player.username,
+						'profile_pic': player.profile_picture.url if player.profile_picture else '/static/images/default_profile_pic.jpeg'
+					}, status=200)
+		
 		return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 	# updating user password
@@ -551,7 +579,7 @@ class PlayerProfileUpdatingView(APIView):
 		player.set_password(serializer.validated_data['new_password'])
 		player.last_password_change = timezone.now()
 		player.save()
-		response = Response({'username': player.username}, status=200)
+		response = Response({'username': player.username, 'success': True}, status=200)
 		response.delete_cookie('access_token')
 		response.delete_cookie('refresh_token')
 		return response
@@ -561,25 +589,27 @@ class SettingsView(APIView, BaseView):
 	permission_classes = [IsAuthenticated]
 	throttle_classes = []
 	template_name = 'account/settings.html'
-	title = 'settings'
+	title = 'Settings'
 	css = ['css/settings.css']
 	js = ['js/settings.js']
 
+	""" get method to get all the chatrooms that the user is a participant in """
 	def handle_exception(self, exception):
 		if isinstance(exception, AuthenticationFailed):
 			if 'access token is invalid but refresh token is valid' in str(exception):
 				response = HttpResponseRedirect(self.request.path)
 				response.set_cookie('access_token', generate_access_token(self.request.COOKIES.get('refresh_token')), httponly=True, samesite='Lax', secure=True)
 				return response
-			signin_url = reverse('signin_page')
-			params = urllib.parse.urlencode({'next': self.request.path})
-			response = HttpResponseRedirect(f'{signin_url}?{params}')
+			response = HttpResponseRedirect(reverse('signin_page'))
 			response.delete_cookie('access_token')
 			response.delete_cookie('refresh_token')
-			response.delete_cookie('csrftoken')
-			response.status_code = 302
+			if self.request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+				return JsonResponse({
+					'redirect': '/signin'
+				}, status=302)
 			return response
 		return super().handle_exception(exception)
+
 	
 	def get_context_data(self, request):
 		player = request.user
@@ -609,32 +639,30 @@ class AnonymizePlayer(APIView):
 	permission_classes = [IsAuthenticated]
 	throttle_classes = []
 
+	""" get method to get all the chatrooms that the user is a participant in """
 	def handle_exception(self, exception):
 		if isinstance(exception, AuthenticationFailed):
 			if 'access token is invalid but refresh token is valid' in str(exception):
 				response = HttpResponseRedirect(self.request.path)
 				response.set_cookie('access_token', generate_access_token(self.request.COOKIES.get('refresh_token')), httponly=True, samesite='Lax', secure=True)
 				return response
-			signin_url = reverse('signin_page')
-			params = urllib.parse.urlencode({'next': self.request.path})
-			response = HttpResponseRedirect(f'{signin_url}?{params}')
+			response = HttpResponseRedirect(reverse('signin_page'))
 			response.delete_cookie('access_token')
 			response.delete_cookie('refresh_token')
+			if self.request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+				return JsonResponse({
+					'redirect': '/signin'
+				}, status=302)
 			return response
 		return super().handle_exception(exception)
 
-	def get(self, request):
-		token_string = request.COOKIES.get('access_token')
-		if token_string:
-			try:
-				add_token_to_blacklist(token_string)
-			except Exception as e:
-				return HttpResponseRedirect(reverse('landing'))
-		# create a new anonymous player
-		anon = createGuestPlayer()
-		new_jwts = RefreshToken.for_user(anon)
-		response = Response({'anon_username': anon.username}, status=status.HTTP_200_OK)
-		response.set_cookie('access_token', str(new_jwts.access_token), httponly=True, samesite='Lax', secure=True)
-		response.set_cookie('refresh_token', str(new_jwts), httponly=True, samesite='Lax', secure=True)
-		anon.save()
-		return response
+
+	def post(self, request):
+		player = request.user
+		anon_action = request.GET.get('anon_action', '')
+		if anon_action == 'anon':
+			player.is_anonymous = True
+		else:
+			player.is_anonymous = False
+		player.save()
+		return Response({'is_anonymous': player.is_anonymous}, status=status.HTTP_200_OK)

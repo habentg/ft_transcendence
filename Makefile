@@ -1,44 +1,41 @@
 
-COMPOSE 		= cd ./source && docker-compose
-
+COMPOSE = docker-compose -f  docker-compose.yaml
 
 # ----------------------- creating services --------------------------
-all: build up
+all: build up collectstatic
 
 keygen:
-	@sh ./source/nginx_server/tools/self_signed_keygen.sh
+	@sh ./source/nginx/tools/self_signed_keygen.sh
+	@python3 ./source/nginx/tools/get_host_ip.py
 
-up: keygen
-	$(COMPOSE) -f docker-compose.yaml up -d --remove-orphans
+up:
+	$(COMPOSE) up -d --remove-orphans
 
-create_users:
-	$(COMPOSE) -f docker-compose.yaml exec app sh create_alot_of_users_for_testing.sh
-
-build:
-	$(COMPOSE) -f docker-compose.yaml build
+build: keygen
+	$(COMPOSE) build
 
 down:
-	$(COMPOSE) -f docker-compose.yaml down
+	$(COMPOSE) down
 
 re: down up # rebuilding the services without deleting the persistent storages
 
 # ---------------------------- django related Operattions -------------------------------
 
 collectstatic:
-	$(COMPOSE) -f docker-compose.yaml exec app python manage.py collectstatic --noinput
+	$(COMPOSE) exec neon_pong python manage.py collectstatic --noinput
 
 migrate:
-	$(COMPOSE) -f docker-compose.yaml exec app python manage.py makemigrations
-	$(COMPOSE) -f docker-compose.yaml exec app python manage.py migrate
+	$(COMPOSE) exec neon_pong python manage.py makemigrations
+	$(COMPOSE) exec neon_pong python manage.py migrate
 
 
 # ----------------------- restarting services --------------------------
 
 start:
-	$(COMPOSE) -f docker-compose.yaml start
+	$(COMPOSE) start
 
 stop:
-	$(COMPOSE) -f docker-compose.yaml stop
+	$(COMPOSE) stop
 
 restart: stop start # restarting the services (volumes, network, and images stay the same)
 
@@ -50,57 +47,14 @@ clean: down
 	@yes | docker images -q | grep -v $$(docker images redis:6-alpine -q) | grep -v $$(docker images postgres:15-alpine -q) | xargs docker rmi -f || true
 	@yes | docker volume ls -q | grep -q . && docker volume rm $$(docker volume ls -q) || true 
 
-fclean: down
-	@yes | docker system prune --all
-	@docker volume ls -q | grep -q . && docker volume rm $$(docker volume ls -q) || true 
+fclean:
+	@yes | docker container ls -q | grep -q . &&  docker stop $$(docker ps -a -q) || true
+	@yes | docker system prune --all --volumes
 
 rebuild: clean all
 
-# ----------------------- Managing app service only --------------------------
-
-app-down:
-	$(COMPOSE) -f docker-compose.yaml stop app
-	$(COMPOSE) -f docker-compose.yaml rm -f app
-# @docker image rm app_image
-
-app-up:
-	$(COMPOSE) -f docker-compose.yaml up --build -d --no-deps app
-
-app-rebuild: app-down app-up
-
-app-restart:
-	$(COMPOSE) -f docker-compose.yaml restart app
-
-app-down:
-
-nginx-rebuild:
-	$(COMPOSE) -f docker-compose.yaml stop nginx
-	$(COMPOSE) -f docker-compose.yaml rm -f nginx
-	$(COMPOSE) -f docker-compose.yaml up --build -d --no-deps nginx
-
-app-nginx-rebuild: app-rebuild nginx-rebuild
-
-
-# ---------------------------- git push target -------------------------------
-
-push:
-	@if [ -z "$(msg)" ]; then \
-		echo "Please provide a commit message."; \
-		echo "Usage: make push msg=\"<commit_message>\""; \
-		exit 1; \
-	fi
-	git add .
-	git status
-	git commit -m "$(msg)"
-	git push
-
-
-
 # ---------------------------- PHONY PHONY ... -------------------------------
 .PHONY: up down fclean re restart rebuild
-
-db:
-	docker exec -it postgresql psql -U ${POSTGRES_USER} -d ${POSTGRES_DB}
 
 # ---------------------------- Help target -------------------------------
 help:
@@ -129,4 +83,15 @@ help:
 	@echo ""
 
 
+# ---------------------------- End of Makefile -------------------------------
+# ---------------------------- End of Makefile -------------------------------
+# ---------------------------- End of Makefile -------------------------------
+# ---------------------------- End of Makefile -------------------------------
+# ---------------------------- End of Makefile -------------------------------
+# ---------------------------- End of Makefile -------------------------------
+# ---------------------------- End of Makefile -------------------------------
+# ---------------------------- End of Makefile -------------------------------
+# ---------------------------- End of Makefile -------------------------------
+# ---------------------------- End of Makefile -------------------------------
+# ---------------------------- End of Makefile -------------------------------
 # ---------------------------- End of Makefile -------------------------------

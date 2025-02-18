@@ -1,5 +1,8 @@
+# Ignore migration files
+**/.DS_Store/
+
 # Ignore .env file in the source directory
-source/.env
+.env
 
 # Ignore __pycache__ directories
 **/__pycache__/
@@ -13,9 +16,6 @@ source/.env
 # Ignore .git files
 .git/
 
-# Ignore profile pictures
-source/transcendence/profile_pics/
-
 # Ignore migration files
 **/migrations/
 
@@ -23,4 +23,4 @@ source/transcendence/profile_pics/
 **/profile_pics/
 
 # ignore secret dir
-secrets/
+source/nginx/tools/secrets/

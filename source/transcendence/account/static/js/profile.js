@@ -36,16 +36,21 @@ async function UpdateUserInfo() {
     });
 
     if (!response.ok) {
-      const errorData = await response.json();
-      displayError(errorData);
+      const data = await response.json();
+      displayError(data);
       return;
     }
     closeModal("username-modal");
-    document.getElementById("full_name").textContent = formData.full_name.slice(0, 20);
-    document.getElementById("player_email").textContent = formData.email.slice(0, 20);
-    showSuccessMessage("Profile Information updated successfully");
+    const player_full_name = document.getElementById("player_full_name");
+    player_full_name.textContent = formData.full_name.slice(0, 20);
+    player_full_name.setAttribute("data-fullname", formData.full_name);
+    const player_email = document.getElementById("player_email");
+    player_email.textContent = formData.email.slice(0, 20);
+    player_email.setAttribute("data-email", formData.email);
+
+    await showSuccessMessage("Profile Information updated successfully");
   } catch (error) {
-    // console.error("Error:", error);
+    createToast({type:'error',error_message:'Failed to update profile info',title:'Error!'})
   }
 }
 
@@ -86,9 +91,9 @@ async function handleUpload() {
     }
 
     // Validate file size
-    const maxSize = 10 * 1024 * 1024; // 10MB
+    const maxSize = 5 * 1024 * 1024; // 5MB
     if (profilePicFile.size > maxSize) {
-      errorMsg.textContent = "File size exceeds 10MB";
+      errorMsg.textContent = "File size exceeds 5MB";
       errorMsg.style.display = "block";
       return;
     }
@@ -121,9 +126,9 @@ async function handleUpload() {
       closeModal("profile-pic-modal");
       // update the user info in the DOM
       const responseData = await response.json();
+      localStorage.setItem("profile_pic", responseData.profile_pic);
       await updateUI(`/profile/${responseData.username}`, false);
-      updateNavBar(true);
-      showSuccessMessage("Profile Picture updated successfully");
+      await showSuccessMessage("Profile Picture updated successfully");
     } else {
       throw new Error("Failed to update profile pic");
     }
@@ -133,17 +138,6 @@ async function handleUpload() {
     errorMsg.style.display = "block";
   }
 }
-
-// function closeModal(modalId) {
-//   console.log("closing modal");
-//   const modal = document.getElementById(modalId);
-//   if (modal) {
-//     modal.remove(); // Remove the modal from the DOM
-//     document.body.classList.remove("modal-open"); // Remove the modal-open class from body
-//   } else {
-//     console.warn(`Modal with id "${modalId}" not found.`);
-//   }
-// }
 
 // Update User Info Modal
 function updateProfileInfo() {
@@ -183,7 +177,7 @@ function updateProfileInfo() {
 
 async function addFriendRequest() {
   const toBeFriend = document
-    .getElementById("username")
+    .getElementById("player_username")
     .getAttribute("data-username");
   try {
     const response = await fetch(`/friend_request/${toBeFriend}/`, {
@@ -218,7 +212,7 @@ async function addFriendRequest() {
 
 async function cancelFriendRequest() {
   const toBeFriend = document
-    .getElementById("username")
+    .getElementById("player_username")
     .getAttribute("data-username");
   try {
     const response = await fetch(`/friend_request/${toBeFriend}/`, {
@@ -318,7 +312,7 @@ async function acceptOrDeclineFriendRequest(action, toBeFriend) {
 
 async function removeFriend() {
   const toBeFriend = document
-    .getElementById("username")
+    .getElementById("player_username")
     .getAttribute("data-username");
   try {
     const response = await fetch(`/friend_request/${toBeFriend}/`, {
@@ -379,7 +373,7 @@ async function create_chatroom(friend_username) {
 
 async function getUserGameHistory(page_number) {
   try {
-    const visited_player_username = document.getElementById("username").getAttribute("data-username");
+    const visited_player_username = document.getElementById("player_username").getAttribute("data-username");
     const response = await fetch(`/game_history?player=${visited_player_username}&page=${page_number}`);
     if (response.ok) {
       const data = await response.json();
@@ -390,7 +384,7 @@ async function getUserGameHistory(page_number) {
     }
     throw new Error("Failed to get game history");
   } catch (error) {
-    console.error("Error: ", error);
+    createToast({type:'error',error_message:`couldnt get game history`,title:'Error'});
   }
 }
 
@@ -489,33 +483,44 @@ function drawBarGraph() {
           title: {
             display: true,
             text: "Games Played",
+            color: "#84ddfc",
             font: {
               size: 16,
             },
           },
           ticks: {
+            color: "#ffffff",
             stepSize: 1,
+          },
+          grid: {
+            display: false,
           },
         },
         x: {
           title: {
             display: true,
             text: "Game Type",
+            color: "#84ddfc",
             font: {
               size: 16,
             },
+          },
+          ticks: {
+            color: "#ffffff",
+          },
+          grid: {
+            display: false,
           },
         },
       },
       plugins: {
         legend: {
-          display: false, 
+          display: false,
         },
       },
     },
   });
 }
-
 
 
 

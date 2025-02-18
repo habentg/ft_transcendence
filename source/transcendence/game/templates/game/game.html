@@ -1,37 +1,30 @@
-<!-- load content -->
 {% load static %}
 
 <div class="gamePage">
   <div class="background-image position-relative">
-    <div
-      id="warningMessage"
-      class="d-none text-center text-light p-2"
-    >
+    <div id="warningMessage" class="d-none text-center text-light p-2">
       <h3 class="mb-4 mt-2">Screen too small to play</h3>
-      <h5>
-        Please switch to a laptop or desktop with a larger screen for the best
-        experience.
-      </h5>
+      <h5>Please switch to a laptop or desktop with a larger screen for the best experience.</h5>
     </div>
     <div id="gameContent">
       <div class="justify-content-center mb-3">
         <div id="controls" class="col-12 text-center">
           {% if isAI %}
-          <button id="aiButton" type="button" class="btn btn-primary me-3">
-            <i class="fas fa-robot me-2"></i>
-            Start game
-          </button> 
+            <button id="aiButton" type="button" class="btn btn-primary me-3">
+              <i class="fas fa-robot me-2"></i>
+              Start game
+            </button>
           {% else %}
-          <button id="startButton" type="button" class="btn btn-primary me-3">
-            <i class="fas fa-play me-2"></i>
-            Start game
-          </button>
+            <button id="startButton" type="button" class="btn btn-primary me-3">
+              <i class="fas fa-play me-2"></i>
+              Start game
+            </button>
           {% endif %}
           <button id="settingButton" type="button" class="btn btn-secondary me-3">
             <i class="fas fa-cog me-2"></i>
             settings
           </button>
-          <button id="gameRulesButton" type="button" class="btn btn-primary2 " onclick="showGameRules()" >
+          <button id="gameRulesButton" type="button" class="btn btn-info" onclick="showGameRules()">
             <i class="fas fa-book me-2"></i>
             How to play
           </button>
@@ -40,7 +33,7 @@
       <div class="justify-content-center">
         <div class="gamePlayers d-flex justify-content-between">
           <div id="player1" class="col-12 col-md-6 text-center">
-            <h3 id="player1Name" class="playerNames">@ {{ current_username }}</h3>  
+            <h3 id="player1Name" class="playerNames">@ {{ current_username }}</h3>
           </div>
           <div id="player2" class="col-12 col-md-6 text-center">
             <h3 id="player2Name" class="playerNames"></h3>
@@ -53,4 +46,3 @@
     </div>
   </div>
 </div>
-

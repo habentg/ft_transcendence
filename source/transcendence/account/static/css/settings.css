@@ -86,6 +86,12 @@
     box-shadow: 0 4px 15px rgba(255, 193, 7, 0.3);
 }
 
+.btn-dark:hover, .btn-light:hover {
+    transform: translateY(-2px);
+    /* background: linear-gradient(45deg, #343a40, #212529);     */
+    box-shadow: 0 4px 15px rgba(52, 58, 64, 0.3);
+}
+
 /* Info Button - Sign Out */
 .btn-info {
     background: linear-gradient(45deg, #17a2b8, #0dcaf0);

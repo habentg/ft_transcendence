@@ -53,12 +53,7 @@ async function handlePassResetSubmit(e) {
     });
 
   } catch (error) {
-  //   createToast({
-  //     title: "Error",
-  //     message: "Failed to authenticate",
-  //     type: "error",
-  //   });
-  //   console.error('Error:', error);
+    createToast({ type: "error", title: "Error", error_message: "An error occurred. Please try again later"});
   }
 }
 
@@ -98,7 +93,7 @@ async function handlePassChangeSubmit(e) {
       return;
     }
 
-    showSuccessMessage("Password reset successfully");
+    await showSuccessMessage("Password reset successfully");
     updateUI(`/signin`);
 
     // Clear the local storage
@@ -106,7 +101,7 @@ async function handlePassChangeSubmit(e) {
     localStorage.removeItem('token');
   }
   catch (error) {
-    console.error('Error:', error);
+    createToast({ type: "error", title: "Error", error_message: "An error occurred. Please try again later."});
   }
 }
 
@@ -129,17 +124,3 @@ document.querySelectorAll(".toggle-password").forEach((button) => {
     }
   });
 });
-
-// function loadSpinner() {
-//   const spinner = document.getElementById("load-spinner");
-
-//   if (spinner) {
-//     spinner.style.display = "block";
-//   }
-//   // Show spinner for 2 seconds
-//   setTimeout(() => {
-//     if (spinner) {
-//       spinner.style.display = "none";
-//     }
-//   }, 2000);
-// }

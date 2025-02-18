@@ -16,8 +16,6 @@ class PlayerSignupSerializer(serializers.ModelSerializer):
         fields = ['full_name', 'username', 'email', 'password']
 
     def create(self, validated_data):
-        print("Initial data:", self.initial_data, flush=True)
-        print("Validated data:", validated_data, flush=True)
         if validated_data['password'] != self.initial_data['confirm_password']:
             raise serializers.ValidationError("Passwords do not match from backend.")
         user_password = validated_data.pop('password')

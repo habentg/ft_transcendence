@@ -14,7 +14,7 @@ class Game {
     this.context = null;
     this.boardWidth = 800;
     this.boardHeight = 500;
-    this.playerWidth = 15;
+    this.playerWidth = 16;
     this.playerHeight = 80;
 
     //players
@@ -26,13 +26,13 @@ class Game {
     this.activeKeys = []; // for key inputs
 
     //setting variables
-    this.defballSpeed = 8;
+    this.defballSpeed = 10;
     this.paddleSpeed = 8;
     this.maxScore = 3;
     this.slowServe = false;
 
     // Parry variables
-    this.cooldownTime = 5000;
+    this.cooldownTime = 7000;
     this.parryFlag = false;
 
     this.ball = {
@@ -40,8 +40,9 @@ class Game {
       y: this.boardHeight / 2,
       velocityX: this.defballSpeed,
       velocityY: this.defballSpeed,
-      ballRadius: 7,
+      ballRadius: 8,
     };
+
     this.sound = new Sound();
   }
 
@@ -59,6 +60,17 @@ class Game {
 
   getplayerWidth() {
     return this.playerWidth;
+  }
+
+  resetValues() {
+    this.stopeventListeners();
+    this.ball.x = this.boardWidth / 2;
+    this.ball.y = this.boardWidth / 2;
+    this.players[0].y = (this.boardHeight / 2) - this.playerHeight / 2;
+    this.players[1].y = (this.boardHeight / 2) - this.playerHeight / 2;
+    this.players[0].velocityY = 0;
+    this.players[1].velocityY = 0;
+    this.randomizeServe();
   }
 
   setupeventListeners() {
@@ -82,29 +94,35 @@ class Game {
   }
   
   stopeventListeners() {
+    // remove active keys
     while (this.activeKeys.length > 0) this.activeKeys.pop();
     document.removeEventListener("keydown", this.move);
     document.removeEventListener("keyup", this.stopMovement);
   }
 
   resetBall(direction) {
+    // puts ball back to the middle
     this.ball.x = this.boardWidth / 2;
     this.ball.y = this.boardHeight / 2;
-    // console.log("Ball values after reset = ", this.ball);
     if (this.slowServe) {
       // Apply reduced speed if slow serve is enabled
       this.ball.velocityX = direction * Math.abs(this.defballSpeed) * 0.5;
       this.ball.velocityY = 2 * (Math.random() > 0.5 ? 1 : -1) * 0.5;
     } else {
       // Use normal initial speed
-      this.ball.velocityX = direction * Math.abs(this.defballSpeed);
+      this.ball.velocityX = direction * Math.abs(this.defballSpeed) * 0.7;
       this.ball.velocityY = 2 * (Math.random() > 0.5 ? 1 : -1);
     }
   }
 
   randomizeServe() {
-    this.ball.velocityX = (Math.random() % 2 == 1 ? this.defballSpeed : -this.defballSpeed)
-    this.ball.velocityY = 2 * (Math.random() > 0.5 ? 1 : -1);
+    if (this.slowServe) {
+      this.ball.velocityX = (Math.random() > 0.5 ? this.defballSpeed * 0.5: -this.defballSpeed * 0.5)
+      this.ball.velocityY = 2 * (Math.random() > 0.5 ? 1 : -1);
+    } else {
+      this.ball.velocityX = (Math.random() > 0.5 ? this.defballSpeed * 0.7 : -this.defballSpeed * 0.7)
+      this.ball.velocityY = 2 * (Math.random() > 0.5 ? 1 : -1);
+    }
   }
 
   initializeBoard(boardElementId) {
@@ -117,34 +135,27 @@ class Game {
   createPlayer(name, position) {
     const player = new Player(name, position, this);
     this.players.push(player);
-    // console.log("Player created: ", player);
-  }
-
-  updateParryFlag() {
-    this.parryFlag = document.getElementById("slowServe").checked;
-    return this.parryFlag;
   }
 
   move = (event) => {
     this.activeKeys[event.code] = true;
-    // console.log(`Key Down: ${event.code}`); // Debugging
   }
 
   stopMovement = (event) => {
     this.activeKeys[event.code] = false;
-    // console.log(`Key Up: ${event.code}`);
   }
 
   saveSettings(user) {
+    //method function to save settings username is used as a key
     const key = `gameSetting_${user}`;
     const settings = {
       defballSpeed: this.defballSpeed,
       paddleSpeed: this.paddleSpeed,
       maxScore: this.maxScore,
       slowServe: this.slowServe,
+      parryFlag: this.parryFlag
     };
     localStorage.setItem(key, JSON.stringify(settings));
-    // console.log("Settings saved to localStorage:", settings);
   }
 
   loadSettings(user) {
@@ -156,7 +167,7 @@ class Game {
       this.paddleSpeed = savedSettings.paddleSpeed || this.paddleSpeed;
       this.maxScore = savedSettings.maxScore || this.maxScore;
       this.slowServe = savedSettings.slowServe || this.slowServe;
-      // console.log("Loaded settings from localStorage:", savedSettings);
+      this.parryFlag = savedSettings.parryFlag || this.parryFlag;
     }
   }
 }
@@ -193,7 +204,6 @@ async function getFullTournamentView(tournament_id) {
       // remove the modal when clicked outside
       tournamentViewerModal.addEventListener("click", (e) => {
         if (e.target === tournamentViewerModal) {
-            console.log("Removing modal tournamentModal");
             closeModal(`tournamentModal${tournament_id}`);
             document.getElementById(`/static/css/tournament.css-id`).remove();
         } 
@@ -202,7 +212,7 @@ async function getFullTournamentView(tournament_id) {
     }
     throw new Error("Failed to load retrieveAllGamesOfaTournament");
   } catch (error) {
-    console.error("ERROR: ", error);
+    createToast({type:'error',error_message: 'Failed to load retrieveAllGamesOfaTournament',title:'Error'});
   }
 }
 
@@ -275,7 +285,7 @@ class Sound {
 
     // Event listener for loading errors
     audio.onerror = () => {
-      console.error(`Failed to load sound "${name}" from "${path}".`);
+      createToast({type:'error',error_message: `Failed to load sound "${name}" from "${path}".`,title:'Error'});
     };
 
     // Start loading the audio
@@ -287,8 +297,17 @@ class Sound {
     if (sound) {
       sound.currentTime = 0; // Reset for replay
       sound.play();
-    } else {
-      console.warn(`Sound "${name}" not found.`);
     }
   }
+}
+
+// Check if mobile using window.navigator.userAgent
+function isInDesktop() {
+  const mobileDevices = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+  const isLargeScreen = window.innerWidth >= 820 && window.innerHeight >= 700; 
+  // const isInDesktop = /(Chrome|Safari|Firefox|Edge|Opera|MSIE|Trident)/i.test(navigator.userAgent);
+  
+  const isTouchDevice = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+
+  return ((!mobileDevices && isTouchDevice) || isLargeScreen);
 }
