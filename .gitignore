@@ -17,7 +17,7 @@
 .git/
 
 # Ignore migration files
-**/migrations/
+# **/migrations/
 
 # Ignore the pfp directory
 **/profile_pics/
